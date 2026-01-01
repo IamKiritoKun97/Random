@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ray's Strategic Finance Planner</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at top left, #1e293b, #0f172a, #020617);
+            color: #f1f5f9;
+            min-height: 100vh;
+        }
+
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .gold-text {
+            color: #fbbf24; /* Amber/Gold accent */
+        }
+
+        .gold-border {
+            border-color: rgba(251, 191, 36, 0.3);
+        }
+
+        input {
+            background: transparent;
+            color: #f1f5f9;
+            transition: all 0.2s;
+        }
+
+        input:focus {
+            background: rgba(255, 255, 255, 0.05);
+            outline: none;
+            box-shadow: inset 0 0 0 1px rgba(251, 191, 36, 0.5);
+        }
+
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .row-hover:hover {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .btn-gold {
+            background: linear-gradient(135deg, #fbbf24, #d97706);
+            color: #000;
+            font-weight: 600;
+        }
+
+        .btn-gold:hover {
+            filter: brightness(1.1);
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+    <div class="max-w-4xl mx-auto">
+        <!-- Header -->
+        <header class="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div>
+                <h1 class="text-4xl font-extrabold tracking-tight gold-text">Strategic Planner</h1>
+                <p class="text-slate-400 mt-1">Financial overview and obligation management.</p>
+            </div>
+            <div class="glass-card p-5 rounded-2xl flex items-center gap-6 gold-border border">
+                <div class="text-right">
+                    <p class="text-xs font-bold uppercase tracking-widest text-slate-400">Net Surplus</p>
+                    <p id="total-net" class="text-3xl font-bold gold-text">₱0.00</p>
+                </div>
+                <div class="h-12 w-12 rounded-xl bg-amber-500/20 flex items-center justify-center border border-amber-500/30">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 gold-text" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 1.343-3 3s1.343 3 3 3 3-1.343 3-3-1.343-3-3-3z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 2a10 10 0 100 20 10 10 0 000-20z" />
+                    </svg>
+                </div>
+            </div>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <!-- Income Section -->
+            <section>
+                <div class="flex items-center justify-between mb-4 px-2">
+                    <h2 class="text-lg font-bold text-slate-200 uppercase tracking-wider flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500"></span> Income Timeline
+                    </h2>
+                    <button onclick="addRow('income-list')" class="text-xs font-bold gold-text hover:underline transition-all uppercase">+ Add Entry</button>
+                </div>
+                <div class="glass-card rounded-2xl overflow-hidden">
+                    <table class="w-full text-left">
+                        <thead class="bg-slate-800/50 text-slate-400">
+                            <tr>
+                                <th class="p-4 text-[10px] font-black uppercase">Date</th>
+                                <th class="p-4 text-[10px] font-black uppercase">Source</th>
+                                <th class="p-4 text-[10px] font-black uppercase text-right">Amount</th>
+                                <th class="p-4 w-8"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="income-list">
+                            <!-- Rows -->
+                        </tbody>
+                    </table>
+                    <div class="p-4 bg-slate-900/40 border-t border-white/5 flex justify-between items-center">
+                        <span class="text-xs font-bold text-slate-400 uppercase">Total Inflow</span>
+                        <span id="total-income" class="text-lg font-bold text-emerald-400">₱0.00</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Obligations Section -->
+            <section>
+                <div class="flex items-center justify-between mb-4 px-2">
+                    <h2 class="text-lg font-bold text-slate-200 uppercase tracking-wider flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-amber-500"></span> Obligations
+                    </h2>
+                    <button onclick="addRow('expense-list')" class="text-xs font-bold gold-text hover:underline transition-all uppercase">+ Add Bill</button>
+                </div>
+                <div class="glass-card rounded-2xl overflow-hidden">
+                    <table class="w-full text-left">
+                        <thead class="bg-slate-800/50 text-slate-400">
+                            <tr>
+                                <th class="p-4 text-[10px] font-black uppercase">Due</th>
+                                <th class="p-4 text-[10px] font-black uppercase">Payee</th>
+                                <th class="p-4 text-[10px] font-black uppercase text-right">Amount</th>
+                                <th class="p-4 w-8"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="expense-list">
+                            <!-- Rows -->
+                        </tbody>
+                    </table>
+                    <div class="p-4 bg-slate-900/40 border-t border-white/5 flex justify-between items-center">
+                        <span class="text-xs font-bold text-slate-400 uppercase">Total Outflow</span>
+                        <span id="total-expenses" class="text-lg font-bold text-slate-200">₱0.00</span>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Footer -->
+        <footer class="mt-12 py-8 border-t border-white/5 text-center">
+            <p class="text-slate-500 text-xs font-medium uppercase tracking-[0.2em]">Personal Finance Management System</p>
+        </footer>
+    </div>
+
+    <script>
+        let incomeData = [
+            { date: 'Jan 15', label: 'Salary', amount: 10000 },
+            { date: 'Jan 17', label: 'AB (No Absents)', amount: 1000 },
+            { date: 'Jan 29', label: 'Photography Gig', amount: 13000 },
+            { date: 'Jan 30', label: 'Salary', amount: 10000 }
+        ];
+
+        let expenseData = [
+            { date: 'Jan 2', label: 'VECO', amount: 1506.08 },
+            { date: 'Jan 2', label: 'PLDT LLC', amount: 1399.00 },
+            { date: 'Jan 15', label: 'Jessica', amount: 2334.00 },
+            { date: 'Jan 15', label: 'MECO', amount: 2000.00 },
+            { date: 'Jan 15', label: 'Sinking Fund', amount: 1500.00 },
+            { date: 'Jan 15', label: 'PAGIBIG MP2', amount: 1000.00 },
+            { date: 'Jan 29', label: 'Unionbank CC', amount: 5142.00 },
+            { date: 'Jan 30', label: 'Jessica', amount: 2334.00 },
+            { date: 'Jan 30', label: 'Motor', amount: 1500.00 },
+            { date: 'Jan 30', label: 'Sinking Fund', amount: 1500.00 },
+            { date: 'Feb 4', label: 'Maribank', amount: 3462.22 },
+            { date: 'Feb 5', label: 'Spaylater', amount: 9525.63 }
+        ];
+
+        function init() {
+            renderList('income-list', incomeData);
+            renderList('expense-list', expenseData);
+            calculate();
+        }
+
+        function renderList(id, data) {
+            const container = document.getElementById(id);
+            container.innerHTML = '';
+            data.forEach((item, index) => {
+                const tr = document.createElement('tr');
+                tr.className = 'border-b border-white/5 row-hover transition-all';
+                tr.innerHTML = `
+                    <td class="p-3"><input type="text" value="${item.date}" onchange="updateValue('${id}', ${index}, 'date', this.value)" class="w-full text-xs font-medium px-1 rounded"></td>
+                    <td class="p-3"><input type="text" value="${item.label}" onchange="updateValue('${id}', ${index}, 'label', this.value)" class="w-full text-xs font-bold text-slate-300 px-1 rounded"></td>
+                    <td class="p-3"><input type="number" step="0.01" value="${item.amount}" oninput="updateValue('${id}', ${index}, 'amount', this.value)" class="w-full text-right text-xs font-bold text-slate-100 px-1 rounded"></td>
+                    <td class="p-3 text-center">
+                        <button onclick="removeRow('${id}', ${index})" class="text-slate-600 hover:text-amber-500 transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                        </button>
+                    </td>
+                `;
+                container.appendChild(tr);
+            });
+        }
+
+        function updateValue(listId, index, key, value) {
+            const arr = listId === 'income-list' ? incomeData : expenseData;
+            arr[index][key] = key === 'amount' ? parseFloat(value) || 0 : value;
+            calculate();
+        }
+
+        function addRow(listId) {
+            const arr = listId === 'income-list' ? incomeData : expenseData;
+            arr.push({ date: 'New', label: 'Item', amount: 0 });
+            renderList(listId, arr);
+            calculate();
+        }
+
+        function removeRow(listId, index) {
+            const arr = listId === 'income-list' ? incomeData : expenseData;
+            arr.splice(index, 1);
+            renderList(listId, arr);
+            calculate();
+        }
+
+        function calculate() {
+            const totalIncome = incomeData.reduce((sum, item) => sum + item.amount, 0);
+            const totalExpense = expenseData.reduce((sum, item) => sum + item.amount, 0);
+            const net = totalIncome - totalExpense;
+
+            document.getElementById('total-income').innerText = `₱${totalIncome.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+            document.getElementById('total-expenses').innerText = `₱${totalExpense.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+            
+            const netEl = document.getElementById('total-net');
+            netEl.innerText = `₱${net.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+            
+            if (net < 0) {
+                netEl.className = 'text-3xl font-bold text-red-400';
+            } else {
+                netEl.className = 'text-3xl font-bold gold-text';
+            }
+        }
+
+        init();
+    </script>
+</body>
+</html>
+

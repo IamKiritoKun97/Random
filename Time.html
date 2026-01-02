@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chrono Break Tracker</title>
+    
+    <!-- Fonts: Inter & JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            /* Deep Dark Palette */
+            --bg-body: #0a0a0c;
+            --bg-card: rgba(23, 23, 26, 0.8);
+            --bg-surface: rgba(255, 255, 255, 0.03);
+            
+            --text-main: #f4f4f5;
+            --text-muted: #a1a1aa;
+
+            /* Neon Accents */
+            --color-primary: #3b82f6; /* Electric Blue */
+            --color-success: #10b981; /* Emerald */
+            --color-danger: #ef4444;  /* Rose */
+            --color-warning: #f59e0b; /* Amber */
+            
+            /* UI Polish */
+            --radius-xl: 32px;
+            --radius-lg: 16px;
+            --font-ui: 'Inter', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+            --border-glass: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: var(--font-ui);
+            background-color: var(--bg-body);
+            background-image: 
+                radial-gradient(circle at 0% 0%, rgba(59, 130, 246, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 100% 100%, rgba(16, 185, 129, 0.05) 0%, transparent 50%);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        /* App Container */
+        .app-container {
+            width: 100%;
+            max-width: 860px;
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            border-radius: var(--radius-xl);
+            display: flex;
+            flex-direction: column;
+            border: var(--border-glass);
+            box-shadow: 0 40px 100px -20px rgba(0,0,0,0.5);
+            overflow: hidden;
+        }
+
+        @media (min-width: 768px) {
+            .app-container { flex-direction: row; min-height: 540px; }
+            .side-controls { flex: 0 0 320px; border-right: var(--border-glass); }
+            .display-area { flex: 1; }
+        }
+
+        .pane { padding: 48px; display: flex; flex-direction: column; }
+
+        /* Left Pane: Controls */
+        .side-controls { background: rgba(0, 0, 0, 0.2); justify-content: space-between; }
+
+        .brand h1 {
+            font-size: 1.75rem;
+            font-weight: 800;
+            letter-spacing: -0.04em;
+            margin-bottom: 8px;
+            background: linear-gradient(to right, #fff, #a1a1aa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .brand p { font-size: 0.85rem; color: var(--text-muted); font-weight: 300; }
+
+        .actions { display: grid; gap: 14px; margin-top: 40px; }
+
+        button {
+            font-family: var(--font-ui);
+            font-size: 0.95rem;
+            font-weight: 600;
+            padding: 18px;
+            border: none;
+            border-radius: var(--radius-lg);
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        button::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255,255,255,0.1);
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        button:hover::after { opacity: 1; }
+        button:active { transform: translateY(2px); }
+
+        .btn-primary { background: var(--color-primary); color: white; }
+        .btn-success { background: var(--color-success); color: white; }
+        .btn-ghost { 
+            background: transparent; 
+            color: var(--text-muted); 
+            border: 1px solid rgba(255,255,255,0.1); 
+            margin-top: 20px;
+        }
+        .btn-ghost:hover { color: var(--color-danger); border-color: var(--color-danger); }
+
+        /* Right Pane: Display */
+        .display-area { justify-content: center; text-align: center; }
+
+        .empty-view {
+            opacity: 0.4;
+            font-weight: 300;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+        }
+
+        .active-view { display: none; animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .session-type {
+            display: inline-block;
+            padding: 6px 16px;
+            border-radius: 100px;
+            background: var(--bg-surface);
+            border: var(--border-glass);
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            margin-bottom: 30px;
+        }
+
+        /* Countdown Visual */
+        .timer-wrap {
+            position: relative;
+            margin-bottom: 40px;
+        }
+
+        .timer-value {
+            font-family: var(--font-mono);
+            font-size: 5.5rem;
+            font-weight: 700;
+            line-height: 1;
+            letter-spacing: -0.05em;
+            transition: color 0.5s ease;
+        }
+
+        .timer-hint {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            margin-top: 10px;
+        }
+
+        /* Grid Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .stat-card {
+            background: var(--bg-surface);
+            padding: 16px 8px;
+            border-radius: var(--radius-lg);
+            border: var(--border-glass);
+        }
+
+        .stat-label { font-size: 0.6rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600; margin-bottom: 6px; }
+        .stat-time { font-family: var(--font-mono); font-size: 1rem; font-weight: 600; }
+
+        /* Dynamic Status Colors */
+        .status-blue { color: var(--color-primary); }
+        .status-green { color: var(--color-success); }
+        .status-red { color: var(--color-danger); text-shadow: 0 0 20px rgba(239, 68, 68, 0.4); }
+
+        /* Modal Overlays */
+        .overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(8px);
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0; pointer-events: none; transition: 0.3s; z-index: 100;
+        }
+        .overlay.active { opacity: 1; pointer-events: auto; }
+
+        .modal {
+            background: #1c1c1e;
+            padding: 40px;
+            border-radius: var(--radius-xl);
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            border: var(--border-glass);
+            transform: scale(0.9);
+            transition: 0.3s;
+        }
+        .overlay.active .modal { transform: scale(1); }
+
+        .modal h2 { margin-bottom: 12px; font-weight: 700; }
+        .modal p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 30px; line-height: 1.5; }
+        .modal-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- Sidebar Controls -->
+        <div class="pane side-controls">
+            <div class="brand">
+                <h1>Chrono</h1>
+                <p>Advanced Session Logic</p>
+                
+                <div class="actions">
+                    <button class="btn-primary" onclick="attemptRecordTime('Break')">Break</button>
+                    <button class="btn-success" onclick="attemptRecordTime('Lunch')">Lunch</button>
+                </div>
+            </div>
+
+            <button class="btn-ghost" onclick="resetApp()">System Reset</button>
+        </div>
+
+        <!-- Main Display -->
+        <div class="pane display-area">
+            
+            <div id="empty-view" class="empty-view">
+                Awaiting sequence initialization...
+            </div>
+
+            <div id="active-view" class="active-view">
+                <div id="session-tag" class="session-type">Session</div>
+
+                <div class="timer-wrap">
+                    <div id="countdown" class="timer-value">00:00</div>
+                    <div class="timer-hint">Remaining Duration</div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">Initial</div>
+                        <div id="start-t" class="stat-time">--:--</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Return</div>
+                        <div id="return-t" class="stat-time status-blue">--:--</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Warning</div>
+                        <div id="warn-t" class="stat-time">--:--</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirm Modal -->
+    <div id="modal-wrap" class="overlay">
+        <div class="modal">
+            <h2>Active Sequence</h2>
+            <p>A session is currently in progress. Proceeding will terminate the existing countdown.</p>
+            <div class="modal-btns">
+                <button class="btn-ghost" style="margin:0" onclick="closeModal()">Cancel</button>
+                <button class="btn-primary" onclick="confirmOverwrite()">Overwrite</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const DURATION = 30;
+        const WARN_OFFSET = 2;
+        const KEY = 'chrono_state_v2';
+        
+        let interval; 
+        let pending = null;
+
+        const ui = {
+            empty: document.getElementById('empty-view'),
+            active: document.getElementById('active-view'),
+            tag: document.getElementById('session-tag'),
+            timer: document.getElementById('countdown'),
+            start: document.getElementById('start-t'),
+            ret: document.getElementById('return-t'),
+            warn: document.getElementById('warn-t'),
+            modal: document.getElementById('modal-wrap')
+        };
+
+        function init() {
+            const saved = localStorage.getItem(KEY);
+            if (saved) render(JSON.parse(saved));
+        }
+
+        function attemptRecordTime(type) {
+            if (localStorage.getItem(KEY)) {
+                pending = type;
+                ui.modal.classList.add('active');
+            } else {
+                record(type);
+            }
+        }
+
+        function closeModal() {
+            ui.modal.classList.remove('active');
+            pending = null;
+        }
+
+        function confirmOverwrite() {
+            if (pending) record(pending);
+            closeModal();
+        }
+
+        function record(type) {
+            const now = new Date();
+            const ret = new Date(now.getTime() + DURATION * 60000);
+            const warn = new Date(ret.getTime() - WARN_OFFSET * 60000);
+
+            const data = {
+                type,
+                start: now.getTime(),
+                ret: ret.getTime(),
+                warn: warn.getTime()
+            };
+
+            localStorage.setItem(KEY, JSON.stringify(data));
+            render(data);
+        }
+
+        function resetApp() {
+            localStorage.removeItem(KEY);
+            if(interval) clearInterval(interval);
+            ui.active.style.display = 'none';
+            ui.empty.style.display = 'block';
+        }
+
+        function render(data) {
+            ui.tag.innerText = `${data.type} Mode`;
+            ui.tag.style.color = data.type === 'Lunch' ? 'var(--color-success)' : 'var(--color-primary)';
+            
+            ui.start.innerText = fmt(data.start);
+            ui.ret.innerText = fmt(data.ret);
+            ui.warn.innerText = fmt(data.warn);
+
+            ui.ret.className = `stat-time ${data.type === 'Lunch' ? 'status-green' : 'status-blue'}`;
+            
+            ui.empty.style.display = 'none';
+            ui.active.style.display = 'block';
+
+            runTimer(data.ret, data.type === 'Lunch');
+        }
+
+        function runTimer(target, isLunch) {
+            if (interval) clearInterval(interval);
+            
+            const baseClass = isLunch ? 'status-green' : 'status-blue';
+            let vibrated = false;
+
+            const tick = () => {
+                const now = new Date().getTime();
+                const diff = target - now;
+
+                if (diff < 0) {
+                    clearInterval(interval);
+                    ui.timer.innerHTML = "EXPIRED";
+                    ui.timer.className = "timer-value status-red";
+                    return;
+                }
+
+                if (diff <= 120000) { // 2 mins
+                    ui.timer.className = "timer-value status-red";
+                    if (!vibrated && navigator.vibrate) {
+                        navigator.vibrate([400, 100, 400]);
+                        vibrated = true;
+                    }
+                } else {
+                    ui.timer.className = `timer-value ${baseClass}`;
+                }
+
+                const m = Math.floor((diff % 3600000) / 60000);
+                const s = Math.floor((diff % 60000) / 1000);
+                ui.timer.innerHTML = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+            };
+
+            tick();
+            interval = setInterval(tick, 1000);
+        }
+
+        function fmt(ts) {
+            return new Date(ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>
+

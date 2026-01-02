@@ -1,0 +1,156 @@
+{
+  "version": "6.0",
+  "timestamp": "2026-01-02T18:33:45.039Z",
+  "income": [
+    {
+      "date": "Jan 15",
+      "label": "Salary",
+      "amount": 10000,
+      "completed": true,
+      "category": "Salary"
+    },
+    {
+      "date": "Jan 30",
+      "label": "Salary",
+      "amount": 10000,
+      "completed": true,
+      "category": "Salary"
+    },
+    {
+      "date": "Jan 17",
+      "label": "AB (No Absents and no lates)",
+      "amount": 1000,
+      "completed": true,
+      "category": "Other"
+    },
+    {
+      "date": "Jan 24",
+      "label": "Kyla's prenup",
+      "amount": 3000,
+      "completed": true,
+      "category": "Business"
+    },
+    {
+      "date": "Jan 29",
+      "label": "Kyla's wedding",
+      "amount": 10000,
+      "completed": true,
+      "category": "Business"
+    },
+    {
+      "date": "Jan 10",
+      "label": "Sherrie Ann's daughter",
+      "amount": 3500,
+      "completed": true,
+      "category": "Business"
+    },
+    {
+      "date": "01/02/2026",
+      "label": "CANON 6D",
+      "amount": 15000,
+      "completed": false,
+      "category": "Other"
+    },
+    {
+      "date": "01/02/2026",
+      "label": "SIGMA 35MM",
+      "amount": 34000,
+      "completed": false,
+      "category": "Other"
+    },
+    {
+      "date": "01/02/2026",
+      "label": "HUAWEI TABLET",
+      "amount": 18000,
+      "completed": false,
+      "category": "Other"
+    }
+  ],
+  "expenses": [
+    {
+      "date": "Jan 2",
+      "label": "VECO",
+      "amount": 1506.08,
+      "completed": false,
+      "category": "Needs"
+    },
+    {
+      "date": "Jan 2 ",
+      "label": "PLDT LLC",
+      "amount": 1399,
+      "completed": true,
+      "category": "Needs"
+    },
+    {
+      "date": "Jan 15",
+      "label": "Computer",
+      "amount": 2334,
+      "completed": false,
+      "category": "Needs"
+    },
+    {
+      "date": "Jan 15",
+      "label": "MECO",
+      "amount": 2000,
+      "completed": false,
+      "category": "Needs"
+    },
+    {
+      "date": "Jan 15 ",
+      "label": "Sinking fund",
+      "amount": 1500,
+      "completed": false,
+      "category": "Savings"
+    },
+    {
+      "date": "Jan 29",
+      "label": "Unionbank CC",
+      "amount": 5142,
+      "completed": false,
+      "category": "Debt"
+    },
+    {
+      "date": "Jan 30",
+      "label": "Computer",
+      "amount": 2334,
+      "completed": false,
+      "category": "Needs"
+    },
+    {
+      "date": "Jan 30",
+      "label": "Motor",
+      "amount": 1500,
+      "completed": false,
+      "category": "Needs"
+    },
+    {
+      "date": "Jan 30",
+      "label": "Sinking fund",
+      "amount": 1500,
+      "completed": false,
+      "category": "Savings"
+    },
+    {
+      "date": "Feb 4",
+      "label": "Maribank",
+      "amount": 3462.22,
+      "completed": false,
+      "category": "Debt"
+    },
+    {
+      "date": "Feb 5",
+      "label": "Spaylater",
+      "amount": 10234.47,
+      "completed": false,
+      "category": "Debt"
+    },
+    {
+      "date": "01/30/2026",
+      "label": "MP2",
+      "amount": 2000,
+      "completed": false,
+      "category": "Savings"
+    }
+  ],
+  "currency": "₱"
+}

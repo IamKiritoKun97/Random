@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Strategic Planner Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at top left, #0f172a, #020617);
+            color: #f1f5f9;
+            min-height: 100vh;
+            overscroll-behavior-y: none;
+        }
+
+        /* Glassmorphism */
+        .glass-card {
+            background: rgba(30, 41, 59, 0.6);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+
+        .gold-text { color: #fbbf24; }
+        
+        /* Input & Select Styling */
+        input, select {
+            background: transparent;
+            color: #f1f5f9;
+            transition: border 0.2s;
+            border-radius: 4px;
+        }
+        input:focus, select:focus {
+            background: rgba(255, 255, 255, 0.05);
+            outline: none;
+            box-shadow: inset 0 0 0 1px rgba(251, 191, 36, 0.5);
+        }
+        select { -webkit-appearance: none; appearance: none; }
+        option { background-color: #1e293b; color: white; }
+
+        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type="date"]::-webkit-calendar-picker-indicator { 
+            filter: invert(1); 
+            cursor: pointer; 
+            opacity: 0.6;
+            width: 20px;
+            height: 20px;
+        }
+
+        /* Row Styling */
+        .row-hover:hover { background: rgba(255, 255, 255, 0.03); }
+        .row-completed { background-color: rgba(0,0,0,0.2) !important; }
+        .row-completed input, .row-completed select { color: #64748b; text-decoration: line-through; }
+        .status-checkbox { accent-color: #fbbf24; width: 18px; height: 18px; border-radius: 4px; }
+
+        /* Scrollbar */
+        @media (min-width: 1024px) {
+            .custom-scroll::-webkit-scrollbar { width: 6px; }
+            .custom-scroll::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
+            .custom-scroll::-webkit-scrollbar-thumb { background: rgba(251, 191, 36, 0.2); border-radius: 10px; }
+            .custom-scroll::-webkit-scrollbar-thumb:hover { background: rgba(251, 191, 36, 0.5); }
+        }
+
+        /* Sticky Header */
+        th {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            background-color: #162032;
+            box-shadow: 0 1px 0 rgba(255,255,255,0.05);
+            cursor: pointer; user-select: none;
+        }
+        
+        /* Visual Bars */
+        .progress-container { width: 100%; background-color: rgba(255,255,255,0.05); border-radius: 99px; height: 6px; overflow: hidden; margin-top: 12px; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, #10b981, #fbbf24); transition: width 0.5s ease, background 0.3s; }
+
+        .breakdown-bar { display: flex; height: 8px; width: 100%; border-radius: 4px; overflow: hidden; margin-top: 8px; background: rgba(255,255,255,0.05); }
+        .seg-needs { background-color: #3b82f6; } 
+        .seg-wants { background-color: #a855f7; } 
+        .seg-save { background-color: #10b981; }  
+        .seg-debt { background-color: #ef4444; }  
+
+        /* Buttons */
+        .btn-action { 
+            padding: 0.5rem 0.75rem; 
+            border-radius: 0.5rem; 
+            font-size: 0.7rem; 
+            font-weight: 700; 
+            text-transform: uppercase; 
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        .btn-secondary { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #94a3b8; }
+        
+        .mobile-hide { display: none; }
+        @media (min-width: 640px) { .mobile-hide { display: table-cell; } }
+    </style>
+</head>
+<body class="p-3 md:p-6 lg:h-screen lg:overflow-hidden flex flex-col">
+    
+    <div class="max-w-[1500px] mx-auto w-full flex flex-col lg:h-full"> 
+        
+        <!-- Header Section -->
+        <header class="mb-4 lg:mb-6 flex flex-col xl:flex-row xl:items-end justify-between gap-4 shrink-0">
+            <div>
+                <div class="flex items-center justify-between">
+                    <h1 class="text-2xl md:text-4xl font-extrabold tracking-tight gold-text">Strategic Planner <span class="text-xs md:text-sm font-normal text-slate-500 ml-1">Pro</span></h1>
+                    
+                    <select onchange="changeCurrency(this.value)" class="lg:hidden bg-white/5 border border-white/10 rounded py-1 px-2 text-xs text-amber-400 font-bold outline-none">
+                        <option value="₱">₱</option><option value="$">$</option><option value="€">€</option><option value="£">£</option>
+                    </select>
+                </div>
+                
+                <div class="flex flex-wrap gap-2 mt-3 items-center">
+                    <div class="relative group flex-grow md:flex-grow-0">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg class="h-4 w-4 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                        </div>
+                        <input type="text" id="search-input" oninput="handleSearch(this.value)" placeholder="Search..." class="w-full bg-white/5 border border-white/10 rounded-lg py-1.5 pl-9 pr-2 text-xs text-slate-200 focus:border-amber-500 md:w-40 transition-all focus:w-56">
+                    </div>
+
+                    <select id="currency-select" onchange="changeCurrency(this.value)" class="hidden lg:block bg-white/5 border border-white/10 rounded-lg py-1.5 px-2 text-xs text-slate-400 focus:text-amber-400 focus:border-amber-500 outline-none cursor-pointer">
+                        <option value="₱">PHP (₱)</option><option value="$">USD ($)</option><option value="€">EUR (€)</option><option value="£">GBP (£)</option>
+                    </select>
+
+                    <div class="hidden lg:block h-6 w-px bg-white/10 mx-1"></div>
+
+                    <div class="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
+                        <button onclick="triggerImport()" class="btn-action btn-secondary flex items-center gap-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg> Import
+                        </button>
+                        <button onclick="exportData()" class="btn-action btn-secondary flex items-center gap-1">
+                             <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg> Export
+                        </button>
+                        <button onclick="sweepCompleted()" class="btn-action btn-secondary text-amber-200 border-amber-500/30 flex items-center gap-1">
+                             <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg> Sweep
+                        </button>
+                        <button onclick="clearData()" class="btn-action btn-secondary text-red-400 border-red-900/30">Reset</button>
+                    </div>
+                    <input type="file" id="json-input" accept=".json" class="hidden" onchange="handleImport(this)">
+                </div>
+            </div>
+
+            <!-- Summary Cards Stack -->
+            <div class="grid grid-cols-2 lg:flex lg:flex-row gap-3 w-full xl:w-auto mt-2 lg:mt-0">
+                <!-- Projected -->
+                <div class="glass-card p-3 md:p-5 rounded-xl border border-white/10 flex-1 min-w-[140px]">
+                    <div class="flex flex-col md:flex-row justify-between md:items-start gap-1">
+                        <div>
+                            <p class="text-[10px] md:text-xs font-bold uppercase tracking-widest text-slate-400">Projected</p>
+                            <p id="total-net" class="text-lg md:text-2xl font-bold gold-text">₱0.00</p>
+                        </div>
+                        <div class="md:text-right">
+                             <p class="text-[10px] font-bold uppercase tracking-widest text-slate-500">Utilization</p>
+                             <p id="utilization-text" class="text-xs md:text-sm font-bold text-slate-300">0%</p>
+                        </div>
+                    </div>
+                    <div class="progress-container h-1.5 md:h-2">
+                        <div id="utilization-bar" class="progress-fill" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <!-- Actual -->
+                <div class="glass-card p-3 md:p-5 rounded-xl border border-emerald-500/20 bg-emerald-900/10 flex-1 min-w-[140px]">
+                    <div class="flex justify-between items-center h-full">
+                        <div>
+                            <p class="text-[10px] md:text-xs font-bold uppercase tracking-widest text-emerald-400/80">Cash on Hand</p>
+                            <p id="actual-cash" class="text-lg md:text-2xl font-bold text-emerald-400 mt-1">₱0.00</p>
+                        </div>
+                        <div class="hidden md:flex h-10 w-10 rounded-lg bg-emerald-500/20 items-center justify-center border border-emerald-500/30">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:flex-grow lg:overflow-hidden">
+            
+            <!-- Income Section -->
+            <section class="flex flex-col h-full lg:min-h-0">
+                <div class="flex items-center justify-between mb-2 px-1">
+                    <h2 class="text-sm md:text-lg font-bold text-slate-200 uppercase tracking-wider flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500"></span> Income
+                    </h2>
+                    <button onclick="addRow('income-list')" class="text-[10px] md:text-xs font-bold gold-text hover:underline transition-all uppercase px-2 py-1 bg-white/5 rounded">+ Add Entry</button>
+                </div>
+                
+                <div class="hidden lg:block h-[46px] mb-2 shrink-0"></div>
+
+                <div class="glass-card rounded-xl flex flex-col lg:flex-grow overflow-hidden">
+                    <div class="overflow-x-auto lg:overflow-y-auto lg:flex-grow custom-scroll">
+                        <table class="w-full text-left border-collapse min-w-[350px]">
+                            <thead class="text-slate-400">
+                                <tr>
+                                    <th class="p-2 md:p-4 w-8 text-center bg-[#162032]">✓</th> 
+                                    <th class="p-2 md:p-4 text-[10px] font-black uppercase w-20 md:w-28 bg-[#162032]" onclick="sortData('income', 'date')">Date</th>
+                                    <th class="p-2 md:p-4 text-[10px] font-black uppercase w-20 md:w-24 bg-[#162032] mobile-hide">Cat</th>
+                                    <th class="p-2 md:p-4 text-[10px] font-black uppercase bg-[#162032]" onclick="sortData('income', 'label')">Source</th>
+                                    <th class="p-2 md:p-4 text-[10px] font-black uppercase text-right w-20 md:w-28 bg-[#162032]" onclick="sortData('income', 'amount')">Amt</th>
+                                    <th class="p-2 md:p-4 w-10 bg-[#162032]"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="income-list"></tbody>
+                        </table>
+                        <div id="income-empty-state" class="hidden text-center py-8 text-slate-600 text-xs">No entries.</div>
+                    </div>
+                    <div class="p-3 md:p-4 bg-slate-900/60 border-t border-white/5 flex justify-between items-center z-20 shrink-0">
+                        <div>
+                            <p class="text-[10px] font-bold text-slate-500 uppercase">Pending</p>
+                            <p id="pending-income" class="text-sm md:text-lg font-bold text-emerald-400">₱0.00</p>
+                        </div>
+                        <div class="text-right">
+                             <p class="text-[10px] font-bold text-slate-500 uppercase">Planned</p>
+                             <p id="total-income" class="text-xs md:text-sm font-medium text-slate-400">₱0.00</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Obligations Section -->
+            <section class="flex flex-col h-full lg:min-h-0 pb-8 lg:pb-0">
+                <div class="flex items-center justify-between mb-2 px-1">
+                    <h2 class="text-sm md:text-lg font-bold text-slate-200 uppercase tracking-wider flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-amber-500"></span> Obligations
+                    </h2>
+                    <button onclick="addRow('expense-list')" class="text-[10px] md:text-xs font-bold gold-text hover:underline transition-all uppercase px-2 py-1 bg-white/5 rounded">+ Add Bill</button>
+                </div>
+                
+                <div class="px-1 mb-2 shrink-0">
+                     <div class="flex flex-wrap gap-x-3 gap-y-1 text-[9px] md:text-[10px] text-slate-400 font-bold uppercase mb-1 items-center">
+                         <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-blue-500"></span>N: <span id="pct-Needs" class="text-slate-200">0%</span></span>
+                         <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-purple-500"></span>W: <span id="pct-Wants" class="text-slate-200">0%</span></span>
+                         <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-500"></span>S: <span id="pct-Savings" class="text-slate-200">0%</span></span>
+                         <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-red-500"></span>D: <span id="pct-Debt" class="text-slate-200">0%</span></span>
+                     </div>
+                     <div class="breakdown-bar" id="breakdown-chart"></div>
+                </div>
+
+                <div class="glass-card rounded-xl flex flex-col lg:flex-grow overflow-hidden">
+                    <div class="overflow-x-auto lg:overflow-y-auto lg:flex-grow custom-scroll">
+                        <table class="w-full text-left border-collapse min-w-[350px]">
+                            <thead class="text-slate-400">
+                                <tr>
+                                    <th class="p-2 md:p-4 w-8 text-center bg-[#162032]">✓</th>
+                                    <th class="p-2 md:p-4 text-[10px] font-black uppercase w-20 md:w-28 bg-[#162032]" onclick="sortData('expense', 'date')">Due</th>
+                                    <th class="p-2 md:p-4 text-[10px] font-black uppercase w-20 md:w-24 bg-[#162032] mobile-hide">Cat</th>
+                                    <th class="p-2 md:p-4 text-[10px] font-black uppercase bg-[#162032]" onclick="sortData('expense', 'label')">Payee</th>
+                                    <th class="p-2 md:p-4 text-[10px] font-black uppercase text-right w-20 md:w-28 bg-[#162032]" onclick="sortData('expense', 'amount')">Amt</th>
+                                    <th class="p-2 md:p-4 w-10 bg-[#162032]"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="expense-list"></tbody>
+                        </table>
+                        <div id="expense-empty-state" class="hidden text-center py-8 text-slate-600 text-xs">No obligations.</div>
+                    </div>
+                    <div class="p-3 md:p-4 bg-slate-900/60 border-t border-white/5 flex justify-between items-center z-20 shrink-0">
+                        <div>
+                            <p class="text-[10px] font-bold text-slate-500 uppercase">Remaining</p>
+                            <p id="pending-expenses" class="text-sm md:text-lg font-bold text-slate-200">₱0.00</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-[10px] font-bold text-slate-500 uppercase">Planned</p>
+                            <p id="total-expenses" class="text-xs md:text-sm font-medium text-slate-400">₱0.00</p>
+                       </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <script>
+        // --- State ---
+        let incomeData = [], expenseData = [];
+        let currentCurrency = '₱';
+        let searchTerm = '';
+        let sortState = { income: { key: null, direction: 'asc' }, expense: { key: null, direction: 'asc' } };
+        const STORAGE_KEY = 'planner_data_v6_fixed';
+        const INCOME_CATS = ['Salary', 'Business', 'Allowance', 'Gift', 'Other'];
+        const EXPENSE_CATS = ['Needs', 'Wants', 'Savings', 'Debt'];
+
+        function init() { loadFromStorage(); renderList('income-list', incomeData); renderList('expense-list', expenseData); calculate(); }
+        function changeCurrency(s) { currentCurrency = s; calculate(); }
+        function handleSearch(t) { searchTerm = t.toLowerCase(); renderList('income-list', incomeData); renderList('expense-list', expenseData); }
+
+        function sweepCompleted() {
+            if(confirm("Delete ALL checked items?")) {
+                incomeData = incomeData.filter(i => !i.completed);
+                expenseData = expenseData.filter(i => !i.completed);
+                refreshAll();
+            }
+        }
+
+        function duplicateRow(listId, index) {
+            const arr = listId === 'income-list' ? incomeData : expenseData;
+            arr.splice(index + 1, 0, { ...arr[index], completed: false });
+            refreshAll();
+        }
+
+        function refreshAll() {
+            renderList('income-list', incomeData); renderList('expense-list', expenseData); calculate(); saveToStorage();
+        }
+
+        function renderList(id, data) {
+            const container = document.getElementById(id);
+            const emptyState = document.getElementById(id === 'income-list' ? 'income-empty-state' : 'expense-empty-state');
+            const categories = id === 'income-list' ? INCOME_CATS : EXPENSE_CATS;
+            
+            container.innerHTML = '';
+            
+            const filteredData = data.map((item, idx) => ({...item, originalIndex: idx}))
+                .filter(item => {
+                    if(!searchTerm) return true;
+                    return (item.label||'').toLowerCase().includes(searchTerm) || (item.category||'').toLowerCase().includes(searchTerm) || (item.amount||'').toString().includes(searchTerm);
+                });
+
+            if (filteredData.length === 0) emptyState.classList.remove('hidden');
+            else {
+                emptyState.classList.add('hidden');
+                filteredData.forEach((item) => {
+                    const idx = item.originalIndex;
+                    const tr = document.createElement('tr');
+                    tr.className = `border-b border-white/5 row-hover transition-all ${item.completed ? 'row-completed' : ''}`;
+                    const isoDate = parseToISO(item.date); 
+                    const catOpts = categories.map(c => `<option value="${c}" ${item.category === c ? 'selected' : ''}>${c.substring(0,1).toUpperCase() + c.substring(1)}</option>`).join('');
+
+                    tr.innerHTML = `
+                        <td class="p-2 md:p-4 text-center align-middle">
+                            <input type="checkbox" class="status-checkbox" ${item.completed ? 'checked' : ''} onchange="toggleStatus('${id}', ${idx}, this.checked)">
+                        </td>
+                        <td class="p-2 md:p-4 align-middle relative">
+                            <div class="flex items-center">
+                                <input type="text" value="${item.date}" placeholder="MM/DD" onchange="updateValue('${id}', ${idx}, 'date', this.value)" class="w-full text-[10px] md:text-xs font-medium px-1 py-1 rounded focus:bg-white/5">
+                                <div class="relative w-4 h-4 md:w-5 md:h-5 overflow-hidden -ml-4 opacity-0">
+                                    <input type="date" value="${isoDate}" oninput="syncDateFromPicker('${id}', ${idx}, this.value)" class="absolute inset-0 w-full h-full cursor-pointer">
+                                </div>
+                            </div>
+                        </td>
+                        <td class="p-2 md:p-4 align-middle mobile-hide">
+                            <select onchange="updateValue('${id}', ${idx}, 'category', this.value)" class="w-full text-[10px] font-bold uppercase text-slate-400 bg-white/5 rounded px-1 py-1">
+                                ${catOpts}
+                            </select>
+                        </td>
+                        <td class="p-2 md:p-4 align-middle">
+                            <input type="text" value="${item.label}" placeholder="..." onchange="updateValue('${id}', ${idx}, 'label', this.value)" class="w-full text-[10px] md:text-xs font-bold text-slate-300 px-1 py-1 rounded focus:bg-white/5">
+                        </td>
+                        <td class="p-2 md:p-4 align-middle">
+                            <input type="number" step="0.01" value="${item.amount}" oninput="updateValue('${id}', ${idx}, 'amount', this.value)" class="w-full text-right text-[10px] md:text-xs font-bold text-slate-100 px-1 py-1 rounded focus:bg-white/5">
+                        </td>
+                        <td class="p-2 md:p-4 text-right align-middle whitespace-nowrap">
+                            <button onclick="removeRow('${id}', ${idx})" class="text-slate-600 hover:text-red-400 transition-all p-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 md:h-4 md:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                            </button>
+                        </td>
+                    `;
+                    container.appendChild(tr);
+                });
+            }
+        }
+
+        // --- BUG FIX IS HERE ---
+        function updateValue(listId, index, key, value) {
+            const arr = listId === 'income-list' ? incomeData : expenseData;
+            if(arr[index]) { 
+                // 1. Update the data
+                arr[index][key] = key === 'amount' ? parseFloat(value) || 0 : value; 
+                
+                // 2. Only calculate totals and save
+                calculate(); 
+                saveToStorage();
+                
+                // 3. DO NOT CALL refreshAll() / renderList() here!
+                // This keeps the DOM intact so the input doesn't lose focus.
+            }
+        }
+
+        function toggleStatus(listId, index, isChecked) {
+            const arr = listId === 'income-list' ? incomeData : expenseData;
+            if(arr[index]) { arr[index].completed = isChecked; refreshAll(); }
+        }
+
+        function syncDateFromPicker(listId, index, isoValue) {
+            if(!isoValue) return;
+            const arr = listId === 'income-list' ? incomeData : expenseData;
+            const p = isoValue.split('-'); arr[index].date = `${p[1]}/${p[2]}/${p[0]}`; refreshAll();
+        }
+
+        function addRow(listId) {
+            const arr = listId === 'income-list' ? incomeData : expenseData;
+            const d = new Date();
+            const dateStr = `${(d.getMonth()+1).toString().padStart(2,'0')}/${d.getDate().toString().padStart(2,'0')}/${d.getFullYear()}`;
+            arr.push({ date: dateStr, label: '', amount: 0, completed: false, category: listId === 'income-list' ? 'Other' : 'Needs' });
+            refreshAll();
+        }
+
+        function removeRow(listId, index) {
+            (listId === 'income-list' ? incomeData : expenseData).splice(index, 1); refreshAll();
+        }
+
+        function calculate() {
+            const sum = (arr) => arr.reduce((s, i) => s + i.amount, 0);
+            const sumDone = (arr) => arr.filter(i => i.completed).reduce((s, i) => s + i.amount, 0);
+            
+            const tInc = sum(incomeData), tExp = sum(expenseData);
+            const rInc = sumDone(incomeData), pExp = sumDone(expenseData);
+            
+            document.getElementById('total-net').innerText = `${currentCurrency}${(tInc - tExp).toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+            document.getElementById('actual-cash').innerText = `${currentCurrency}${(rInc - pExp).toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+            
+            // Util
+            let pct = tInc > 0 ? (tExp / tInc) * 100 : 0; if(pct > 100) pct = 100;
+            const uBar = document.getElementById('utilization-bar');
+            uBar.style.width = `${pct}%`;
+            document.getElementById('utilization-text').innerText = `${pct.toFixed(0)}%`;
+            uBar.style.background = pct > 90 ? '#ef4444' : 'linear-gradient(90deg, #10b981, #fbbf24)';
+
+            // Footers
+            document.getElementById('pending-income').innerText = `${currentCurrency}${(tInc - rInc).toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+            document.getElementById('total-income').innerText = `${currentCurrency}${tInc.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+            document.getElementById('pending-expenses').innerText = `${currentCurrency}${(tExp - pExp).toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+            document.getElementById('total-expenses').innerText = `${currentCurrency}${tExp.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+
+            updateBreakdown(tExp);
+        }
+
+        function updateBreakdown(total) {
+            const chart = document.getElementById('breakdown-chart'); chart.innerHTML = '';
+            const totals = { 'Needs': 0, 'Wants': 0, 'Savings': 0, 'Debt': 0 };
+            expenseData.forEach(i => totals[i.category || 'Needs'] += i.amount);
+            
+            [{k:'Needs',c:'seg-needs'},{k:'Wants',c:'seg-wants'},{k:'Savings',c:'seg-save'},{k:'Debt',c:'seg-debt'}].forEach(o => {
+                const amt = totals[o.k];
+                const pct = total > 0 ? (amt / total) * 100 : 0;
+                document.getElementById(`pct-${o.k}`).innerText = `${pct.toFixed(0)}%`;
+                if(amt > 0) {
+                    const d = document.createElement('div'); d.className = o.c; d.style.width = `${pct}%`; chart.appendChild(d);
+                }
+            });
+        }
+
+        function parseToISO(s) { if(!s) return ''; const p = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/); return p ? `${p[3]}-${p[1].padStart(2,'0')}-${p[2].padStart(2,'0')}` : s; }
+        function saveToStorage() { localStorage.setItem(STORAGE_KEY, JSON.stringify({ income: incomeData, expenses: expenseData, currency: currentCurrency })); }
+        function loadFromStorage() {
+            const s = localStorage.getItem(STORAGE_KEY); if(s) { try { const p = JSON.parse(s); incomeData = p.income || []; expenseData = p.expenses || []; if(p.currency) currentCurrency = p.currency; } catch(e){} }
+        }
+        function clearData() { if(confirm("Reset everything?")) { localStorage.removeItem(STORAGE_KEY); location.reload(); } }
+        function exportData() {
+            const s = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({ version: "6.0", timestamp: new Date(), income: incomeData, expenses: expenseData, currency: currentCurrency }, null, 2));
+            const a = document.createElement('a'); a.href = s; a.download = `plan-${new Date().toISOString().slice(0,10)}.json`; document.body.appendChild(a); a.click(); a.remove();
+        }
+        function triggerImport() { document.getElementById('json-input').click(); }
+        function handleImport(inp) { 
+            const f = inp.files[0]; if(!f) return;
+            const r = new FileReader(); r.onload = e => { try { const j = JSON.parse(e.target.result); incomeData=j.income; expenseData=j.expenses; refreshAll(); } catch(err){alert("Invalid JSON");} }; r.readAsText(f);
+        }
+        function sortData(type, key) {
+            const arr = type === 'income' ? incomeData : expenseData;
+            const s = sortState[type];
+            s.direction = s.key === key && s.direction === 'asc' ? 'desc' : 'asc'; s.key = key;
+            arr.sort((a,b) => {
+                if(key==='amount') return s.direction==='asc' ? a[key]-b[key] : b[key]-a[key];
+                if(key==='date') { const dA=new Date(parseToISO(a[key])), dB=new Date(parseToISO(b[key])); return s.direction==='asc' ? dA-dB : dB-dA; }
+                const vA=(a[key]||'').toLowerCase(), vB=(b[key]||'').toLowerCase(); return s.direction==='asc' ? (vA<vB?-1:1) : (vA>vB?-1:1);
+            });
+            refreshAll();
+        }
+
+        init();
+    </script>
+</body>
+</html>

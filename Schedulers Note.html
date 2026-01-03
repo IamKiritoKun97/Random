@@ -520,24 +520,24 @@
   <script>
     /** APP LOGIC **/
     const templates = [
-      { id: 0, label: "Voicemail – Detailed", type: "Voicemail", ref: "Voicemail", body: "[Scheduling] Attempts #{{Attempts}}, called patient at P#{{Telephone}}, routed to voicemail, left a detailed message." },
+      { id: 0, label: "Voicemail", type: "Voicemail", ref: "Voicemail", body: "[Scheduling] Attempts #{{Attempts}}, called patient at P#{{Telephone}}, routed to voicemail, left a detailed message." },
       { id: 1, label: "Scheduling - Replacement", type: "Spoke w/ Pt", ref: "Request for replacement", body: "[Scheduling] Called P#{{Telephone}}, talked with patient, explained the process and {{subjLower}} understood. {{Subj}} wants a replacement, sent to dispatch {{Date}}." },
       { id: 2, label: "Scheduling - No replacement, just signature", type: "Spoke w/ Pt", ref: "No replacement, just signature", body: "[Scheduling] Called P#{{Telephone}}, talked with patient, explained the process and {{subjLower}} understood. {{Subj}} does not want a replacement but would like to renew {{subjLower}} contract, sent to dispatch {{Date}}." },
       { id: 3, label: "Scheduling - Check HOC First", type: "Spoke w/ Pt", ref: "Check HOC first", body: "[Scheduling] Called P#{{Telephone}}, talked with patient, explained the process and {{subjLower}} understood. {{Subj}} wants us to check HOC first and only replace if necessary, sent to dispatch {{Date}}." },
-      { id: 4, label: "Scheduling - DocuSign (Kari)", type: "Digital", ref: "DocuSign Req", body: "[Scheduling] Called P#{{Telephone}}, talked with patient, explained the process and {{Subj}} understood. {{Subj}} wants to sign the contract through DocuSign, sent message to Kari." },
+      { id: 4, label: "Scheduling - DocuSign (Kari)", type: "Digital", ref: "DocuSign Request", body: "[Scheduling] Called P#{{Telephone}}, talked with patient, explained the process and {{Subj}} understood. {{Subj}} wants to sign the contract through DocuSign, sent message to Kari." },
       { id: 5, label: "Scheduling - Mail out", type: "Postal", ref: "Postal Mail", body: "[Scheduling] Called P#{{Telephone}}, talked with patient, explained the process and {{Subj}} understood. {{Subj}} wants to sign the contract through postal mail, sent email to local branch." },
-      { id: 6, label: "Blind Delivery / No response", type: "Dispatch", ref: "Blind Delivery - No Ans", body: "[Scheduling] Multiple attempts have been made, sent as blind delivery {{Date}}." },
+      { id: 6, label: "Blind Delivery / No response", type: "Dispatch", ref: "Blind Delivery - No Answer", body: "[Scheduling] Multiple attempts have been made, sent as blind delivery {{Date}}." },
       { id: 7, label: "Blind Delivery / Bad #", type: "Dispatch", ref: "Blind Delivery - Bad #", body: "[Scheduling] Multiple attempts have been made, sent as blind delivery {{Date}}." },
       { id: 8, label: "No answer", type: "No Answer", ref: "No answer", body: "[Scheduling] Attempts #{{Attempts}}, called patient at P#{{Telephone}}, disconnected after multiple rings." },
       { id: 9, label: "Voicemail – DocuSign", type: "Voicemail", ref: "VM DocuSign", body: "[Scheduling] Attempts #{{Attempts}}, called patient at P#{{Telephone}} to follow-up the DocuSign, routed to voicemail, left a message." },
-      { id: 10, label: "Refused Info", type: "Spoke w/ Pt", ref: "Refused Info", body: "[Scheduling] Attempts #{{Attempts}}, called patient at P#{{Telephone}}, spoke with patient but {{subjLower}} does not want to give out info." },
+      { id: 10, label: "Refused Info", type: "Spoke w/ Pt", ref: "Refused to answer", body: "[Scheduling] Attempts #{{Attempts}}, called patient at P#{{Telephone}}, spoke with patient but {{subjLower}} does not want to give out info." },
       { id: 11, label: "Mailbox Not Setup", type: "Voicemail", ref: "No Mailbox", body: "[Scheduling] Attempts #{{Attempts}}, called patient at P#{{Telephone}}, unable to leave message - mailbox not setup." },
       { id: 12, label: "Voicemail Full", type: "Voicemail", ref: "VM Full", body: "[Scheduling] Attempts #{{Attempts}}, called patient at P#{{Telephone}}, routed to voicemail, unable to leave message because mailbox is full." },
       { id: 13, label: "Not in Service", type: "Bad #", ref: "Not in Service", body: "[Scheduling] Attempts #{{Attempts}}, called patient at P#{{Telephone}}, no longer in service." },
-      { id: 15, label: "Smart Blocker", type: "Blocker", ref: "Call Blocked", body: "[Scheduling] Attempts #{{Attempts}}, called patient at P#{{Telephone}}, call blocked by smart blocker." },
-      { id: 16, label: "Callback Requested", type: "Spoke w/ Pt", ref: "Callback Req", body: "[Scheduling] Attempts #{{Attempts}}, called patient at P#{{Telephone}}, spoke with patient but asked for a callback later." },
+      { id: 15, label: "Smart Call Blocker", type: "Blocker", ref: "Smart Call Blocker", body: "[Scheduling] Attempts #{{Attempts}}, called patient at P#{{Telephone}}, call blocked by smart blocker." },
+      { id: 16, label: "Callback Requested", type: "Spoke w/ Pt", ref: "Callback Request", body: "[Scheduling] Attempts #{{Attempts}}, called patient at P#{{Telephone}}, spoke with patient but asked for a callback later." },
       { id: 17, label: "Busy Tone", type: "Busy", ref: "Busy Tone", body: "[Scheduling] Attempts #{{Attempts}}, called patient at P#{{Telephone}}, routed to busy tone." },
-      { id: 18, label: "Pt Disconnected", type: "Spoke w/ Pt", ref: "Disconnected", body: "[Scheduling] Attempts #{{Attempts}}, called patient at P#{{Telephone}}, spoke with patient but disconnected call." },
+      { id: 18, label: "Pt Disconnected", type: "Spoke w/ Pt", ref: "Pt Disconnected", body: "[Scheduling] Attempts #{{Attempts}}, called patient at P#{{Telephone}}, spoke with patient but disconnected call." },
     ];
 
     const pronounMap = { she: { Subj: "She", subjLower: "she" }, he: { Subj: "He", subjLower: "he" }, they: { Subj: "They", subjLower: "they" } };

@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Outcome Builder | Premium Assistant</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%236366f1'/%3E%3Cstop offset='100%25' stop-color='%23a855f7'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='16' cy='16' r='16' fill='url(%23g)'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.35em' fill='white' font-family='sans-serif' font-weight='bold' font-size='14'%3EOB%3C/text%3E%3C/svg%3E">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      /* Palette */
+      --bg-deep: #030712;
+      --bg-surface: #0f172a;
+      
+      --primary: #6366f1;
+      --primary-dim: rgba(99, 102, 241, 0.15);
+      --primary-glow: rgba(99, 102, 241, 0.5);
+      
+      --accent-teal: #14b8a6;
+      --accent-purple: #a855f7;
+      
+      /* Glass */
+      --glass-panel: rgba(17, 24, 39, 0.65);
+      --glass-border: rgba(255, 255, 255, 0.08);
+      --glass-highlight: rgba(255, 255, 255, 0.03);
+      
+      /* Text */
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-sub: #64748b;
+
+      /* UI */
+      --radius-xl: 24px;
+      --radius-lg: 16px;
+      --radius-md: 12px;
+      --font-main: 'Inter', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      
+      --shadow-lg: 0 20px 40px -10px rgba(0,0,0,0.5);
+      --shadow-glow: 0 0 20px rgba(99, 102, 241, 0.15);
+    }
+
+    /* Reset & Base */
+    * { box-sizing: border-box; outline: none; -webkit-font-smoothing: antialiased; }
+    body { 
+      margin: 0; min-height: 100vh; font-family: var(--font-main); 
+      background-color: var(--bg-deep); color: var(--text-main); 
+      display: flex; justify-content: center; padding: 40px 20px; 
+      overflow-x: hidden; selection: { background: var(--primary); color: white; }
+    }
+
+    /* Background FX */
+    .bg-noise { position: fixed; inset: 0; z-index: -1; opacity: 0.03; background: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E"); pointer-events: none; }
+    .aurora-bg { position: fixed; inset: 0; z-index: -2; background: radial-gradient(circle at 0% 0%, rgba(99, 102, 241, 0.15), transparent 40%), radial-gradient(circle at 100% 100%, rgba(168, 85, 247, 0.1), transparent 40%); }
+
+    /* Layout */
+    .app-shell { width: 100%; max-width: 1400px; animation: slideUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1); }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* Header */
+    .app-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 30px; padding: 0 4px; }
+    .brand h1 { font-size: 2rem; font-weight: 700; margin: 0; letter-spacing: -0.03em; background: linear-gradient(135deg, #fff 30%, #94a3b8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .brand p { color: var(--text-sub); margin: 4px 0 0; font-size: 0.85rem; font-weight: 500; letter-spacing: 0.02em; }
+    
+    .header-actions { display: flex; gap: 10px; }
+    
+    /* Buttons */
+    .btn { 
+      position: relative; overflow: hidden;
+      padding: 10px 20px; border-radius: var(--radius-md); 
+      font-size: 0.85rem; font-weight: 600; cursor: pointer; 
+      transition: all 0.2s ease; display: flex; align-items: center; gap: 8px;
+    }
+    .btn-glass { 
+      background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); color: var(--text-muted); 
+    }
+    .btn-glass:hover { background: rgba(255,255,255,0.08); color: white; border-color: rgba(255,255,255,0.2); transform: translateY(-1px); }
+    
+    .btn-primary { 
+      background: var(--primary); color: white; border: 1px solid rgba(255,255,255,0.1); 
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+    }
+    .btn-primary:hover { background: #5558e6; transform: translateY(-1px); box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4); }
+
+    /* Grid Layout */
+    .main-grid { display: grid; grid-template-columns: 400px 1fr; gap: 24px; align-items: start; }
+    
+    /* Panels */
+    .panel { 
+      background: var(--glass-panel); backdrop-filter: blur(40px); -webkit-backdrop-filter: blur(40px);
+      border: 1px solid var(--glass-border); border-radius: var(--radius-xl); 
+      padding: 32px; box-shadow: var(--shadow-lg); 
+      position: relative; overflow: hidden;
+    }
+    .panel::before {
+      content:''; position: absolute; inset: 0; pointer-events: none;
+      background: linear-gradient(180deg, rgba(255,255,255,0.03) 0%, transparent 100%);
+    }
+
+    .section-label { 
+      font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.15em; 
+      color: var(--text-sub); margin-bottom: 24px; font-weight: 700; 
+      display: flex; align-items: center; gap: 12px;
+    }
+    .section-label span { flex: 1; height: 1px; background: linear-gradient(90deg, rgba(255,255,255,0.05), transparent); }
+
+    /* Inputs */
+    .form-group { margin-bottom: 20px; }
+    .form-group label { display: block; font-size: 0.75rem; font-weight: 600; margin-bottom: 8px; color: var(--text-muted); letter-spacing: 0.02em; }
+    
+    .input-wrapper { position: relative; }
+    .input-wrapper::after {
+      content: ''; position: absolute; bottom: 0; left: 50%; width: 0; height: 1px; 
+      background: var(--primary); transition: 0.3s ease; transform: translateX(-50%);
+    }
+    .input-wrapper:focus-within::after { width: 100%; }
+
+    input, select { 
+      width: 100%; background: rgba(0,0,0,0.2); border: 1px solid var(--glass-border); 
+      border-radius: var(--radius-md); padding: 12px 16px; 
+      color: white; font-family: var(--font-main); font-size: 0.95rem; 
+      transition: all 0.2s; 
+    }
+    input:focus, select:focus { border-color: var(--primary); background: rgba(0,0,0,0.4); box-shadow: 0 0 0 4px var(--primary-dim); }
+    
+    /* Previews */
+    .card-preview { 
+      background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); 
+      border-radius: var(--radius-lg); padding: 24px; margin-top: 16px; 
+      cursor: pointer; transition: 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); position: relative;
+    }
+    .card-preview:hover { border-color: rgba(255,255,255,0.15); transform: translateY(-2px); background: rgba(255,255,255,0.02); }
+    .card-preview.disabled { opacity: 0.4; pointer-events: none; filter: grayscale(1); }
+    
+    .card-header { 
+      font-size: 0.65rem; font-weight: 800; text-transform: uppercase; 
+      color: var(--accent-teal); margin-bottom: 12px; display: block; letter-spacing: 0.05em;
+    }
+    .card-text { font-size: 0.9rem; line-height: 1.6; color: var(--text-main); font-weight: 400; }
+    .mono { font-family: var(--font-mono); color: var(--text-muted); font-size: 0.8rem; }
+    
+    .copy-icon { position: absolute; top: 20px; right: 20px; opacity: 0; transition: 0.2s; color: var(--text-muted); }
+    .card-preview:hover .copy-icon { opacity: 1; }
+
+    /* Template Grid */
+    .template-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+    .search-wrapper { 
+      position: relative; width: 280px; 
+    }
+    .search-wrapper input { padding-left: 36px; border-radius: 100px; background: rgba(255,255,255,0.03); font-size: 0.85rem; }
+    .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 16px; color: var(--text-sub); pointer-events: none; }
+
+    .template-grid { 
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; 
+      max-height: 65vh; overflow-y: auto; padding-right: 4px; padding-bottom: 20px;
+    }
+    .template-grid::-webkit-scrollbar { width: 6px; }
+    .template-grid::-webkit-scrollbar-track { background: transparent; }
+    .template-grid::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+
+    .template-card { 
+      background: linear-gradient(145deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%);
+      border: 1px solid var(--glass-border); padding: 16px 20px; 
+      border-radius: var(--radius-md); cursor: pointer; transition: all 0.2s ease;
+      display: flex; flex-direction: column; gap: 8px;
+    }
+    .template-card:hover { 
+      background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.2); 
+      transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+    .template-card.locked { opacity: 0.25; pointer-events: none; filter: blur(0.5px); }
+    
+    .t-category { 
+      font-size: 0.6rem; font-weight: 700; color: var(--primary); 
+      text-transform: uppercase; background: rgba(99, 102, 241, 0.1); 
+      padding: 4px 8px; border-radius: 4px; align-self: flex-start;
+    }
+    .t-name { font-weight: 600; font-size: 0.9rem; color: #e2e8f0; line-height: 1.4; }
+
+    /* Modals */
+    .modal-overlay { 
+      position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(12px); 
+      z-index: 9999; display: none; align-items: center; justify-content: center; 
+      opacity: 0; transition: opacity 0.3s;
+    }
+    .modal-overlay.open { display: flex; opacity: 1; }
+    
+    .modal-content { 
+      background: #0f172a; border: 1px solid rgba(255,255,255,0.1); 
+      border-radius: var(--radius-xl); width: 95%; max-width: 800px; 
+      position: relative; transform: scale(0.95); transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); 
+      box-shadow: 0 25px 50px -12px rgba(0,0,0,0.8); overflow: hidden;
+    }
+    .modal-overlay.open .modal-content { transform: scale(1); }
+    
+    .modal-close { position: absolute; top: 20px; right: 20px; background: none; border: none; color: var(--text-muted); font-size: 1.5rem; cursor: pointer; z-index: 100; transition: color 0.2s; }
+    .modal-close:hover { color: white; }
+
+    .modal-body { padding: 40px; }
+    
+    /* Specific Modal Styles */
+    .script-text { font-size: 1.1rem; line-height: 1.7; color: var(--text-main); font-weight: 400; }
+    .script-highlight { color: var(--primary); font-weight: 600; }
+    
+    .o2-window { height: 90vh; max-width: 1200px; display: flex; flex-direction: column; }
+    .o2-frame { flex: 1; width: 100%; border: none; background: #030712; }
+
+    /* Toast */
+    .toast { 
+      position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%) translateY(100px); 
+      background: white; color: black; padding: 12px 24px; border-radius: 100px; 
+      font-weight: 600; font-size: 0.85rem; transition: 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28); 
+      z-index: 100000; box-shadow: 0 20px 40px rgba(0,0,0,0.4); display: flex; align-items: center; gap: 8px;
+    }
+    .toast.visible { transform: translateX(-50%) translateY(0); }
+  </style>
+</head>
+<body>
+
+  <div class="bg-noise"></div>
+  <div class="aurora-bg"></div>
+
+  <div class="toast" id="toast">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+    <span>Copied to clipboard</span>
+  </div>
+
+  <div class="app-shell">
+    <header class="app-header">
+      <div class="brand">
+        <h1>Outcome Builder</h1>
+        <p>Clinical Workflow Assistant</p>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-glass" onclick="openModal('modal-vm')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 19a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v14z"></path></svg> 
+          Voicemail
+        </button>
+        <button class="btn btn-glass" onclick="openModal('modal-talk')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+          Live Script
+        </button>
+        <button class="btn btn-primary" id="btn-open-o2">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+          O2 Tool
+        </button>
+      </div>
+    </header>
+
+    <div class="main-grid">
+      <!-- LEFT: DATA INPUT -->
+      <aside class="panel">
+        <div class="section-label">Call Data <span></span></div>
+        <div class="form-group">
+          <label>Phone Number</label>
+          <div class="input-wrapper"><input type="tel" id="telephone" placeholder="(555) 000-0000" autocomplete="off"></div>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+          <div class="form-group">
+            <label>Action Date</label>
+            <div class="input-wrapper"><input type="date" id="date"></div>
+          </div>
+          <div class="form-group">
+            <label>Attempt #</label>
+            <div class="input-wrapper"><input type="number" id="attempts" value="1" min="1"></div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Pronouns</label>
+          <div class="input-wrapper">
+            <select id="pronouns">
+              <option value="she">She / Her</option>
+              <option value="he">He / Him</option>
+              <option value="they">They / Them</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="section-label" style="margin-top: 40px;">Live Preview <span></span></div>
+        <div class="card-preview disabled" id="card-live">
+          <span class="card-header">Outcome Narrative</span>
+          <div class="card-text" id="preview-text">Complete inputs to generate...</div>
+          <div class="copy-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></div>
+        </div>
+        <div class="card-preview disabled" id="card-ref">
+          <span class="card-header" style="color: var(--accent-purple);">Reference Note</span>
+          <div class="card-text mono" id="reference-text">--/-- - Pending</div>
+          <div class="copy-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></div>
+        </div>
+        <button id="btn-reset" style="margin-top: 24px; background: none; border: none; color: var(--text-muted); font-size: 0.7rem; font-weight: 700; cursor: pointer; text-transform: uppercase; letter-spacing: 0.1em; width: 100%; text-align: center; opacity: 0.6; transition: 0.2s;">Reset Session</button>
+      </aside>
+
+      <!-- RIGHT: TEMPLATE EXPLORER -->
+      <main class="panel">
+        <div class="template-controls">
+          <div class="section-label" style="margin: 0; width: auto;">Templates</div>
+          <div class="search-wrapper">
+            <div class="search-icon">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            </div>
+            <input type="text" id="search" placeholder="Search scenarios...">
+          </div>
+        </div>
+        <div class="template-grid" id="template-list"></div>
+      </main>
+    </div>
+  </div>
+
+  <!-- MODALS -->
+  <div class="modal-overlay" id="modal-vm">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeModal('modal-vm')">&times;</button>
+      <div class="modal-body">
+        <h2 style="color: var(--accent-purple); margin-top: 0;">Voicemail Script</h2>
+        <p class="script-text">"This is about your breathing equipment. We have received a document from your doctor confirming that you still need it. This is important, so please call us back at <span class="script-highlight">484-567-0666</span>."</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="modal-talk">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeModal('modal-talk')">&times;</button>
+      <div class="modal-body">
+        <h2 style="color: var(--accent-teal); margin-top: 0;">Live Conversation</h2>
+        <p class="script-text">"Hi, this is Raymond calling from AdaptHealth on a recorded line. Is this a good time to talk? I realize we’re right around the holiday, and I don’t want to pull you away from anything important..."</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- O2 TOOL MODAL -->
+  <div class="modal-overlay" id="modal-o2">
+    <div class="modal-content o2-window">
+      <div style="padding: 15px 25px; background: rgba(0,0,0,0.3); border-bottom: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center;">
+        <span style="font-weight: 700; font-size: 0.75rem; text-transform: uppercase; color: var(--primary); letter-spacing: 0.1em;">O2 5-Year RUL Configuration</span>
+        <button class="modal-close" style="position: static; font-size: 1.2rem;" onclick="closeModal('modal-o2')">&times;</button>
+      </div>
+      <iframe id="o2-iframe" class="o2-frame"></iframe>
+    </div>
+  </div>
+
+  <!-- UPDATED O2 SOURCE CODE (PREMIUM REDESIGN) -->
+  <template id="o2-source-code">
+    <!DOCTYPE html>
+    <html><head>
+      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
+      <style>
+        :root { --primary: #6366f1; --bg: #030712; --panel: #0f172a; --border: rgba(255,255,255,0.08); }
+        body { background: var(--bg); color: #f1f5f9; font-family: 'Inter', sans-serif; padding: 30px; margin: 0; overflow: hidden; height: 100vh; box-sizing: border-box; }
+        * { box-sizing: border-box; outline: none; }
+        
+        .dashboard { display: grid; grid-template-columns: 480px 1fr; gap: 30px; height: calc(100vh - 60px); align-items: start; }
+
+        .config-pane { 
+          background: var(--panel); border: 1px solid var(--border); padding: 30px; border-radius: 16px; 
+          height: 100%; overflow-y: auto; box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+        .config-pane::-webkit-scrollbar { width: 4px; }
+        .config-pane::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+
+        .section-tag { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--primary); margin-bottom: 20px; display: block; border-bottom: 1px solid var(--border); padding-bottom: 10px;}
+        
+        label { display: block; font-size: 0.75rem; font-weight: 600; color: #94a3b8; margin-bottom: 8px; }
+        
+        select, input { 
+          width: 100%; padding: 10px 14px; border-radius: 8px; border: 1px solid var(--border); 
+          background: rgba(0,0,0,0.2); color: white; font-family: inherit; font-size: 0.9rem;
+          margin-bottom: 20px; transition: all 0.2s; 
+        }
+        select:focus, input:focus { border-color: var(--primary); background: rgba(0,0,0,0.4); }
+
+        .group-card { background: rgba(255,255,255,0.02); border: 1px solid var(--border); padding: 20px; border-radius: 12px; margin-bottom: 20px; }
+
+        .check-item { display: flex; align-items: center; gap: 12px; cursor: pointer; margin-bottom: 12px; user-select: none; }
+        .check-item input { width: 16px; height: 16px; margin: 0; accent-color: var(--primary); }
+        .check-item span { font-size: 0.85rem; font-weight: 500; color: #e2e8f0; }
+
+        .preview-pane { height: 100%; display: flex; flex-direction: column; }
+        
+        #preview { 
+          background: rgba(0,0,0,0.3); padding: 40px; border-radius: 16px; 
+          font-family: 'JetBrains Mono', monospace; font-size: 14px; line-height: 1.6; 
+          border: 1px solid var(--border); white-space: pre-wrap; flex: 1;
+          cursor: pointer; transition: all 0.2s; color: #cbd5e1;
+        }
+        #preview:hover { border-color: var(--primary); color: #f8fafc; background: rgba(255,255,255,0.02); }
+
+        .copy-hint { font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--primary); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+        
+        .success-toast {
+          position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px);
+          background: var(--primary); color: white; padding: 10px 20px; border-radius: 100px;
+          font-size: 12px; font-weight: 700; text-transform: uppercase; box-shadow: 0 10px 20px rgba(0,0,0,0.3); 
+          transition: 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28); z-index: 2000; pointer-events: none;
+        }
+        .success-toast.active { transform: translateX(-50%) translateY(0); }
+        .hidden { display: none; }
+      </style>
+    </head>
+    <body>
+      <div id="toast" class="success-toast">Outcome Narrative Copied!</div>
+      <div class="dashboard">
+        <div class="config-pane">
+          <span class="section-tag">Order Details</span>
+          <label>Delivery Type</label>
+          <select id="template">
+            <option value="replacement">Replacement Needed</option>
+            <option value="check">Check First / Replace If Necessary</option>
+            <option value="signature">Just Signature</option>
+            <option value="blind">Blind Delivery</option>
+          </select>
+          <label>Preferred Time Window</label>
+          <select id="preferred">
+            <option value="no">No Preference</option>
+            <option value="yes">Specific Request</option>
+          </select>
+          <div id="timeWrap" class="hidden">
+            <label>Patient Requested</label>
+            <select id="timeChoice">
+              <option>In the morning</option>
+              <option>After lunch</option>
+              <option>ASAP</option>
+            </select>
+          </div>
+          <div id="suppliesWrap">
+            <label>Required Supplies</label>
+            <div class="group-card">
+              <label class="check-item"><input type="checkbox" id="ncEnable"> <span>Nasal Cannulas</span></label>
+              <div id="ncSub" class="hidden">
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                  <select id="ncLen"><option value="4ft">4ft</option><option value="7ft">7ft</option><option value="both">Both</option></select>
+                  <select id="ncQty"><option>1pc</option><option>2pcs</option><option>5pcs</option><option>10pcs</option></select>
+                </div>
+              </div>
+              <label class="check-item" style="margin-top: 15px; margin-bottom: 0;"><input type="checkbox" id="tbEnable"> <span>Tubing</span></label>
+              <div id="tbSub" class="hidden" style="margin-top:12px;">
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                  <select id="tbLen"><option value="25ft">25ft</option><option value="50ft">50ft</option><option value="both">Both</option></select>
+                  <select id="tbQty"><option>1pc</option><option>2pcs</option><option>5pcs</option></select>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+            <div><label>Sales Order ID</label><input id="so" placeholder="UniqueID"></div>
+            <div><label>Exchange ID</label><input id="pe" placeholder="UniqueID"></div>
+          </div>
+        </div>
+        <div class="preview-pane">
+          <div class="copy-hint">Outcome Narrative (Click to Copy)</div>
+          <div id="preview" onclick="copyResult()" title="Click to copy narrative"></div>
+        </div>
+      </div>
+      <script>
+        const TITLES = { replacement: 'O2 5 Year RUL / REPLACEMENT IS NEEDED', check: 'O2 5 Year RUL / CHECK ONLY, REPLACE IF NECESSARY', signature: 'O2 5 Year RUL / NO NEED EXCHANGE, JUST SIGNATURE', blind: 'O2 5 Year RUL / BLIND DELIVERY' };
+        const SIGNS = { replacement: 'Please have patient sign 60-month letter when completing exchange/restart located in OTL.', check: 'Please have patient sign 60-month letter when completing restart located in OTL.', signature: 'Please have patient sign 60-month letter when completing restart located in OTL.', blind: 'Please have patient sign 60-month letter when completing exchange/restart located in OTL.' };
+
+        function update() {
+          const type = document.getElementById('template').value;
+          const isBlind = type === 'blind';
+          document.getElementById('timeWrap').className = (!isBlind && document.getElementById('preferred').value === 'yes') ? '' : 'hidden';
+          document.getElementById('ncSub').className = document.getElementById('ncEnable').checked ? '' : 'hidden';
+          document.getElementById('tbSub').className = document.getElementById('tbEnable').checked ? '' : 'hidden';
+          
+          let out = TITLES[type] + "\n\n";
+          if(!isBlind && document.getElementById('preferred').value === 'yes') out += "Preferred time: " + document.getElementById('timeChoice').value + "\n\n";
+          
+          let sup = [];
+          if(document.getElementById('ncEnable').checked) sup.push(`nasal cannulas \${document.getElementById('ncLen').value} \${document.getElementById('ncQty').value}`);
+          if(document.getElementById('tbEnable').checked) sup.push(`tubing \${document.getElementById('tbLen').value} \${document.getElementById('tbQty').value}`);
+          if(sup.length > 0) out += "Please bring supplies, " + sup.join(', ') + ".\n\n";
+
+          out += SIGNS[type] + "\n\n";
+          out += "Sales Order - " + (document.getElementById('so').value || '{{UNIQUE ID}}') + "\n";
+          out += "Pickup/Exchange - " + (document.getElementById('pe').value || '{{UNIQUE ID}}') + "\n\n";
+          out += "2 Liter-flow";
+          
+          document.getElementById('preview').innerText = out;
+        }
+
+        const copyResult = () => { 
+          const textToCopy = document.getElementById('preview').innerText;
+          if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(textToCopy).then(() => showToast());
+          } else {
+            const textArea = document.createElement("textarea");
+            textArea.value = textToCopy;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+            showToast();
+          }
+        };
+
+        function showToast() {
+          const toast = document.getElementById('toast');
+          toast.classList.add('active');
+          setTimeout(() => toast.classList.remove('active'), 2500);
+        }
+        
+        document.querySelectorAll('input, select').forEach(i => i.oninput = update);
+        update();
+      </script>
+    </body></html>
+  </template>
+
+  <script>
+    /** APP LOGIC **/
+    const templates = [
+      { id: 0, label: "Voicemail – Detailed", type: "Voicemail", ref: "Voicemail", body: "[Scheduling] Attempts #{{Attempts}}, called patient at P#{{Telephone}}, routed to voicemail, left a detailed message." },
+      { id: 1, label: "Scheduling - Replacement", type: "Spoke w/ Pt", ref: "Request for replacement", body: "[Scheduling] Called P#{{Telephone}}, talked with patient, explained the process and {{subjLower}} understood. {{Subj}} wants a replacement, sent to dispatch {{Date}}." },
+      { id: 2, label: "Scheduling - No replacement, just signature", type: "Spoke w/ Pt", ref: "No replacement, just signature", body: "[Scheduling] Called P#{{Telephone}}, talked with patient, explained the process and {{subjLower}} understood. {{Subj}} does not want a replacement but would like to renew {{subjLower}} contract, sent to dispatch {{Date}}." },
+      { id: 3, label: "Scheduling - Check HOC First", type: "Spoke w/ Pt", ref: "Check HOC first", body: "[Scheduling] Called P#{{Telephone}}, talked with patient, explained the process and {{subjLower}} understood. {{Subj}} wants us to check HOC first and only replace if necessary, sent to dispatch {{Date}}." },
+      { id: 4, label: "Scheduling - DocuSign (Kari)", type: "Digital", ref: "DocuSign Req", body: "[Scheduling] Called P#{{Telephone}}, talked with patient, explained the process and {{Subj}} understood. {{Subj}} wants to sign the contract through DocuSign, sent message to Kari." },
+      { id: 5, label: "Scheduling - Mail out", type: "Postal", ref: "Postal Mail", body: "[Scheduling] Called P#{{Telephone}}, talked with patient, explained the process and {{Subj}} understood. {{Subj}} wants to sign the contract through postal mail, sent email to local branch." },
+      { id: 6, label: "Blind Delivery / No response", type: "Dispatch", ref: "Blind Delivery - No Ans", body: "[Scheduling] Multiple attempts have been made, sent as blind delivery {{Date}}." },
+      { id: 7, label: "Blind Delivery / Bad #", type: "Dispatch", ref: "Blind Delivery - Bad #", body: "[Scheduling] Multiple attempts have been made, sent as blind delivery {{Date}}." },
+      { id: 8, label: "No answer", type: "No Answer", ref: "No answer", body: "[Scheduling] Attempts #{{Attempts}}, called patient at P#{{Telephone}}, disconnected after multiple rings." },
+      { id: 9, label: "Voicemail – DocuSign", type: "Voicemail", ref: "VM DocuSign", body: "[Scheduling] Attempts #{{Attempts}}, called patient at P#{{Telephone}} to follow-up the DocuSign, routed to voicemail, left a message." },
+      { id: 10, label: "Refused Info", type: "Spoke w/ Pt", ref: "Refused Info", body: "[Scheduling] Attempts #{{Attempts}}, called patient at P#{{Telephone}}, spoke with patient but {{subjLower}} does not want to give out info." },
+      { id: 11, label: "Mailbox Not Setup", type: "Voicemail", ref: "No Mailbox", body: "[Scheduling] Attempts #{{Attempts}}, called patient at P#{{Telephone}}, unable to leave message - mailbox not setup." },
+      { id: 12, label: "Voicemail Full", type: "Voicemail", ref: "VM Full", body: "[Scheduling] Attempts #{{Attempts}}, called patient at P#{{Telephone}}, routed to voicemail, unable to leave message because mailbox is full." },
+      { id: 13, label: "Not in Service", type: "Bad #", ref: "Not in Service", body: "[Scheduling] Attempts #{{Attempts}}, called patient at P#{{Telephone}}, no longer in service." },
+      { id: 15, label: "Smart Blocker", type: "Blocker", ref: "Call Blocked", body: "[Scheduling] Attempts #{{Attempts}}, called patient at P#{{Telephone}}, call blocked by smart blocker." },
+      { id: 16, label: "Callback Requested", type: "Spoke w/ Pt", ref: "Callback Req", body: "[Scheduling] Attempts #{{Attempts}}, called patient at P#{{Telephone}}, spoke with patient but asked for a callback later." },
+      { id: 17, label: "Busy Tone", type: "Busy", ref: "Busy Tone", body: "[Scheduling] Attempts #{{Attempts}}, called patient at P#{{Telephone}}, routed to busy tone." },
+      { id: 18, label: "Pt Disconnected", type: "Spoke w/ Pt", ref: "Disconnected", body: "[Scheduling] Attempts #{{Attempts}}, called patient at P#{{Telephone}}, spoke with patient but disconnected call." },
+    ];
+
+    const pronounMap = { she: { Subj: "She", subjLower: "she" }, he: { Subj: "He", subjLower: "he" }, they: { Subj: "They", subjLower: "they" } };
+    const el = { tel: document.getElementById('telephone'), date: document.getElementById('date'), attempts: document.getElementById('attempts'), pronouns: document.getElementById('pronouns'), textLive: document.getElementById('preview-text'), textRef: document.getElementById('reference-text'), previewLive: document.getElementById('card-live'), previewRef: document.getElementById('card-ref'), list: document.getElementById('template-list'), search: document.getElementById('search'), toast: document.getElementById('toast') };
+    let activeTemplateId = 0;
+
+    const formatPhone = (v) => { const d = v.replace(/\D/g, '').substring(0, 10); if(d.length < 4) return d; if(d.length < 7) return `(${d.slice(0,3)}) ${d.slice(3)}`; return `(${d.slice(0,3)}) ${d.slice(3,6)}-${d.slice(6)}`; };
+    const isValid = () => el.tel.value.length >= 10 && el.date.value && el.attempts.value;
+
+    const getFullText = (tpl) => {
+      const p = pronounMap[el.pronouns.value];
+      const date = el.date.value.split('-').reverse().join('/');
+      const full = tpl.body.replace(/{{Telephone}}/g, el.tel.value).replace(/{{Date}}/g, date).replace(/{{Attempts}}/g, el.attempts.value).replace(/{{Subj}}/g, p.Subj).replace(/{{subjLower}}/g, p.subjLower);
+      const d = new Date();
+      const ref = `${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')} - ${tpl.ref} #${el.attempts.value}`;
+      return { full, ref };
+    };
+
+    const updateUI = () => {
+      const valid = isValid();
+      el.previewLive.classList.toggle('disabled', !valid); el.previewRef.classList.toggle('disabled', !valid);
+      if(valid) { const txt = getFullText(templates.find(t => t.id === activeTemplateId) || templates[0]); el.textLive.textContent = txt.full; el.textRef.textContent = txt.ref; }
+      renderTemplates();
+    };
+
+    const renderTemplates = () => {
+      el.list.innerHTML = '';
+      templates.forEach(t => {
+        if(el.search.value && !t.label.toLowerCase().includes(el.search.value.toLowerCase())) return;
+        const card = document.createElement('div');
+        card.className = `template-card ${isValid() ? '' : 'locked'}`;
+        card.innerHTML = `<span class="t-category">${t.type}</span><div class="t-name">${t.label}</div>`;
+        card.onclick = () => { if(!isValid()) return; activeTemplateId = t.id; updateUI(); copyText(getFullText(t).full, "Narrative Copied!"); };
+        el.list.appendChild(card);
+      });
+    };
+
+    const copyText = (txt, msg) => { 
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(txt);
+        el.toast.querySelector('span').textContent = msg; el.toast.classList.add('visible'); setTimeout(() => el.toast.classList.remove('visible'), 2000);
+      }
+    };
+    
+    const openModal = (id) => document.getElementById(id).classList.add('open');
+    const closeModal = (id) => document.getElementById(id).classList.remove('open');
+
+    document.getElementById('btn-open-o2').onclick = () => {
+      const frame = document.getElementById('o2-iframe');
+      if(!frame.src) { const source = document.getElementById('o2-source-code').innerHTML; const blob = new Blob([source], { type: 'text/html' }); frame.src = URL.createObjectURL(blob); }
+      openModal('modal-o2');
+    };
+
+    el.tel.oninput = (e) => { e.target.value = formatPhone(e.target.value); updateUI(); };
+    el.date.oninput = updateUI; el.attempts.oninput = updateUI; el.pronouns.onchange = updateUI; el.search.oninput = renderTemplates;
+    el.previewLive.onclick = () => copyText(el.textLive.textContent, "Narrative Copied!");
+    el.previewRef.onclick = () => copyText(el.textRef.textContent, "Reference Copied!");
+    document.getElementById('btn-reset').onclick = () => { el.tel.value = ''; el.date.value = new Date().toISOString().split('T')[0]; el.attempts.value = 1; updateUI(); };
+
+    el.date.value = new Date().toISOString().split('T')[0];
+    updateUI();
+  </script>
+</body>
+</html>

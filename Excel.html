@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>60monthrestart | Premium Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            /* Premium Midnight Palette */
+            --bg-body: #020617;
+            --bg-surface: #0f172a;
+            --bg-sidebar: rgba(15, 23, 42, 0.9);
+            --text-main: #94a3b8;
+            --text-heading: #f8fafc;
+            --text-muted: #64748b;
+            --primary: #6366f1;
+            --primary-hover: #818cf8;
+            --primary-light: rgba(99, 102, 241, 0.1);
+            --border: #1e293b;
+            --danger: #ef4444;
+            --danger-bg: rgba(239, 68, 68, 0.1);
+            
+            --sidebar-width: 400px;
+            --radius-lg: 16px;
+            --radius-md: 12px;
+            --radius-sm: 8px;
+            --header-height: 72px;
+            --shadow-premium: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+            --font-stack: 'Inter', system-ui, sans-serif;
+            --font-display: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body.light-mode {
+            --bg-body: #f8fafc;
+            --bg-surface: #ffffff;
+            --bg-sidebar: rgba(255, 255, 255, 0.9);
+            --text-main: #334155;
+            --text-heading: #0f172a;
+            --text-muted: #94a3b8;
+            --primary: #4f46e5;
+            --border: #e2e8f0;
+            --shadow-premium: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        * { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
+
+        body {
+            margin: 0; padding: 0;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            font-family: var(--font-stack);
+            height: 100vh;
+            overflow: hidden; 
+            transition: background-color 0.3s ease;
+        }
+
+        /* --- Components --- */
+        .hidden { display: none !important; }
+        
+        .btn {
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+            padding: 0.6rem 1.2rem; border-radius: var(--radius-sm); font-weight: 600; cursor: pointer;
+            border: 1px solid transparent; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); 
+            font-size: 0.85rem; letter-spacing: 0.01em; font-family: var(--font-display);
+        }
+        .btn-primary { 
+            background: linear-gradient(135deg, var(--primary) 0%, #8b5cf6 100%); 
+            color: white; 
+            box-shadow: 0 4px 14px 0 rgba(99, 102, 241, 0.3);
+        }
+        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4); }
+        .btn-edit { background: #fef3c7; color: #92400e; border: 1px solid #fcd34d; }
+        .btn-ghost { background: transparent; color: var(--text-muted); padding: 8px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: none; }
+        .btn-ghost:hover { background: var(--border); color: var(--text-heading); }
+        .btn-outline { 
+            background: var(--bg-surface); 
+            border: 1px solid var(--border); 
+            color: var(--text-heading); 
+        }
+        .btn-outline:hover { 
+            border-color: var(--primary); 
+            color: var(--primary); 
+            background: var(--primary-light); 
+        }
+        
+        /* --- Navbar --- */
+        .navbar {
+            height: var(--header-height); 
+            background: rgba(15, 23, 42, 0.7); 
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: space-between; padding: 0 2rem;
+            position: fixed; top: 0; width: 100%; z-index: 100;
+        }
+        .brand { 
+            font-family: var(--font-display);
+            font-weight: 800; font-size: 1.3rem; 
+            color: var(--text-heading); 
+            display: flex; align-items: center; gap: 10px; 
+            letter-spacing: -0.02em;
+        }
+        .brand span { 
+            background: linear-gradient(135deg, #818cf8 0%, #c084fc 100%); 
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent; 
+        }
+
+        /* --- Layout --- */
+        .main-container {
+            margin-top: var(--header-height); 
+            height: calc(100vh - var(--header-height)); 
+            display: flex; align-items: flex-start; justify-content: center;
+            padding: 2rem; overflow-y: auto;
+        }
+
+        .editor-card {
+            background: var(--bg-surface); 
+            border-radius: var(--radius-lg); 
+            border: 1px solid var(--border); 
+            padding: 2.5rem; 
+            width: 100%; max-width: 900px;
+            display: flex; flex-direction: column; 
+            position: relative;
+            box-shadow: var(--shadow-premium);
+            transition: all 0.3s ease;
+            margin-bottom: 3rem; 
+        }
+        .editor-card.editing-mode { border-color: #fbbf24; box-shadow: 0 0 0 4px rgba(251, 191, 36, 0.15); }
+
+        .top-status-bar { 
+            display: flex; gap: 1rem; 
+            margin-bottom: 2rem; 
+            padding-bottom: 1.5rem; 
+            border-bottom: 1px dashed var(--border); 
+        }
+        .status-item { 
+            display: flex; align-items: center; gap: 8px; 
+            background: var(--bg-body); 
+            padding: 6px 14px; 
+            border-radius: 100px; 
+            font-size: 0.75rem; 
+            color: var(--text-muted); 
+            font-weight: 600; 
+            border: 1px solid var(--border);
+        }
+        .status-value { color: var(--primary); font-weight: 800; }
+
+        .editor-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+        .editor-title { font-family: var(--font-display); font-size: 1.5rem; font-weight: 700; color: var(--text-heading); }
+
+        textarea.main-input {
+            width: 100%; min-height: 550px; border: none; resize: none; outline: none;
+            font-family: var(--font-stack); font-size: 1.05rem; line-height: 1.8; color: var(--text-heading);
+            background: transparent; padding: 10px 0;
+        }
+        textarea.main-input::placeholder { color: var(--text-muted); opacity: 0.5; }
+
+        /* --- Sidebar --- */
+        .overlay { position: fixed; inset: 0; background: rgba(2, 6, 23, 0.6); backdrop-filter: blur(4px); z-index: 40; opacity: 0; visibility: hidden; transition: 0.3s; }
+        .overlay.active { opacity: 1; visibility: visible; }
+        
+        .sidebar {
+            position: fixed; top: 12px; bottom: 12px; left: 12px; 
+            width: var(--sidebar-width);
+            background: var(--bg-sidebar); 
+            backdrop-filter: blur(24px);
+            z-index: 50; transform: translateX(-115%);
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            display: flex; flex-direction: column; 
+            box-shadow: var(--shadow-premium);
+        }
+        .sidebar.active { transform: translateX(0); }
+        .sidebar-header { padding: 1.5rem; border-bottom: 1px solid var(--border); }
+        .sidebar-title { font-family: var(--font-display); font-weight: 700; font-size: 1.1rem; color: var(--text-heading); }
+        
+        .search-input { 
+            width: 100%; padding: 12px 16px; border-radius: var(--radius-sm); 
+            border: 1px solid var(--border); background: var(--bg-body); 
+            color: var(--text-heading); outline: none; transition: 0.2s; font-family: var(--font-stack);
+        }
+        .search-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light); }
+
+        .notes-list { flex: 1; overflow-y: auto; padding: 1.25rem; display: flex; flex-direction: column; gap: 12px; }
+        .note-card { 
+            background: var(--bg-surface); 
+            border: 1px solid var(--border); 
+            border-radius: var(--radius-md); 
+            padding: 1.25rem; transition: all 0.2s ease; cursor: pointer; 
+        }
+        .note-card:hover { border-color: var(--primary); transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3); }
+        .note-meta { font-size: 0.7rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; display: flex; justify-content: space-between; margin-bottom: 0.75rem; }
+        .note-preview { font-size: 0.85rem; color: var(--text-main); max-height: 80px; overflow: hidden; line-height: 1.6; }
+        .note-actions { display: flex; justify-content: flex-end; gap: 8px; border-top: 1px solid var(--border); padding-top: 10px; margin-top: 10px; }
+
+        /* --- Modals --- */
+        .modal { position: fixed; inset: 0; z-index: 1000; display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: 0.3s; }
+        .modal.show { opacity: 1; visibility: visible; pointer-events: auto; }
+        .modal-bg { position: absolute; inset: 0; background: rgba(2, 6, 23, 0.8); backdrop-filter: blur(8px); }
+        .modal-content { 
+            position: relative; background: var(--bg-surface); width: 90%; 
+            max-width: 850px; border-radius: var(--radius-lg); 
+            box-shadow: var(--shadow-premium); transform: translateY(20px); 
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            max-height: 90vh; overflow: hidden; border: 1px solid var(--border);
+            display: flex; flex-direction: column;
+        }
+        .modal.show .modal-content { transform: translateY(0); }
+        .modal-header { padding: 1.5rem 2rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.02); }
+        .modal-body { padding: 2rem; overflow-y: auto; flex: 1; }
+
+        /* --- Tool Specific Grid UI --- */
+        .tool-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 1.25rem; }
+        .tool-card {
+            aspect-ratio: 1/1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            border-radius: var(--radius-md); border: 1px solid var(--border); background: var(--bg-body);
+            cursor: pointer; transition: 0.2s; padding: 1rem; text-align: center;
+        }
+        .tool-card:hover { border-color: var(--primary); transform: translateY(-3px); background: var(--primary-light); }
+        .tool-card svg { width: 40px; height: 40px; margin-bottom: 12px; }
+        .tool-card span { font-weight: 600; font-size: 0.85rem; color: var(--text-heading); }
+
+        /* --- Toast --- */
+        .toast { 
+            position: fixed; bottom: 30px; left: 50%; transform: translate(-50%, 100px); 
+            background: var(--text-heading); color: var(--bg-body); padding: 12px 28px; border-radius: 100px; 
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3); transition: 0.4s; z-index: 2000; font-weight: 600; 
+        }
+        .toast.show { transform: translate(-50%, 0); }
+
+        /* --- Scrollbar --- */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+
+        /* --- Patient ID Grid --- */
+        .pid-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; }
+        .pid-item { 
+            padding: 10px; border-radius: var(--radius-sm); border: 1px solid var(--border); 
+            background: var(--bg-body); font-family: 'JetBrains Mono', monospace; 
+            font-size: 0.85rem; display: flex; justify-content: space-between; cursor: pointer;
+        }
+        .pid-item:hover { border-color: var(--primary); color: var(--primary); }
+        .pid-item.duplicate { border-color: var(--danger); color: var(--danger); background: var(--danger-bg); }
+
+        /* --- Abbreviation Manager --- */
+        .abbr-row { display: grid; grid-template-columns: 100px 1fr 40px; gap: 15px; padding: 12px; border-bottom: 1px solid var(--border); align-items: center; }
+        .abbr-key { font-weight: 800; color: var(--primary); font-family: 'JetBrains Mono', monospace; }
+        .abbr-val { color: var(--text-main); font-size: 0.9rem; }
+    </style>
+</head>
+<body class="dark-mode">
+
+    <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 1.5rem;">
+                <span class="sidebar-title">Activity Logs</span>
+                <button class="btn-ghost" onclick="toggleSidebar()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+            <input type="text" id="searchInput" class="search-input" placeholder="Search by ID or content...">
+        </div>
+        <div class="notes-list" id="notesList"></div>
+    </aside>
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <div style="display:flex; align-items:center; gap:1.5rem;">
+            <button class="btn btn-outline" onclick="toggleSidebar()" title="Toggle History (S)">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+            </button>
+            <div class="brand">60month<span>restart</span></div>
+        </div>
+        
+        <div style="display:flex; gap:0.6rem; align-items: center;">
+            <button class="btn btn-outline" onclick="openWorkflow()">Scheduling</button>
+            <button class="btn btn-outline" onclick="openParachute()">Parachute</button>
+            <button class="btn btn-outline" onclick="openDocSystem()">Docs Library</button>
+            <button class="btn btn-outline" onclick="openMyApps()">My Portal</button>
+            
+            <div style="width: 1px; height: 24px; background: var(--border); margin: 0 8px;"></div>
+            
+            <button class="btn btn-ghost" id="darkModeToggle" onclick="toggleDarkMode()">
+                <svg id="moonIcon" class="hidden" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+                <svg id="sunIcon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+            </button>
+        </div>
+    </nav>
+
+    <!-- MAIN DASHBOARD -->
+    <main class="main-container">
+        <div class="editor-card" id="editorCard">
+            <div class="top-status-bar">
+                <div class="status-item">Active Patient IDs: <span id="activeCountEl" class="status-value">0</span></div>
+                <div class="status-item">Total Logged IDs: <span id="totalSavedCountEl" class="status-value">0</span></div>
+            </div>
+
+            <div class="editor-header">
+                <div>
+                    <span id="modeTitle" class="editor-title">New Entry</span>
+                    <button id="cancelEditBtn" class="btn btn-ghost hidden" onclick="cancelEditMode()" style="color:var(--danger); margin-left: 10px; font-size: 11px;">Discard Changes</button>
+                </div>
+                <button id="saveBtn" class="btn btn-primary" onclick="handleSaveAction()" title="Ctrl + S">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-right:6px;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+                    Save Note
+                </button>
+            </div>
+            
+            <textarea id="notepad" class="main-input" placeholder="Type or paste patient info here... Shortened codes expand with Space."></textarea>
+            
+            <div style="display:flex; gap:10px; margin-top: 2rem; border-top: 1px solid var(--border); padding-top: 2rem; flex-wrap: wrap;">
+                <button class="btn btn-outline" onclick="openAbbrModal()">Manage Shortcuts</button>
+                <button class="btn btn-outline" onclick="renderPatientIDsModal(false)">View IDs Summary</button>
+                <button class="btn btn-outline" onclick="document.getElementById('calcModal').classList.add('show')">Calculator</button>
+                <div style="flex:1"></div>
+                <button class="btn btn-outline" onclick="exportData()">Export DB</button>
+                <button class="btn btn-outline" onclick="document.getElementById('fileInput').click()">Import DB</button>
+                <input type="file" id="fileInput" accept=".txt" class="hidden">
+            </div>
+        </div>
+    </main>
+
+    <!-- FOR SCHEDULING MODAL -->
+    <div id="workflowModal" class="modal">
+        <div class="modal-bg" onclick="document.getElementById('workflowModal').classList.remove('show')"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Scheduling Assistant</h3>
+                <button class="btn btn-ghost" onclick="document.getElementById('workflowModal').classList.remove('show')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+            </div>
+            <div class="modal-body workflow-wrapper">
+                <div class="nav-container" style="display:flex; gap:8px; margin-bottom: 1.5rem; background: var(--bg-body); padding: 5px; border-radius: 50px;">
+                    <button id="btn-codes" class="nav-btn active" style="flex:1; padding: 10px; border-radius: 50px; border:none; background: var(--primary); color:white; font-weight:700; cursor:pointer;" onclick="switchWFTab('codes')">Equipment</button>
+                    <button id="btn-rul" class="nav-btn" style="flex:1; padding: 10px; border-radius: 50px; border:none; background: transparent; color:var(--text-muted); font-weight:700; cursor:pointer;" onclick="switchWFTab('rul')">Void Claims</button>
+                    <button id="btn-notes" class="nav-btn" style="flex:1; padding: 10px; border-radius: 50px; border:none; background: transparent; color:var(--text-muted); font-weight:700; cursor:pointer;" onclick="switchWFTab('notes')">Comm Notes</button>
+                </div>
+
+                <div id="wf-codes" class="content-section">
+                    <div style="display:grid; gap:10px;">
+                        <div class="btn btn-outline" style="justify-content:space-between; padding:15px;" onclick="copyWF(this)"><span>OXY CONCENTRATOR 5 LPM</span><span style="font-family:monospace; color:var(--primary)">BL-E1390-5LPM</span></div>
+                        <div class="btn btn-outline" style="justify-content:space-between; padding:15px;" onclick="copyWF(this)"><span>POC Billing</span><span style="font-family:monospace; color:var(--primary)">BL-E1392</span></div>
+                        <div class="btn btn-outline" style="justify-content:space-between; padding:15px;" onclick="copyWF(this)"><span>HOMEFILL COMPRESSOR</span><span style="font-family:monospace; color:var(--primary)">BL-K0738</span></div>
+                    </div>
+                </div>
+
+                <div id="wf-rul" class="content-section hidden">
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; margin-bottom: 20px;">
+                        <select id="rulIdInput" onchange="updateRul()" style="padding:12px; border-radius:8px; background:var(--bg-body); color:white; border:1px solid var(--border);">
+                            <option value="E1390">E1390</option><option value="E1392">E1392</option><option value="E0431">E0431</option>
+                        </select>
+                        <input type="date" id="rulDateInput" onchange="updateRul()" style="padding:12px; border-radius:8px; background:var(--bg-body); color:white; border:1px solid var(--border);">
+                    </div>
+                    <div class="btn btn-outline" style="width:100%; padding:20px; height:auto; display:block; text-align:left; line-height:1.6;" onclick="copyWF(this)">
+                        RUL MET <span id="rulIdText">E1390</span> <span id="rulDateText">MM/DD/YYYY</span><br>PLEASE VOID ANY UNPAID CLAIMS
+                    </div>
+                </div>
+
+                <div id="wf-notes" class="content-section hidden">
+                    <input type="date" id="noteDateInput" onchange="updateNotes()" style="width:100%; padding:12px; border-radius:8px; background:var(--bg-body); color:white; border:1px solid var(--border); margin-bottom:15px;">
+                    <div class="btn btn-outline" style="width:100%; padding:15px; margin-bottom:10px; height:auto; text-align:left;" onclick="copyWF(this)">
+                        5-YR RUL is not due until <span class="noteDateText">{{DATE}}</span>. Do not schedule until then.
+                    </div>
+                    <div class="btn btn-outline" style="width:100%; padding:15px; height:auto; text-align:left;" onclick="copyWF(this)">
+                        Please have patient sign 60-month letter when completing exchange/restart.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PATIENT ID SUMMARY MODAL -->
+    <div id="patientIDsModal" class="modal">
+        <div class="modal-bg" onclick="document.getElementById('patientIDsModal').classList.remove('show')"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Patient IDs Summary</h3>
+                <div style="display:flex; gap:10px;">
+                    <button class="btn btn-primary" onclick="copyAllIDs()">Copy All</button>
+                    <button class="btn btn-ghost" onclick="document.getElementById('patientIDsModal').classList.remove('show')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+                </div>
+            </div>
+            <div class="modal-body" id="patientIDsContent"></div>
+        </div>
+    </div>
+
+    <!-- ABBREVIATION MODAL -->
+    <div id="abbrModal" class="modal">
+        <div class="modal-bg" onclick="document.getElementById('abbrModal').classList.remove('show')"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Shortcut Manager</h3>
+                <button class="btn btn-ghost" onclick="document.getElementById('abbrModal').classList.remove('show')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+            </div>
+            <div class="modal-body">
+                <div style="display:grid; grid-template-columns: 1fr 2fr auto; gap:10px; margin-bottom: 2rem; background: var(--bg-body); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border);">
+                    <input type="text" id="newAbbrInput" class="search-input" placeholder="Shortcut">
+                    <input type="text" id="newExpInput" class="search-input" placeholder="Expansion">
+                    <button class="btn btn-primary" onclick="addNewAbbr()">Add</button>
+                </div>
+                <div id="abbrListContainer" style="max-height: 350px; overflow-y: auto; border: 1px solid var(--border); border-radius: 12px; background: var(--bg-surface);"></div>
+                
+                <div style="display:flex; gap:10px; margin-top: 2rem; justify-content: flex-end;">
+                    <button class="btn btn-outline" onclick="exportAbbreviations()">Export JSON</button>
+                    <button class="btn btn-outline" onclick="document.getElementById('abbrInput').click()">Import JSON</button>
+                    <input type="file" id="abbrInput" accept=".json" class="hidden">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CALCULATOR MODAL -->
+    <div id="calcModal" class="modal">
+        <div class="modal-bg" onclick="document.getElementById('calcModal').classList.remove('show')"></div>
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header"><h3>Date Calculator</h3></div>
+            <div class="modal-body">
+                <div style="display:grid; gap:1.5rem;">
+                    <div style="display:flex; flex-direction:column; gap:8px;">
+                        <label style="font-size:0.75rem; font-weight:700; text-transform:uppercase; color:var(--text-muted)">Reference Date</label>
+                        <input type="date" id="calcRefDate" class="search-input">
+                    </div>
+                    <div style="display:flex; flex-direction:column; gap:8px;">
+                        <label style="font-size:0.75rem; font-weight:700; text-transform:uppercase; color:var(--text-muted)">Days Offset</label>
+                        <input type="number" id="calcDaysInput" value="90" class="search-input">
+                    </div>
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; margin-top:10px;">
+                        <div class="btn btn-outline" style="flex-direction:column; height:100px; padding:15px;" onclick="copyCalcValue('calc-before-date')">
+                            <span style="font-size:10px; color:var(--primary); font-weight:800;">PRIOR</span>
+                            <span id="calc-before-date" style="font-size:1.2rem; font-weight:700;">--/--/--</span>
+                        </div>
+                        <div class="btn btn-outline" style="flex-direction:column; height:100px; padding:15px;" onclick="copyCalcValue('calc-after-date')">
+                            <span style="font-size:10px; color:var(--primary); font-weight:800;">AFTER</span>
+                            <span id="calc-after-date" style="font-size:1.2rem; font-weight:700;">--/--/--</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PARACHUTE MODAL -->
+    <div id="parachuteModal" class="modal">
+        <div class="modal-bg" onclick="document.getElementById('parachuteModal').classList.remove('show')"></div>
+        <div class="modal-content" style="max-width: 1000px;">
+            <div class="modal-header" style="background:var(--brand-dark)">
+                <h3>Parachute Dashboard</h3>
+                <input type="text" id="paraSearchInput" class="search-input" placeholder="Search locations..." style="max-width: 300px;">
+            </div>
+            <div class="modal-body" style="padding:0;">
+                <table style="width:100%; border-collapse:collapse; text-align:left;">
+                    <thead style="background:var(--bg-body); color:var(--primary); font-size:0.75rem; text-transform:uppercase;">
+                        <tr><th style="padding:15px;">State</th><th style="padding:15px;">Dashboard</th><th style="padding:15px;">Region</th><th style="padding:15px;">Database</th></tr>
+                    </thead>
+                    <tbody id="paraTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- DOCS MODAL -->
+    <div id="docsModal" class="modal">
+        <div class="modal-bg" onclick="document.getElementById('docsModal').classList.remove('show')"></div>
+        <div class="modal-content">
+            <div class="modal-header"><h3>Document Library</h3><input type="text" id="docSearchInput" class="search-input" placeholder="Search documents..." style="max-width: 300px;"></div>
+            <div class="modal-body tool-grid" id="docsGrid"></div>
+        </div>
+    </div>
+
+    <!-- PDF VIEWER -->
+    <div id="pdfViewerModal" class="modal" style="z-index: 2000;">
+        <div class="modal-bg" onclick="document.getElementById('pdfViewerModal').classList.remove('show')"></div>
+        <div class="modal-content" style="max-width: 950px; height: 90vh;">
+            <div class="modal-header"><h3 id="pdfViewerTitle">Document</h3><button class="btn btn-ghost" onclick="document.getElementById('pdfViewerModal').classList.remove('show')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button></div>
+            <div class="modal-body" style="padding:0;"><iframe id="pdfFrame" style="width:100%; height:100%; border:none;"></iframe></div>
+        </div>
+    </div>
+
+    <!-- PORTAL MODAL -->
+    <div id="myAppsModal" class="modal">
+        <div class="modal-bg" onclick="document.getElementById('myAppsModal').classList.remove('show')"></div>
+        <div class="modal-content">
+            <div class="modal-header"><h3>My Portal Dashboard</h3></div>
+            <div class="modal-body tool-grid" id="appLinksContainer"></div>
+        </div>
+    </div>
+
+    <!-- MILESTONE MODAL -->
+    <div id="greetingModal" class="modal">
+        <div class="modal-bg" onclick="this.parentElement.classList.remove('show')"></div>
+        <div class="modal-content" style="max-width: 400px; text-align: center; padding: 3rem;">
+            <h2 id="greetingTitleEl" style="color:var(--primary); font-family:var(--font-display); font-weight:800;">Phenomenal!</h2>
+            <p id="greetingMessageEl" style="line-height:1.6; margin-bottom: 2rem;"></p>
+            <button class="btn btn-primary" style="width:100%;" onclick="document.getElementById('greetingModal').classList.remove('show')">Continue</button>
+        </div>
+    </div>
+
+    <div id="toast" class="toast">Action Saved</div>
+
+    <script>
+        /* --- ALL YOUR ORIGINAL DATA --- */
+        const DEFAULT_ABBRS = [
+            {"abbr": "vm","expansion": "Voicemail"},
+            {"abbr": "gtg","expansion": "got to go"},
+            {"abbr": "rek","expansion": "REKEYED SO#CODE: Rekey to show the rental equipment the patient has.\n\nPT NAME: CODE\nPT ID: CODE\nSALES ORDER: CODE\nBT DATABASE:"},
+            {"abbr": "intro.","expansion": "Hello,\n\nI hope this email finds you well. I am writing to request confirmation on whether the address provided for our patient falls within your service area. \n\n[STATE YOUR REASON HERE]\n\nPatient Information:  \n• CODE  \n• SO#CODE  \n• PU ticket#CODE  \n\nIf further details are required, please let us know at your earliest convenience. Your prompt attention to this matter is appreciated.\n\nThank you,"}
+        ];
+
+  /* --- Parachute Data --- */
+        const parachuteData = [
+            { title: "Alabama", dashboard: "AdaptHealth/Aerocare South (AL, LA, MS)", region: "South", database: "Aerocare" }, { title: "Arkansas", dashboard: "Aerocare (AR)", region: "AR", database: "Aerocare" }, { title: "Arkansas (on the MO Border)", dashboard: "Aerocare Midwest", region: "Midwest", database: "Aerocare" }, { title: "Arizona", dashboard: "AdaptHealth West", region: "West", database: "St Lukes/Adapt" }, { title: "California", dashboard: "AdaptHealth West", region: "West", database: "St Lukes/Adapt" }, { title: "Colorado", dashboard: "Aerocare and AdaptHealth - CO, OK and WY", region: "Mountain", database: "Aerocare" }, { title: "Connecticut", dashboard: "AdaptHealth New England CT", region: "East", database: "OHH" }, { title: "District of Columbia", dashboard: "AdaptHealth/Aerocare - MidAtlantic", region: "MidAtlantic", database: "St Lukes/Adapt" }, { title: "Delaware", dashboard: "AdaptHealth/Aerocare - MidAtlantic", region: "MidAtlantic", database: "St Lukes/Adapt" }, { title: "Florida", dashboard: "Aerocare (FL)", region: "FL", database: "Aerocare" }, { title: "Georgia", dashboard: "AdaptHealth/Aerocare Georgia", region: "GA", database: "Aerocare" }, { title: "Iowa", dashboard: "Aerocare Midwest", region: "Midwest", database: "Aerocare" }, { title: "Idaho", dashboard: "AdaptHealth Pacific NorthWest", region: "Pacific NorthWest", database: "St Lukes/Adapt" }, { title: "Illinois (Chicago)", dashboard: "Total Home Health", region: "IL", database: "" }, { title: "Illinois (Chicago)", dashboard: "Home Medical Express", region: "IL", database: "St Lukes/Adapt" }, { title: "Indiana (Northern)", dashboard: "Airway Oxygen", region: "Michigan/Northern Indiana", database: "Aerocare" }, { title: "Indiana (Southern)", dashboard: "AdaptHealth/AeroCare KY & Southern IN", region: "Kentucky/Southern Indiana", database: "St Lukes/Adapt" }, { title: "Kansas", dashboard: "Aerocare Midwest", region: "Midwest", database: "Aerocare" }, { title: "Kentucky", dashboard: "AdaptHealth/AeroCare KY & Southern IN", region: "Kentucky/Southern Indiana", database: "St Lukes/Adapt" }, { title: "Kentucky", dashboard: "AdaptHealth - East", region: "Wecare", database: "Aerocare" }, { title: "Louisiana", dashboard: "AdaptHealth/Aerocare South (AL, LA, MS)", region: "South", database: "Aerocare" }, { title: "Massachusetts", dashboard: "AdaptHealth New England MA", region: "New England", database: "OHH" }, { title: "Maryland", dashboard: "AdaptHealth/Aerocare - MidAtlantic", region: "MidAtlantic", database: "St Lukes/Adapt" }, { title: "Maine", dashboard: "AdaptHealth New England MA", region: "New England", database: "OHH" }, { title: "Michigan", dashboard: "Airway Oxygen", region: "Michigan/Northern Indiana", database: "Aerocare" }, { title: "Minnesota", dashboard: "AdaptHealth Minnesota", region: "MN", database: "St Lukes/Adapt" }, { title: "Missouri", dashboard: "Aerocare Midwest", region: "Midwest", database: "Aerocare" }, { title: "Mississippi", dashboard: "AdaptHealth/Aerocare South (AL, LA, MS)", region: "South", database: "Aerocare" }, { title: "Montana", dashboard: "Aerocare and AdaptHealth - CO, OK and WY", region: "Mountain", database: "Aerocare" }, { title: "North Carolina", dashboard: "AdaptHealth Southeast", region: "NC", database: "St Lukes/Adapt" }, { title: "North Carolina (Western)", dashboard: "AdaptHealth/Aerocare Western NC", region: "Western NC/Eastern TN", database: "Aerocare" }, { title: "North Dakota", dashboard: "Aerocare Midwest", region: "Midwest", database: "Aerocare" }, { title: "Nebraska", dashboard: "Aerocare Midwest", region: "Midwest", database: "Aerocare" }, { title: "New Hampshire", dashboard: "AdaptHealth New England Keene Medical", region: "New England", database: "OHH" }, { title: "New Jersey", dashboard: "Ocean Home Health", region: "NJ", database: "OHH" }, { title: "New Mexico", dashboard: "AdaptHealth West", region: "NM", database: "St Lukes/Adapt" }, { title: "Nevada", dashboard: "AdaptHealth West", region: "West", database: "St Lukes/Adapt" }, { title: "New York (Metro)", dashboard: "Landauer Medstar", region: "East", database: "OHH" }, { title: "New York (Metro PAP)", dashboard: "Landauer Medstar PAP", region: "East", database: "OHH" }, { title: "New York (North of Kingston)", dashboard: "AdaptHealth Upstate NY & Respiratory Services of Western NY", region: "East", database: "OHH" }, { title: "Ohio", dashboard: "AdaptHealth - East", region: "OH", database: "Aerocare" }, { title: "Oklahoma", dashboard: "Aerocare and AdaptHealth - CO, OK and WY", region: "Mountain", database: "Aerocare" }, { title: "Oregon", dashboard: "AdaptHealth Pacific NorthWest", region: "Pacific NorthWest", database: "St Lukes/Adapt" }, { title: "Pennsylvania", dashboard: "AdaptHealth/Aerocare - MidAtlantic", region: "MidAtlantic", database: "St Lukes/Adapt" }, { title: "Rhode Island", dashboard: "AdaptHealth New England RI", region: "New England", database: "OHH" }, { title: "South Carolina", dashboard: "AdaptHealth/Aerocare SC", region: "South Carolina", database: "Aerocare" }, { title: "South Dakota", dashboard: "Aerocare Midwest", region: "Midwest", database: "Aerocare" }, { title: "Tennessee", dashboard: "AdaptHealth/AeroCare TN", region: "Tennessee", database: "Aerocare" }, { title: "Texas", dashboard: "AdaptHealth Texas", region: "Tx", database: "St Lukes/Adapt" }, { title: "Utah", dashboard: "Medway", region: "Medway", database: "St Lukes/Adapt" }, { title: "Virginia", dashboard: "AdaptHealth/Aerocare - MidAtlantic", region: "Virginias", database: "St Lukes/Adapt" }, { title: "Vermont", dashboard: "AdaptHealth New England Keene Medical", region: "New England", database: "OHH" }, { title: "Washington", dashboard: "AdaptHealth Pacific NorthWest", region: "Pacific NorthWest", database: "St Lukes/Adapt" }, { title: "Wisconsin", dashboard: "Aerocare (WI)", region: "WI", database: "Aerocare" }, { title: "West Virginia", dashboard: "AdaptHealth/Aerocare - MidAtlantic", region: "Virginias", database: "St Lukes/Adapt" }, { title: "Wyoming", dashboard: "Aerocare and AdaptHealth - CO, OK and WY", region: "Mountain", database: "Aerocare" }, { title: "Diabetes", dashboard: "AdaptHealth Patient Care Solutions", region: "Diabetes", database: "Diabetes" }, { title: "Diabetes", dashboard: "", region: "Diabetes", database: "Diabetes" }, { title: "Michigan", dashboard: "Access Medical", region: "Michigan.Northern Indiana", database: "Aerocare" }
+        ];
+
+ /* --- MyApps Data (With Abbreviations for Icons) --- */
+        const myAppsData = [
+            { title: "Myapps", url: "https://myapps.microsoft.com/", initials: "MA", color: "#00a8e8" },
+            { title: "Patient search", url: "https://osapps.adapthealth.com/patientsearch/", initials: "PS", color: "#00cc88" },
+            { title: "MyCGS", url: "https://mycgsportal.com/MyCGS/SameSimilar/SameSimilarSummary", initials: "CGS", color: "#3366cc" },
+            { title: "Aerocare", url: "https://launcher.myapps.microsoft.com/api/signin/4792ba22-7ac0-4c64-bdd0-c21aca6ae69c", initials: "AC", color: "#e81e63" },
+            { title: "StLukes", url: "https://launcher.myapps.microsoft.com/api/signin/03d84850-9e34-425c-8a43-36895a622edb", initials: "STL", color: "#ff9800" },
+            { title: "OHH", url: "https://launcher.myapps.microsoft.com/api/signin/7cc7482b-41c0-41bf-914c-6648a7db717b", initials: "OHH", color: "#9c27b0" },
+            { title: "Purecloud", url: "https://account.activedirectory.windowsazure.com/applications/signin/82e5a33a-010a-4e51-ae16-b640c34b0f99", initials: "PC", color: "#ff5722" },
+            { title: "Outlook", url: "https://outlook.office.com/mail/", initials: "OL", color: "#0078d4" },
+            { title: "Same & Similar", url: "https://toolbox.adapthealth.com/samesimiliar", initials: "SS", color: "#607d8b" },
+            { title: "Humana Lookup", url: "https://osapps.adapthealth.com/AC_CustomerService_UI/HumanaLookup", initials: "HL", color: "#4caf50" },
+            { title: "Locations", url: "https://adapthealth.com/locations/", initials: "LOC", color: "#795548" },
+            { title: "Cylinder", url: "https://c0cqk231.caspio.com/dp/c9a33000fb07015d90f44092b3c5", initials: "CYL", color: "#3f51b5" },
+            { title: "AH Central", url: "https://osapps.adapthealth.com/AH_Central_UI/Home", initials: "AH", color: "#2196f3" },
+            { title: "Simple fax", url: "https://osapps.adapthealth.com/AC_FaxingSuite_EU/SimpleOutboundFax", initials: "FAX", color: "#ffc107" },
+            { title: "Parachute", url: "https://launcher.myapps.microsoft.com/api/signin/438d4908-e073-47b6-ab34-c5d155eba961", initials: "PAR", color: "#00bcd4" },
+            { title: "Noridian", url: "https://www.noridianmedicareportal.com/group/end-user/sameandsimilar", initials: "NOR", color: "#673ab7" },
+            { title: "NPI Lookup", url: "https://progress.oandp.com/pecos/opie", initials: "NPI", color: "#009688" },
+            { title: "PDF Tools", url: "https://iamray13.github.io/PDF/", initials: "PDF", color: "#f44336" },
+            { title: "Copilot", url: "https://copilot.microsoft.com/", initials: "AI", color: "#e81e63" },
+            { title: "Attendance", url: "https://shorturl.at/eUx36", initials: "PDF", color: "#10a37f" },
+            { title: "Productivity Tracker", url: "https://shorturl.at/wqedG", initials: "PDF", color: "#10a37f" },
+            { title: "Recalculation", url: "https://shorturl.at/BNoqF", initials: "PDF", color: "#10a37f" }
+        ];
+
+        const docData = [
+            { title: "6MWT", pdf: "assets/6MWT.pdf", icon: "sky" },
+            { title: "TSS", pdf: "assets/TSS.pdf", icon: "lime" },
+            { title: "ONO", pdf: "assets/ONO.pdf", icon: "orange" },
+            { title: "ABG", pdf: "assets/ABG.pdf", icon: "pink" },
+            { title: "60month", pdf: "assets/60monthletter.pdf", icon: "red" }
+        ];
+
+        /* --- STATE --- */
+        let notesData = [];
+        let currentEditingId = null;
+        let abbreviationList = [];
+        let patientMilestonesReached = [];
+        let isDarkMode = true;
+        const STORAGE_KEY = "60month_premium_v1";
+
+        /* --- INITIALIZATION --- */
+        document.addEventListener('DOMContentLoaded', () => {
+            loadNotes();
+            loadAbbreviations();
+            initCalculator();
+            initMyApps();
+            initDocSystem();
+            initParachute();
+            updateTotalPatientCount();
+            
+            // Textarea Handlers
+            const notepad = document.getElementById('notepad');
+            notepad.addEventListener('input', () => {
+                updatePatientCountAndCheckMilestonesForActiveNote();
+            });
+            notepad.addEventListener('keyup', (e) => {
+                if (e.key === ' ') handleSpaceExpansion(e.target);
+            });
+            
+            // Search sidebar
+            document.getElementById('searchInput').addEventListener('input', (e) => renderSidebar(e.target.value));
+            
+            // Global shortcuts
+            document.addEventListener('keydown', (e) => {
+                if ((e.ctrlKey || e.metaKey) && e.key === 's') { e.preventDefault(); handleSaveAction(); }
+                if (e.key.toLowerCase() === 's' && document.activeElement.tagName !== 'TEXTAREA' && document.activeElement.tagName !== 'INPUT') { e.preventDefault(); toggleSidebar(); }
+            });
+            
+            renderSidebar();
+        });
+
+        /* --- LOGIC PRESERVED --- */
+        function toggleDarkMode() {
+            isDarkMode = !isDarkMode;
+            document.body.classList.toggle('light-mode', !isDarkMode);
+            document.getElementById('moonIcon').classList.toggle('hidden', isDarkMode);
+            document.getElementById('sunIcon').classList.toggle('hidden', !isDarkMode);
+        }
+
+        function handleSaveAction() {
+            const notepad = document.getElementById('notepad');
+            const content = notepad.value;
+            if(!content.trim()) return showToast("Cannot save empty note");
+            
+            if(currentEditingId) {
+                const note = notesData.find(n => n.id === currentEditingId);
+                if(note) { note.content = content; saveNotesToStorage(); showToast("Note Updated"); cancelEditMode(); }
+            } else {
+                notesData.unshift({ id: Date.now(), content: content.trim(), timestamp: new Date().toLocaleString(), milestoneCount: 0 });
+                saveNotesToStorage(); showToast("Note Saved");
+                notepad.value = ""; renderSidebar();
+            }
+            updateTotalPatientCount();
+        }
+
+        function startEditing(id) {
+            const note = notesData.find(n => n.id === id);
+            if(!note) return;
+            currentEditingId = id;
+            document.getElementById('notepad').value = note.content;
+            document.getElementById('modeTitle').textContent = "Editing Note";
+            document.getElementById('saveBtn').textContent = "Update Note";
+            document.getElementById('cancelEditBtn').classList.remove('hidden');
+            document.getElementById('editorCard').classList.add('editing-mode');
+            if(document.getElementById('sidebar').classList.contains('active')) toggleSidebar();
+        }
+
+        function cancelEditMode() {
+            currentEditingId = null;
+            document.getElementById('notepad').value = "";
+            document.getElementById('modeTitle').textContent = "New Entry";
+            document.getElementById('saveBtn').textContent = "Save Note";
+            document.getElementById('cancelEditBtn').classList.add('hidden');
+            document.getElementById('editorCard').classList.remove('editing-mode');
+        }
+
+        function toggleSidebar() {
+            const s = document.getElementById('sidebar'), o = document.getElementById('overlay');
+            s.classList.toggle('active'); o.classList.toggle('active');
+            if(s.classList.contains('active')) renderSidebar();
+        }
+
+        function renderSidebar(query = "") {
+            const list = document.getElementById('notesList');
+            list.innerHTML = "";
+            const filtered = notesData.filter(n => n.content.toLowerCase().includes(query.toLowerCase()));
+            
+            filtered.forEach(note => {
+                const card = document.createElement('div');
+                card.className = 'note-card';
+                card.onclick = () => startEditing(note.id);
+                card.innerHTML = `
+                    <div class="note-meta"><span>#${note.id.toString().slice(-4)}</span><span>${note.timestamp.split(',')[0]}</span></div>
+                    <div class="note-preview">${note.content.substring(0, 100)}...</div>
+                    <div class="note-actions">
+                        <button class="btn btn-ghost" onclick="event.stopPropagation(); copyToClipboard(\`${note.content.replace(/`/g, '\\`')}\`)" style="padding:4px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                        <button class="btn btn-ghost" onclick="event.stopPropagation(); deleteNote(${note.id})" style="color:var(--danger); padding:4px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>
+                    </div>
+                `;
+                list.appendChild(card);
+            });
+        }
+
+        function deleteNote(id) {
+            if(confirm("Delete this entry?")) {
+                notesData = notesData.filter(n => n.id !== id);
+                saveNotesToStorage(); renderSidebar(); updateTotalPatientCount(); showToast("Deleted");
+            }
+        }
+
+        /* --- SCHEDULING LOGIC --- */
+        function openWorkflow() { document.getElementById('workflowModal').classList.add('show'); updateRul(); }
+        function switchWFTab(tab) {
+            document.querySelectorAll('.content-section').forEach(s => s.classList.add('hidden'));
+            document.getElementById('wf-' + tab).classList.remove('hidden');
+            document.querySelectorAll('.nav-btn').forEach(b => {
+                b.style.background = "transparent"; b.style.color = "var(--text-muted)";
+            });
+            const activeBtn = document.getElementById('btn-' + tab);
+            activeBtn.style.background = "var(--primary)"; activeBtn.style.color = "white";
+        }
+        function updateRul() {
+            const id = document.getElementById('rulIdInput').value;
+            const date = document.getElementById('rulDateInput').value;
+            document.getElementById('rulIdText').innerText = id;
+            document.getElementById('rulDateText').innerText = date ? date.split('-').reverse().join('/') : "MM/DD/YYYY";
+        }
+        function updateNotes() {
+            const date = document.getElementById('noteDateInput').value;
+            const fmt = date ? date.split('-').reverse().join('/') : "{{DATE}}";
+            document.querySelectorAll('.noteDateText').forEach(el => el.innerText = fmt);
+        }
+        function copyWF(el) { copyToClipboard(el.innerText); }
+
+        /* --- ABBREVIATION LOGIC --- */
+        function openAbbrModal() { document.getElementById('abbrModal').classList.add('show'); renderAbbrList(); }
+        function renderAbbrList() {
+            const container = document.getElementById('abbrListContainer'); container.innerHTML = "";
+            abbreviationList.forEach(item => {
+                const row = document.createElement('div'); row.className = 'abbr-row';
+                row.innerHTML = `<div class="abbr-key">${item.abbr}</div><div class="abbr-val">${item.expansion}</div><button class="btn-ghost" onclick="deleteAbbr('${item.abbr}')" style="color:var(--danger)">×</button>`;
+                container.appendChild(row);
+            });
+        }
+        function addNewAbbr() {
+            const key = document.getElementById('newAbbrInput').value.trim();
+            const val = document.getElementById('newExpInput').value.trim();
+            if(!key || !val) return;
+            abbreviationList.push({abbr: key, expansion: val});
+            localStorage.setItem("60_abbr", JSON.stringify(abbreviationList));
+            renderAbbrList(); document.getElementById('newAbbrInput').value = ""; document.getElementById('newExpInput').value = "";
+        }
+        function deleteAbbr(key) { abbreviationList = abbreviationList.filter(a => a.abbr !== key); localStorage.setItem("60_abbr", JSON.stringify(abbreviationList)); renderAbbrList(); }
+        function handleSpaceExpansion(textarea) {
+            const cursor = textarea.selectionStart; const text = textarea.value;
+            const beforeCursor = text.slice(0, cursor); const match = /(\S+)\s$/.exec(beforeCursor);
+            if (match) {
+                const exp = abbreviationList.find(a => a.abbr.toLowerCase() === match[1].toLowerCase());
+                if (exp) {
+                    const newBefore = beforeCursor.slice(0, match.index) + exp.expansion + " ";
+                    textarea.value = newBefore + text.slice(cursor);
+                    textarea.selectionStart = textarea.selectionEnd = newBefore.length;
+                }
+            }
+        }
+
+        /* --- TOOL INITIALIZERS --- */
+        function initCalculator() {
+            const ref = document.getElementById('calcRefDate'); ref.value = new Date().toISOString().split('T')[0];
+            const calc = () => {
+                const d = new Date(ref.value + "T12:00:00");
+                const offset = parseInt(document.getElementById('calcDaysInput').value) || 0;
+                const before = new Date(d); before.setDate(d.getDate() - offset);
+                const after = new Date(d); after.setDate(d.getDate() + offset);
+                const fmt = (date) => (date.getMonth()+1).toString().padStart(2,'0') + '/' + date.getDate().toString().padStart(2,'0') + '/' + date.getFullYear();
+                document.getElementById('calc-before-date').innerText = fmt(before);
+                document.getElementById('calc-after-date').innerText = fmt(after);
+            };
+            ref.onchange = calc; document.getElementById('calcDaysInput').oninput = calc; calc();
+        }
+        function initMyApps() {
+            const cont = document.getElementById('appLinksContainer');
+            myAppsData.forEach(app => {
+                const card = document.createElement('a'); card.href = app.url; card.target = "_blank"; card.className = "tool-card";
+                card.innerHTML = `<div style="width:45px; height:45px; border-radius:10px; background:${app.color}; color:white; display:flex; align-items:center; justify-content:center; font-weight:800; margin-bottom:10px;">${app.initials}</div><span>${app.title}</span>`;
+                cont.appendChild(card);
+            });
+        }
+        function initDocSystem() {
+            const cont = document.getElementById('docsGrid');
+            docData.forEach(doc => {
+                const card = document.createElement('div'); card.className = "tool-card";
+                card.onclick = () => { document.getElementById('pdfFrame').src = doc.pdf; document.getElementById('pdfViewerTitle').innerText = doc.title; document.getElementById('pdfViewerModal').classList.add('show'); };
+                card.innerHTML = `<svg viewBox="0 0 24 24" fill="var(--primary)"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg><span>${doc.title}</span>`;
+                cont.appendChild(card);
+            });
+        }
+        function initParachute() {
+            const body = document.getElementById('paraTableBody');
+            parachuteData.forEach(row => {
+                const tr = document.createElement('tr'); tr.style.borderBottom = "1px solid var(--border)";
+                tr.innerHTML = `<td style="padding:12px;">${row.title}</td><td style="padding:12px;">${row.dashboard}</td><td style="padding:12px;">${row.region}</td><td style="padding:12px; color:var(--primary); font-weight:700;">${row.database}</td>`;
+                body.appendChild(tr);
+            });
+            document.getElementById('paraSearchInput').oninput = (e) => {
+                const term = e.target.value.toLowerCase();
+                Array.from(body.rows).forEach(r => r.style.display = r.innerText.toLowerCase().includes(term) ? "" : "none");
+            };
+        }
+
+        /* --- SYSTEM UTILS --- */
+        function extractPatientIDs(text) { const regex = /\bPatient ID\s*(\d+)\b/ig; return Array.from(text.matchAll(regex)).map(m => m[1]); }
+        function updateTotalPatientCount() {
+            let total = 0; notesData.forEach(n => total += extractPatientIDs(n.content).length);
+            document.getElementById('totalSavedCountEl').innerText = total;
+        }
+        function updatePatientCountAndCheckMilestonesForActiveNote() {
+            const ids = extractPatientIDs(document.getElementById('notepad').value);
+            document.getElementById('activeCountEl').innerText = ids.length;
+            if(ids.length > 0 && ids.length % 10 === 0 && !patientMilestonesReached.includes(ids.length)) {
+                patientMilestonesReached.push(ids.length);
+                document.getElementById('greetingMessageEl').innerHTML = `You've identified <b>${ids.length}</b> patient records in this session!`;
+                document.getElementById('greetingModal').classList.add('show');
+            }
+        }
+        function renderPatientIDsModal() {
+            const cont = document.getElementById('patientIDsContent'); cont.innerHTML = '<div class="pid-grid"></div>';
+            const grid = cont.querySelector('.pid-grid');
+            let allIds = []; notesData.forEach(n => allIds.push(...extractPatientIDs(n.content)));
+            const unique = [...new Set(allIds)];
+            unique.forEach(id => {
+                const item = document.createElement('div'); item.className = 'pid-item';
+                item.innerText = id; grid.appendChild(item);
+            });
+            document.getElementById('patientIDsModal').classList.add('show');
+        }
+        function copyToClipboard(txt) { navigator.clipboard.writeText(txt).then(() => showToast("Copied to Clipboard")); }
+        function showToast(msg) { const t = document.getElementById('toast'); t.innerText = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3000); }
+        function saveNotesToStorage() { localStorage.setItem(STORAGE_KEY, JSON.stringify(notesData)); }
+        function loadNotes() { const d = localStorage.getItem(STORAGE_KEY); if(d) notesData = JSON.parse(d); }
+        function loadAbbreviations() { const d = localStorage.getItem("60_abbr"); abbreviationList = d ? JSON.parse(d) : DEFAULT_ABBRS; }
+        function exportData() { 
+            const blob = new Blob([JSON.stringify(notesData)], {type: "text/plain"});
+            const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = "60month_db.txt"; a.click();
+        }
+        function openDocSystem() { document.getElementById('docsModal').classList.add('show'); }
+        function openMyApps() { document.getElementById('myAppsModal').classList.add('show'); }
+        function openParachute() { document.getElementById('parachuteModal').classList.add('show'); }
+        function copyCalcValue(id) { copyToClipboard(document.getElementById(id).innerText); }
+    </script>
+</body>
+</html>

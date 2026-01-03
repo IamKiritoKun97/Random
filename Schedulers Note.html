@@ -1,8 +1,9 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Outcome Builder | Premium Assistant</title>
+  <title>Schedulers Note</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%236366f1'/%3E%3Cstop offset='100%25' stop-color='%23a855f7'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='16' cy='16' r='16' fill='url(%23g)'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.35em' fill='white' font-family='sans-serif' font-weight='bold' font-size='14'%3EOB%3C/text%3E%3C/svg%3E">
@@ -317,20 +318,27 @@
       <button class="modal-close" onclick="closeModal('modal-vm')">&times;</button>
       <div class="modal-body">
         <h2 style="color: var(--accent-purple); margin-top: 0;">Voicemail Script</h2>
-        <p class="script-text">"This is about your breathing equipment. We have received a document from your doctor confirming that you still need it. This is important, so please call us back at <span class="script-highlight">484-567-0666</span>."</p>
+        <p class="script-text">"Hi, this is Raymond calling from AdaptHealth on a recorded line. This is about your breathing equipment and we have received a document from your doctor confirming that you still need it. This is important, so please call us back at <span class="script-highlight">484-567-0666</span>."</p>
       </div>
     </div>
   </div>
 
-  <div class="modal-overlay" id="modal-talk">
-    <div class="modal-content">
-      <button class="modal-close" onclick="closeModal('modal-talk')">&times;</button>
-      <div class="modal-body">
-        <h2 style="color: var(--accent-teal); margin-top: 0;">Live Conversation</h2>
-        <p class="script-text">"Hi, this is Raymond calling from AdaptHealth on a recorded line. Is this a good time to talk? I realize we’re right around the holiday, and I don’t want to pull you away from anything important..."</p>
-      </div>
+ <div class="modal-overlay" id="modal-talk">
+  <div class="modal-content">
+    <button class="modal-close" onclick="closeModal('modal-talk')">&times;</button>
+    <div class="modal-body">
+      <h2 style="color: var(--accent-teal); margin-top: 0;">Live Conversation</h2>
+      <p class="script-text">
+        Hi, this is Raymond calling from AdaptHealth on a recorded line.<br><br>
+        We received a document from your doctor confirming that you still need your breathing equipment. Is now a good time to talk?<br><br>
+        Your account here is about to turn 5 years, and your insurance requires a new contract so they can continue covering the cost of your oxygen equipment and supplies for another 5 years.<br><br>
+        Have you been using the same equipment during this time? If so, we’ll need to replace it to make sure you don’t experience any issues.<br><br>
+        To move forward, could you please confirm the best address to deliver the equipment, your phone number, and are you going to be available on [PLEASE STATE THE DATE]?
+      </p>
     </div>
   </div>
+</div>
+
 
   <!-- O2 TOOL MODAL -->
   <div class="modal-overlay" id="modal-o2">

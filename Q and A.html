@@ -4,13 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ProPrep | The Executive Interview Suite</title>
+    <title>ProPrep | Full Executive Suite</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-color: #030303;
-            --card-bg: rgba(18, 18, 23, 0.7);
+            --card-bg: rgba(18, 18, 23, 0.85);
             --accent: #6366f1;
         }
 
@@ -26,10 +26,10 @@
 
         .premium-glass {
             background: var(--card-bg);
-            backdrop-filter: blur(20px) saturate(180%);
-            -webkit-backdrop-filter: blur(20px) saturate(180%);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(25px) saturate(200%);
+            -webkit-backdrop-filter: blur(25px) saturate(200%);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.9);
         }
 
         .card-inner-border {
@@ -42,7 +42,7 @@
             inset: 0;
             border-radius: inherit;
             padding: 1px;
-            background: linear-gradient(145deg, rgba(255,255,255,0.1), transparent, rgba(255,255,255,0.05));
+            background: linear-gradient(145deg, rgba(255,255,255,0.15), transparent, rgba(255,255,255,0.05));
             -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
             mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
             -webkit-mask-composite: xor;
@@ -51,15 +51,15 @@
         }
 
         .highlight {
-            background: linear-gradient(90deg, #6366f1, #a855f7);
+            background: linear-gradient(90deg, #818cf8, #c084fc);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            font-weight: 700;
+            font-weight: 800;
         }
 
         .search-glow:focus-within {
-            box-shadow: 0 0 20px rgba(99, 102, 241, 0.2);
-            border-color: rgba(99, 102, 241, 0.5);
+            box-shadow: 0 0 30px rgba(99, 102, 241, 0.3);
+            border-color: rgba(99, 102, 241, 0.6);
         }
 
         @keyframes shimmer {
@@ -76,48 +76,49 @@
         }
 
         .modal-animate {
-            animation: cubic-bezier(0.16, 1, 0.3, 1) 0.6s modalSlideUp;
+            animation: modalPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
-        @keyframes modalSlideUp {
-            from { opacity: 0; transform: translateY(30px) scale(0.98); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
+        @keyframes modalPop {
+            from { opacity: 0; transform: scale(0.9) translateY(20px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
         }
 
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #27272a; border-radius: 10px; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
+        ::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #6366f1; }
     </style>
 </head>
 <body class="min-h-screen">
 
-    <nav class="sticky top-0 z-50 premium-glass border-b border-white/5">
-        <div class="max-w-7xl mx-auto px-8 py-5 flex flex-col md:flex-row items-center justify-between gap-6">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/20">
-                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+    <nav class="sticky top-0 z-50 premium-glass border-b border-white/10">
+        <div class="max-w-7xl mx-auto px-8 py-6 flex flex-col md:flex-row items-center justify-between gap-6">
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-xl shadow-indigo-500/30">
+                    <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
                 </div>
                 <div>
-                    <h1 class="text-xl font-extrabold tracking-tight text-white uppercase">ProPrep<span class="text-indigo-500">.</span></h1>
-                    <p class="text-[10px] uppercase tracking-[0.2em] text-zinc-500 font-bold">Elite Interview Intelligence</p>
+                    <h1 class="text-2xl font-black tracking-tighter text-white uppercase">ProPrep<span class="text-indigo-500">.</span></h1>
+                    <p class="text-[11px] uppercase tracking-[0.3em] text-zinc-400 font-bold">Elite Interview Intelligence</p>
                 </div>
             </div>
             
-            <div class="relative w-full md:w-[450px] group search-glow transition-all duration-300 rounded-2xl">
+            <div class="relative w-full md:w-[500px] group search-glow transition-all duration-300 rounded-2xl">
                 <input type="text" id="searchInput" 
-                    placeholder="Search intelligence database..." 
-                    class="w-full bg-zinc-950/50 border border-white/10 rounded-2xl px-6 py-4 pl-14 focus:outline-none transition-all text-zinc-200 placeholder-zinc-500 text-sm">
-                <svg class="w-5 h-5 absolute left-5 top-4.5 text-zinc-500 group-focus-within:text-indigo-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    placeholder="Search all 17 answers..." 
+                    class="w-full bg-zinc-900/80 border border-white/10 rounded-2xl px-6 py-5 pl-14 focus:outline-none transition-all text-white placeholder-zinc-500 text-lg">
+                <svg class="w-6 h-6 absolute left-5 top-5 text-zinc-500 group-focus-within:text-indigo-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                 </svg>
             </div>
         </div>
     </nav>
 
-    <main class="max-w-7xl mx-auto px-8 py-12">
-        <div class="mb-12">
-            <h2 class="text-3xl font-bold text-white mb-2">Curated Preparation Path</h2>
-            <p class="text-zinc-400 max-w-2xl">Explore all 17 essential interview modules. Click to reveal high-impact strategic responses.</p>
+    <main class="max-w-7xl mx-auto px-8 py-16">
+        <div class="mb-16">
+            <h2 class="text-4xl font-extrabold text-white mb-4">My Full Interview Database</h2>
+            <p class="text-xl text-zinc-400 max-w-3xl">All 17 modules updated with my 8-year career history.</p>
         </div>
 
         <div id="qaGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -126,41 +127,42 @@
         
         <div id="noResults" class="hidden text-center py-32">
             <div class="text-zinc-600 mb-4 flex justify-center">
-                <svg class="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9.172 9.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <svg class="w-20 h-20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9.172 9.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
             </div>
-            <p class="text-xl font-medium text-zinc-400">No matching intelligence found.</p>
+            <p class="text-2xl font-medium text-zinc-400">No matching questions found.</p>
         </div>
     </main>
 
-    <div id="modalOverlay" class="fixed inset-0 bg-black/90 backdrop-blur-md z-[60] hidden flex items-center justify-center p-6">
-        <div id="modalContent" class="premium-glass card-inner-border max-w-2xl w-full rounded-[2.5rem] p-10 shadow-2xl modal-animate relative">
-            <button onclick="closeModal()" class="absolute top-8 right-8 text-zinc-500 hover:text-white transition-colors p-2 hover:bg-white/5 rounded-full">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+    <!-- BOX REMAINS BIG (max-w-5xl) -->
+    <div id="modalOverlay" class="fixed inset-0 bg-black/95 backdrop-blur-xl z-[60] hidden flex items-center justify-center p-4 md:p-10">
+        <div id="modalContent" class="premium-glass card-inner-border max-w-5xl w-full rounded-[3rem] p-8 md:p-16 shadow-2xl modal-animate relative max-h-[90vh] overflow-y-auto">
+            <button onclick="closeModal()" class="absolute top-8 right-8 text-zinc-400 hover:text-white transition-colors p-3 hover:bg-white/10 rounded-full">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
             <div id="modalInner"></div>
         </div>
     </div>
 
-    <script>
-        const interviewData = [
-            { q: "Tell me about yourself.", a: "I'm a highly motivated and hard-working person who does tasks with care and wants to keep getting better. I am always trying to improve my skills to give the best service to clients and customers." },
-            { q: "Why do you want to work here?", a: "I have learned a lot about your company and I am truly happy about this chance, especially since it is a new place for me. I think my current skills and qualities will help me make a good difference right away." },
-            { q: "What are your strengths?", a: "I see myself as very flexible and able to do many things. I am always ready to take on duties that are not part of my main job. I am a dedicated, driven, and experienced employee." },
-            { q: "What are your weaknesses?", a: "My biggest weakness was saying 'yes' to everything. But now, I have learned to check my work before I agree to do more. This helps me make sure I can truly help without falling behind." },
-            { q: "Why did you leave your previous job?", a: "I left my last job because I had learned all I could in that role. I gained much experience there, and now I want to find new challenges and keep growing in my career." },
-            { q: "Where do you see yourself in 5 years?", a: "In the next five years, I want to be a very skilled and important member of this team. I plan to do this by taking part in training and being open to advice." },
-            { q: "What can you contribute to the company?", a: "With my experience, I can give excellent customer service. I have handled many different customer talks, from upset ones to very polite ones." },
-            { q: "How do you handle stress and pressure?", a: "I handle stress and pressure by staying calm and focused on the job. I make sure to finish tasks on time and to carefully avoid errors." },
-            { q: "Why should we hire you?", a: "You should hire me because I have a good attitude, a strong wish to do well, and I am ready to be trained and developed into the exact professional your team needs." },
-            { q: "Can you handle a different job role?", a: "Yes, absolutely! I quickly learned and did well in my first job by working hard to understand everything. I believe the best way to learn is to listen and ask questions." },
-            { q: "What’s the hardest decision you’ve made?", a: "Leaving my last job. It was hard to leave people who helped me grow, but I knew it was important to move forward for my own growth." },
-            { q: "Interested without direct experience?", a: "I am a fast learner and eager to prove myself. I've done research and believe this is a great chance to start my career and quickly pick up the skills." },
-            { q: "What useful skills do you have?", a: "I am a good communicator, organized, and pay close attention to details. I am also very good at solving problems and I like to help people." },
-            { q: "How do you learn new things?", a: "I learn by listening carefully, taking notes, and practicing. I also ask questions and use online tutorials or books to understand things better." },
-            { q: "Example of teamwork?", a: "In a school project, I worked with a team to create a presentation. We shared tasks and helped each other, teaching me the importance of working together." },
-            { q: "Goals for first 90 days?", a: "Learn as much as I can about the company and job. I want to understand the team, the processes, and quickly become a useful member of the team." },
-            { q: "How do you handle feedback?", a: "I see feedback as a chance to grow. I listen carefully and think about how I can use it to improve my work and become a better professional." }
-        ];
+  <script>
+    const interviewData = [
+        { q: "Tell me about yourself.", a: "I have eight years of professional experience in customer service. I spent five years in IT sales at Live2Sell, where I developed strong communication and problem-solving skills, and three years in healthcare support at iPloy, handling sensitive information with accuracy and care. I am dedicated, detail-oriented, and reliable in every task I take on." },
+        { q: "Why do you want to work here?", a: "I am excited about the opportunity to bring my eight years of experience into a new environment where I can continue to grow. I am motivated by challenges, and I believe my ability to solve problems and adapt quickly will allow me to make an immediate positive impact on your team." },
+        { q: "What are your strengths?", a: "My key strengths are adaptability, fast learning, and strong communication skills. I connect well with people, whether colleagues or customers, and I pay close attention to detail to ensure accuracy and quality in my work." },
+        { q: "What are your weaknesses?", a: "In the past, I had a tendency to say 'yes' to every task, which sometimes stretched my time too thin. Over the years, I’ve learned to prioritize effectively, assess my workload, and ensure I deliver high-quality results without compromising deadlines." },
+        { q: "Why did you leave your previous job?", a: "I left my previous role because I had reached a point where I had learned everything I could in that position. I am now seeking new challenges and opportunities to expand my skills and continue growing my career in a dynamic environment." },
+        { q: "Where do you see yourself in 5 years?", a: "In five years, I see myself as a highly skilled and valuable member of this company, contributing to its success while continuing to learn and take on greater responsibilities. My goal is to grow alongside the organization and help drive its long-term objectives." },
+        { q: "What can you contribute to the company?", a: "I bring eight years of experience working in fast-paced, high-volume offices. I know how to communicate effectively with diverse customers and ensure their satisfaction. My focus is always on delivering excellent service and building positive relationships that benefit the company." },
+        { q: "How do you handle stress and pressure?", a: "I remain calm and focused under pressure. In my previous role, I managed sensitive medical records where accuracy and speed were critical. That experience taught me how to work efficiently without compromising quality, even in high-stress situations." },
+        { q: "Why should we hire you?", a: "You should hire me because I combine a positive attitude with eight years of proven experience. I am eager to learn, adaptable to new environments, and committed to contributing my best to help the team succeed." },
+        { q: "Can you handle a different job role?", a: "Yes, absolutely. I am a fast learner and have proven this in my career. In my first job, I quickly adapted by listening carefully, asking the right questions, and applying what I learned. I am confident I can do the same in any new role." },
+        { q: "What’s the hardest decision you’ve made?", a: "The hardest decision I made was leaving my last job. I truly valued the people I worked with, but I knew I needed to move forward to pursue new challenges and continue developing my career." },
+        { q: "Interested without direct experience?", a: "Yes. Even if the role is new to me, my eight years of customer service experience have equipped me with transferable skills such as communication, problem-solving, and adaptability. I am confident I can learn quickly and excel." },
+        { q: "What useful skills do you have?", a: "I am an effective communicator, highly organized, and skilled at solving customer issues through both chat and phone support. These skills allow me to deliver excellent service and maintain efficiency in my work." },
+        { q: "How do you learn new things?", a: "I learn by listening carefully, taking notes, and practicing what I’ve learned. I also ask clarifying questions to ensure I fully understand, which helps me apply new knowledge effectively." },
+        { q: "Example of teamwork?", a: "In my past roles, I consistently worked with my team to meet deadlines and achieve goals. I believe collaboration and supporting one another are the best ways to ensure success." },
+        { q: "Goals for first 90 days?", a: "My goal is to quickly learn the company’s processes, adapt to its culture, and become a productive member of the team. I want to contribute value as soon as possible." },
+        { q: "How do you handle feedback?", a: "I view feedback as an opportunity to grow. I listen carefully, apply the advice, and use it to improve my performance and become a stronger professional." }
+    ];
 
         const qaGrid = document.getElementById('qaGrid');
         const searchInput = document.getElementById('searchInput');
@@ -187,19 +189,19 @@
                 noResults.classList.add('hidden');
                 filteredData.forEach((item, index) => {
                     const card = document.createElement('div');
-                    card.className = 'premium-glass card-inner-border p-8 rounded-[2rem] cursor-pointer shimmer-hover overflow-hidden relative transition-all duration-500 hover:-translate-y-2 hover:border-white/20 group';
+                    card.className = 'premium-glass card-inner-border p-10 rounded-[2.5rem] cursor-pointer shimmer-hover overflow-hidden relative transition-all duration-500 hover:-translate-y-3 hover:border-indigo-500/40 group';
                     card.onclick = () => openModal(item);
                     
                     card.innerHTML = `
-                        <div class="flex justify-between items-start mb-6">
-                            <div class="px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20">
-                                <span class="text-[10px] font-bold uppercase tracking-widest text-indigo-400">Question ${index + 1}</span>
+                        <div class="flex justify-between items-start mb-8">
+                            <div class="px-4 py-1.5 rounded-full bg-indigo-500/20 border border-indigo-500/30">
+                                <span class="text-[11px] font-black uppercase tracking-widest text-indigo-400">Response ${index + 1}</span>
                             </div>
                             <div class="text-zinc-600 group-hover:text-indigo-400 transition-colors">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
                             </div>
                         </div>
-                        <h3 class="text-xl font-bold text-white leading-tight group-hover:text-indigo-50 transition-colors">
+                        <h3 class="text-2xl font-bold text-white leading-tight group-hover:text-indigo-100 transition-colors">
                             ${highlightText(item.q, filter)}
                         </h3>
                     `;
@@ -211,18 +213,24 @@
         function openModal(item) {
             const query = searchInput.value;
             modalInner.innerHTML = `
-                <div class="inline-flex items-center px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 mb-6">
-                    <span class="text-[10px] font-bold uppercase tracking-widest text-indigo-400">Refined Response</span>
+                <div class="inline-flex items-center px-4 py-1.5 rounded-full bg-indigo-500/20 border border-indigo-500/30 mb-8">
+                    <span class="text-xs font-black uppercase tracking-widest text-indigo-400">Executive Response</span>
                 </div>
-                <h2 class="text-3xl font-extrabold text-white mb-8 pr-12 leading-tight">${highlightText(item.q, query)}</h2>
-                <div class="space-y-6 text-zinc-400 leading-relaxed text-lg font-light">
-                    <p class="border-l-2 border-indigo-500/30 pl-6 italic bg-white/5 py-6 rounded-r-xl" id="answerText">
-                        "${highlightText(item.a, query)}"
-                    </p>
+                <!-- QUESTION (Remains Bold) -->
+                <h2 class="text-4xl font-black text-white mb-8 pr-12 leading-tight tracking-tight">${highlightText(item.q, query)}</h2>
+                
+                <!-- ANSWER BOX (TEXT MADE SMALLER: text-xl) -->
+                <div class="space-y-8">
+                    <div class="border-l-4 border-indigo-500 pl-8 bg-zinc-900/40 p-10 rounded-2xl md:rounded-r-[2.5rem]">
+                        <p class="text-zinc-200 text-lg md:text-xl font-medium leading-relaxed tracking-wide" id="answerText">
+                            ${highlightText(item.a, query)}
+                        </p>
+                    </div>
                 </div>
-                <div class="mt-10 flex gap-4">
-                    <button onclick="closeModal()" class="flex-1 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold rounded-2xl transition-all shadow-lg shadow-indigo-600/20">
-                        Got it, thanks!
+
+                <div class="mt-12 flex gap-6">
+                    <button onclick="closeModal()" class="w-full py-5 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white text-lg font-black rounded-3xl transition-all shadow-2xl shadow-indigo-600/40 uppercase tracking-widest">
+                        Got it!
                     </button>
                 </div>
             `;

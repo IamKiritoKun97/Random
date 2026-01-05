@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>WIP Dashboard | Pro</title>
+  
+  <!-- Inter Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      /* --- Light Theme (Default) --- */
+      --primary: #6366f1; /* Indigo 500 */
+      --primary-hover: #4f46e5;
+      --primary-light: #e0e7ff;
+      
+      --bg-body: #f1f5f9;
+      --bg-surface: #ffffff;
+      --bg-surface-glass: rgba(255, 255, 255, 0.85);
+      
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      
+      --success-bg: #dcfce7; --success-text: #166534;
+      --warning-bg: #fef9c3; --warning-text: #854d0e;
+      --danger-bg: #fee2e2;  --danger-text: #991b1b;
+      
+      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+      --shadow-lg: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+      
+      --radius: 12px;
+      --trans: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+      /* --- Table Resizing Vars --- */
+      --first-col-width: 60px; /* Default width for sticky checkbox column */
+    }
+
+    /* --- Dark Theme --- */
+    [data-theme="dark"] {
+      --primary: #818cf8;
+      --primary-hover: #6366f1;
+      --primary-light: rgba(99, 102, 241, 0.2);
+      
+      --bg-body: #0f172a;
+      --bg-surface: #1e293b;
+      --bg-surface-glass: rgba(30, 41, 59, 0.85);
+      
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --border: #334155;
+      
+      --success-bg: rgba(22, 101, 52, 0.2); --success-text: #4ade80;
+      --warning-bg: rgba(133, 77, 14, 0.2); --warning-text: #facc15;
+      --danger-bg: rgba(153, 27, 27, 0.2);  --danger-text: #f87171;
+    }
+
+    * { box-sizing: border-box; outline: none; }
+    
+    body {
+      margin: 0; padding: 0;
+      background: var(--bg-body);
+      font-family: 'Inter', sans-serif;
+      color: var(--text-main);
+      font-size: 14px;
+      line-height: 1.5;
+      transition: background-color 0.3s, color 0.3s;
+      /* Prevent the whole page from scrolling */
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* --- Layout --- */
+    .app-container {
+      max-width: 1800px;
+      margin: 0 auto;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      height: 100vh; /* Lock container height to viewport */
+      overflow: hidden; /* Ensure content doesn't overflow container */
+    }
+
+    /* --- Header & Collapsible Logic --- */
+    /* Ensure header doesn't shrink when table grows */
+    .header-wrapper { 
+        display: flex; flex-direction: column; gap: 12px; 
+        flex-shrink: 0; 
+    }
+
+    .header-toggle {
+        display: flex; align-items: center; justify-content: center; gap: 8px;
+        background: var(--bg-surface); border: 1px solid var(--border);
+        border-radius: 8px; padding: 8px; cursor: pointer; color: var(--text-muted);
+        font-weight: 500; font-size: 0.85rem; transition: var(--trans); user-select: none;
+    }
+    .header-toggle:hover { border-color: var(--primary); color: var(--primary); box-shadow: var(--shadow-sm); }
+    .header-toggle svg { transition: transform 0.3s ease; }
+    
+    .header-content {
+        max-height: 0; opacity: 0; overflow: hidden;
+        transition: max-height 0.4s cubic-bezier(0, 1, 0, 1), opacity 0.3s ease-out, margin-bottom 0.3s;
+        display: flex; flex-direction: column; gap: 24px; margin-bottom: 0;
+    }
+    .header-content.expanded {
+        max-height: 600px; opacity: 1; margin-bottom: 12px;
+        transition: max-height 0.4s ease-in-out, opacity 0.3s ease-in;
+    }
+
+    .brand-row { display: flex; justify-content: space-between; align-items: flex-start; }
+    .brand-group h1 { font-size: 1.75rem; font-weight: 700; margin: 0; letter-spacing: -0.03em; }
+    .brand-group .subtitle { color: var(--text-muted); font-weight: 500; margin-top: 4px; display:flex; align-items:center; gap:8px; }
+    
+    .theme-toggle {
+      background: var(--bg-surface); border: 1px solid var(--border);
+      padding: 8px; border-radius: 50%; cursor: pointer; color: var(--text-muted);
+      transition: var(--trans);
+    }
+    .theme-toggle:hover { color: var(--primary); border-color: var(--primary); box-shadow: var(--shadow-sm); }
+
+    /* --- Stats Cards --- */
+    .stats-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px;
+    }
+
+    .stat-card {
+      background: var(--bg-surface); padding: 24px;
+      border-radius: var(--radius); box-shadow: var(--shadow-sm); border: 1px solid var(--border);
+      position: relative; overflow: hidden; transition: var(--trans);
+    }
+    .stat-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); border-color: var(--primary-light); }
+    
+    .stat-label { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+    .stat-value { font-size: 2.25rem; font-weight: 800; margin-top: 8px; letter-spacing: -0.02em; }
+    
+    .stat-card::after { content:''; position: absolute; right:-10px; bottom: -10px; width: 80px; height: 80px; border-radius: 50%; opacity: 0.1; }
+    .stat-card.blue .stat-value { color: var(--primary); }
+    .stat-card.blue::after { background: var(--primary); }
+    
+    .stat-card.green .stat-value { color: var(--success-text); }
+    .stat-card.green::after { background: var(--success-text); }
+    
+    .stat-card.orange .stat-value { color: var(--warning-text); }
+    .stat-card.orange::after { background: var(--warning-text); }
+
+    /* --- Controls --- */
+    .controls-panel {
+      background: var(--bg-surface); padding: 12px; border-radius: var(--radius);
+      border: 1px solid var(--border); box-shadow: var(--shadow-sm);
+      display: flex; flex-wrap: wrap; gap: 16px; align-items: center; justify-content: space-between;
+      animation: fadeIn 0.6s ease-out;
+      flex-shrink: 0; /* Controls also don't shrink */
+    }
+
+    .drop-zone {
+      flex: 1; border: 2px dashed var(--border); background: var(--bg-body);
+      border-radius: var(--radius); padding: 40px; text-align: center;
+      cursor: pointer; color: var(--text-muted); transition: var(--trans); position: relative;
+    }
+    .drop-zone:hover { border-color: var(--primary); background: var(--primary-light); color: var(--primary); }
+    .drop-zone strong { font-weight: 600; text-decoration: underline; }
+    .drop-zone input { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+
+    .toolbar-actions { display: flex; gap: 12px; align-items: center; width: 100%; }
+    .search-wrapper { position: relative; flex: 1; max-width: 400px; }
+    .search-wrapper svg { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted); pointer-events: none; }
+    
+    input[type="text"] {
+      width: 100%; padding: 10px 14px 10px 42px;
+      background: var(--bg-body); border: 1px solid var(--border); border-radius: 8px;
+      color: var(--text-main); font-size: 14px; transition: var(--trans);
+    }
+    input[type="text"]:focus { border-color: var(--primary); background: var(--bg-surface); box-shadow: 0 0 0 3px var(--primary-light); }
+
+    .btn {
+      padding: 10px 16px; border: 1px solid transparent; border-radius: 8px; cursor: pointer;
+      font-size: 0.875rem; font-weight: 500; display: inline-flex; align-items: center; gap: 8px;
+      transition: var(--trans);
+    }
+    .btn:active { transform: scale(0.96); }
+
+    .btn-primary { background: var(--primary); color: white; box-shadow: 0 4px 6px -2px rgba(99, 102, 241, 0.3); }
+    .btn-primary:hover { background: var(--primary-hover); box-shadow: 0 6px 8px -2px rgba(99, 102, 241, 0.4); }
+
+    .btn-secondary { background: var(--bg-surface); border-color: var(--border); color: var(--text-main); }
+    .btn-secondary:hover { background: var(--bg-body); border-color: var(--text-muted); }
+
+    .btn-danger { background: var(--danger-bg); color: var(--danger-text); }
+    .btn-danger:hover { background: #fee2e2; border: 1px solid var(--danger-text); }
+
+    .btn-icon { padding: 10px; border-radius: 8px; }
+
+    /* --- Data Table Container (The Scrolling Part) --- */
+    .table-container {
+      flex: 1; /* Take up all remaining vertical space */
+      background: var(--bg-surface); 
+      border-radius: var(--radius);
+      border: 1px solid var(--border); 
+      box-shadow: var(--shadow-md);
+      overflow: hidden; /* Hide overflow of container itself */
+      display: flex; 
+      flex-direction: column; 
+      min-height: 0; /* Crucial for nested flex scrolling */
+      animation: slideUp 0.5s ease-out;
+    }
+    
+    /* The internal scroll area */
+    .table-scroll { 
+        overflow: auto; 
+        flex: 1; 
+        height: 100%;
+        width: 100%;
+    }
+
+    table { 
+      width: 100%; 
+      border-collapse: separate; 
+      border-spacing: 0; 
+      table-layout: fixed; 
+    }
+
+    /* Fixed Headers inside the scrolling area */
+    thead th {
+      background: var(--bg-surface-glass);
+      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+      position: sticky; top: 0; z-index: 40; /* Sticky to top of .table-scroll */
+      text-align: left; padding: 16px;
+      font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;
+      color: var(--text-muted); border-bottom: 1px solid var(--border);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      user-select: none;
+    }
+
+    .th-inner { display: flex; align-items: center; gap: 6px; cursor: pointer; width: 100%; overflow: hidden; }
+    .th-inner:hover { color: var(--primary); }
+
+    .resizer {
+        position: absolute; right: 0; top: 0; height: 100%; width: 5px;
+        cursor: col-resize; z-index: 50; transition: background 0.2s;
+    }
+    .resizer:hover, .resizing { background: var(--primary); opacity: 0.5; }
+
+    tbody tr { transition: background-color 0.1s; animation: fadeIn 0.3s ease-out; }
+    tbody tr:last-child td { border-bottom: none; }
+    tbody td {
+      padding: 14px 16px; border-bottom: 1px solid var(--border);
+      color: var(--text-main); white-space: nowrap; font-size: 0.9rem;
+      overflow: hidden; text-overflow: ellipsis;
+    }
+
+    /* Sticky Columns (Left) */
+    th:first-child, td:first-child { 
+      position: sticky; left: 0; z-index: 30; 
+      background: var(--bg-surface); 
+      width: var(--first-col-width); 
+      min-width: 50px;
+      max-width: var(--first-col-width);
+      text-align: center;
+      border-right: 1px solid var(--border);
+    }
+    th:nth-child(2), td:nth-child(2) {
+      position: sticky; 
+      left: var(--first-col-width); 
+      z-index: 30;
+      background: var(--bg-surface);
+      border-right: 1px solid var(--border);
+      font-weight: 500;
+    }
+    
+    tbody tr:hover td { background: var(--bg-body); }
+    tbody tr:hover td:first-child, tbody tr:hover td:nth-child(2) { background: var(--bg-body); }
+
+    /* Highlights & Special Rows */
+    .highlight-text { background-color: rgba(253, 224, 71, 0.4); border-radius: 2px; color: var(--text-main); }
+    
+    tr.completed td { background: var(--success-bg); color: var(--text-muted); opacity: 0.7; }
+    tr.completed td:first-child, tr.completed td:nth-child(2) { background: var(--success-bg); }
+    tr.completed .link-cell { text-decoration: line-through; }
+    
+    tr.special-row td { background: var(--warning-bg); }
+    tr.special-row td:first-child, tr.special-row td:nth-child(2) { background: var(--warning-bg); }
+    tr.special-row td:nth-child(4) { color: var(--warning-text); font-weight: 700; }
+
+    .link-cell { color: var(--primary); cursor: pointer; font-weight: 500; text-decoration: none; border-bottom: 1px dotted transparent; }
+    .link-cell:hover { border-bottom-color: var(--primary); }
+
+    .editable-cell {
+      border: 1px solid transparent; padding: 4px 8px; border-radius: 4px;
+      transition: var(--trans); cursor: text;
+    }
+    .editable-cell:hover { background: var(--bg-body); border-color: var(--border); }
+    .editable-cell:focus { background: var(--bg-surface); border-color: var(--primary); box-shadow: 0 0 0 2px var(--primary-light); }
+
+    .check-circle {
+      width: 22px; height: 22px; border: 2px solid var(--border);
+      border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center;
+      transition: var(--trans); background: var(--bg-surface); margin: 0 auto;
+    }
+    .check-circle:hover { border-color: var(--primary); }
+    tr.completed .check-circle { background: var(--success-text); border-color: var(--success-text); }
+    tr.completed .check-circle::after { content: '✓'; color: white; font-size: 14px; font-weight: bold; }
+
+    /* --- Popovers & Modals --- */
+    .filter-popover {
+      position: absolute; background: var(--bg-surface); border: 1px solid var(--border);
+      box-shadow: var(--shadow-lg); border-radius: var(--radius); width: 280px; z-index: 1000;
+      display: flex; flex-direction: column; animation: scaleIn 0.15s ease-out;
+    }
+    .popover-search { padding: 8px; border-bottom: 1px solid var(--border); }
+    .popover-list { max-height: 240px; overflow-y: auto; padding: 4px 0; }
+    .popover-item { padding: 8px 12px; display: flex; align-items: center; gap: 10px; cursor: pointer; font-size: 13px; }
+    .popover-item:hover { background: var(--bg-body); }
+    .popover-actions { padding: 8px; background: var(--bg-body); display: flex; justify-content: space-between; border-radius: 0 0 var(--radius) var(--radius); }
+
+    .modal-backdrop {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.4); backdrop-filter: blur(4px);
+      z-index: 2000; display: none; align-items: center; justify-content: center; animation: fadeIn 0.2s;
+    }
+    .modal-box {
+      background: var(--bg-surface); width: 500px; padding: 32px;
+      border-radius: var(--radius); box-shadow: var(--shadow-lg); border: 1px solid var(--border);
+      animation: scaleIn 0.2s;
+    }
+    textarea { width: 100%; height: 120px; padding: 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-body); color: var(--text-main); font-family: monospace; resize: vertical; margin: 16px 0; }
+    
+    .hidden { display: none !important; }
+    .empty-state { text-align: center; color: var(--text-muted); padding: 80px 20px; display: flex; flex-direction: column; align-items: center; gap: 16px; }
+    .empty-icon { width: 64px; height: 64px; background: var(--bg-body); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 8px; }
+
+    .toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 3000; display: flex; flex-direction: column; gap: 10px; }
+    .toast {
+      background: var(--bg-surface); border-left: 4px solid var(--primary);
+      padding: 16px 20px; border-radius: 8px; box-shadow: var(--shadow-lg);
+      display: flex; align-items: center; gap: 12px; min-width: 300px; animation: slideInRight 0.3s ease-out;
+    }
+    .toast-success { border-color: var(--success-text); }
+    .toast-error { border-color: var(--danger-text); }
+
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes slideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes scaleIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+    @keyframes slideInRight { from { opacity: 0; transform: translateX(100%); } to { opacity: 1; transform: translateX(0); } }
+
+  </style>
+</head>
+<body>
+
+<div class="app-container">
+  
+  <!-- Fixed Header Section -->
+  <div class="header-wrapper">
+    <div class="header-toggle" id="headerToggle">
+      <span id="headerToggleText">Show Dashboard Stats</span>
+      <svg id="headerToggleIcon" width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+    </div>
+    <div class="header-content" id="headerContent">
+        <div class="brand-row">
+            <div class="brand-group">
+                <h1>WIP Dashboard</h1>
+                <div class="subtitle">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                Operations & Logistics Pro
+                </div>
+            </div>
+            <button class="theme-toggle" id="themeBtn" title="Toggle Dark Mode">
+                <svg id="moonIcon" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+                <svg id="sunIcon" class="hidden" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+            </button>
+        </div>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <span class="stat-label">Total Records</span>
+                <div class="stat-value" id="statTotal">0</div>
+            </div>
+            <div class="stat-card blue">
+                <span class="stat-label">Pending</span>
+                <div class="stat-value" id="statPending">0</div>
+            </div>
+            <div class="stat-card orange">
+                <span class="stat-label">Special Handling</span>
+                <div class="stat-value" id="statSpecial">0</div>
+            </div>
+            <div class="stat-card green">
+                <span class="stat-label">Completed</span>
+                <div class="stat-value" id="statCompleted">0</div>
+            </div>
+        </div>
+    </div>
+  </div>
+
+  <!-- Controls (Kept visible/fixed as well) -->
+  <div class="controls-panel">
+    <div class="drop-zone" id="dropZone">
+      <svg width="40" height="40" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin-bottom:12px; color:var(--primary);"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+      <div>Drag & Drop CSV or <strong>Click to Upload</strong></div>
+      <input type="file" id="fileInput" accept=".csv" />
+    </div>
+    <div class="toolbar-actions hidden" id="mainToolbar">
+      <div class="search-wrapper">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+        <input type="text" id="searchInput" placeholder="Search orders, patients, references..." />
+      </div>
+      <div style="flex:1"></div>
+      <button class="btn btn-secondary" id="toggleCompletedBtn">Hide Completed</button>
+      <button class="btn btn-secondary btn-icon" id="settingsBtn" title="Configuration">
+        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+      </button>
+      <button class="btn btn-primary" id="exportBtn">
+        <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+        Export
+      </button>
+      <button class="btn btn-danger btn-icon" id="clearDataBtn" title="Reset Data">
+        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Scrolling Table Container -->
+  <div class="table-container">
+    <div class="empty-state" id="emptyState">
+      <div class="empty-icon">
+        <svg width="32" height="32" fill="none" stroke="#94a3b8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+      </div>
+      <h3>No Data Loaded</h3>
+      <p style="margin:0; color:var(--text-muted)">Upload a CSV file to generate the dashboard.</p>
+    </div>
+    
+    <div class="table-scroll hidden" id="tableScroll">
+      <table id="dataTable">
+        <colgroup id="colGroup"></colgroup>
+        <thead><tr id="tableHeaderRow"></tr></thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<div class="modal-backdrop" id="settingsModal">
+  <div class="modal-box">
+    <h2>Configuration</h2>
+    <p style="color:var(--text-muted); margin-bottom:8px;"><strong>Special Branches</strong></p>
+    <textarea id="specialBranchesInput"></textarea>
+    <div style="text-align:right; display:flex; justify-content:flex-end; gap:10px;">
+      <button class="btn btn-secondary" id="closeSettingsBtn">Cancel</button>
+      <button class="btn btn-primary" id="saveSettingsBtn">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-container" id="toastArea"></div>
+
+<script>
+/**
+ * WIP Dashboard Logic - Professional Edition
+ */
+
+const CONFIG = {
+  storageKey: "wip_pro_data_v3",
+  settingsKey: "wip_pro_settings_v2",
+  requiredCols: ["SOKey", "PtKey", "PatientName", "BranchName", "Reference", "CreateDate", "SchedDeliveryDate"],
+  defaultSpecial: ["ALL WE CARE MEDICAL (WEC)", "AR BENTONVILLE", "AR RUSSELLVILLE", "AR SPRINGDALE", "SC WALTERBORO", "TN KINGSPORT", "WI NEW BERLIN", "WI WAUKESHA", "WI FORT ATKINSON", "WI RACINE", "OK NORMAN", "MICHIGAN", "NORTHERN INDIANA"]
+};
+
+const State = {
+  data: [],
+  headers: [],
+  settings: { specialBranches: [] },
+  view: {
+    sortCol: -1,
+    sortAsc: true,
+    filterText: "",
+    hideCompleted: false,
+    colFilters: {},
+    colWidths: {} 
+  }
+};
+
+document.addEventListener("DOMContentLoaded", () => {
+  initTheme();
+  loadSettings();
+  loadData();
+  initListeners();
+  
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.filter-popover') && !e.target.closest('.th-inner')) {
+      document.querySelectorAll('.filter-popover').forEach(el => el.remove());
+    }
+  });
+});
+
+function initTheme() {
+  const isDark = localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+  if(isDark) document.documentElement.setAttribute('data-theme', 'dark');
+  updateThemeIcon();
+}
+function toggleTheme() {
+  const curr = document.documentElement.getAttribute('data-theme');
+  const next = curr === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem('theme', next);
+  updateThemeIcon();
+}
+function updateThemeIcon() {
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  document.getElementById('moonIcon').classList.toggle('hidden', isDark);
+  document.getElementById('sunIcon').classList.toggle('hidden', !isDark);
+}
+
+function loadSettings() {
+  const s = localStorage.getItem(CONFIG.settingsKey);
+  State.settings = s ? JSON.parse(s) : { specialBranches: [...CONFIG.defaultSpecial] };
+}
+
+function loadData() {
+  const s = localStorage.getItem(CONFIG.storageKey);
+  if (s) {
+    try {
+      const parsed = JSON.parse(s);
+      State.data = parsed.data;
+      State.headers = parsed.headers;
+      
+      if(parsed.view) {
+        State.view.sortCol = parsed.view.sortCol || -1;
+        State.view.sortAsc = parsed.view.sortAsc !== false;
+        State.view.filterText = parsed.view.filterText || "";
+        State.view.hideCompleted = parsed.view.hideCompleted || false;
+        State.view.colWidths = parsed.view.colWidths || {};
+        
+        if (parsed.view.colFilters) {
+          Object.keys(parsed.view.colFilters).forEach(k => {
+            State.view.colFilters[k] = new Set(parsed.view.colFilters[k]);
+          });
+        }
+      }
+      
+      updateSpecialStatus();
+      renderApp(true);
+    } catch(e) { console.error(e); showToast('Error loading data', 'error'); }
+  }
+}
+
+function saveData() {
+  const saveState = {
+    data: State.data,
+    headers: State.headers,
+    view: {
+      ...State.view,
+      colFilters: Object.keys(State.view.colFilters).reduce((acc, k) => {
+        acc[k] = Array.from(State.view.colFilters[k]);
+        return acc;
+      }, {})
+    }
+  };
+  localStorage.setItem(CONFIG.storageKey, JSON.stringify(saveState));
+}
+
+function updateSpecialStatus() {
+  const specialSet = new Set(State.settings.specialBranches.map(b => b.trim().toUpperCase()));
+  const branchIdx = State.headers.findIndex(h => h.toLowerCase().includes("branch"));
+  
+  if (branchIdx === -1) return;
+  
+  State.data.forEach(row => {
+    const branch = String(row.vals[branchIdx] || "").trim().toUpperCase();
+    row.isSpecial = specialSet.has(branch);
+  });
+}
+
+function processCSV(csvText) {
+  const lines = csvText.split(/\r?\n/);
+  if (lines.length < 2) return showToast("File appears empty.", "error");
+  
+  const parseLine = (line) => {
+    const res = [];
+    let cur = '', inQuote = false;
+    for (let c of line) {
+      if (c === '"') { inQuote = !inQuote; }
+      else if (c === ',' && !inQuote) { res.push(cur.trim()); cur = ''; }
+      else { cur += c; }
+    }
+    res.push(cur.trim());
+    return res;
+  };
+
+  const rawHeaders = parseLine(lines[0]).map(h => h.toUpperCase());
+  const indices = CONFIG.requiredCols.map(req => rawHeaders.indexOf(req.toUpperCase()));
+  
+  if (indices.includes(-1)) return showToast(`Missing columns: ${CONFIG.requiredCols.join(", ")}`, "error");
+
+  const newData = [];
+  const uniqueTracker = new Set();
+  
+  for (let i = 1; i < lines.length; i++) {
+    if (!lines[i].trim()) continue;
+    const rawRow = parseLine(lines[i]);
+    const vals = indices.map(idx => rawRow[idx] || "");
+    
+    [5, 6].forEach(dIdx => {
+      const d = new Date(vals[dIdx]);
+      if (!isNaN(d)) vals[dIdx] = d.toLocaleDateString("en-US", {year:'numeric', month:'2-digit', day:'2-digit'});
+    });
+
+    const key = vals.join("|");
+    if (uniqueTracker.has(key)) continue;
+    uniqueTracker.add(key);
+
+    newData.push({
+      id: crypto.randomUUID(),
+      vals: vals,
+      done: false,
+      isSpecial: false
+    });
+  }
+
+  State.headers = CONFIG.requiredCols;
+  State.data = newData;
+  State.view.colFilters = {}; 
+  updateSpecialStatus();
+  saveData();
+  renderApp(true);
+  showToast(`Loaded ${newData.length} records successfully.`);
+}
+
+function renderApp(full = false) {
+  const hasData = State.data.length > 0;
+  
+  document.getElementById("emptyState").classList.toggle("hidden", hasData);
+  document.getElementById("tableScroll").classList.toggle("hidden", !hasData);
+  document.getElementById("dropZone").style.display = hasData ? "none" : "block";
+  document.getElementById("mainToolbar").classList.toggle("hidden", !hasData);
+
+  if (!hasData) { updateStats(); return; }
+
+  if (full) renderHeader();
+  renderBody();
+  updateStats();
+}
+
+function getColWidth(idx, isCheckbox = false) {
+  const key = isCheckbox ? "cb" : idx.toString();
+  if (State.view.colWidths[key]) return State.view.colWidths[key] + "px";
+  return isCheckbox ? "60px" : "150px"; 
+}
+
+function renderHeader() {
+  const tr = document.getElementById("tableHeaderRow");
+  tr.innerHTML = "";
+  
+  if (State.view.colWidths["cb"]) {
+    document.documentElement.style.setProperty('--first-col-width', State.view.colWidths["cb"] + "px");
+  }
+
+  const thStat = document.createElement("th");
+  thStat.style.width = getColWidth(0, true);
+  
+  const resizerStat = document.createElement("div");
+  resizerStat.className = "resizer";
+  initResizer(resizerStat, thStat, "cb");
+  thStat.appendChild(resizerStat);
+  
+  tr.appendChild(thStat);
+
+  State.headers.forEach((h, idx) => {
+    const th = document.createElement("th");
+    th.style.width = getColWidth(idx); 
+    
+    const div = document.createElement("div");
+    div.className = "th-inner";
+    div.onclick = () => handleSort(idx);
+    
+    const span = document.createElement("span");
+    span.textContent = h;
+    
+    if (State.view.sortCol === idx) {
+      span.style.color = "var(--primary)";
+      span.innerHTML += State.view.sortAsc ? " &uarr;" : " &darr;";
+    }
+
+    const filterBtn = document.createElement("div");
+    filterBtn.style.padding = "4px";
+    filterBtn.style.marginLeft = "auto";
+    if (State.view.colFilters[idx]) filterBtn.style.color = "var(--primary)";
+    else filterBtn.style.color = "#cbd5e1";
+    
+    filterBtn.innerHTML = `<svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/></svg>`;
+    filterBtn.onclick = (e) => { e.stopPropagation(); toggleFilterMenu(idx, filterBtn); };
+
+    div.appendChild(span);
+    div.appendChild(filterBtn);
+    th.appendChild(div);
+
+    const resizer = document.createElement("div");
+    resizer.className = "resizer";
+    initResizer(resizer, th, idx.toString());
+    th.appendChild(resizer);
+
+    tr.appendChild(th);
+  });
+}
+
+function initResizer(resizer, th, colKey) {
+  let startX, startW;
+
+  const onMouseMove = (e) => {
+    const dx = e.clientX - startX;
+    const newW = Math.max(50, startW + dx); 
+    th.style.width = newW + "px";
+    
+    if (colKey === "cb") {
+      document.documentElement.style.setProperty('--first-col-width', newW + "px");
+    }
+  };
+
+  const onMouseUp = (e) => {
+    document.removeEventListener('mousemove', onMouseMove);
+    document.removeEventListener('mouseup', onMouseUp);
+    resizer.classList.remove('resizing');
+    document.body.style.cursor = '';
+    
+    const finalW = parseInt(th.style.width);
+    State.view.colWidths[colKey] = finalW;
+    saveData();
+  };
+
+  resizer.addEventListener('mousedown', (e) => {
+    e.stopPropagation(); 
+    startX = e.clientX;
+    startW = th.getBoundingClientRect().width;
+    
+    resizer.classList.add('resizing');
+    document.body.style.cursor = 'col-resize';
+    
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', onMouseUp);
+  });
+}
+
+function renderBody() {
+  const tbody = document.getElementById("tableBody");
+  tbody.innerHTML = "";
+
+  const terms = State.view.filterText.toLowerCase().split(" ").filter(t => t);
+
+  let rows = State.data.filter(r => {
+    if (State.view.hideCompleted && r.done) return false;
+    if (terms.length > 0) {
+      const rowStr = r.vals.join(" ").toLowerCase();
+      if (!terms.every(term => rowStr.includes(term))) return false;
+    }
+    for (const [colIdx, allowedSet] of Object.entries(State.view.colFilters)) {
+      if (!allowedSet.has(r.vals[colIdx])) return false;
+    }
+    return true;
+  });
+
+  rows.sort((a, b) => {
+    if (a.done !== b.done) return a.done ? 1 : -1;
+    if (a.isSpecial !== b.isSpecial) return a.isSpecial ? -1 : 1;
+    const idx = State.view.sortCol;
+    if (idx === -1) return 0;
+    const vA = a.vals[idx], vB = b.vals[idx];
+    if (idx === 5 || idx === 6) { 
+        return State.view.sortAsc ? new Date(vA) - new Date(vB) : new Date(vB) - new Date(vA); 
+    }
+    return State.view.sortAsc ? vA.localeCompare(vB, undefined, {numeric:true}) : vB.localeCompare(vA, undefined, {numeric:true});
+  });
+
+  const fragment = document.createDocumentFragment();
+  rows.forEach(row => {
+    const tr = document.createElement("tr");
+    if (row.done) tr.classList.add("completed");
+    else if (row.isSpecial) tr.classList.add("special-row");
+
+    const tdAct = document.createElement("td");
+    const check = document.createElement("div");
+    check.className = "check-circle";
+    check.onclick = () => toggleDone(row.id);
+    tdAct.appendChild(check);
+    tr.appendChild(tdAct);
+
+    row.vals.forEach((val, idx) => {
+      const td = document.createElement("td");
+      let displayVal = val;
+      if (terms.length > 0 && !row.done) {
+        const regex = new RegExp(`(${terms.join('|')})`, 'gi');
+        displayVal = val.replace(regex, '<span class="highlight-text">$1</span>');
+      }
+
+      if (State.headers[idx] === "SOKey") {
+        td.innerHTML = `<a class="link-cell" onclick="openLink('SO','${val}')">${displayVal}</a>`;
+      } else if (State.headers[idx] === "PtKey") {
+        td.innerHTML = `<a class="link-cell" onclick="openLink('PT','${val}')">${displayVal}</a>`;
+      } else if (State.headers[idx] === "PatientName") {
+         td.innerHTML = `<a class="link-cell" onclick="openLink('BOTH','${row.vals[0]}','${row.vals[1]}')">${displayVal}</a>`;
+      } else if (State.headers[idx] === "Reference" && !row.done) {
+        td.innerHTML = displayVal;
+        td.contentEditable = true;
+        td.className = "editable-cell";
+        td.onblur = (e) => updateRef(row.id, e.target.innerText);
+        td.onkeydown = (e) => { if(e.key==='Enter'){e.preventDefault(); e.target.blur();} };
+      } else {
+        td.innerHTML = displayVal;
+      }
+      tr.appendChild(td);
+    });
+    fragment.appendChild(tr);
+  });
+  tbody.appendChild(fragment);
+}
+
+function toggleFilterMenu(colIdx, btnEl) {
+  document.querySelectorAll('.filter-popover').forEach(e => e.remove());
+  const values = new Set();
+  State.data.forEach(r => values.add(r.vals[colIdx]));
+  const sortedVals = Array.from(values).sort();
+  const currentFilter = State.view.colFilters[colIdx];
+
+  const pop = document.createElement("div");
+  pop.className = "filter-popover";
+  
+  const searchBox = document.createElement("div");
+  searchBox.className = "popover-search";
+  const input = document.createElement("input");
+  input.placeholder = "Search values...";
+  input.style.border="none"; input.style.background="transparent"; input.style.width="100%";
+  input.onkeyup = (e) => {
+    const t = e.target.value.toLowerCase();
+    pop.querySelectorAll(".popover-item:not(.all-opt)").forEach(item => {
+      item.style.display = item.innerText.toLowerCase().includes(t) ? "flex" : "none";
+    });
+  };
+  searchBox.appendChild(input);
+  pop.appendChild(searchBox);
+
+  const list = document.createElement("div");
+  list.className = "popover-list";
+  const mkItem = (lbl, checked, val, isAll=false) => {
+    const div = document.createElement("div");
+    div.className = "popover-item" + (isAll ? " all-opt" : "");
+    if (!isAll) div.dataset.val = val;
+    const cb = document.createElement("input");
+    cb.type = "checkbox"; cb.checked = checked; cb.style.accentColor = "var(--primary)";
+    if (isAll) {
+      cb.onchange = (e) => list.querySelectorAll("input:not(.sel-all)").forEach(c => c.checked = e.target.checked);
+      cb.className = "sel-all";
+    }
+    const txt = document.createElement("span"); txt.textContent = lbl;
+    div.onclick = (e) => { if(e.target!==cb) cb.click(); };
+    div.append(cb, txt); return div;
+  };
+
+  list.appendChild(mkItem("(Select All)", !currentFilter, null, true));
+  sortedVals.forEach(val => list.appendChild(mkItem(val, !currentFilter || currentFilter.has(val), val)));
+  pop.appendChild(list);
+
+  const acts = document.createElement("div");
+  acts.className = "popover-actions";
+  const btnClr = document.createElement("button");
+  btnClr.className = "btn btn-secondary"; btnClr.style.fontSize="12px"; btnClr.textContent = "Clear";
+  btnClr.onclick = () => { delete State.view.colFilters[colIdx]; saveData(); renderApp(true); };
+  const btnApply = document.createElement("button");
+  btnApply.className = "btn btn-primary"; btnApply.style.fontSize="12px"; btnApply.textContent = "Apply";
+  btnApply.onclick = () => {
+    const newSet = new Set();
+    const checks = list.querySelectorAll("input:not(.sel-all)");
+    let allChecked = true;
+    checks.forEach(c => { if (c.checked) newSet.add(c.parentElement.dataset.val); else allChecked = false; });
+    if (allChecked) delete State.view.colFilters[colIdx]; else State.view.colFilters[colIdx] = newSet;
+    saveData(); renderApp(true); pop.remove();
+  };
+  acts.append(btnClr, btnApply); pop.appendChild(acts);
+  document.body.appendChild(pop);
+  
+  const rect = btnEl.getBoundingClientRect();
+  pop.style.top = (rect.bottom + window.scrollY + 6) + "px";
+  pop.style.left = (rect.left + window.scrollX) + "px";
+  if (pop.getBoundingClientRect().right > window.innerWidth) pop.style.left = (window.innerWidth - pop.offsetWidth - 20) + "px";
+}
+
+function handleSort(idx) {
+  if (State.view.sortCol === idx) State.view.sortAsc = !State.view.sortAsc;
+  else { State.view.sortCol = idx; State.view.sortAsc = true; }
+  renderHeader(); renderBody();
+}
+
+function updateRef(id, val) {
+  const r = State.data.find(x => x.id === id);
+  if (r && r.vals[4] !== val) { r.vals[4] = val; saveData(); showToast("Reference updated"); }
+}
+
+function toggleDone(id) {
+  const r = State.data.find(x => x.id === id);
+  if (r) { r.done = !r.done; saveData(); renderBody(); updateStats(); if(r.done) showToast("Order marked completed", "success"); }
+}
+
+function updateStats() {
+  const total = State.data.length;
+  const done = State.data.filter(r => r.done).length;
+  const special = State.data.filter(r => r.isSpecial && !r.done).length;
+  animateValue("statTotal", parseInt(document.getElementById("statTotal").innerText), total, 500);
+  animateValue("statCompleted", parseInt(document.getElementById("statCompleted").innerText), done, 500);
+  animateValue("statSpecial", parseInt(document.getElementById("statSpecial").innerText), special, 500);
+  animateValue("statPending", parseInt(document.getElementById("statPending").innerText), (total - done - special), 500);
+}
+
+function animateValue(id, start, end, duration) {
+  if (start === end) return;
+  const range = end - start;
+  let current = start;
+  const increment = end > start ? 1 : -1;
+  const stepTime = Math.abs(Math.floor(duration / range));
+  const obj = document.getElementById(id);
+  const timer = setInterval(() => {
+    current += increment; obj.innerText = current; if (current == end) clearInterval(timer);
+  }, Math.max(stepTime, 10));
+}
+
+function showToast(msg, type = "info") {
+  const container = document.getElementById("toastArea");
+  const el = document.createElement("div");
+  el.className = `toast ${type === 'success' ? 'toast-success' : type === 'error' ? 'toast-error' : ''}`;
+  let icon = `<svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`;
+  if(type === 'success') icon = `<svg width="20" height="20" fill="none" stroke="#166534" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>`;
+  if(type === 'error') icon = `<svg width="20" height="20" fill="none" stroke="#991b1b" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`;
+  el.innerHTML = `${icon} <span>${msg}</span>`;
+  container.appendChild(el);
+  setTimeout(() => { el.style.opacity = '0'; el.style.transform = 'translateX(100%)'; setTimeout(() => el.remove(), 300); }, 3000);
+}
+
+function clearData() {
+  if (confirm("Are you sure you want to clear all data?")) {
+    localStorage.removeItem(CONFIG.storageKey); State.data = []; State.view.colFilters = {};
+    renderApp(true); showToast("Dashboard reset successfully.");
+  }
+}
+
+window.openLink = (type, v1, v2) => {
+  const baseSO = `https://brightree.net/F1/035467/StLukesHS/OrderEntry/frmSOOrder.aspx?SalesOrderKey=`;
+  const basePT = `https://brightree.net/F1/035467/StLukesHS/Patient/frmPatientNotes.aspx?PatientKey=`;
+  if (type === 'SO') window.open(`${baseSO}${v1}&Edit=1`, '_blank', 'width=1000,height=900');
+  if (type === 'PT') window.open(`${basePT}${v1}&Edit=1`, '_blank', 'width=1000,height=900');
+  if (type === 'BOTH') { openLink('SO', v1); setTimeout(()=>openLink('PT', v2), 200); }
+};
+
+function initListeners() {
+  const fileIn = document.getElementById("fileInput");
+  const dz = document.getElementById("dropZone");
+  dz.onclick = () => fileIn.click();
+  fileIn.onchange = (e) => { if(e.target.files[0]) readFile(e.target.files[0]); };
+  dz.ondragover = (e) => { e.preventDefault(); dz.style.borderColor = 'var(--primary)'; dz.style.background = 'var(--primary-light)'; };
+  dz.ondragleave = () => { dz.style.borderColor = 'var(--border)'; dz.style.background = 'var(--bg-body)'; };
+  dz.ondrop = (e) => { e.preventDefault(); dz.style.borderColor = 'var(--border)'; dz.style.background = 'var(--bg-body)'; if(e.dataTransfer.files[0]) readFile(e.dataTransfer.files[0]); };
+  
+  function readFile(file) {
+    const r = new FileReader(); r.onload = x => processCSV(x.target.result); r.readAsText(file);
+  }
+
+  let timeout;
+  document.getElementById("searchInput").addEventListener("input", (e) => {
+    clearTimeout(timeout); timeout = setTimeout(() => { State.view.filterText = e.target.value.trim(); renderBody(); }, 250);
+  });
+
+  document.getElementById("toggleCompletedBtn").onclick = (e) => {
+    State.view.hideCompleted = !State.view.hideCompleted;
+    e.target.textContent = State.view.hideCompleted ? "Show Completed" : "Hide Completed"; renderBody();
+  };
+  
+  document.getElementById("themeBtn").onclick = toggleTheme;
+  document.getElementById("exportBtn").onclick = () => {
+    if(State.data.length === 0) return;
+    let csv = [State.headers.join(",")];
+    State.data.forEach(r => csv.push(r.vals.map(v => `"${String(v).replace(/"/g,'""')}"`).join(",")));
+    const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([csv.join("\n")], {type:"text/csv"}));
+    a.download = `WIP_Export_${new Date().toISOString().slice(0,10)}.csv`; a.click(); showToast("Export download started.", "success");
+  };
+  document.getElementById("clearDataBtn").onclick = clearData;
+  
+  const hdrToggle = document.getElementById("headerToggle");
+  const hdrContent = document.getElementById("headerContent");
+  const hdrText = document.getElementById("headerToggleText");
+  const hdrIcon = document.getElementById("headerToggleIcon");
+  hdrToggle.onclick = () => {
+    const isClosed = !hdrContent.classList.contains("expanded");
+    if (isClosed) { hdrContent.classList.add("expanded"); hdrText.textContent = "Hide Dashboard Stats"; hdrIcon.style.transform = "rotate(180deg)"; } 
+    else { hdrContent.classList.remove("expanded"); hdrText.textContent = "Show Dashboard Stats"; hdrIcon.style.transform = "rotate(0deg)"; }
+  };
+
+  const m = document.getElementById("settingsModal");
+  document.getElementById("settingsBtn").onclick = () => { document.getElementById("specialBranchesInput").value = State.settings.specialBranches.join("\n"); m.style.display="flex"; };
+  document.getElementById("closeSettingsBtn").onclick = () => m.style.display="none";
+  document.getElementById("saveSettingsBtn").onclick = () => {
+    State.settings.specialBranches = document.getElementById("specialBranchesInput").value.split("\n").map(s=>s.trim()).filter(s=>s);
+    localStorage.setItem(CONFIG.settingsKey, JSON.stringify(State.settings)); updateSpecialStatus(); renderBody(); updateStats(); m.style.display="none"; showToast("Settings saved successfully.", "success");
+  };
+}
+</script>
+</body>
+</html>

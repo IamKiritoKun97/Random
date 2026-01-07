@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Internal Notes | Premium Formatter</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --accent: #10b981;
+      --accent-glow: rgba(16, 185, 129, 0.4);
+      --bg-dark: #050505;
+      --glass-bg: rgba(255, 255, 255, 0.03);
+      --glass-border: rgba(255, 255, 255, 0.08);
+      --text-main: #f8fafc;
+      --text-dim: #94a3b8;
+    }
+
+    * { box-sizing: border-box; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      overflow-x: hidden;
+      /* Premium Mesh Gradient Background */
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.15) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(59, 130, 246, 0.1) 0px, transparent 50%);
+    }
+
+    .glass-card {
+      width: 100%;
+      max-width: 550px;
+      padding: 40px;
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      border-radius: 32px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+    }
+
+    h1 {
+      font-size: 1.75rem;
+      font-weight: 600;
+      margin: 0 0 32px 0;
+      text-align: center;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #fff 0%, #888 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .section-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-dim);
+      margin-bottom: 8px;
+      font-weight: 700;
+      display: block;
+    }
+
+    .input-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    input, select {
+      width: 100%;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      padding: 12px 16px;
+      color: var(--text-main);
+      font-size: 0.95rem;
+      outline: none;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 15px var(--accent-glow);
+    }
+
+    .status-picker {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .btn-add {
+      background: var(--accent);
+      color: #000;
+      border: none;
+      border-radius: 12px;
+      padding: 0 20px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .btn-add:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px var(--accent-glow);
+    }
+
+    /* Status Tags Styling */
+    .tags-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 24px;
+      min-height: 32px;
+    }
+
+    .tag {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--glass-border);
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      animation: popIn 0.3s ease-out;
+    }
+
+    @keyframes popIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .tag-remove {
+      color: #ef4444;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 1.1rem;
+      line-height: 1;
+    }
+
+    .tag-remove:hover { color: #f87171; }
+
+    /* Output Bubble */
+    .bubble {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      padding: 24px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+      line-height: 1.6;
+      cursor: pointer;
+      position: relative;
+      color: var(--accent);
+      white-space: pre-line;
+    }
+
+    .bubble:hover {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(16, 185, 129, 0.3);
+    }
+
+    .copy-hint {
+      text-align: center;
+      font-size: 0.7rem;
+      color: var(--text-dim);
+      margin-top: 12px;
+    }
+
+    #toast {
+      visibility: hidden;
+      background: var(--accent);
+      color: #000;
+      font-weight: 600;
+      padding: 12px 32px;
+      border-radius: 50px;
+      position: fixed;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 100;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+
+    #toast.show { visibility: visible; animation: slideUp 0.4s ease forwards; }
+
+    @keyframes slideUp {
+      0% { transform: translate(-50%, 20px); opacity: 0; }
+      100% { transform: translate(-50%, 0); opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="glass-card">
+  <h1>Internal Notes</h1>
+
+  <div class="input-row">
+    <div>
+      <span class="section-label">Department</span>
+      <select id="department" onchange="saveAndRefresh()">
+        <option value="CS">CS</option>
+        <option value="FICA">FICA</option>
+        <option value="Withdrawals">Withdrawals</option>
+      </select>
+    </div>
+    <div>
+      <span class="section-label">User</span>
+      <input type="text" id="username" placeholder="Ramon T." oninput="saveAndRefresh()">
+    </div>
+  </div>
+
+  <span class="section-label">Add Status</span>
+  <div class="status-picker">
+    <select id="statusOptions">
+      <option value="Approved ID">Approved ID</option>
+      <option value="Approved POR">Approved POR</option>
+      <option value="FICA Verified">FICA Verified</option>
+      <option value="POR Reverted">POR Reverted</option>
+      <option value="ID Reverted">ID Reverted</option>
+    </select>
+    <button class="btn-add" onclick="addStatus()">Add</button>
+  </div>
+
+  <div class="tags-container" id="tagsContainer"></div>
+
+  <span class="section-label">Output (Click to Copy)</span>
+  <div id="bubble" class="bubble" role="button" onclick="copyText()"></div>
+  <p class="copy-hint">Automatically updates every second • Data saved locally</p>
+</div>
+
+<div id="toast">Copied to Clipboard</div>
+
+<script>
+  let statuses = [];
+
+  // Initialize from LocalStorage
+  window.onload = () => {
+    if(localStorage.getItem('dept')) document.getElementById('department').value = localStorage.getItem('dept');
+    if(localStorage.getItem('user')) document.getElementById('username').value = localStorage.getItem('user');
+    if(localStorage.getItem('statuses')) {
+      statuses = JSON.parse(localStorage.getItem('statuses'));
+      renderTags();
+    }
+    refreshBubble();
+    setInterval(refreshBubble, 1000);
+  };
+
+  function saveAndRefresh() {
+    localStorage.setItem('dept', document.getElementById('department').value);
+    localStorage.setItem('user', document.getElementById('username').value);
+    localStorage.setItem('statuses', JSON.stringify(statuses));
+    refreshBubble();
+  }
+
+  function addStatus() {
+    const val = document.getElementById('statusOptions').value;
+    if (!statuses.includes(val)) {
+      statuses.push(val);
+      renderTags();
+      saveAndRefresh();
+    }
+  }
+
+  function removeStatus(index) {
+    statuses.splice(index, 1);
+    renderTags();
+    saveAndRefresh();
+  }
+
+  function renderTags() {
+    const container = document.getElementById('tagsContainer');
+    container.innerHTML = '';
+    statuses.forEach((status, index) => {
+      const tag = document.createElement('div');
+      tag.className = 'tag';
+      tag.innerHTML = `${status} <span class="tag-remove" onclick="removeStatus(${index})">&times;</span>`;
+      container.appendChild(tag);
+    });
+  }
+
+  function refreshBubble() {
+    const tz = "Africa/Johannesburg";
+    const now = new Date();
+
+    const parts = new Intl.DateTimeFormat("en-GB", {
+      timeZone: tz, year: "numeric", month: "2-digit", day: "2-digit",
+      hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false
+    }).formatToParts(now);
+
+    const get = (type) => parts.find(p => p.type === type).value;
+    const dateStr = `${get("day")}/${get("month")}/${get("year")}`;
+    const timeStr = `${get("hour")}:${get("minute")}:${get("second")}`;
+
+    const dept = document.getElementById("department").value;
+    const user = document.getElementById("username").value.trim() || "User";
+
+    // Logic: FICA Verified Auto-append
+    let displayList = [...statuses];
+    const hasID = displayList.includes("Approved ID");
+    const hasPOR = displayList.includes("Approved POR");
+    const hasFICA = displayList.includes("FICA Verified");
+
+    if (hasID && hasPOR && !hasFICA) {
+      displayList.push("FICA Verified");
+    }
+
+    const header = `${dateStr} | ${timeStr} SAST | ${dept} | ${user}`;
+    const output = displayList.length > 0 ? `${header}\n${displayList.join("\n")}` : header;
+    
+    document.getElementById("bubble").textContent = output;
+  }
+
+  async function copyText() {
+    const text = document.getElementById("bubble").textContent;
+    try {
+      await navigator.clipboard.writeText(text);
+      showToast();
+    } catch (err) {
+      const el = document.createElement('textarea');
+      el.value = text;
+      document.body.appendChild(el);
+      el.select();
+      document.execCommand('copy');
+      document.body.removeChild(el);
+      showToast();
+    }
+  }
+
+  function showToast() {
+    const toast = document.getElementById("toast");
+    toast.classList.add("show");
+    setTimeout(() => toast.classList.remove("show"), 2500);
+  }
+</script>
+
+</body>
+</html>

@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -31,7 +32,6 @@
       justify-content: center;
       min-height: 100vh;
       overflow-x: hidden;
-      /* Premium Mesh Gradient Background */
       background-image: 
         radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.15) 0px, transparent 50%),
         radial-gradient(at 100% 100%, rgba(59, 130, 246, 0.1) 0px, transparent 50%);
@@ -115,7 +115,6 @@
       box-shadow: 0 5px 15px var(--accent-glow);
     }
 
-    /* Status Tags Styling */
     .tags-container {
       display: flex;
       flex-wrap: wrap;
@@ -151,7 +150,6 @@
 
     .tag-remove:hover { color: #f87171; }
 
-    /* Output Bubble */
     .bubble {
       background: rgba(0, 0, 0, 0.4);
       border: 1px solid var(--glass-border);
@@ -245,12 +243,12 @@
 <script>
   let statuses = [];
 
-  // Initialize from LocalStorage
   window.onload = () => {
     if(localStorage.getItem('dept')) document.getElementById('department').value = localStorage.getItem('dept');
     if(localStorage.getItem('user')) document.getElementById('username').value = localStorage.getItem('user');
     if(localStorage.getItem('statuses')) {
       statuses = JSON.parse(localStorage.getItem('statuses'));
+      checkFICAAutoAdd(); // Check if FICA should be added on load
       renderTags();
     }
     refreshBubble();
@@ -268,8 +266,20 @@
     const val = document.getElementById('statusOptions').value;
     if (!statuses.includes(val)) {
       statuses.push(val);
+      checkFICAAutoAdd(); // Check if we should now add FICA Verified tag
       renderTags();
       saveAndRefresh();
+    }
+  }
+
+  // Logic: Automatically add the FICA Verified TAG if ID and POR are present
+  function checkFICAAutoAdd() {
+    const hasID = statuses.includes("Approved ID");
+    const hasPOR = statuses.includes("Approved POR");
+    const hasFICA = statuses.includes("FICA Verified");
+
+    if (hasID && hasPOR && !hasFICA) {
+      statuses.push("FICA Verified");
     }
   }
 
@@ -306,18 +316,9 @@
     const dept = document.getElementById("department").value;
     const user = document.getElementById("username").value.trim() || "User";
 
-    // Logic: FICA Verified Auto-append
-    let displayList = [...statuses];
-    const hasID = displayList.includes("Approved ID");
-    const hasPOR = displayList.includes("Approved POR");
-    const hasFICA = displayList.includes("FICA Verified");
-
-    if (hasID && hasPOR && !hasFICA) {
-      displayList.push("FICA Verified");
-    }
-
     const header = `${dateStr} | ${timeStr} SAST | ${dept} | ${user}`;
-    const output = displayList.length > 0 ? `${header}\n${displayList.join("\n")}` : header;
+    // FICA Verified is now handled as a real tag, so we just join the statuses
+    const output = statuses.length > 0 ? `${header}\n${statuses.join("\n")}` : header;
     
     document.getElementById("bubble").textContent = output;
   }

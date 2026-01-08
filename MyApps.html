@@ -3,188 +3,207 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Command Center</title>
+    <title>Nexus Workspace</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --emerald-glow: rgba(16, 185, 129, 0.15);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-bg: rgba(10, 10, 10, 0.4);
+        }
+
         body {
-            background-color: #050505;
+            font-family: 'Inter', sans-serif;
+            background-color: #020617;
+            /* Dynamic background orbs for that premium glass look */
             background-image: 
-                radial-gradient(circle at 50% 50%, #061f14 0%, #050505 100%);
+                radial-gradient(circle at 20% 20%, rgba(16, 185, 129, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 80% 80%, rgba(16, 185, 129, 0.05) 0%, transparent 40%);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             margin: 0;
-            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            overflow: hidden;
         }
 
-        .glass-container {
-            background: rgba(255, 255, 255, 0.02);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            padding: 32px;
-            border-radius: 40px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+        /* The Main Glass Plate */
+        .glass-plate {
+            background: var(--glass-bg);
+            backdrop-filter: blur(40px) saturate(150%);
+            -webkit-backdrop-filter: blur(40px) saturate(150%);
+            border: 1px solid var(--glass-border);
+            border-radius: 48px;
+            padding: 40px;
+            box-shadow: 
+                0 4px 24px -1px rgba(0, 0, 0, 0.5),
+                inset 0 1px 1px rgba(255, 255, 255, 0.05);
             width: 100%;
-            max-width: 320px;
-        }
-
-        /* Search Box Styling */
-        .search-wrapper {
+            max-width: 440px;
             position: relative;
-            margin-bottom: 24px;
         }
 
-        .search-input {
-            width: 100%;
+        /* Frosted Search Bar */
+        .search-glass {
             background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(74, 222, 128, 0.1);
-            border-radius: 12px;
-            padding: 10px 12px 10px 36px;
-            color: white;
-            font-size: 13px;
-            outline: none;
-            transition: all 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
         }
 
-        .search-input:focus {
-            border-color: #4ade80;
-            background: rgba(74, 222, 128, 0.05);
-            box-shadow: 0 0 15px rgba(74, 222, 128, 0.1);
+        .search-glass:focus-within {
+            background: rgba(16, 185, 129, 0.05);
+            border-color: rgba(16, 185, 129, 0.4);
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.1);
         }
 
-        .search-icon {
-            position: absolute;
-            left: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: rgba(74, 222, 128, 0.5);
-        }
-
-        /* Grid Styling */
-        .icon-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 12px;
-        }
-
-        .icon-link {
-            width: 52px;
-            height: 52px;
+        /* Icon Tile Styling */
+        .app-tile {
+            position: relative;
+            aspect-ratio: 1;
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: 16px;
-            color: #4ade80;
+            border-radius: 20px;
             background: rgba(255, 255, 255, 0.02);
             border: 1px solid rgba(255, 255, 255, 0.05);
-            transition: all 0.25s ease;
-            position: relative;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            color: rgba(255, 255, 255, 0.4);
         }
 
-        .icon-link:hover {
-            background: rgba(74, 222, 128, 0.1);
-            border-color: #4ade80;
-            transform: translateY(-2px);
-            color: #fff;
+        .app-tile:hover {
+            transform: scale(1.1) translateY(-5px);
+            background: rgba(16, 185, 129, 0.15);
+            border-color: rgba(16, 185, 129, 0.5);
+            color: #10b981;
+            box-shadow: 0 15px 30px -10px rgba(0, 0, 0, 0.5);
         }
 
-        /* Tooltip */
-        .icon-link::after {
-            content: attr(data-title);
+        /* Floating Tooltip */
+        .app-tile::after {
+            content: attr(data-name);
             position: absolute;
-            bottom: -25px;
+            bottom: -35px;
             left: 50%;
-            transform: translateX(-50%);
-            background: #111;
-            color: #4ade80;
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-size: 10px;
-            white-space: nowrap;
+            transform: translateX(-50%) translateY(10px);
             opacity: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-size: 11px;
+            color: #10b981;
+            white-space: nowrap;
+            transition: all 0.2s ease;
             pointer-events: none;
-            transition: opacity 0.2s;
-            border: 1px solid rgba(74, 222, 128, 0.2);
-            z-index: 10;
+            border: 1px solid rgba(16, 185, 129, 0.2);
         }
 
-        .icon-link:hover::after {
+        .app-tile:hover::after {
             opacity: 1;
+            transform: translateX(-50%) translateY(0);
         }
 
-        /* Hidden State for Search */
-        .icon-link.hidden {
-            display: none;
+        /* Filter Logic */
+        .hidden-app {
+            display: none !important;
         }
     </style>
 </head>
 <body>
 
-    <div class="glass-container">
-        <!-- Search Bar -->
-        <div class="search-wrapper">
-            <i data-lucide="search" class="search-icon w-4 h-4"></i>
-            <input type="text" id="appSearch" class="search-input" placeholder="Search apps..." autocomplete="off">
+    <main class="glass-plate">
+        <!-- Search Section -->
+        <div class="relative mb-10">
+            <div class="search-glass flex items-center px-5 py-3.5 rounded-2xl">
+                <i data-lucide="search" class="w-4 h-4 text-emerald-500/50 mr-3"></i>
+                <input type="text" id="mainSearch" 
+                    placeholder="Search ecosystem..." 
+                    class="bg-transparent border-none outline-none text-white text-sm w-full placeholder:text-slate-600">
+            </div>
         </div>
 
-        <!-- App Grid -->
-        <div class="icon-grid" id="iconGrid">
-            <a href="https://easybet.co.za/" data-title="Easybet" target="_blank" class="icon-link">
-                <i data-lucide="layout-grid" class="w-5 h-5"></i>
+        <!-- Grid Section -->
+        <div class="grid grid-cols-4 gap-4" id="appGrid">
+            
+            <a href="https://easybet.co.za/" data-name="Easybet" target="_blank" class="app-tile">
+                <i data-lucide="globe" class="w-5 h-5"></i>
             </a>
-            <a href="https://tracker.toptal.com/" data-title="Toptal" target="_blank" class="icon-link">
+
+            <a href="https://tracker.toptal.com/" data-name="Toptal Tracker" target="_blank" class="app-tile">
                 <i data-lucide="clock" class="w-5 h-5"></i>
             </a>
-            <a href="https://chatgpt.com/" data-title="ChatGPT" target="_blank" class="icon-link">
-                <i data-lucide="message-circle" class="w-5 h-5"></i>
+
+            <a href="https://chatgpt.com/" data-name="ChatGPT" target="_blank" class="app-tile">
+                <i data-lucide="message-square" class="w-5 h-5"></i>
             </a>
-            <a href="https://admin.adv.bet/" data-title="ADV Admin" target="_blank" class="icon-link">
+
+            <a href="https://admin.adv.bet/" data-name="ADV Admin" target="_blank" class="app-tile">
                 <i data-lucide="shield-check" class="w-5 h-5"></i>
             </a>
-            <a href="https://www.online.xds.co.za/XDSPortal/Account/Login" data-title="XDS Portal" target="_blank" class="icon-link">
-                <i data-lucide="key" class="w-5 h-5"></i>
+
+            <a href="https://www.online.xds.co.za/XDSPortal/Account/Login" data-name="XDS Portal" target="_blank" class="app-tile">
+                <i data-lucide="user-check" class="w-5 h-5"></i>
             </a>
-            <a href="https://ez-bt.vercel.app/" data-title="Vercel" target="_blank" class="icon-link">
+
+            <a href="https://ez-bt.vercel.app/" data-name="Vercel App" target="_blank" class="app-tile">
                 <i data-lucide="zap" class="w-5 h-5"></i>
             </a>
-            <a href="https://easybet.co.za/page/promo-landing-page" data-title="Promos" target="_blank" class="icon-link">
+
+            <a href="https://easybet.co.za/page/promo-landing-page" data-name="Promo Engine" target="_blank" class="app-tile">
                 <i data-lucide="megaphone" class="w-5 h-5"></i>
             </a>
-            <a href="https://iamkiritokun97.github.io/Random/Internal%20note.html" data-title="Internal Notes" target="_blank" class="icon-link">
+
+            <a href="https://iamkiritokun97.github.io/Random/Internal%20note.html" data-name="Knowledge Base" target="_blank" class="app-tile">
                 <i data-lucide="book-open" class="w-5 h-5"></i>
             </a>
-            <a href="https://docs.google.com/spreadsheets/d/19fd9de7Zm8psh06D3aIYMqUKyhFEndrW4Cb_7kfchXM/edit?gid=0#gid=0" data-title="Project Sheet" target="_blank" class="icon-link">
+
+            <a href="https://docs.google.com/spreadsheets/d/19fd9de7Zm8psh06D3aIYMqUKyhFEndrW4Cb_7kfchXM/edit" data-name="Project Tracker" target="_blank" class="app-tile">
                 <i data-lucide="file-spreadsheet" class="w-5 h-5"></i>
             </a>
-            <a href="https://docs.google.com/spreadsheets/d/1Ynv8_-SbdYfIx3FfYkLQ-DmV0a-31kBzc2GAGAvH9To/edit?gid=1183747124#gid=1183747124" data-title="Ops Sheet" target="_blank" class="icon-link">
-                <i data-lucide="file-spreadsheet" class="w-5 h-5"></i>
+
+            <a href="https://docs.google.com/spreadsheets/d/1Ynv8_-SbdYfIx3FfYkLQ-DmV0a-31kBzc2GAGAvH9To/edit" data-name="Operations" target="_blank" class="app-tile">
+                <i data-lucide="layers" class="w-5 h-5"></i>
             </a>
-            <a href="https://docs.google.com/spreadsheets/d/1FsY4NL-OIM5m3xevXOPBNO19LCEXEw1uLaO4Ke4x9N4/edit?gid=0#gid=0" data-title="Audit Sheet" target="_blank" class="icon-link">
-                <i data-lucide="file-spreadsheet" class="w-5 h-5"></i>
+
+            <a href="https://docs.google.com/spreadsheets/d/1FsY4NL-OIM5m3xevXOPBNO19LCEXEw1uLaO4Ke4x9N4/edit" data-name="Audit Logs" target="_blank" class="app-tile">
+                <i data-lucide="activity" class="w-5 h-5"></i>
             </a>
+
+            <!-- Empty slot filler -->
+            <div class="app-tile opacity-20 border-dashed border-slate-700">
+                <i data-lucide="plus" class="w-4 h-4 text-slate-500"></i>
+            </div>
         </div>
-    </div>
+
+        <!-- System Tag -->
+        <div class="mt-12 flex justify-center">
+            <div class="px-4 py-1 rounded-full bg-emerald-500/5 border border-emerald-500/10 flex items-center gap-2">
+                <div class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
+                <span class="text-[10px] text-emerald-500/60 uppercase tracking-widest font-bold">Secure Environment</span>
+            </div>
+        </div>
+    </main>
 
     <script>
-        // Initialize Icons
+        // Initialize Lucide Icons
         lucide.createIcons();
 
-        // Search Logic
-        const searchInput = document.getElementById('appSearch');
-        const iconLinks = document.querySelectorAll('.icon-link');
+        // High-performance search logic
+        const searchInput = document.getElementById('mainSearch');
+        const appTiles = document.querySelectorAll('.app-tile');
 
         searchInput.addEventListener('input', (e) => {
-            const term = e.target.value.toLowerCase();
+            const query = e.target.value.toLowerCase();
             
-            iconLinks.forEach(link => {
-                const title = link.getAttribute('data-title').toLowerCase();
-                if (title.includes(term)) {
-                    link.classList.remove('hidden');
+            appTiles.forEach(tile => {
+                const appName = tile.getAttribute('data-name')?.toLowerCase() || "";
+                if (appName.includes(query)) {
+                    tile.classList.remove('hidden-app');
                 } else {
-                    link.classList.add('hidden');
+                    tile.classList.add('hidden-app');
                 }
             });
         });

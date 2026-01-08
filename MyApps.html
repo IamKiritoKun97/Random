@@ -3,208 +3,214 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Easybit MyApps</title>
+    <title>Nexus Dock</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --emerald-glow: rgba(16, 185, 129, 0.15);
-            --glass-border: rgba(255, 255, 255, 0.08);
-            --glass-bg: rgba(10, 10, 10, 0.4);
-        }
-
         body {
-            font-family: 'Inter', sans-serif;
             background-color: #020617;
-            /* Dynamic background orbs for that premium glass look */
+            /* Deep Emerald Radial Gradient */
             background-image: 
-                radial-gradient(circle at 20% 20%, rgba(16, 185, 129, 0.05) 0%, transparent 40%),
-                radial-gradient(circle at 80% 80%, rgba(16, 185, 129, 0.05) 0%, transparent 40%);
+                radial-gradient(circle at 50% 50%, #062d1d 0%, #020617 100%);
             min-height: 100vh;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
             margin: 0;
+            font-family: 'Inter', sans-serif;
             overflow: hidden;
         }
 
-        /* The Main Glass Plate */
-        .glass-plate {
-            background: var(--glass-bg);
-            backdrop-filter: blur(40px) saturate(150%);
-            -webkit-backdrop-filter: blur(40px) saturate(150%);
-            border: 1px solid var(--glass-border);
-            border-radius: 48px;
-            padding: 40px;
-            box-shadow: 
-                0 4px 24px -1px rgba(0, 0, 0, 0.5),
-                inset 0 1px 1px rgba(255, 255, 255, 0.05);
-            width: 100%;
-            max-width: 440px;
-            position: relative;
+        /* Ambient Glass Background Pattern */
+        body::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2310b981' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            mask-image: radial-gradient(circle at center, black, transparent 80%);
+            pointer-events: none;
         }
 
-        /* Frosted Search Bar */
-        .search-glass {
+        /* Minimal Search Box */
+        .search-container {
+            width: 100%;
+            max-width: 280px;
+            margin-bottom: 40px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .search-bar {
+            width: 100%;
             background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(10px);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            border-radius: 12px;
+            padding: 10px 14px 10px 40px;
+            color: #10b981;
+            font-size: 13px;
+            outline: none;
             transition: all 0.3s ease;
         }
 
-        .search-glass:focus-within {
+        .search-bar:focus {
+            border-color: #10b981;
             background: rgba(16, 185, 129, 0.05);
-            border-color: rgba(16, 185, 129, 0.4);
             box-shadow: 0 0 20px rgba(16, 185, 129, 0.1);
         }
 
-        /* Icon Tile Styling */
-        .app-tile {
-            position: relative;
-            aspect-ratio: 1;
+        .search-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #10b981;
+            opacity: 0.5;
+        }
+
+        /* The Dock Grid */
+        .dock-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 20px;
+            max-width: 500px;
+            justify-items: center;
+        }
+
+        /* Minimal Icon Button */
+        .app-icon {
+            width: 44px;
+            height: 44px;
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: 20px;
+            border-radius: 50%;
+            color: rgba(16, 185, 129, 0.6);
             background: rgba(255, 255, 255, 0.02);
             border: 1px solid rgba(255, 255, 255, 0.05);
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            color: rgba(255, 255, 255, 0.4);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
         }
 
-        .app-tile:hover {
-            transform: scale(1.1) translateY(-5px);
-            background: rgba(16, 185, 129, 0.15);
-            border-color: rgba(16, 185, 129, 0.5);
+        .app-icon:hover {
             color: #10b981;
-            box-shadow: 0 15px 30px -10px rgba(0, 0, 0, 0.5);
+            background: rgba(16, 185, 129, 0.1);
+            border-color: #10b981;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.5);
         }
 
-        /* Floating Tooltip */
-        .app-tile::after {
-            content: attr(data-name);
+        /* Discrete Tooltip */
+        .app-icon::after {
+            content: attr(data-title);
             position: absolute;
-            bottom: -35px;
+            bottom: -30px;
             left: 50%;
-            transform: translateX(-50%) translateY(10px);
-            opacity: 0;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(5px);
-            padding: 4px 12px;
-            border-radius: 8px;
-            font-size: 11px;
+            transform: translateX(-50%);
+            font-size: 10px;
+            font-weight: 500;
             color: #10b981;
+            opacity: 0;
+            transition: opacity 0.2s ease;
             white-space: nowrap;
-            transition: all 0.2s ease;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
             pointer-events: none;
-            border: 1px solid rgba(16, 185, 129, 0.2);
         }
 
-        .app-tile:hover::after {
+        .app-icon:hover::after {
             opacity: 1;
-            transform: translateX(-50%) translateY(0);
         }
 
-        /* Filter Logic */
-        .hidden-app {
+        /* Search Filtering */
+        .hidden {
             display: none !important;
+        }
+
+        @media (max-width: 500px) {
+            .dock-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
         }
     </style>
 </head>
 <body>
 
-    <main class="glass-plate">
-        <!-- Search Section -->
-        <div class="relative mb-10">
-            <div class="search-glass flex items-center px-5 py-3.5 rounded-2xl">
-                <i data-lucide="search" class="w-4 h-4 text-emerald-500/50 mr-3"></i>
-                <input type="text" id="mainSearch" 
-                    placeholder="Search ecosystem..." 
-                    class="bg-transparent border-none outline-none text-white text-sm w-full placeholder:text-slate-600">
-            </div>
-        </div>
+    <!-- Search Section -->
+    <div class="search-container">
+        <i data-lucide="search" class="search-icon w-4 h-4"></i>
+        <input type="text" id="dockSearch" class="search-bar" placeholder="Jump to..." autocomplete="off">
+    </div>
 
-        <!-- Grid Section -->
-        <div class="grid grid-cols-4 gap-4" id="appGrid">
-            
-            <a href="https://easybet.co.za/" data-name="Easybet" target="_blank" class="app-tile">
-                <i data-lucide="globe" class="w-5 h-5"></i>
-            </a>
+    <!-- Floating Icons Dock -->
+    <div class="dock-grid" id="dockGrid">
+        
+        <a href="https://easybet.co.za/" data-title="Easybet" target="_blank" class="app-icon">
+            <i data-lucide="external-link" class="w-5 h-5"></i>
+        </a>
 
-            <a href="https://tracker.toptal.com/" data-name="Toptal Tracker" target="_blank" class="app-tile">
-                <i data-lucide="clock" class="w-5 h-5"></i>
-            </a>
+        <a href="https://tracker.toptal.com/" data-title="Tracker" target="_blank" class="app-icon">
+            <i data-lucide="clock" class="w-5 h-5"></i>
+        </a>
 
-            <a href="https://chatgpt.com/" data-name="ChatGPT" target="_blank" class="app-tile">
-                <i data-lucide="message-square" class="w-5 h-5"></i>
-            </a>
+        <a href="https://chatgpt.com/" data-title="ChatGPT" target="_blank" class="app-icon">
+            <i data-lucide="message-circle" class="w-5 h-5"></i>
+        </a>
 
-            <a href="https://admin.adv.bet/" data-name="Aardvark" target="_blank" class="app-tile">
-                <i data-lucide="shield-check" class="w-5 h-5"></i>
-            </a>
+        <a href="https://admin.adv.bet/" data-title="ADV Admin" target="_blank" class="app-icon">
+            <i data-lucide="shield" class="w-5 h-5"></i>
+        </a>
 
-            <a href="https://www.online.xds.co.za/XDSPortal/Account/Login" data-name="XDS Portal" target="_blank" class="app-tile">
-                <i data-lucide="user-check" class="w-5 h-5"></i>
-            </a>
+        <a href="https://www.online.xds.co.za/XDSPortal/Account/Login" data-title="XDS Portal" target="_blank" class="app-icon">
+            <i data-lucide="key" class="w-5 h-5"></i>
+        </a>
 
-            <a href="https://ez-bt.vercel.app/" data-name="Email script" target="_blank" class="app-tile">
-                <i data-lucide="zap" class="w-5 h-5"></i>
-            </a>
+        <a href="https://ez-bt.vercel.app/" data-title="Vercel" target="_blank" class="app-icon">
+            <i data-lucide="zap" class="w-5 h-5"></i>
+        </a>
 
-            <a href="https://easybet.co.za/page/promo-landing-page" data-name="Promo Engine" target="_blank" class="app-tile">
-                <i data-lucide="megaphone" class="w-5 h-5"></i>
-            </a>
+        <a href="https://easybet.co.za/page/promo-landing-page" data-title="Promos" target="_blank" class="app-icon">
+            <i data-lucide="megaphone" class="w-5 h-5"></i>
+        </a>
 
-            <a href="https://iamkiritokun97.github.io/Random/Internal%20note.html" data-name="Knowledge Base" target="_blank" class="app-tile">
-                <i data-lucide="book-open" class="w-5 h-5"></i>
-            </a>
+        <a href="https://iamkiritokun97.github.io/Random/Internal%20note.html" data-title="Notes" target="_blank" class="app-icon">
+            <i data-lucide="book-open" class="w-5 h-5"></i>
+        </a>
 
-            <a href="https://docs.google.com/spreadsheets/d/19fd9de7Zm8psh06D3aIYMqUKyhFEndrW4Cb_7kfchXM/edit" data-name="Project Tracker" target="_blank" class="app-tile">
-                <i data-lucide="file-spreadsheet" class="w-5 h-5"></i>
-            </a>
+        <!-- Spreadsheets -->
+        <a href="https://docs.google.com/spreadsheets/d/19fd9de7Zm8psh06D3aIYMqUKyhFEndrW4Cb_7kfchXM/edit" data-title="Project T." target="_blank" class="app-icon">
+            <i data-lucide="file-spreadsheet" class="w-5 h-5"></i>
+        </a>
 
-            <a href="https://docs.google.com/spreadsheets/d/1Ynv8_-SbdYfIx3FfYkLQ-DmV0a-31kBzc2GAGAvH9To/edit" data-name="Operations" target="_blank" class="app-tile">
-                <i data-lucide="layers" class="w-5 h-5"></i>
-            </a>
+        <a href="https://docs.google.com/spreadsheets/d/1Ynv8_-SbdYfIx3FfYkLQ-DmV0a-31kBzc2GAGAvH9To/edit" data-title="Operations" target="_blank" class="app-icon">
+            <i data-lucide="layout-list" class="w-5 h-5"></i>
+        </a>
 
-            <a href="https://docs.google.com/spreadsheets/d/1FsY4NL-OIM5m3xevXOPBNO19LCEXEw1uLaO4Ke4x9N4/edit" data-name="Audit Logs" target="_blank" class="app-tile">
-                <i data-lucide="activity" class="w-5 h-5"></i>
-            </a>
+        <a href="https://docs.google.com/spreadsheets/d/1FsY4NL-OIM5m3xevXOPBNO19LCEXEw1uLaO4Ke4x9N4/edit" data-title="Audit Log" target="_blank" class="app-icon">
+            <i data-lucide="database" class="w-5 h-5"></i>
+        </a>
 
-            <!-- Empty slot filler -->
-            <div class="app-tile opacity-20 border-dashed border-slate-700">
-                <i data-lucide="plus" class="w-4 h-4 text-slate-500"></i>
-            </div>
-        </div>
+    </div>
 
-        <!-- System Tag -->
-        <div class="mt-12 flex justify-center">
-            <div class="px-4 py-1 rounded-full bg-emerald-500/5 border border-emerald-500/10 flex items-center gap-2">
-                <div class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
-                <span class="text-[10px] text-emerald-500/60 uppercase tracking-widest font-bold">Secure Environment</span>
-            </div>
-        </div>
-    </main>
+    <!-- Status Badge -->
+    <div class="absolute bottom-8 text-[10px] font-bold text-emerald-900 tracking-[0.3em] uppercase pointer-events-none">
+        Secure Workspace Connection
+    </div>
 
     <script>
-        // Initialize Lucide Icons
+        // Initialize Icons
         lucide.createIcons();
 
-        // High-performance search logic
-        const searchInput = document.getElementById('mainSearch');
-        const appTiles = document.querySelectorAll('.app-tile');
+        // Search Filter Logic
+        const search = document.getElementById('dockSearch');
+        const icons = document.querySelectorAll('.app-icon');
 
-        searchInput.addEventListener('input', (e) => {
-            const query = e.target.value.toLowerCase();
-            
-            appTiles.forEach(tile => {
-                const appName = tile.getAttribute('data-name')?.toLowerCase() || "";
-                if (appName.includes(query)) {
-                    tile.classList.remove('hidden-app');
-                } else {
-                    tile.classList.add('hidden-app');
-                }
+        search.addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+            icons.forEach(icon => {
+                const title = icon.getAttribute('data-title').toLowerCase();
+                icon.classList.toggle('hidden', !title.includes(term));
             });
         });
     </script>

@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Command Center</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body {
+            background-color: #050505;
+            background-image: 
+                radial-gradient(circle at 50% 50%, #061f14 0%, #050505 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+
+        .glass-container {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 32px;
+            border-radius: 40px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+            width: 100%;
+            max-width: 320px;
+        }
+
+        /* Search Box Styling */
+        .search-wrapper {
+            position: relative;
+            margin-bottom: 24px;
+        }
+
+        .search-input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(74, 222, 128, 0.1);
+            border-radius: 12px;
+            padding: 10px 12px 10px 36px;
+            color: white;
+            font-size: 13px;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .search-input:focus {
+            border-color: #4ade80;
+            background: rgba(74, 222, 128, 0.05);
+            box-shadow: 0 0 15px rgba(74, 222, 128, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(74, 222, 128, 0.5);
+        }
+
+        /* Grid Styling */
+        .icon-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+
+        .icon-link {
+            width: 52px;
+            height: 52px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 16px;
+            color: #4ade80;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.25s ease;
+            position: relative;
+        }
+
+        .icon-link:hover {
+            background: rgba(74, 222, 128, 0.1);
+            border-color: #4ade80;
+            transform: translateY(-2px);
+            color: #fff;
+        }
+
+        /* Tooltip */
+        .icon-link::after {
+            content: attr(data-title);
+            position: absolute;
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #111;
+            color: #4ade80;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s;
+            border: 1px solid rgba(74, 222, 128, 0.2);
+            z-index: 10;
+        }
+
+        .icon-link:hover::after {
+            opacity: 1;
+        }
+
+        /* Hidden State for Search */
+        .icon-link.hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="glass-container">
+        <!-- Search Bar -->
+        <div class="search-wrapper">
+            <i data-lucide="search" class="search-icon w-4 h-4"></i>
+            <input type="text" id="appSearch" class="search-input" placeholder="Search apps..." autocomplete="off">
+        </div>
+
+        <!-- App Grid -->
+        <div class="icon-grid" id="iconGrid">
+            <a href="https://easybet.co.za/" data-title="Easybet" target="_blank" class="icon-link">
+                <i data-lucide="layout-grid" class="w-5 h-5"></i>
+            </a>
+            <a href="https://tracker.toptal.com/" data-title="Toptal" target="_blank" class="icon-link">
+                <i data-lucide="clock" class="w-5 h-5"></i>
+            </a>
+            <a href="https://chatgpt.com/" data-title="ChatGPT" target="_blank" class="icon-link">
+                <i data-lucide="message-circle" class="w-5 h-5"></i>
+            </a>
+            <a href="https://admin.adv.bet/" data-title="ADV Admin" target="_blank" class="icon-link">
+                <i data-lucide="shield-check" class="w-5 h-5"></i>
+            </a>
+            <a href="https://www.online.xds.co.za/XDSPortal/Account/Login" data-title="XDS Portal" target="_blank" class="icon-link">
+                <i data-lucide="key" class="w-5 h-5"></i>
+            </a>
+            <a href="https://ez-bt.vercel.app/" data-title="Vercel" target="_blank" class="icon-link">
+                <i data-lucide="zap" class="w-5 h-5"></i>
+            </a>
+            <a href="https://easybet.co.za/page/promo-landing-page" data-title="Promos" target="_blank" class="icon-link">
+                <i data-lucide="megaphone" class="w-5 h-5"></i>
+            </a>
+            <a href="https://iamkiritokun97.github.io/Random/Internal%20note.html" data-title="Internal Notes" target="_blank" class="icon-link">
+                <i data-lucide="book-open" class="w-5 h-5"></i>
+            </a>
+            <a href="https://docs.google.com/spreadsheets/d/19fd9de7Zm8psh06D3aIYMqUKyhFEndrW4Cb_7kfchXM/edit?gid=0#gid=0" data-title="Project Sheet" target="_blank" class="icon-link">
+                <i data-lucide="file-spreadsheet" class="w-5 h-5"></i>
+            </a>
+            <a href="https://docs.google.com/spreadsheets/d/1Ynv8_-SbdYfIx3FfYkLQ-DmV0a-31kBzc2GAGAvH9To/edit?gid=1183747124#gid=1183747124" data-title="Ops Sheet" target="_blank" class="icon-link">
+                <i data-lucide="file-spreadsheet" class="w-5 h-5"></i>
+            </a>
+            <a href="https://docs.google.com/spreadsheets/d/1FsY4NL-OIM5m3xevXOPBNO19LCEXEw1uLaO4Ke4x9N4/edit?gid=0#gid=0" data-title="Audit Sheet" target="_blank" class="icon-link">
+                <i data-lucide="file-spreadsheet" class="w-5 h-5"></i>
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Icons
+        lucide.createIcons();
+
+        // Search Logic
+        const searchInput = document.getElementById('appSearch');
+        const iconLinks = document.querySelectorAll('.icon-link');
+
+        searchInput.addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+            
+            iconLinks.forEach(link => {
+                const title = link.getAttribute('data-title').toLowerCase();
+                if (title.includes(term)) {
+                    link.classList.remove('hidden');
+                } else {
+                    link.classList.add('hidden');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premium Response Tool | AI Architect Pro </title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0c0c0e;
+            color: #e4e4e7;
+            background-image: 
+                radial-gradient(circle at 50% -20%, rgba(212, 163, 115, 0.15) 0%, transparent 50%);
+            min-height: 100vh;
+        }
+
+        .glass-panel {
+            background: rgba(18, 18, 20, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .gold-border-focus {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .gold-border-focus:focus-within {
+            border-color: #d4a373;
+            box-shadow: 0 0 30px rgba(212, 163, 115, 0.1);
+        }
+
+        .copy-button {
+            background: linear-gradient(135deg, #d4a373 0%, #a98467 100%);
+            transition: all 0.3s ease;
+        }
+
+        .copy-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(212, 163, 115, 0.2);
+        }
+
+        .system-badge {
+            background: rgba(212, 163, 115, 0.1);
+            color: #d4a373;
+            border: 1px solid rgba(212, 163, 115, 0.2);
+        }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #27272a; border-radius: 10px; }
+    </style>
+</head>
+<body class="p-4 md:p-12">
+
+    <div class="max-w-5xl mx-auto">
+        <header class="mb-12 flex justify-between items-end">
+            <div>
+                <div class="flex items-center gap-2 mb-3">
+                    <span class="px-2 py-1 rounded text-[10px] font-bold bg-zinc-800 text-zinc-400 uppercase tracking-widest">Enterprise v3.6</span>
+                    <span class="px-2 py-1 rounded text-[10px] font-bold system-badge uppercase tracking-widest">Sentiment Logic Active</span>
+                </div>
+                <h1 class="text-5xl font-bold tracking-tight text-white leading-none">Easybets <span class="text-zinc-600"> Response Architect</span></h1>
+                <p class="text-zinc-500 mt-4 max-w-md">Professional engagement structuring with specialized detection for deletion requests and frustration.</p>
+            </div>
+            <button onclick="location.reload()" class="p-3 rounded-full hover:bg-zinc-900 text-zinc-600 transition-colors">
+                <i data-lucide="refresh-cw" class="w-5 h-5"></i>
+            </button>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            <!-- Left: Input Area -->
+            <div class="lg:col-span-7 space-y-6">
+                <div class="glass-panel rounded-3xl p-8 gold-border-focus">
+                    <div class="flex justify-between items-center mb-6">
+                        <label class="text-xs font-bold text-zinc-500 uppercase tracking-widest">1. Customer Inquiry & Context</label>
+                        <i data-lucide="message-square" class="w-4 h-4 text-zinc-700"></i>
+                    </div>
+                    <textarea id="mainInput" oninput="processResponse()" 
+                        class="w-full h-80 bg-transparent text-white text-lg placeholder-zinc-800 resize-none focus:outline-none leading-relaxed" 
+                        placeholder="Paste the customers inquiry here (e.g., 'Delete my account' or 'This is stupid')..."></textarea>
+                </div>
+            </div>
+
+            <!-- Right: Logic Preview -->
+            <div class="lg:col-span-5 space-y-4">
+                <h3 class="text-xs font-bold text-zinc-500 uppercase tracking-widest px-2">Generated Structure</h3>
+                
+                <!-- Auto Step 1 -->
+                <div class="glass-panel rounded-2xl p-5 border-l-2 border-zinc-700">
+                    <p class="text-[10px] font-bold text-zinc-600 uppercase mb-2">Acknowledgement</p>
+                    <p id="p1" class="text-sm text-zinc-400 italic">Waiting for input...</p>
+                </div>
+
+                <!-- Auto Step 2 -->
+                <div class="glass-panel rounded-2xl p-5 border-l-2 border-[#d4a373]">
+                    <div class="flex justify-between mb-2">
+                        <p class="text-[10px] font-bold text-[#d4a373] uppercase tracking-tighter">Smart Empathy</p>
+                        <i data-lucide="sparkles" class="w-3 h-3 text-[#d4a373]"></i>
+                    </div>
+                    <p id="p2" class="text-sm text-zinc-300">Ready to analyze sentiment.</p>
+                </div>
+
+                <!-- Auto Step 3 -->
+                <div class="glass-panel rounded-2xl p-5 border-l-2 border-emerald-600">
+                    <p class="text-[10px] font-bold text-emerald-600 uppercase mb-2">Reassurance</p>
+                    <p id="p3" class="text-sm text-zinc-300">Always prepared to assist and resolve.</p>
+                </div>
+
+                <!-- Rule Indicator -->
+                <div class="bg-indigo-500/5 border border-indigo-500/20 rounded-xl p-4 flex gap-3 items-start">
+                    <i data-lucide="shield-check" class="w-5 h-5 text-indigo-400 shrink-0 mt-0.5"></i>
+                    <p class="text-[11px] text-zinc-500 leading-tight">
+                        <b class="text-indigo-300">Logic Note:</b> Detection is active for keywords like <i class="text-zinc-400">delete, fuck, stupid, broken, etc.</i>
+                    </p>
+                </div>
+
+                <button onclick="copyToClipboard()" class="copy-button w-full py-6 rounded-2xl text-black font-extrabold text-lg flex items-center justify-center gap-3 active:scale-95 shadow-2xl">
+                    <i data-lucide="copy" class="w-6 h-6"></i>
+                    COPY FOR CHATGPT
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Success -->
+    <div id="toast" class="fixed top-10 left-1/2 -translate-x-1/2 px-6 py-3 rounded-full bg-white text-black font-bold shadow-2xl opacity-0 transition-all pointer-events-none translate-y-[-20px] flex items-center gap-2 z-50">
+        <i data-lucide="check" class="w-4 h-4"></i>
+        <span>Copied with AI Rules</span>
+    </div>
+
+    <script>
+        // Initialize Icons
+        lucide.createIcons();
+
+        const input = document.getElementById('mainInput');
+        const p1 = document.getElementById('p1');
+        const p2 = document.getElementById('p2');
+        const p3 = document.getElementById('p3');
+
+// Keywords
+const deleteTriggers = [
+  'delete', 'close', 'deactivate', 'remove my account', 'cancel my account', 'remove account',
+  'terminate', 'terminate account', 'erase', 'erase account', 'account deletion',
+  'shut down', 'shut down account', 'disable', 'disable account',
+  'opt out', 'unsubscribe', 'unregister', 'withdraw membership',
+  'end account', 'end my account', 'close profile', 'remove profile',
+  'delete profile', 'deactivate profile', 'cancel membership'
+];
+
+const profanityTriggers = [
+  'shit', 'fuck', 'damn', 'hell', 'stupid', 'idiot', 'scam', 'garbage', 'trash',
+  'bullshit', 'crap', 'asshole', 'bastard', 'moron', 'dumb', 'useless',
+  'ripoff', 'fraud', 'fake', 'cheat', 'liar',
+  'wtf', 'omg', 'ffs', 'pissed', 'pissing',
+  'sucks', 'suck', 'hate', 'hate this',
+  'nonsense', 'ridiculous', 'pathetic', 'joke'
+];
+
+const frustratedTriggers = [
+  'sad', 'angry', 'broken', 'not working', 'fail', 'issue', 'problem', 'fix',
+  'refund', 'unhappy', 'wait', 'delay', 'error',
+  'frustrated', 'upset', 'annoyed', 'disappointed', 'confused',
+  'concerned', 'worried', 'stress', 'stressed',
+  'trouble', 'difficulty', 'hard', 'struggling',
+  'stuck', 'blocked', 'unable', 'can’t', 'cannot',
+  'doesn’t work', 'won’t work', 'malfunction', 'bug', 'glitch',
+  'crash', 'crashed', 'freeze', 'frozen',
+  'slow', 'lag', 'loading', 'pending',
+  'missing', 'lost', 'not received', 'never received',
+  'wrong', 'incorrect', 'mistake',
+  'payment failed', 'transaction failed', 'withdrawal issue', 'deposit issue',
+  'account issue', 'locked', 'restricted', 'suspended',
+  'verification issue', 'kyc',
+  'no response', 'ignored', 'unresponsive',
+  'taking too long', 'still waiting', 'waiting too long'
+];
+
+
+// Empathy Libraries
+const empathyDelete = [
+    "I understand you want to delete your account and we hate to see you go, but we can definitely help you out with that right away.",
+    "I'm sorry to hear you're looking to close your account. We'd hate to lose you, but I'll certainly assist you with the process.",
+    "I understand you're requesting to delete your account. While we're sad to see you go, I'm here to make sure this is handled for you.",
+    "I've noted your request for account closure. We hate to see you leave our community, but I will help you complete this request now.",
+
+    // Added 30 more
+    "I understand that you’d like to proceed with deleting your account, and I’ll be happy to help you with the next steps.",
+    "I’m sorry to hear that you’ve decided to close your account. While we’ll miss you, I’m here to assist you.",
+    "I understand your decision to remove your account and I’ll make sure this is handled smoothly.",
+    "I see that you’d like to deactivate your account. I’m here to help you through the process.",
+    "I understand that you want to close your account and I’ll ensure this request is properly handled.",
+    "I’m sorry to hear you’re considering leaving, but I’ll assist you with closing your account.",
+    "I understand you’d like to cancel your account and I’m ready to help you with that.",
+    "I’ve received your request to remove your account and will assist you accordingly.",
+    "I understand your request for account deletion and will guide you through the process.",
+    "I’m sorry to hear you’re choosing to deactivate your account, but I’ll help you complete this.",
+    "I understand you’re requesting to end your account and I’m here to support you.",
+    "I see that you’d like your account closed. I’ll assist you with the necessary steps.",
+    "I understand your wish to delete your profile and I’ll help ensure this is done correctly.",
+    "I’m sorry to hear you want to remove your account, and I’m here to assist you with that.",
+    "I understand your decision to close your profile and will help make this process smooth.",
+    "I’ve noted your request to deactivate your profile and will assist you promptly.",
+    "I understand you’d like to permanently delete your account and I’ll help you proceed.",
+    "I’m sorry to see you go, but I’ll assist you with completing the account deletion.",
+    "I understand your request to cancel your membership and I’m here to help.",
+    "I see that you’d like to withdraw from our service and I’ll assist you with that.",
+    "I understand you want to end your membership and I’ll guide you through the steps.",
+    "I’ve received your request to close your membership and will help you complete it.",
+    "I understand your intention to remove your account and I’ll ensure this is handled properly.",
+    "I’m sorry to hear you’re leaving, but I’ll assist you with closing your account today.",
+    "I understand you want your account removed and I’m ready to help you with the process.",
+    "I’ve noted your request for account removal and will assist you right away.",
+    "I understand your request to shut down your account and I’ll help make it happen.",
+    "I’m sorry to hear you’ve decided to cancel your account, but I’m here to assist you.",
+    "I understand you want to deactivate your membership and I’ll help you complete this.",
+    "I’ve received your request to end your account and will support you through the process."
+];
+
+
+const empathyProfanity = [
+    "I can hear how frustrated you are, and I truly apologize for the experience. Let’s work together to resolve this for you.",
+    "I understand you're upset, and I'm committed to turning this experience around. Let's look into what happened.",
+    "I'm sorry for the trouble you've encountered. I hear your frustration and I'm here to help fix this right now.",
+    "I apologize that things haven't gone smoothly. I'm here to listen and help find a solution to the issue you're facing.",
+
+    // Added 30 more
+    "I can tell this situation has really upset you, and I’m sorry you’re dealing with this.",
+    "I understand how angry this has made you, and I’m here to help make things right.",
+    "I’m sorry this experience has been so frustrating. Let’s focus on fixing it now.",
+    "I hear how upset you are, and I appreciate you bringing this to my attention.",
+    "I understand why you’re frustrated, and I’m here to help resolve this.",
+    "I’m sorry this has caused you so much stress. Let’s work through it together.",
+    "I can sense how annoyed you are, and I want to help sort this out for you.",
+    "I understand your frustration and I’m taking this seriously.",
+    "I’m sorry this didn’t meet your expectations. I’m here to help fix it.",
+    "I hear your concern and understand why you’re upset about this.",
+    "I know this situation is upsetting, and I’m here to support you.",
+    "I’m sorry you’ve had such a negative experience. Let’s work on resolving it.",
+    "I understand how frustrating this has been, and I appreciate your patience.",
+    "I hear how strongly you feel about this, and I want to help address it.",
+    "I’m sorry this has been such a hassle. I’m here to help make it right.",
+    "I understand your anger, and I’m committed to helping resolve this issue.",
+    "I can tell this has been very frustrating for you, and I’m here to help.",
+    "I’m sorry you’re feeling this way. Let’s look into what went wrong.",
+    "I understand why this situation has upset you, and I’m ready to help.",
+    "I hear your frustration and want to work toward a solution with you.",
+    "I’m sorry this experience has caused you inconvenience. I’m here to help.",
+    "I understand this has been irritating, and I want to help resolve it.",
+    "I can see why this would make you upset, and I’m here to assist.",
+    "I’m sorry things didn’t go as expected. Let’s fix this together.",
+    "I understand how stressful this has been, and I appreciate you speaking up.",
+    "I hear your frustration clearly, and I’m ready to help address it.",
+    "I’m sorry you’ve had to deal with this issue. I’m here to help resolve it.",
+    "I understand why this has made you angry, and I’m here to help.",
+    "I can tell this has been very annoying, and I want to help fix it.",
+    "I’m sorry for the frustration this has caused, and I’m here to help you move forward."
+];
+
+
+// Variation Libraries
+const empathyFrustrated = [
+    "I can certainly understand how frustrating it is when things don't go as planned, and I want to make sure we get this sorted out for you immediately.",
+    "I'm truly sorry to hear about the trouble you've encountered. I know how important this is, and I'm here to help fix it.",
+    "I completely recognize why this would be a concern. Thank you for your patience while we address this issue together.",
+    "I appreciate you bringing this to my attention. I understand the impact this has on you and I'll do my best to resolve it quickly.",
+
+    // Added 100 more
+    "I understand how upsetting this situation must be, and I appreciate you taking the time to let us know.",
+    "I’m really sorry that this has caused you inconvenience. Let’s work together to resolve it as soon as possible.",
+    "I can see why this would be frustrating, and I want you to know I’m here to help.",
+    "Thank you for your patience. I understand how difficult this situation is for you.",
+    "I’m sorry you’re experiencing this issue. I know how disruptive it can be.",
+    "I completely understand your concern, and I appreciate you bringing it to our attention.",
+    "I know this isn’t the experience you were expecting, and I’m here to make things right.",
+    "I understand how stressful this can be, and I’ll do my best to assist you promptly.",
+    "I appreciate you sharing this with me. I understand why this is frustrating.",
+    "I’m sorry for the inconvenience this has caused you. Let’s get this resolved.",
+    "I recognize how important this matter is to you, and I’m here to support you.",
+    "I understand your frustration and want to reassure you that I’m looking into this.",
+    "Thank you for letting me know about this issue. I understand how concerning it is.",
+    "I’m sorry you had to deal with this situation. I know it’s not easy.",
+    "I understand why this delay is frustrating, and I appreciate your patience.",
+    "I can imagine how inconvenient this must be for you, and I’m here to help.",
+    "I understand how disappointing this experience has been, and I want to help resolve it.",
+    "I’m sorry that things didn’t work as expected. Let’s work on fixing this together.",
+    "I truly understand your concern and appreciate you reaching out about this.",
+    "I know how important it is for this to be resolved quickly, and I’m here to assist.",
+    "I understand how this issue can cause stress, and I’m committed to helping you.",
+    "I appreciate your patience while we work through this problem together.",
+    "I’m sorry for the trouble this has caused and understand your frustration.",
+    "I understand that this situation is inconvenient, and I’m here to help address it.",
+    "I know this has been frustrating, and I want to thank you for your understanding.",
+    "I understand why you’re concerned and appreciate you bringing this up.",
+    "I’m sorry this has caused you any difficulty. Let’s take care of it together.",
+    "I recognize how disruptive this issue can be and want to help resolve it.",
+    "I understand how frustrating it is to deal with unexpected problems like this.",
+    "I appreciate you sharing your experience, and I understand your frustration.",
+    "I’m sorry you’re dealing with this inconvenience, and I’m here to assist.",
+    "I understand why this situation is upsetting, and I’m ready to help.",
+    "I know this isn’t ideal, and I appreciate your patience while we fix it.",
+    "I understand your frustration and want to ensure this is handled properly.",
+    "I’m sorry that this has taken longer than expected and understand your concern.",
+    "I recognize how important it is to get this resolved quickly for you.",
+    "I understand how inconvenient this situation is, and I’m here to help.",
+    "I’m sorry you’ve had this experience, and I’ll do my best to improve it.",
+    "I understand how troubling this issue must be, and I appreciate your patience.",
+    "I know this has caused frustration, and I’m here to support you.",
+    "I’m sorry for the inconvenience and understand how this affects you.",
+    "I understand why this issue is concerning, and I’ll work to resolve it.",
+    "I appreciate you reaching out and understand your frustration.",
+    "I know this situation isn’t easy, and I’m here to help make it right.",
+    "I understand how stressful this delay can be, and I appreciate your patience.",
+    "I’m sorry this didn’t go as smoothly as expected. Let’s address it now.",
+    "I understand your concern and want to help you through this.",
+    "I know this issue has been frustrating, and I’m here to assist.",
+    "I appreciate your patience and understand how important this is to you.",
+    "I’m sorry for any inconvenience this has caused and want to resolve it.",
+    "I understand how this problem could be upsetting, and I’m here to help.",
+    "I know delays like this can be frustrating, and I appreciate your understanding.",
+    "I understand why this is an issue for you and want to address it promptly.",
+    "I’m sorry you’ve experienced this difficulty and appreciate your patience.",
+    "I understand how disruptive this issue is and want to help fix it.",
+    "I know this situation is frustrating, and I’m here to support you.",
+    "I appreciate you letting me know and understand your concern.",
+    "I’m sorry this issue has caused you stress, and I’m here to help.",
+    "I understand how disappointing this must be, and I want to make it right.",
+    "I know this isn’t the outcome you were hoping for, and I’m here to assist.",
+    "I appreciate your patience and understand how challenging this has been.",
+    "I’m sorry this has caused frustration and want to help resolve it.",
+    "I understand why this matter is important to you and I’m here to help.",
+    "I know this experience hasn’t been ideal, and I appreciate your understanding.",
+    "I understand how inconvenient this issue is and want to address it quickly.",
+    "I’m sorry you’re dealing with this, and I’ll do my best to help.",
+    "I recognize how frustrating this can be and appreciate your patience.",
+    "I understand your concern and want to make sure it’s handled properly.",
+    "I know this delay is frustrating, and I’m here to assist you.",
+    "I appreciate you bringing this issue forward and understand your frustration.",
+    "I’m sorry this has caused you trouble, and I want to help resolve it.",
+    "I understand how this situation affects you and I’m here to help.",
+    "I know this problem has been inconvenient, and I appreciate your patience.",
+    "I’m sorry you’ve encountered this issue and understand your concern.",
+    "I understand why this experience has been frustrating, and I’m here to help.",
+    "I appreciate your understanding while we work through this issue.",
+    "I know this isn’t easy to deal with, and I’m committed to helping you.",
+    "I’m sorry for the inconvenience and understand how important this is.",
+    "I understand how upsetting this delay can be and appreciate your patience.",
+    "I know this situation has caused frustration, and I’m here to assist.",
+    "I appreciate you reaching out and understand how concerning this is.",
+    "I’m sorry you’ve had to deal with this, and I’m here to help.",
+    "I understand your frustration and want to ensure this is resolved.",
+    "I know this issue has been stressful, and I appreciate your patience.",
+    "I’m sorry for any inconvenience this has caused and I’m here to assist.",
+    "I understand how this problem can be discouraging, and I want to help.",
+    "I appreciate your patience and understand how challenging this has been for you."
+];
+
+const empathyGeneral = [
+    "Thank you for reaching out to me about this. I understand your request and am happy to help you with this today.",
+    "I appreciate you sharing these details with me. I've noted the context and am ready to assist you with the next steps.",
+    "Thanks for getting in touch. I understand what you're looking to achieve and I'm more than happy to guide you through this.",
+    "I've received your inquiry and clearly understand your goals. Let's work together to get this taken care of.",
+
+    // Added 100 more
+    "Thank you for contacting me. I understand your concern and I’m here to assist you.",
+    "I appreciate you taking the time to reach out. I understand your situation and am ready to help.",
+    "Thanks for letting me know about this. I understand your request and will gladly assist.",
+    "I’ve carefully reviewed your message and understand what you need help with.",
+    "Thank you for bringing this to my attention. I understand your concern and am happy to help.",
+    "I appreciate the information you’ve shared. I understand your request and am here to assist.",
+    "Thanks for reaching out. I understand what you’re experiencing and I’m ready to help.",
+    "I’ve received your message and understand the support you’re looking for.",
+    "Thank you for the details. I understand your concern and I’m here to guide you.",
+    "I appreciate you getting in touch. I understand your needs and will assist you accordingly.",
+    "Thanks for contacting us. I understand your request and I’m glad to help.",
+    "I’ve noted your inquiry and understand what you’re aiming to resolve.",
+    "Thank you for explaining your situation. I understand your concern and I’m here to help.",
+    "I appreciate you sharing this with me. I understand your request and will assist you.",
+    "Thanks for your message. I understand your concern and I’m ready to support you.",
+    "I’ve reviewed your inquiry and understand what assistance you need.",
+    "Thank you for reaching out today. I understand your request and I’m happy to assist.",
+    "I appreciate the context you provided. I understand your situation and am here to help.",
+    "Thanks for letting me know. I understand your concern and will guide you through this.",
+    "I’ve received your concern and understand what you need help with.",
+    "Thank you for contacting me regarding this. I understand your request and will assist.",
+    "I appreciate you reaching out. I understand your situation and I’m here to help.",
+    "Thanks for bringing this up. I understand your concern and will support you.",
+    "I’ve read through your message and understand your request clearly.",
+    "Thank you for the information. I understand your concern and I’m ready to help.",
+    "I appreciate you getting in touch about this. I understand your needs.",
+    "Thanks for your inquiry. I understand what you’re looking for and will assist.",
+    "I’ve received your message and understand the help you’re seeking.",
+    "Thank you for reaching out. I understand your concern and I’m here to assist you.",
+    "I appreciate you sharing these details. I understand your request fully.",
+    "Thanks for contacting us today. I understand your concern and I’m glad to help.",
+    "I’ve noted your message and understand what you need assistance with.",
+    "Thank you for explaining this. I understand your request and will help you.",
+    "I appreciate you reaching out about this matter. I understand your concern.",
+    "Thanks for letting me know. I understand your situation and I’m ready to assist.",
+    "I’ve reviewed your concern and understand what needs to be addressed.",
+    "Thank you for contacting me. I understand your request and I’m here to help.",
+    "I appreciate the details you provided. I understand your concern clearly.",
+    "Thanks for your message. I understand your request and will support you.",
+    "I’ve received your inquiry and understand the assistance you need.",
+    "Thank you for reaching out to us. I understand your concern and will help.",
+    "I appreciate you bringing this to my attention. I understand your request.",
+    "Thanks for contacting me regarding this issue. I understand your situation.",
+    "I’ve noted your concern and understand what you’re hoping to resolve.",
+    "Thank you for the clarification. I understand your request and will assist.",
+    "I appreciate you taking the time to explain. I understand your concern.",
+    "Thanks for reaching out today. I understand your needs and I’m here to help.",
+    "I’ve read your message and understand what you’re asking for.",
+    "Thank you for contacting support. I understand your request and will assist.",
+    "I appreciate you sharing this information. I understand your concern.",
+    "Thanks for your inquiry. I understand your situation and I’m ready to help.",
+    "I’ve received your message and understand the issue you’re raising.",
+    "Thank you for reaching out about this. I understand your request.",
+    "I appreciate the update. I understand your concern and will assist you.",
+    "Thanks for letting me know about this. I understand your needs.",
+    "I’ve reviewed your inquiry and understand what support you’re seeking.",
+    "Thank you for contacting me today. I understand your concern.",
+    "I appreciate you reaching out with this information. I understand your request.",
+    "Thanks for your message. I understand what you need help with.",
+    "I’ve noted your concern and understand the assistance you’re looking for.",
+    "Thank you for bringing this up. I understand your request and will help.",
+    "I appreciate you sharing these details with me. I understand your situation.",
+    "Thanks for contacting us regarding this. I understand your concern.",
+    "I’ve received your inquiry and understand what you’d like assistance with.",
+    "Thank you for reaching out. I understand your needs and I’m here to help.",
+    "I appreciate you getting in touch today. I understand your request.",
+    "Thanks for explaining your concern. I understand your situation clearly.",
+    "I’ve reviewed your message and understand how I can assist you.",
+    "Thank you for contacting support about this. I understand your concern.",
+    "I appreciate the information you provided. I understand your request.",
+    "Thanks for your inquiry. I understand your goals and I’m here to help.",
+    "I’ve noted your message and understand the support you need.",
+    "Thank you for reaching out to me. I understand your concern fully.",
+    "I appreciate you sharing this. I understand your request and will assist.",
+    "Thanks for letting me know. I understand your situation and I’m ready to help.",
+    "I’ve received your concern and understand what you’re asking for.",
+    "Thank you for contacting us. I understand your request and I’m glad to assist.",
+    "I appreciate you taking the time to reach out. I understand your concern.",
+    "Thanks for your message today. I understand your needs and will help.",
+    "I’ve reviewed your inquiry and understand how to assist you further.",
+    "Thank you for reaching out regarding this matter. I understand your request.",
+    "I appreciate you bringing this to my attention. I understand your concern and I’m here to help."
+];
+
+const reassuranceOptions = [
+    "Rest assured, I am fully committed to helping you fix this problem, and I will stay with you until we reach a perfect resolution.",
+    "Please be assured that I will investigate this thoroughly to ensure everything is handled correctly for you.",
+    "You are in good hands—I will make this a priority and ensure we find the best possible path forward.",
+    "I will personally see to it that this is resolved. I'm dedicated to making sure you have a smooth experience from here on out.",
+
+    // Added 100 more with strong power words
+    "Absolutely, I will take full responsibility for this and ensure it is resolved properly.",
+    "I will definitely look into this immediately and make sure it is handled correctly.",
+    "You can be confident that I will personally oversee this until it is resolved.",
+    "I absolutely will stay with you throughout this process until everything is settled.",
+    "I will make sure this is addressed thoroughly and without delay.",
+    "I will definitely prioritize this and ensure it gets the attention it deserves.",
+    "Rest assured, I will take decisive action to resolve this for you.",
+    "I absolutely guarantee that I will follow through on this.",
+    "I will personally ensure that this matter is resolved from start to finish.",
+    "You have my word that I will handle this with urgency and care.",
+    "I will definitely not let this issue go unresolved.",
+    "I absolutely will make this a top priority until it is fixed.",
+    "I will take full ownership of this and see it through to completion.",
+    "Rest assured, I will ensure every necessary step is taken.",
+    "I will definitely keep working on this until we reach a solution.",
+    "I absolutely will make sure nothing is overlooked in resolving this.",
+    "I will personally push this forward to ensure a proper outcome.",
+    "You can trust that I will resolve this as quickly and smoothly as possible.",
+    "I will definitely stay on top of this until it is completed.",
+    "I absolutely will ensure that this is handled professionally.",
+    "I will take immediate action and follow up until it is resolved.",
+    "Rest assured, I will see this through without interruption.",
+    "I will definitely ensure that you receive a clear resolution.",
+    "I absolutely will remain fully engaged until this is settled.",
+    "I will personally monitor this until everything is finalized.",
+    "You can count on me—I will get this resolved.",
+    "I will definitely make sure this concern is fully addressed.",
+    "I absolutely will not stop until this is resolved correctly.",
+    "I will ensure this is handled with precision and care.",
+    "Rest assured, I will manage this issue end to end.",
+    "I will definitely follow through on every step required.",
+    "I absolutely will ensure the best possible outcome for you.",
+    "I will take responsibility and make sure this is resolved properly.",
+    "You have my full commitment that I will fix this.",
+    "I will definitely continue working on this until it is complete.",
+    "I absolutely will ensure a smooth resolution for you.",
+    "I will personally make sure this issue is closed successfully.",
+    "Rest assured, I will act on this immediately.",
+    "I will definitely ensure that this does not fall through the cracks.",
+    "I absolutely will see this matter through to the end.",
+    "I will make this my priority and resolve it promptly.",
+    "You can trust that I will handle this with urgency.",
+    "I will definitely take all necessary actions to resolve this.",
+    "I absolutely will ensure this is resolved to your satisfaction.",
+    "I will personally follow up until this is fully settled.",
+    "Rest assured, I will stay accountable for this issue.",
+    "I will definitely ensure that every detail is handled correctly.",
+    "I absolutely will remain committed until we reach resolution.",
+    "I will take immediate ownership and resolve this.",
+    "You can be assured that I will not abandon this issue.",
+    "I will definitely ensure a clear and proper resolution.",
+    "I absolutely will give this my full attention.",
+    "I will personally ensure timely progress on this.",
+    "Rest assured, I will manage this with full responsibility.",
+    "I will definitely see this through to completion.",
+    "I absolutely will take decisive steps to resolve this.",
+    "I will ensure this concern is handled correctly and completely.",
+    "You can count on me—I will make this right.",
+    "I will definitely remain focused on resolving this.",
+    "I absolutely will handle this with care and urgency.",
+    "I will personally ensure the resolution is smooth.",
+    "Rest assured, I will keep this moving forward.",
+    "I will definitely do everything needed to resolve this.",
+    "I absolutely will stand by you until this is resolved.",
+    "I will take full accountability and fix this issue.",
+    "You have my assurance that I will see this resolved.",
+    "I will definitely ensure this reaches a proper conclusion.",
+    "I absolutely will not let this remain unresolved.",
+    "I will personally oversee this until it is complete.",
+    "Rest assured, I will follow up consistently.",
+    "I will definitely ensure this is resolved without delay.",
+    "I absolutely will make sure the outcome is correct.",
+    "I will take ownership and drive this to resolution.",
+    "You can trust that I will ensure full closure on this.",
+    "I will definitely stay committed until the end.",
+    "I absolutely will resolve this as a top priority.",
+    "I will personally make sure this is handled end to end.",
+    "Rest assured, I will take this to completion.",
+    "I will definitely ensure nothing is missed.",
+    "I absolutely will work on this until it is fully resolved.",
+    "I will ensure this issue is properly closed.",
+    "You have my commitment that I will resolve this fully.",
+    "I will definitely remain accountable throughout this process.",
+    "I absolutely will ensure a final and proper resolution.",
+    "I will personally make sure this is settled correctly.",
+    "Rest assured, I will deliver a complete resolution."
+];
+
+        let currentIdx = Math.floor(Math.random() * 4);
+
+        function processResponse() {
+            const rawVal = input.value.trim();
+            const val = rawVal.toLowerCase();
+
+            if (!rawVal) {
+                p1.innerText = "Waiting for input...";
+                p2.innerText = "Ready to analyze sentiment.";
+                p3.innerText = "Always prepared to assist and resolve.";
+                return;
+            }
+
+            p1.innerText = rawVal;
+
+            // Detection Logic
+            if (profanityTriggers.some(t => val.includes(t))) {
+                p2.innerText = empathyProfanity[currentIdx % empathyProfanity.length];
+            } else if (deleteTriggers.some(t => val.includes(t))) {
+                p2.innerText = empathyDelete[currentIdx % empathyDelete.length];
+            } else if (frustratedTriggers.some(t => val.includes(t))) {
+                p2.innerText = empathyFrustrated[currentIdx % empathyFrustrated.length];
+            } else {
+                p2.innerText = empathyGeneral[currentIdx % empathyGeneral.length];
+            }
+
+            p3.innerText = reassuranceOptions[currentIdx % reassuranceOptions.length];
+        }
+
+        function copyToClipboard() {
+            const val = input.value.trim();
+            if(!val) return alert("Please enter the inquiry first.");
+
+            const part1 = `1. Acknowledgement and Paraphrasing: ${p1.innerText}`;
+            const part2 = `2. Empathy: ${p2.innerText}`;
+            const part3 = `3. Reassurance: ${p3.innerText}`;
+            
+            const aiRule = `\n\nRule for AI: Do not add any ai indications like #, * or —, just give the direct answers without the title so the user can directly copy and paste them and observe proper spacing and shift enter if needed. Provide 3 examples responses and separate the 3 examples by adding 1, 2 and 3`;
+
+            const finalPayload = `${part1}\n\n${part2}\n\n${part3}${aiRule}`;
+
+            navigator.clipboard.writeText(finalPayload).then(() => {
+                const toast = document.getElementById('toast');
+                toast.classList.remove('opacity-0', 'translate-y-[-20px]');
+                toast.classList.add('opacity-100', 'translate-y-0');
+                
+                // Shuffle for next time
+                currentIdx = Math.floor(Math.random() * 4);
+
+                setTimeout(() => {
+                    toast.classList.add('opacity-0', 'translate-y-[-20px]');
+                    toast.classList.remove('opacity-100', 'translate-y-0');
+                }, 2500);
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,268 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Architect | Glass Edition</title>
+    <!-- Favicon -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><defs><linearGradient id='g' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' stop-color='%236366f1'/><stop offset='100%' stop-color='%23a855f7'/></linearGradient></defs><rect width='32' height='32' rx='9' fill='url(%23g)'/><path d='M9 16l4.5 2 7.5-7-5.5 8.5v4l2.5-3.5 4.5 2 2-13.5z' fill='white'/><circle cx='25' cy='7' r='2.5' fill='white'/></svg>">
+    
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-glow: rgba(99, 102, 241, 0.5);
+            --glass-bg: rgba(15, 23, 42, 0.65);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background: #020617;
+            color: var(--text-main);
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Animated Background Blobs */
+        .blob {
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            filter: blur(80px);
+            border-radius: 50%;
+            z-index: -1;
+            opacity: 0.4;
+            animation: move 20s infinite alternate;
+        }
+
+        .blob-2 {
+            background: linear-gradient(135deg, #0ea5e9 0%, #22d3ee 100%);
+            right: 10%;
+            top: 10%;
+            animation-delay: -5s;
+        }
+
+        @keyframes move {
+            from { transform: translate(-10%, -10%) scale(1); }
+            to { transform: translate(10%, 10%) scale(1.1); }
+        }
+
+        /* Glass Card */
+        .glass-card {
+            width: 90%;
+            max-width: 700px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 28px;
+            padding: 40px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+
+        header {
+            margin-bottom: 30px;
+            text-align: left;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+            background: linear-gradient(to right, #fff, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            background: rgba(99, 102, 241, 0.15);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 100px;
+            color: #818cf8;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 12px;
+        }
+
+        /* Input Styling */
+        .input-wrapper {
+            position: relative;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 18px;
+            border: 1px solid var(--glass-border);
+            transition: all 0.3s ease;
+        }
+
+        .input-wrapper:focus-within {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px var(--primary-glow);
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 220px;
+            background: transparent;
+            border: none;
+            padding: 20px;
+            color: #fff;
+            font-size: 1.05rem;
+            line-height: 1.6;
+            resize: none;
+            outline: none;
+        }
+
+        /* Button Styling */
+        .copy-btn {
+            margin-top: 25px;
+            width: 100%;
+            padding: 18px;
+            border-radius: 16px;
+            border: none;
+            background: #fff;
+            color: #020617;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .copy-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(255, 255, 255, 0.1);
+            background: #f1f5f9;
+        }
+
+        .copy-btn:active {
+            transform: translateY(0);
+        }
+
+        .copy-btn.success {
+            background: #10b981;
+            color: white;
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #fff;
+            color: #000;
+            padding: 12px 28px;
+            border-radius: 100px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* Icon Helper */
+        .icon { width: 20px; height: 20px; }
+    </style>
+</head>
+<body>
+
+    <div class="blob"></div>
+    <div class="blob blob-2"></div>
+
+    <div class="glass-card">
+        <header>
+            <div class="badge">AI Prompt Studio</div>
+            <h1>Email Architect</h1>
+            <p style="color: var(--text-dim); font-size: 0.9rem;">Refine customer issues into professional replies instantly.</p>
+        </header>
+
+        <div class="input-wrapper">
+            <textarea id="customerIssue" placeholder="Paste the customer's message or concern here..."></textarea>
+        </div>
+
+        <button class="copy-btn" id="mainAction">
+            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path>
+            </svg>
+            <span id="btnText">Copy Full Prompt</span>
+        </button>
+    </div>
+
+    <div id="toast" class="toast">
+        ✅ Prompt copied successfully
+    </div>
+
+    <script>
+        const btn = document.getElementById('mainAction');
+        const textArea = document.getElementById('customerIssue');
+        const btnText = document.getElementById('btnText');
+        const toast = document.getElementById('toast');
+
+        const PROMPT_TEMPLATE = `Rewrite this into an email format with a friendly and professional tone. Include an opening, acknowledgement, paraphrasing, and empathy (Only if applicable), along with reassurance, keep it short and simple. Rule for AI: Do not add any ai indications like #, * or — or ;.\n\nCUSTOMER ISSUE > `;
+
+        btn.addEventListener('click', async () => {
+            const issue = textArea.value.trim();
+            
+            if (!issue) {
+                textArea.parentElement.style.borderColor = "#ef4444";
+                setTimeout(() => textArea.parentElement.style.borderColor = "var(--glass-border)", 1000);
+                return;
+            }
+
+            const finalPrompt = PROMPT_TEMPLATE + issue;
+
+            try {
+                await navigator.clipboard.writeText(finalPrompt);
+                
+                // Visual feedback
+                btn.classList.add('success');
+                btnText.innerText = "Copied to Clipboard!";
+                toast.classList.add('show');
+
+                setTimeout(() => {
+                    btn.classList.remove('success');
+                    btnText.innerText = "Copy Full Prompt";
+                    toast.classList.remove('show');
+                }, 2500);
+
+            } catch (err) {
+                console.error('Copy failed', err);
+            }
+        });
+
+        // Add "Enter to Copy" shortcut
+        textArea.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                btn.click();
+            }
+        });
+    </script>
+</body>
+</html>

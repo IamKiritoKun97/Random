@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Easybet Support Assistant | Raya</title>
+    <!-- Premium Favicon (Blue Circle) -->
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>E</text></svg>">
+   
+    <style>
+        :root {
+            --bg-color: #ffffff;
+            --card-bg: #ffffff;
+            --text-primary: #1a1a1a;
+            --text-secondary: #666666;
+            --accent: #0052FF;
+            --border: #f0f0f0;
+            --shadow: 0 20px 40px rgba(0,0,0,0.04);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #fafafa;
+            color: var(--text-primary);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .wrapper {
+            width: 100%;
+            max-width: 540px;
+            padding: 20px;
+        }
+
+        .app-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: var(--shadow);
+        }
+
+        .header {
+            margin-bottom: 32px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 0;
+            letter-spacing: -0.02em;
+        }
+
+        .header p {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-top: 8px;
+        }
+
+        .input-area {
+            margin-bottom: 24px;
+        }
+
+        label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 12px;
+            color: var(--text-secondary);
+        }
+
+        textarea {
+            width: 100%;
+            height: 140px;
+            padding: 16px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            font-size: 1rem;
+            font-family: inherit;
+            resize: none;
+            box-sizing: border-box;
+            transition: all 0.2s ease;
+            background: #fdfdfd;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+            background: #fff;
+            box-shadow: 0 0 0 4px rgba(0, 82, 255, 0.05);
+        }
+
+        .copy-btn {
+            width: 100%;
+            background: var(--text-primary);
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .copy-btn:hover {
+            background: #000;
+            transform: translateY(-1px);
+        }
+
+        .copy-btn:active {
+            transform: translateY(0);
+        }
+
+        .success-toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #1a1a1a;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-size: 0.875rem;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 100;
+        }
+
+        .success-toast.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .footer-note {
+            margin-top: 24px;
+            text-align: center;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+    </style>
+</head>
+<body>
+
+<div class="wrapper">
+    <div class="app-card">
+        <div class="header">
+            <h1></h1>
+            <p></p>
+        </div>
+
+        <div class="input-area">
+            <label for="inquiry">Customer Inquiry</label>
+            <textarea id="inquiry" placeholder="Paste customer message here..."></textarea>
+        </div>
+
+        <button class="copy-btn" onclick="generateAndCopy()">
+            Copy Prompt
+        </button>
+
+        <div class="footer-note">
+            
+        </div>
+    </div>
+</div>
+
+<div id="toast" class="success-toast">Copied to clipboard!</div>
+
+<script>
+    const PROMPT_CONTEXT = `Rewrite this into a chat format
+When responding to customers in chat, follow these steps:
+
+Opening line (default):  
+Thank you for contacting Easybet Support. My name is Raya and I will be your support today.
+
+Paraphrase first:  
+Restate the customer’s concern in simple words to show you understood. Keep it short and clear.
+
+Acknowledge and confirm:  
+After paraphrasing, ask for confirmation with phrases like:
+Is that correct?
+Is that right?
+Did I understand you correctly?
+Am I getting this right?
+Do I have that correct?
+Is that what you mean?
+Did I capture your concern correctly?
+Is that accurate?
+Am I following you correctly?
+Does that sound right to you?
+
+Empathy (if needed):  
+If the customer is upset or confused, show understanding and care. Example:
+I understand this can be frustrating.
+I’m sorry you’re experiencing this.
+
+Reassurance:  
+Let the customer know you will help resolve the issue. Example:
+Don’t worry, I’ll guide you through this.
+I’ll make sure we find a solution.
+You’re in good hands, I’ll help you.
+I’ll take care of this for you.
+I’ll do my best to resolve this quickly.
+Rest assured, I’ll support you step by step.
+I’ll help you sort this out.
+I’ll make sure you’re not alone in this.
+I’ll work with you until it’s fixed.
+I’ll stay with you until we solve it.
+
+Keep it simple:  
+Use short sentences and easy words so even customers with limited English can understand.
+
+Give me at least 3 probing questions put them in a bulleted lists
+- If you detect withdrawal make sure to ask the exact amount and the date in one question.
+- OZOW should always in capital form
+- Always use these below
+Kindly, 
+would you mind, 
+may I ask, 
+could you, 
+If you don't mind, 
+Would it be possible,
+I'd appreciate if it
+It would help if 
+At your convenience
+When you have a moment
+
+Promo/Bonus Guide:
+Losing Leg Refund, 150% First Deposit Match, Lucky Streak Bonus, Refer a Friend Bonus, 10%Cashback Slots Bonus, 10% Aviator Cashback Bonus, 50% Win Boost ( Aviator ), Fica Verified Promo, 15% Cashback on Sports and Lucky numbers, R500 First Bet Match, Birthday Bonus, R50 Sign up bonus, 15% Cashback for Sports, 15% Cashback for Luck Numbers, 15% Skyward Daily Cash Back.
+
+Always provide the link but make sure it's relevant:
+https://easybet.co.za/page/skyward-15-cashback
+https://easybet.co.za/page/losing-leg
+https://easybet.co.za/page/aviator-welcome-bonus
+https://easybet.co.za/page/refer-friend-200
+https://easybet.co.za/page/aviator-10cashback
+https://easybet.co.za/page/r50-sign-up-bonus
+https://easybet.co.za/page/lucky-streak
+https://easybet.co.za/page/bdaybonusbet
+https://easybet.co.za/page/early-cash-out
+https://easybet.co.za/page/10-cash-back-slots
+https://easybet.co.za/page/pick-ten-results
+https://easybet.co.za/page/r500-first-bet-match
+https://easybet.co.za/page/cash-back-lotto
+https://easybet.co.za/page/cash-back
+https://easybet.co.za/page/prize-drops-thursday
+https://easybet.co.za/page/voucher-hunt
+https://easybet.co.za/page/deposit-match
+https://easybet.co.za/page/guaranteed-saturday-bonus
+https://easybet.co.za/page/voucher-drop
+
+If you detect the account is disabled or a duplicate, add this exactly:
+After reviewing your account, we have identified that you have created multiple accounts with us. As stated in our terms and conditions, we only allow one betting account per customer.
+
+To resolve this matter, we need you to provide a valid explanation as to why you created more than one account. Once we receive your explanation, we will review it and determine the next steps to reactivate your account.
+
+Tone:  
+Always stay friendly, professional, cheerful, and supportive.
+
+Rule for AI: Do not add any ai indications like #, * or — or ;.
+
+CUSTOMER ISSUE > `;
+
+    function generateAndCopy() {
+        const inquiry = document.getElementById('inquiry').value;
+        const fullText = PROMPT_CONTEXT + (inquiry || "[No inquiry provided]");
+        
+        navigator.clipboard.writeText(fullText).then(() => {
+            const toast = document.getElementById('toast');
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2500);
+        });
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,324 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Easybet Premium | Time Sync</title>
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;900&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg: #020408;
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --accent-sa: #00f2fe;
+            --accent-ph: #4facfe;
+            --gold: #facc15;
+            --text: #ffffff;
+            --text-dim: #94a3b8;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+
+        body {
+            background-color: var(--bg);
+            background-image: 
+                radial-gradient(circle at 0% 0%, rgba(0, 242, 254, 0.12) 0%, transparent 40%),
+                radial-gradient(circle at 100% 100%, rgba(250, 204, 21, 0.06) 0%, transparent 40%);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            backdrop-filter: blur(30px);
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 40px;
+            padding: 50px 40px;
+            box-shadow: 0 50px 100px rgba(0,0,0,0.8);
+        }
+
+        /* Responsive Header */
+        .day-display {
+            text-align: center;
+            margin-bottom: 45px;
+        }
+
+        .day-display h2 {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            color: var(--text-dim);
+            margin-bottom: 10px;
+        }
+
+        .day-display .main-day {
+            font-size: 3.5rem;
+            font-weight: 900;
+            background: linear-gradient(to bottom, #fff 30%, var(--text-dim));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 10px 20px rgba(0,0,0,0.3);
+        }
+
+        .day-comparison {
+            font-size: 0.9rem;
+            color: var(--gold);
+            font-weight: 600;
+            margin-top: 5px;
+            min-height: 1.2rem;
+        }
+
+        /* Clock Grid */
+        .clock-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .clock-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--glass-border);
+            padding: 35px 20px;
+            border-radius: 28px;
+            text-align: center;
+            position: relative;
+            transition: transform 0.3s ease;
+        }
+
+        .clock-card:hover { transform: translateY(-5px); border-color: rgba(255,255,255,0.15); }
+
+        .country-label {
+            font-size: 0.7rem;
+            letter-spacing: 3px;
+            color: var(--text-dim);
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .time {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 2.8rem;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .date {
+            font-size: 1.1rem;
+            color: var(--text-dim);
+            font-weight: 400;
+        }
+
+        /* Bonus Section */
+        .bonus-title {
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            color: var(--gold);
+            margin-bottom: 20px;
+            padding-left: 10px;
+            border-left: 3px solid var(--gold);
+        }
+
+        .bonus-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 15px;
+        }
+
+        .bonus-card {
+            background: rgba(255,255,255,0.01);
+            border: 1px solid var(--glass-border);
+            padding: 22px;
+            border-radius: 20px;
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .bonus-card h4 {
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .bonus-card p { font-size: 0.85rem; color: #94a3b8; line-height: 1.5; }
+
+        .validity-tag {
+            display: inline-block;
+            margin-top: 15px;
+            font-size: 0.65rem;
+            color: var(--text-dim);
+            background: rgba(255,255,255,0.05);
+            padding: 4px 10px;
+            border-radius: 6px;
+        }
+
+        /* Highlighting Styles */
+        .bonus-card.active {
+            border-color: var(--gold);
+            background: rgba(250, 204, 21, 0.08);
+            box-shadow: 0 0 30px rgba(250, 204, 21, 0.05);
+        }
+
+        .bonus-card.active h4 { color: var(--gold); }
+
+        .active-label {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: var(--gold);
+            color: #000;
+            font-size: 0.6rem;
+            font-weight: 900;
+            padding: 2px 8px;
+            border-radius: 4px;
+            display: none;
+        }
+
+        .bonus-card.active .active-label { display: block; }
+
+        @media (max-width: 650px) {
+            .clock-grid { grid-template-columns: 1fr; }
+            .main-day { font-size: 2.5rem; }
+            .time { font-size: 2.2rem; }
+            .container { padding: 30px 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="day-display">
+            <h2>South Africa and Philippines Today is</h2>
+            <div class="main-day" id="today-name">...</div>
+            <div class="day-comparison" id="day-compare"></div>
+        </div>
+
+        <div class="clock-grid">
+            <!-- South Africa -->
+            <div class="clock-card">
+                <div class="country-label">🇿🇦 SOUTH AFRICA (SAST)</div>
+                <div class="time" id="sa-time">--:--:-- --</div>
+                <div class="date" id="sa-date">--/--/----</div>
+            </div>
+
+            <!-- Philippines -->
+            <div class="clock-card">
+                <div class="country-label">🇵🇭 PHILIPPINES (PHT)</div>
+                <div class="time" id="ph-time">--:--:-- --</div>
+                <div class="date" id="ph-date">--/--/----</div>
+            </div>
+        </div>
+
+        <div class="bonus-title">EXCLUSIVE EASYBET BONUSES</div>
+        
+        <div class="bonus-grid">
+            <!-- Thursday Cashback -->
+            <a href="https://easybet.co.za/page/cash-back" target="_blank" class="bonus-card" id="card-thursday">
+                <div class="active-label">CLAIM NOW</div>
+                <h4>💰 Cashback Bonus</h4>
+                <p>Credited every Thursday. Calculated on your Monday–Sunday play.</p>
+                <span class="validity-tag">⏱ Valid for 5 days</span>
+            </a>
+
+            <!-- Monday Refer a Friend -->
+            <a href="https://easybet.co.za/page/refer-friend-200" target="_blank" class="bonus-card" id="card-monday">
+                <div class="active-label">CLAIM NOW</div>
+                <h4>👥 Refer a Friend</h4>
+                <p>Credited every Monday after review. Get R200 for every friend.</p>
+                <span class="validity-tag">⏱ Valid for 7 days</span>
+            </a>
+
+            <!-- Daily Streak -->
+            <a href="https://easybet.co.za/page/lucky-streak" target="_blank" class="bonus-card active">
+                <h4>🔥 Lucky Streak</h4>
+                <p>Credited after 7 consecutive qualifying days. Keep the streak alive!</p>
+                <span class="validity-tag">⏱ Valid for 24 hours</span>
+            </a>
+
+            <!-- Losing Leg -->
+            <a href="https://easybet.co.za/page/losing-leg" target="_blank" class="bonus-card">
+                <h4>🔄 Losing Leg Refund</h4>
+                <p>Get your stake back if one leg lets you down on your multi-bet.</p>
+                <span class="validity-tag">⏱ Valid for 7 days</span>
+            </a>
+
+            <!-- Birthday -->
+            <a href="https://easybet.co.za/page/bdaybonusbet" target="_blank" class="bonus-card">
+                <h4>🎂 Birthday Bonus</h4>
+                <p>A special gift on your big day for FICA verified users.</p>
+                <span class="validity-tag">⏱ Valid for 24 hours</span>
+            </a>
+        </div>
+    </div>
+
+    <script>
+        function updateAll() {
+            const now = new Date();
+
+            // Config for 12-hour time and MM/DD/YYYY date
+            const timeOptions = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true };
+            const dateOptions = { month: '2-digit', day: '2-digit', year: 'numeric' };
+
+            // SA Time Logic
+            const saStr = now.toLocaleString("en-US", { timeZone: "Africa/Johannesburg" });
+            const saDate = new Date(saStr);
+            
+            // PH Time Logic
+            const phStr = now.toLocaleString("en-US", { timeZone: "Asia/Manila" });
+            const phDate = new Date(phStr);
+
+            // Update Clocks
+            document.getElementById('sa-time').textContent = saDate.toLocaleTimeString('en-US', timeOptions);
+            document.getElementById('sa-date').textContent = saDate.toLocaleDateString('en-US', dateOptions);
+
+            document.getElementById('ph-time').textContent = phDate.toLocaleTimeString('en-US', timeOptions);
+            document.getElementById('ph-date').textContent = phDate.toLocaleDateString('en-US', dateOptions);
+
+            // Update Main Day Header
+            const saDay = saDate.toLocaleDateString('en-US', { weekday: 'long' }).toUpperCase();
+            const phDay = phDate.toLocaleDateString('en-US', { weekday: 'long' }).toUpperCase();
+            
+            const mainHeader = document.getElementById('today-name');
+            const compareHeader = document.getElementById('day-compare');
+
+            if (saDay === phDay) {
+                mainHeader.textContent = saDay;
+                compareHeader.textContent = "Philippines is 6 hours ahead";
+            } else {
+                mainHeader.textContent = `${saDay} / ${phDay}`;
+                compareHeader.textContent = `PH is already on ${phDay}`;
+            }
+
+            // Update Bonus Highlighting (Based on SA Day for Easybet)
+            const cards = ['card-thursday', 'card-monday'];
+            cards.forEach(id => document.getElementById(id).classList.remove('active'));
+
+            if (saDay === "THURSDAY") {
+                document.getElementById('card-thursday').classList.add('active');
+            } else if (saDay === "MONDAY") {
+                document.getElementById('card-monday').classList.add('active');
+            }
+        }
+
+        // Initialize and set interval
+        setInterval(updateAll, 1000);
+        updateAll();
+    </script>
+</body>
+</html>

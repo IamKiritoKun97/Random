@@ -1,25 +1,24 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Easybet Premium | Time Sync</title>
-    <!-- Favicon -->
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>">
+    <title>SyncTime | Premium Easybet Dashboard</title>
+    
+    <!-- Unique Premium SVG Favicon (Geometric Gold Clock) -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><defs><linearGradient id='g' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' style='stop-color:%23f6d365;stop-opacity:1' /><stop offset='100%' style='stop-color:%23fda085;stop-opacity:1' /></linearGradient></defs><circle cx='50' cy='50' r='45' stroke='url(%23g)' stroke-width='8' fill='none'/><path d='M50 20 V50 H70' stroke='url(%23g)' stroke-width='8' stroke-linecap='round' fill='none'/></svg>">
     
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;900&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
 
     <style>
         :root {
-            --bg: #020408;
+            --bg: #04060b;
             --glass: rgba(255, 255, 255, 0.03);
-            --glass-border: rgba(255, 255, 255, 0.08);
-            --accent-sa: #00f2fe;
-            --accent-ph: #4facfe;
-            --gold: #facc15;
-            --text: #ffffff;
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --gold: #f1c40f;
+            --cyan: #00d2ff;
+            --text-main: #ffffff;
             --text-dim: #94a3b8;
         }
 
@@ -28,9 +27,9 @@
         body {
             background-color: var(--bg);
             background-image: 
-                radial-gradient(circle at 0% 0%, rgba(0, 242, 254, 0.12) 0%, transparent 40%),
-                radial-gradient(circle at 100% 100%, rgba(250, 204, 21, 0.06) 0%, transparent 40%);
-            color: var(--text);
+                radial-gradient(circle at 5% 5%, rgba(0, 210, 255, 0.1) 0%, transparent 40%),
+                radial-gradient(circle at 95% 95%, rgba(241, 196, 15, 0.08) 0%, transparent 40%);
+            color: var(--text-main);
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -40,8 +39,8 @@
 
         .container {
             width: 100%;
-            max-width: 900px;
-            backdrop-filter: blur(30px);
+            max-width: 950px;
+            backdrop-filter: blur(25px);
             background: var(--glass);
             border: 1px solid var(--glass-border);
             border-radius: 40px;
@@ -49,221 +48,186 @@
             box-shadow: 0 50px 100px rgba(0,0,0,0.8);
         }
 
-        /* Responsive Header */
-        .day-display {
+        /* Dynamic Day Header */
+        .day-header {
             text-align: center;
-            margin-bottom: 45px;
+            margin-bottom: 50px;
         }
 
-        .day-display h2 {
+        .day-header h2 {
             font-size: 0.8rem;
             text-transform: uppercase;
-            letter-spacing: 5px;
+            letter-spacing: 6px;
             color: var(--text-dim);
             margin-bottom: 10px;
         }
 
-        .day-display .main-day {
-            font-size: 3.5rem;
+        .day-header .day-text {
+            font-size: 3.8rem;
             font-weight: 900;
-            background: linear-gradient(to bottom, #fff 30%, var(--text-dim));
+            background: linear-gradient(to bottom, #fff, #444);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            text-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            line-height: 1;
         }
 
-        .day-comparison {
-            font-size: 0.9rem;
-            color: var(--gold);
-            font-weight: 600;
-            margin-top: 5px;
-            min-height: 1.2rem;
-        }
-
-        /* Clock Grid */
+        /* Clocks */
         .clock-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 25px;
-            margin-bottom: 40px;
+            margin-bottom: 45px;
         }
 
         .clock-card {
             background: rgba(255, 255, 255, 0.02);
             border: 1px solid var(--glass-border);
             padding: 35px 20px;
-            border-radius: 28px;
+            border-radius: 30px;
             text-align: center;
-            position: relative;
-            transition: transform 0.3s ease;
+            transition: all 0.3s ease;
         }
 
-        .clock-card:hover { transform: translateY(-5px); border-color: rgba(255,255,255,0.15); }
+        .clock-card:hover { border-color: rgba(255,255,255,0.2); transform: translateY(-3px); }
 
-        .country-label {
-            font-size: 0.7rem;
-            letter-spacing: 3px;
-            color: var(--text-dim);
-            margin-bottom: 15px;
-            font-weight: 700;
-        }
+        .country { font-size: 0.7rem; letter-spacing: 3px; color: var(--text-dim); margin-bottom: 15px; font-weight: 700; }
+        .time { font-family: 'JetBrains Mono', monospace; font-size: 2.8rem; font-weight: 500; margin-bottom: 5px; }
+        .date { font-size: 1.1rem; color: var(--text-dim); }
 
-        .time {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 2.8rem;
-            font-weight: 500;
-            margin-bottom: 8px;
-        }
-
-        .date {
-            font-size: 1.1rem;
-            color: var(--text-dim);
-            font-weight: 400;
-        }
-
-        /* Bonus Section */
-        .bonus-title {
+        /* Bonus Cards */
+        .bonus-section-title {
             font-size: 0.8rem;
             letter-spacing: 2px;
             color: var(--gold);
-            margin-bottom: 20px;
-            padding-left: 10px;
+            margin-bottom: 25px;
+            padding-left: 15px;
             border-left: 3px solid var(--gold);
         }
 
         .bonus-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 15px;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
         }
 
         .bonus-card {
-            background: rgba(255,255,255,0.01);
+            background: rgba(0,0,0,0.3);
             border: 1px solid var(--glass-border);
-            padding: 22px;
-            border-radius: 20px;
+            padding: 25px;
+            border-radius: 24px;
             text-decoration: none;
             color: inherit;
-            transition: all 0.3s ease;
             position: relative;
+            transition: 0.3s;
         }
 
-        .bonus-card h4 {
-            font-size: 1.1rem;
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .bonus-card p { font-size: 0.85rem; color: #94a3b8; line-height: 1.5; }
-
-        .validity-tag {
-            display: inline-block;
-            margin-top: 15px;
-            font-size: 0.65rem;
-            color: var(--text-dim);
-            background: rgba(255,255,255,0.05);
-            padding: 4px 10px;
-            border-radius: 6px;
-        }
-
-        /* Highlighting Styles */
-        .bonus-card.active {
+        .bonus-card.highlight {
             border-color: var(--gold);
-            background: rgba(250, 204, 21, 0.08);
-            box-shadow: 0 0 30px rgba(250, 204, 21, 0.05);
+            background: rgba(241, 196, 15, 0.08);
+            box-shadow: 0 0 40px rgba(241, 196, 15, 0.1);
         }
 
-        .bonus-card.active h4 { color: var(--gold); }
-
-        .active-label {
+        .bonus-card h4 { font-size: 1.15rem; margin-bottom: 10px; color: var(--gold); }
+        .bonus-card p { font-size: 0.85rem; color: #cbd5e1; line-height: 1.6; }
+        
+        .status-tag {
             position: absolute;
-            top: 15px;
-            right: 15px;
-            background: var(--gold);
-            color: #000;
+            top: 20px;
+            right: 20px;
             font-size: 0.6rem;
             font-weight: 900;
-            padding: 2px 8px;
-            border-radius: 4px;
+            padding: 3px 10px;
+            border-radius: 6px;
+            background: var(--gold);
+            color: #000;
             display: none;
         }
 
-        .bonus-card.active .active-label { display: block; }
+        .highlight .status-tag { display: block; }
+
+        .footer-info {
+            margin-top: 40px;
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            padding-top: 20px;
+            border-top: 1px solid var(--glass-border);
+        }
 
         @media (max-width: 650px) {
             .clock-grid { grid-template-columns: 1fr; }
-            .main-day { font-size: 2.5rem; }
+            .day-text { font-size: 2.5rem; }
             .time { font-size: 2.2rem; }
-            .container { padding: 30px 20px; }
         }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <div class="day-display">
-            <h2>South Africa and Philippines Today is</h2>
-            <div class="main-day" id="today-name">...</div>
-            <div class="day-comparison" id="day-compare"></div>
+        <div class="day-header">
+            <h2 id="comparison-text">South Africa and Philippines Today is</h2>
+            <div class="day-text" id="main-day">THURSDAY</div>
         </div>
 
         <div class="clock-grid">
             <!-- South Africa -->
             <div class="clock-card">
-                <div class="country-label">🇿🇦 SOUTH AFRICA (SAST)</div>
+                <div class="country">🇿🇦 SOUTH AFRICA (SAST)</div>
                 <div class="time" id="sa-time">--:--:-- --</div>
                 <div class="date" id="sa-date">--/--/----</div>
             </div>
 
             <!-- Philippines -->
             <div class="clock-card">
-                <div class="country-label">🇵🇭 PHILIPPINES (PHT)</div>
+                <div class="country">🇵🇭 PHILIPPINES (PHT)</div>
                 <div class="time" id="ph-time">--:--:-- --</div>
                 <div class="date" id="ph-date">--/--/----</div>
             </div>
         </div>
 
-        <div class="bonus-title">EXCLUSIVE EASYBET BONUSES</div>
-        
+        <div class="bonus-section-title">ACTIVE EASYBET PROMOTIONS</div>
+
         <div class="bonus-grid">
-            <!-- Thursday Cashback -->
+            <!-- Updated Cashback Bonus -->
             <a href="https://easybet.co.za/page/cash-back" target="_blank" class="bonus-card" id="card-thursday">
-                <div class="active-label">CLAIM NOW</div>
-                <h4>💰 Cashback Bonus</h4>
-                <p>Credited every Thursday. Calculated on your Monday–Sunday play.</p>
-                <span class="validity-tag">⏱ Valid for 5 days</span>
+                <div class="status-tag">AVAILABLE NOW</div>
+                <h4>💰 15% Weekly Cashback</h4>
+                <p>15% Cash Back in Bonus Bets on your net losing Sports credited every Thursday at 12PM!</p>
+                <div style="margin-top:15px; font-size:0.7rem; color:var(--text-dim);">⏱ Valid for 5 days</div>
             </a>
 
-            <!-- Monday Refer a Friend -->
+            <!-- Refer a Friend -->
             <a href="https://easybet.co.za/page/refer-friend-200" target="_blank" class="bonus-card" id="card-monday">
-                <div class="active-label">CLAIM NOW</div>
-                <h4>👥 Refer a Friend</h4>
-                <p>Credited every Monday after review. Get R200 for every friend.</p>
-                <span class="validity-tag">⏱ Valid for 7 days</span>
+                <div class="status-tag">AVAILABLE NOW</div>
+                <h4>👥 Refer a Friend Bonus</h4>
+                <p>Credited every Monday after review. Ensure FICA verification is complete.</p>
+                <div style="margin-top:15px; font-size:0.7rem; color:var(--text-dim);">⏱ Valid for 7 days</div>
             </a>
 
-            <!-- Daily Streak -->
-            <a href="https://easybet.co.za/page/lucky-streak" target="_blank" class="bonus-card active">
-                <h4>🔥 Lucky Streak</h4>
-                <p>Credited after 7 consecutive qualifying days. Keep the streak alive!</p>
-                <span class="validity-tag">⏱ Valid for 24 hours</span>
+            <!-- Lucky Streak -->
+            <a href="https://easybet.co.za/page/lucky-streak" target="_blank" class="bonus-card highlight">
+                <h4>🔥 Lucky Streak Bonus</h4>
+                <p>Credited after completing 7 consecutive qualifying days of betting.</p>
+                <div style="margin-top:15px; font-size:0.7rem; color:var(--text-dim);">⏱ Valid for 24 hours</div>
             </a>
 
             <!-- Losing Leg -->
             <a href="https://easybet.co.za/page/losing-leg" target="_blank" class="bonus-card">
                 <h4>🔄 Losing Leg Refund</h4>
-                <p>Get your stake back if one leg lets you down on your multi-bet.</p>
-                <span class="validity-tag">⏱ Valid for 7 days</span>
+                <p>Credited automatically once you qualify. Get your stake back on multi-bets.</p>
+                <div style="margin-top:15px; font-size:0.7rem; color:var(--text-dim);">⏱ Valid for 7 days</div>
             </a>
 
             <!-- Birthday -->
             <a href="https://easybet.co.za/page/bdaybonusbet" target="_blank" class="bonus-card">
                 <h4>🎂 Birthday Bonus</h4>
-                <p>A special gift on your big day for FICA verified users.</p>
-                <span class="validity-tag">⏱ Valid for 24 hours</span>
+                <p>Credited on your birthday if FICA verified beforehand. Enjoy your day!</p>
+                <div style="margin-top:15px; font-size:0.7rem; color:var(--text-dim);">⏱ Valid for 24 hours</div>
             </a>
+        </div>
+
+        <div class="footer-info">
+            Philippines is 6 hours ahead of South Africa • Syncing Real-Time
         </div>
     </div>
 
@@ -271,52 +235,62 @@
         function updateAll() {
             const now = new Date();
 
-            // Config for 12-hour time and MM/DD/YYYY date
-            const timeOptions = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true };
-            const dateOptions = { month: '2-digit', day: '2-digit', year: 'numeric' };
+            // Time Formatting (12 Hour)
+            const tOptions = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true };
+            // Date Formatting (MM/DD/YYYY)
+            const dOptions = { month: '2-digit', day: '2-digit', year: 'numeric' };
 
-            // SA Time Logic
+            // South Africa Logic
             const saStr = now.toLocaleString("en-US", { timeZone: "Africa/Johannesburg" });
             const saDate = new Date(saStr);
             
-            // PH Time Logic
+            // Philippines Logic
             const phStr = now.toLocaleString("en-US", { timeZone: "Asia/Manila" });
             const phDate = new Date(phStr);
 
-            // Update Clocks
-            document.getElementById('sa-time').textContent = saDate.toLocaleTimeString('en-US', timeOptions);
-            document.getElementById('sa-date').textContent = saDate.toLocaleDateString('en-US', dateOptions);
+            // Update UI Clocks
+            document.getElementById('sa-time').textContent = saDate.toLocaleTimeString('en-US', tOptions);
+            document.getElementById('sa-date').textContent = saDate.toLocaleDateString('en-US', dOptions);
+            
+            document.getElementById('ph-time').textContent = phDate.toLocaleTimeString('en-US', tOptions);
+            document.getElementById('ph-date').textContent = phDate.toLocaleDateString('en-US', dOptions);
 
-            document.getElementById('ph-time').textContent = phDate.toLocaleTimeString('en-US', timeOptions);
-            document.getElementById('ph-date').textContent = phDate.toLocaleDateString('en-US', dateOptions);
-
-            // Update Main Day Header
+            // Update Day Names
             const saDay = saDate.toLocaleDateString('en-US', { weekday: 'long' }).toUpperCase();
             const phDay = phDate.toLocaleDateString('en-US', { weekday: 'long' }).toUpperCase();
-            
-            const mainHeader = document.getElementById('today-name');
-            const compareHeader = document.getElementById('day-compare');
 
+            const mainDayEl = document.getElementById('main-day');
             if (saDay === phDay) {
-                mainHeader.textContent = saDay;
-                compareHeader.textContent = "Philippines is 6 hours ahead";
+                mainDayEl.textContent = saDay;
             } else {
-                mainHeader.textContent = `${saDay} / ${phDay}`;
-                compareHeader.textContent = `PH is already on ${phDay}`;
+                mainDayEl.textContent = `${saDay} / ${phDay}`;
             }
 
-            // Update Bonus Highlighting (Based on SA Day for Easybet)
-            const cards = ['card-thursday', 'card-monday'];
-            cards.forEach(id => document.getElementById(id).classList.remove('active'));
+            // Highlighting Logic based on South African Time
+            const cardThursday = document.getElementById('card-thursday');
+            const cardMonday = document.getElementById('card-monday');
 
+            // Reset
+            cardThursday.classList.remove('highlight');
+            cardMonday.classList.remove('highlight');
+
+            // Thursday 12PM Logic
             if (saDay === "THURSDAY") {
-                document.getElementById('card-thursday').classList.add('active');
-            } else if (saDay === "MONDAY") {
-                document.getElementById('card-monday').classList.add('active');
+                const hour = saDate.getHours();
+                if (hour >= 12) {
+                    cardThursday.classList.add('highlight');
+                    cardThursday.querySelector('.status-tag').textContent = "DISTRIBUTED @ 12PM";
+                } else {
+                    cardThursday.classList.add('highlight');
+                    cardThursday.querySelector('.status-tag').textContent = "PENDING 12PM";
+                }
+            }
+
+            if (saDay === "MONDAY") {
+                cardMonday.classList.add('highlight');
             }
         }
 
-        // Initialize and set interval
         setInterval(updateAll, 1000);
         updateAll();
     </script>

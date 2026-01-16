@@ -1,0 +1,767 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Easybet Script | Premium Manager</title>
+    <!-- Inter Font for modern feel -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --accent: #10b981;
+            --accent-glow: rgba(16, 185, 129, 0.4);
+            --bg-dark: #050505;
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+            --sidebar-width: 280px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            background-image: 
+                radial-gradient(circle at 0% 0%, rgba(16, 185, 129, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 100% 100%, rgba(16, 185, 129, 0.03) 0%, transparent 40%);
+            color: var(--text-main);
+            height: 100vh;
+            display: flex;
+            overflow: hidden;
+        }
+
+        /* Sidebar Glassmorphism */
+        aside {
+            width: var(--sidebar-width);
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid var(--glass-border);
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+            margin: 1rem;
+            border-radius: 20px;
+            height: calc(100vh - 2rem);
+        }
+
+        .brand {
+            padding: 2rem 1.5rem;
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .brand-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--accent);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--accent-glow);
+        }
+
+        .nav-wrapper {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+        }
+
+        .nav-wrapper::-webkit-scrollbar { width: 3px; }
+        .nav-wrapper::-webkit-scrollbar-thumb { background: var(--glass-border); border-radius: 10px; }
+
+        .group-label {
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            margin: 1.5rem 0 0.5rem 0.75rem;
+            opacity: 0.6;
+        }
+
+        .nav-link {
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.25rem;
+            cursor: pointer;
+            border-radius: 12px;
+            color: var(--text-dim);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            border: 1px solid transparent;
+        }
+
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-main);
+            padding-left: 1.25rem;
+        }
+
+        .nav-link.active {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        /* Main Content */
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 1rem 1rem 1rem 0;
+            position: relative;
+        }
+
+        header {
+            padding: 1.5rem 2rem;
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .search-container {
+            flex: 1;
+            max-width: 500px;
+            position: relative;
+        }
+
+        #searchInput {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
+            padding: 0.85rem 1.25rem;
+            border-radius: 14px;
+            color: var(--text-main);
+            font-size: 0.95rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        #searchInput:focus {
+            border-color: var(--accent);
+            background: rgba(16, 185, 129, 0.02);
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.1);
+        }
+
+        .content-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem 2rem;
+            scroll-behavior: smooth;
+        }
+
+        .content-area::-webkit-scrollbar { width: 5px; }
+        .content-area::-webkit-scrollbar-thumb { background: var(--glass-border); border-radius: 10px; }
+
+        /* CHANGED: Hide blocks by default for tab functionality */
+        .category-block {
+            display: none;
+            margin-bottom: 4rem;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .cat-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .cat-title::before {
+            content: '';
+            height: 6px;
+            width: 6px;
+            background: var(--accent);
+            border-radius: 50%;
+            box-shadow: 0 0 8px var(--accent);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 1rem;
+        }
+
+        .card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            padding: 1.5rem;
+            border-radius: 18px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            color: var(--text-dim);
+            line-height: 1.6;
+            font-size: 0.9rem;
+            position: relative;
+            overflow: hidden;
+            white-space: pre-wrap;
+        }
+
+        .card:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(16, 185, 129, 0.3);
+            color: var(--text-main);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5);
+        }
+
+        .card::after {
+            content: 'Click to copy';
+            position: absolute;
+            bottom: 0.5rem;
+            right: 1rem;
+            font-size: 0.7rem;
+            color: var(--accent);
+            opacity: 0;
+            transition: 0.3s;
+        }
+
+        .card:hover::after {
+            opacity: 1;
+        }
+
+        .highlight {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--accent);
+            padding: 0 2px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        /* Feedback UI */
+        #toast {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            background: var(--accent);
+            color: #fff;
+            padding: 0.85rem 1.75rem;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transform: translateY(-100px);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 2000;
+            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        #toast.show {
+            transform: translateY(0);
+        }
+
+        @media (max-width: 900px) {
+            body { flex-direction: column; }
+            aside { 
+                width: calc(100% - 2rem); 
+                height: auto; 
+                max-height: 250px;
+                margin-bottom: 0;
+            }
+            main { padding: 1rem; }
+            .grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <aside>
+        <div class="brand">
+            <div class="brand-dot"></div>
+            Easybet Script
+        </div>
+        <div class="nav-wrapper" id="sidebarNav"></div>
+    </aside>
+
+    <main>
+        <header>
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="Search for responses or keywords..." onkeyup="filterContent()">
+            </div>
+            <div style="font-size: 0.75rem; color: var(--text-dim); font-weight: 600;">
+                PREMIUM REPOSITORY
+            </div>
+        </header>
+
+        <div class="content-area" id="mainDisplay"></div>
+    </main>
+
+    <div id="toast">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        Copied to clipboard
+    </div>
+
+    <script>
+        const scriptData = [
+            {
+                group: "Chat Control",
+                categories: [
+                    { id: "hold", name: "Hold & Wait", items: [
+                        `Perfect! Rest assured that I will check that for you. Please bear with me for 3-5 minutes.`,
+                        `Thank you so much for your patience while waiting in line. I’m still working on your account, please allow me another 3-5 minutes. I will do my best to help you out with this.`,
+                        `Sorry to keep you waiting. I’m still checking all the necessary resources to better assist you with this issue. Kindly allow me about 3–5 minutes to get this sorted for you.`,
+                        `I truly appreciate your patience. I’m still reviewing the details to ensure I provide the best resolution. This will take about 3-5 more minutes.`,
+                        `Thank you for bearing with me. I’m carefully verifying the information on your account, and I’ll need another 3-5 minutes to complete this for you.`,
+                        `Thanks for staying on the line. I am currently consulting with my supervisor to ensure we have the correct information. Please give me another 3-5 minutes.`,
+                        `I appreciate your continued patience. I am just waiting for the system to refresh so I can finalize the update on your account. Please bear with me for 3-5 more minutes.`,
+                        `Almost there! I’m just conducting a final check on your request to make sure everything is perfect. May I have another 3-5 minutes of your time?`,
+                        `Thank you for holding. I’m still coordinating with our internal team to resolve this as quickly as possible. Please allow me an additional 3-5 minutes.`,
+                        `I am still here and actively looking into your concern. I just need a few more moments to cross-reference some details. Please bear with me for another 3-5 minutes.`
+                    ]}
+                ]
+            },
+            {
+                group: "Transactions",
+                categories: [
+                    { id: "withdraw_status", name: "Withdrawal Status", items: [
+                        `You’re checking on the status of your withdrawal, is that the case? I’m here to help you.`,
+                        `You’d like an update on your withdrawal, am I understanding this properly? I’ll be happy to assist.`,
+                        `Just to confirm, you’re asking about your withdrawal status, did I get that right?`,
+                        `It seems you’re inquiring about the progress of your withdrawal. Does that sound accurate?`,
+                        `You’re reaching out for information about your withdrawal, am I on the same page?`,
+                        `From what I understand, you want to know the status of your withdrawal. Is that what you’re referring to?`,
+                        `You’re requesting an update regarding your withdrawal. Is that the situation?`,
+                        `You’re following up on a withdrawal request, am I understanding you clearly?`,
+                        `It appears you’re seeking details about your withdrawal status. Is that what you meant?`,
+                        `You’re contacting us to check on your withdrawal. Is that the request?`
+                    ]},
+                    { id: "withdraw_time", name: "Withdrawal Timeframes", items: [
+                        `I understand you’d like to know how long a withdrawal usually takes to process, is that correct?`,
+                        `It looks like you’re checking on the expected timeframe for a withdrawal, am I getting that right?`,
+                        `I see you’re asking about how long withdrawals typically take, is that correct from your side?`,
+                        `You’re reaching out to confirm the processing time for a withdrawal, am I following you right?`,
+                        `From your message, it seems you want clarity on how long a withdrawal takes to be completed, is that right so far?`,
+                        `I understand you’re enquiring about the withdrawal turnaround time, am I understanding that correctly?`,
+                        `It appears you need information on withdrawal processing times, is that correct?`,
+                        `You’re asking about the duration it takes for a withdrawal to reflect, am I on the right track here?`,
+                        `Your message suggests you want to know the timeline for a withdrawal, is that correct on your end?`,
+                        `I see you’d like guidance on how long a withdrawal may take to process, am I getting this right?`
+                    ]}
+                ]
+            },
+{
+  group: "NOT RESPONDING",
+  categories: [
+    {
+      id: "chat_closure_statehere",
+      name: "Idle Spiel",
+      items: [
+        `It looks like we’ve been inactive for a bit, so I’ll go ahead and close the chat for now.
+
+I’m glad I was able to assist you with your inquiry about STATEHERE. If you need any further assistance, feel free to reach out — we’re always here to help!
+
+After this interaction, you may receive a quick survey about your experience. Your feedback means a lot to us and helps us continue improving the support we provide.
+
+You can also contact us via:
+Live Chat
+Email: help@easybet.co.za
+
+Thank you for choosing Easybet. Have a great day!`,
+
+`It looks like we’ve been inactive for a bit, so I’ll go ahead and close the chat for now. If you need any further assistance, feel free to reach out — we’re always here to help!
+
+After this interaction, you may receive a quick survey about your experience. Your feedback means a lot to us and helps us continue improving the support we provide.
+
+You can also contact us via:
+Live Chat
+Email: help@easybet.co.za
+
+Thank you for choosing Easybet. Have a great day!`
+       ]}
+                ]
+            },
+
+            {
+                group: "Account Security",
+                categories: [
+                    { id: "phone_change", name: "Phone Number Update", items: [
+                        `I understand you’d like to change the phone number on your account, is that correct? May I ask the reason for this change and what new number we should add?`,
+                        `It looks like you’re requesting an update to your phone number, am I getting that right? Kindly let me know the reason for the change and the new number to update.`,
+                        `I see you want to update your registered phone number, is that correct from your side? Would you mind sharing the reason and the new number we should use?`,
+                        `You’re reaching out to change your phone number on the account, am I following you right? Please let me know why and which new number should be added.`,
+                        `From your message, it seems you want to update your contact number, is that right so far? May I ask the reason for the change and the new phone number?`,
+                        `I understand you’re asking to modify your phone number details, am I understanding that correctly? Could you please provide the reason and the new number to reflect?`,
+                        `It appears you need assistance changing your phone number, is that correct? Kindly advise the reason for this change and the new number we should add.`,
+                        `You’re enquiring about updating your phone number, am I on the right track here? Would it be possible to share the reason and the new contact number?`,
+                        `Your message suggests you want to revise your phone number, is that correct on your end? Please let me know why and what new number should be updated.`,
+                        `I see you’d like guidance on changing your phone number, am I getting this right? May I ask the reason and the new number to add to the account?`
+                    ]},
+                    { id: "email_change", name: "Email Address Update", items: [
+                        `I understand you’d like to change the email address linked to your account, is that correct? May I ask the reason for the change and the new email to add?`,
+                        `It looks like you’re requesting an update to your email address, am I getting that right? Kindly let me know why and what new email we should use.`,
+                        `I see you want to update your registered email address, is that correct from your side? Would you mind sharing the reason and the new email address?`,
+                        `You’re reaching out to modify your email details, am I following you right? Please let me know the reason and the new email to update.`,
+                        `From your message, it seems you want to change the email on your account, is that right so far? May I ask why and which email should be added?`,
+                        `I understand you’re asking to update your email information, am I understanding that correctly? Could you please provide the reason and the new email address?`,
+                        `It appears you need help changing your email address, is that correct? Kindly advise the reason for this change and the new email to reflect.`,
+                        `You’re enquiring about updating your email address, am I on the right track here? Would it be possible to share the reason and the new email?`,
+                        `Your message indicates you want to revise your email details, is that correct on your end? Please let me know why and what email we should add.`,
+                        `I see you’d like assistance with changing your email address, am I getting this right? May I ask the reason and the updated email to use?`
+                    ]},
+                    { id: "address_change", name: "Address Update", items: [
+                        `I understand you’d like to change the address on your account, is that correct? May I ask the reason for this change and the new address to add?`,
+                        `It looks like you’re requesting an update to your registered address, am I getting that right? Kindly let me know why and what new address should be updated.`,
+                        `I see you want to update your address details, is that correct from your side? Would you mind sharing the reason and the new address?`,
+                        `You’re reaching out to modify your address information, am I following you right? Please let me know the reason and the new address to reflect.`,
+                        `From your message, it seems you want to change the address linked to your account, is that right so far? May I ask why and which address we should add?`,
+                        `I understand you’re asking to update your residential address, am I understanding that correctly? Could you please provide the reason and the new address?`,
+                        `It appears you need assistance changing your address details, is that correct? Kindly advise the reason for the update and the new address.`,
+                        `You’re enquiring about updating your address on the account, am I on the right track here? Would it be possible to share the reason and the new address?`,
+                        `Your message suggests you want to revise your address information, is that correct on your end? Please let me know why and what address should be updated.`,
+                        `I see you’d like guidance on changing your address details, am I getting this right? May I ask the reason and the updated address to add?`
+                    ]},
+                    { id: "bank_change", name: "Bank Account Update", items: [
+                        `I understand you’d like to change the bank account number linked to your account, is that correct? May I ask the reason for this change and the new bank account number we should add?`,
+                        `It looks like you’re requesting an update to your bank account details, am I getting that right? Kindly let me know the reason for the change and the new account number to update.`,
+                        `I see you want to update your registered bank account number, is that correct from your side? Would you mind sharing the reason and the new bank account number?`,
+                        `You’re reaching out to modify your bank account information, am I following you right? Please let me know the reason for the update and the new account number to add.`,
+                        `From your message, it seems you want to change the bank account number on your account, is that right so far? May I ask why and which new account number we should use?`,
+                        `I understand you’re asking to update your bank account details, am I understanding that correctly? Could you please provide the reason and the new bank account number?`,
+                        `It appears you need assistance changing your bank account number, is that correct? Kindly advise the reason for the change and the new account number to reflect.`,
+                        `You’re enquiring about updating your bank account number, am I on the right track here? Would it be possible to share the reason and the new account number?`,
+                        `Your message suggests you want to revise your bank account details, is that correct on your end? Please let me know why and what new bank account number should be added.`,
+                        `I see you’d like guidance on changing your bank account number, am I getting this right? May I ask the reason for the change and the updated account number to add?`
+                    ]},
+                    { id: "disabled", name: "Disabled / Duplicate", items: [
+                        `You’re reaching out regarding a disabled account. Is that correct?`,
+                        `I understand that you’re contacting us regarding your disabled account. I know how important it is to regain access as soon as possible, and I’m more than happy to assist you with this.`,
+                        
+			            `After reviewing your account, we have identified that you have created multiple accounts with us. As stated in our terms and conditions, we only allow one betting account per customer.
+
+To resolve this matter, we need you to provide a valid explanation as to why you created more than one account. Once we receive your explanation, we will review it and determine the next steps to reactivate your account.`,
+
+`Upon checking the account was disabled due to STATE_THE_REASON_HERE as I carefully reviewed the account. It is you who made a second account on Easybet.
+
+Please be aware that if any additional registrations are made using false information, Easybet reserves the right to immediately terminate the customer’s betting account and prevent future use of our services.
+
+For more details, please refer to this link: https://easybet.co.za/page/registration-queries/registration-duplicateaccount.`,
+
+
+`To proceed with your reactivation request, we require the following documents:
+
+A clear photo of your ID
+A selfie holding your ID
+A PDF version of your bank statement, showing your name, address, and account number. The statement must be recent (within the last three months) and cannot be a screenshot or photocopy.
+
+Once we receive the required documents, we’ll guide you through the next steps and ensure you get the help you need.`,
+
+`It looks like we’ve been inactive for a bit, so I’ll go ahead and close the chat for now. If you need any further assistance, feel free to reach out we’re always here to help!
+
+Just a quick recap: You contacted us regarding your disabled account, which was flagged due to a duplicate name and date of birth. To reactivate your account, we require your FICA documents as well as a selfie of you holding your ID. However, you were inactive before these could be provided.
+
+For more information, you can visit this link: https://easybet.co.za/page/registration-queries/registration-duplicateaccount
+
+Thank you for your time today, Sphamandla. We appreciate you. 
+
+After this interaction, you may receive a quick survey about your experience. Your feedback means a lot to us and helps us continue improving the support we provide. 
+
+You can also contact us via:
+Live Chat
+Email: help@easybet.co.za
+
+Thank for for choosing Easybet, Have a great day!`
+
+                    ]}
+                ]
+            },
+            {
+                group: "Bonuses & Promos",
+                categories: [
+                    { id: "refer", name: "Refer a Friend", items: [
+                        `From what I gather, you’re contacting us about the Refer a Friend bonus and want to check whether you qualify or see its status. Is that the case?`,
+                        `It seems you’re reaching out regarding the Refer a Friend bonus and would like to confirm your eligibility or its current status. Am I understanding this properly?`,
+                        `I understand that you’re asking about the Refer a Friend bonus and want to know if you qualify or check the progress. Does that match what you need help with?`,
+                        `You’re looking for assistance with the Refer a Friend bonus and want to verify your qualification or status. Is that what you’re referring to?`,
+                        `Based on your message, you’d like to review your Refer a Friend bonus eligibility or status. Am I on the same page?`,
+                        `It appears you’re inquiring about the Refer a Friend bonus and want to know whether you meet the requirements or its current standing. Does that sound like your concern?`,
+                        `From what I understand, you’re following up on the Refer a Friend bonus to check eligibility or status. Is that the situation?`,
+                        `You’re reaching out for information about the Refer a Friend bonus and whether you qualify or can track its status. Am I understanding you clearly?`,
+                        `It looks like you need help checking the Refer a Friend bonus to see if you qualify or to confirm its status. Is that what you meant?`,
+                        `You’re contacting us about the Refer a Friend bonus and would like to confirm eligibility or review its status. Does this align with your request?`,
+                        `From what I understand, you’re reaching out about the Refer a Friend bonus and would like to know if you qualify or check its status. Does that sound accurate?`
+                    ]},
+                    { id: "r50", name: "R50 Bonus", items: [
+                        `From what I gather, you’re contacting us about an R50 bonus and would like help identifying what it’s for or why it hasn’t appeared yet. Is that the situation?`,
+                        `It seems you’re reaching out regarding an R50 bonus and need assistance understanding its purpose or why it hasn’t reflected. Am I on the same page?`,
+                        `I understand that you’re asking about an R50 bonus and want to check what it relates to or why it hasn’t been credited yet. Does that sound accurate?`,
+                        `You’re inquiring about an R50 bonus and would like support determining its source or why it’s still missing. Is that what you’re referring to?`,
+                        `Based on your message, you’d like help reviewing an R50 bonus to see what it’s for or why it hasn’t shown yet. Am I understanding this properly?`,
+                        `It appears you’re following up on an R50 bonus and need clarification on its purpose or its current status. Is that the case?`,
+                        `From what I understand, you’re seeking assistance with an R50 bonus to find out what it’s linked to or why it hasn’t reflected. Does this match your concern?`,
+                        `You’re reaching out for help regarding an R50 bonus and want to know why it hasn’t been credited or what it applies to. Am I understanding you clearly?`,
+                        `It looks like you need assistance checking an R50 bonus to understand where it came from or why it hasn’t appeared yet. Is that what you meant?`,
+                        `You’re contacting us about an R50 bonus and would like help confirming its details or why it hasn’t reflected. Does this align with what you’re asking?`
+                    ]},
+                    { id: "match150", name: "150% Deposit Match", items: [
+                        `From what I gather, you’re inquiring about the 150% First Deposit Match bonus and would like assistance understanding how it works or if you’re eligible. Is that the case?`,
+                        `It appears you’re reaching out regarding the 150% First Deposit Match bonus and want help reviewing how it applies or whether you qualify. Am I understanding this properly?`,
+                        `I understand that you’re asking about the 150% First Deposit Match bonus and need help checking the mechanics or your eligibility. Is this what you need assistance with?`,
+                        `You’re contacting us about the 150% First Deposit Match bonus and would like clarification on how it works or if you meet the requirements. Is that what you’re referring to?`,
+                        `Based on your message, you’d like support with the 150% First Deposit Match bonus to understand how it works or confirm eligibility. Am I on the same page?`,
+                        `It seems you’re following up on the 150% First Deposit Match bonus and want to know how it works or whether you qualify. Is that the situation?`,
+                        `From what I can see, you’re seeking information about the 150% First Deposit Match bonus and would like help determining eligibility or understanding the process. Does this match your concern?`,
+                        `You’re looking for assistance with the 150% First Deposit Match bonus, including how it works or whether you qualify. Am I understanding you clearly?`,
+                        `It looks like you need help reviewing the 150% First Deposit Match bonus to check the requirements or how it applies. Is that what you meant?`,
+                        `You’re reaching out to learn more about the 150% First Deposit Match bonus and to see if you qualify. Is this what you’d like help with?`
+                    ]},
+                    { id: "losing_leg", name: "Losing Leg Refund", items: [
+                        `From what I understand, you’re reaching out about the Losing Leg Refund and would like help checking how it works or its status. Is that the case?`,
+                        `It seems you’re inquiring about the Losing Leg Refund and want assistance reviewing the details or eligibility. Am I understanding this properly?`,
+                        `You’re contacting us regarding the Losing Leg Refund and would like support checking whether it applies to your bet. Is that what you need help with?`,
+                        `Based on your message, you’d like more information about the Losing Leg Refund or help confirming if you qualify. Am I on the same page?`,
+                        `I understand that you’re asking about the Losing Leg Refund and want to know how it works or why it hasn’t reflected yet. Is this what you’re referring to?`,
+                        `It appears you’re following up on a Losing Leg Refund and would like help reviewing the outcome. Is that the situation?`,
+                        `You’re reaching out to check the status or requirements of the Losing Leg Refund. Does this match your concern?`,
+                        `From what I gather, you need assistance with the Losing Leg Refund to see if it applies to your bet. Am I understanding you clearly?`,
+                        `You’re looking for clarification regarding the Losing Leg Refund and whether it should be credited. Is that what you meant?`,
+                        `It looks like you’re seeking help with the Losing Leg Refund to understand how it applies or to check its status. Is that the request?`
+                    ]},
+                    { id: "lucky_streak", name: "Lucky Streak Bonus", items: [
+                        `I understand you’d like more information about the Lucky Streak Bonus. Is that what you’re looking for?`,
+                        `It looks like you’re trying to learn more about the Lucky Streak Bonus. Does that align with your enquiry?`,
+                        `I see you’re asking about the Lucky Streak Bonus. Would you like me to walk you through how it works?`,
+                        `You’re reaching out for more details about the Lucky Streak Bonus. Is this the bonus you need help with?`,
+                        `From your message, it seems you want to know more about the Lucky Streak Bonus. Is that the case?`,
+                        `I understand you’re interested in the Lucky Streak Bonus and how it applies. Am I following you correctly?`,
+                        `It appears you need additional information regarding the Lucky Streak Bonus. Is that what you’d like assistance with?`,
+                        `You’re looking for guidance on the Lucky Streak Bonus. Would you like me to explain the requirements?`,
+                        `Your enquiry mentions the Lucky Streak Bonus. Is this something you’d like me to check for you?`,
+                        `I see you’d like to know more about the Lucky Streak Bonus. Shall I help you review it?`
+                    ]},
+                    { id: "slots_cb", name: "🎰 10% Cashback Slots", items: [
+                        `I understand you’d like more information about the 10% Cashback Slots Bonus. Is this the bonus you’re referring to?`,
+                        `It looks like you’re asking about the 10% Cashback Slots Bonus. Would you like help reviewing how it works?`,
+                        `I see you’re interested in the 10% Cashback Slots Bonus. Is your goal to check eligibility or status?`,
+                        `You’re reaching out for details regarding the 10% Cashback Slots Bonus. Is this what you need assistance with?`,
+                        `From your message, it seems you want to know more about the 10% Cashback Slots Bonus. Does that match your concern?`,
+                        `I understand you’re looking for guidance on the 10% Cashback Slots Bonus. Would you like me to explain the conditions?`,
+                        `It appears you need assistance with the 10% Cashback Slots Bonus. Is this something you’d like me to look into?`,
+                        `You’re enquiring about the 10% Cashback Slots Bonus. Shall I help clarify how it’s credited?`,
+                        `Your message refers to the 10% Cashback Slots Bonus. Is this the bonus you’re following up on?`,
+                        `I see you’d like to learn more about the 10% Cashback Slots Bonus. May I go over the details with you?`
+                    ]},
+                    { id: "aviator_cb", name: "✈️ 10% Aviator Cashback", items: [
+                        `I understand you’d like more information about the 10% Aviator Cashback Bonus. Is that what you’re checking on?`,
+                        `It looks like you’re asking about the 10% Aviator Cashback Bonus. Would you like help reviewing how it applies?`,
+                        `I see you’re interested in learning more about the 10% Aviator Cashback Bonus. Is eligibility what you’d like to confirm?`,
+                        `You’re reaching out for details regarding the 10% Aviator Cashback Bonus. Is this the bonus you’re referring to?`,
+                        `From your message, it seems you want to know more about the 10% Aviator Cashback Bonus. Is that the situation?`,
+                        `I understand you’re looking for guidance on the 10% Aviator Cashback Bonus. Would you like me to explain the requirements?`,
+                        `It appears you need assistance with the 10% Aviator Cashback Bonus. Is this something you want me to check?`,
+                        `You’re enquiring about the 10% Aviator Cashback Bonus. Shall I help clarify how it’s credited?`,
+                        `Your message mentions the 10% Aviator Cashback Bonus. Is this what you need support with?`,
+                        `I see you’d like to learn more about the 10% Aviator Cashback Bonus. May I assist you further with this?`
+                    ]},
+                    { id: "aviator_boost", name: "🚀 50% Win Boost (Aviator)", items: [
+                        `I understand you’d like more information about the 50% Win Boost for Aviator. Is that what you’re enquiring about?`,
+                        `It looks like you’re asking about the 50% Win Boost on Aviator. Would you like help reviewing how it works?`,
+                        `I see you’re interested in the 50% Win Boost available on Aviator. Is eligibility what you’d like to confirm?`,
+                        `You’re reaching out for details regarding the 50% Win Boost for Aviator. Is this the offer you’re referring to?`,
+                        `From your message, it seems you want to know more about the 50% Win Boost on Aviator. Is that the case?`,
+                        `I understand you’re looking for guidance on the 50% Win Boost for Aviator. Would you like me to explain the terms?`,
+                        `It appears you need assistance with the 50% Win Boost on Aviator. Is this something you’d like me to check?`,
+                        `You’re enquiring about the 50% Win Boost for Aviator. Shall I walk you through how it applies?`,
+                        `Your message refers to the 50% Win Boost on Aviator. Is this the bonus you’re following up on?`,
+                        `I see you’d like to learn more about the 50% Win Boost for Aviator. May I assist you with the details?`
+                    ]},
+                    { id: "cb_sports_lucky", name: "15% Cashback (Sports & Lucky)", items: [
+                        `I understand you’re asking about the 15% Cashback on Sports and Lucky Numbers, is that correct?`,
+                        `It looks like your enquiry is about the 15% Cashback on Sports and Lucky Numbers, am I getting that right?`,
+                        `I see you’re looking for more details on the 15% Cashback for Sports and Lucky Numbers, is that correct on your end?`,
+                        `You’re reaching out regarding the 15% Cashback on Sports and Lucky Numbers, am I following you right?`,
+                        `From your message, it seems you want to know more about the 15% Cashback on Sports and Lucky Numbers, is that right so far?`,
+                        `I understand you’re interested in the 15% Cashback offer for Sports and Lucky Numbers, am I understanding that correctly?`,
+                        `It appears you need more information about the 15% Cashback on Sports and Lucky Numbers, is that the right promotion?`,
+                        `You’re enquiring about the 15% Cashback on Sports and Lucky Numbers, am I on the right track here?`,
+                        `Your message mentions the 15% Cashback on Sports and Lucky Numbers, is that correct from your side?`,
+                        `I see you’d like to learn more about the 15% Cashback on Sports and Lucky Numbers, am I getting this right?`
+                    ]},
+                    { id: "r500_match", name: "R500 First Bet Match", items: [
+                        `I understand you’re asking about the R500 First Bet Match, is that correct?`,
+                        `It looks like your enquiry is about the R500 First Bet Match, am I getting that right?`,
+                        `I see you’re looking for details on the R500 First Bet Match, is that correct from your side?`,
+                        `You’re reaching out regarding the R500 First Bet Match, am I following you right?`,
+                        `From your message, it seems you want to know more about the R500 First Bet Match, is that right so far?`,
+                        `I understand you’re interested in how the R500 First Bet Match works, am I understanding that correctly?`,
+                        `It appears you need more information about the R500 First Bet Match, is that the right promotion?`,
+                        `You’re enquiring about the R500 First Bet Match offer, am I on the right track here?`,
+                        `Your message mentions the R500 First Bet Match, is that correct on your end?`,
+                        `I see you’d like to learn more about the R500 First Bet Match, am I getting this right?`
+                    ]},
+                    { id: "birthday_bonus", name: "Birthday Bonus", items: [
+                        `I understand you’re asking about the Birthday Bonus, is that correct?`,
+                        `It looks like your enquiry is about the Birthday Bonus, am I getting that right?`,
+                        `I see you’re looking for details regarding the Birthday Bonus, is that correct from your side?`,
+                        `You’re reaching out about the Birthday Bonus offer, am I following you right?`,
+                        `From your message, it seems you want to know more about the Birthday Bonus, is that right so far?`,
+                        `I understand you’re interested in how the Birthday Bonus works, am I understanding that correctly?`,
+                        `It appears you need more information about the Birthday Bonus, is that the right promotion?`,
+                        `You’re enquiring about the Birthday Bonus, am I on the right track here?`,
+                        `Your message mentions the Birthday Bonus, is that correct on your end?`,
+                        `I see you’d like to learn more about the Birthday Bonus, am I getting this right?`
+                    ]},
+                    { id: "cb_sports", name: "15% Cashback (Sports)", items: [
+                        `I understand you’re asking about the 15% Cashback for Sports, is that correct?`,
+                        `It looks like your enquiry is about the 15% Cashback for Sports, am I getting that right?`,
+                        `I see you’re looking for more details on the 15% Cashback for Sports, is that correct from your side?`,
+                        `You’re reaching out regarding the 15% Cashback for Sports, am I following you right?`,
+                        `From your message, it seems you want to know more about the 15% Cashback for Sports, is that right so far?`,
+                        `I understand you’re interested in how the 15% Cashback for Sports works, am I understanding that correctly?`,
+                        `It appears you need more information about the 15% Cashback for Sports, is that the right promotion?`,
+                        `You’re enquiring about the 15% Cashback for Sports, am I on the right track here?`,
+                        `Your message mentions the 15% Cashback for Sports, is that correct on your end?`
+                    ]},
+                    { id: "cb_lucky", name: "15% Cashback (Lucky Numbers)", items: [
+                        `I understand you’re asking about the 15% Cashback for Lucky Numbers, is that correct?`,
+                        `It looks like your enquiry is about the 15% Cashback for Lucky Numbers, am I getting that right?`,
+                        `I see you’re looking for more details on the 15% Cashback for Lucky Numbers, is that correct from your side?`,
+                        `You’re reaching out regarding the 15% Cashback for Lucky Numbers, am I following you right?`,
+                        `From your message, it seems you want to know more about the 15% Cashback for Lucky Numbers, is that right so far?`,
+                        `I understand you’re interested in how the 15% Cashback for Lucky Numbers works, am I understanding that correctly?`,
+                        `It appears you need more information about the 15% Cashback for Lucky Numbers, is that the right promotion?`,
+                        `You’re enquiring about the 15% Cashback for Lucky Numbers, am I on the right track here?`,
+                        `Your message mentions the 15% Cashback for Lucky Numbers, is that correct on your end?`,
+                        `I see you’d like to learn more about the 15% Cashback for Lucky Numbers, am I getting this right?`
+                    ]}
+                ]
+            }
+        ];
+
+        const sidebar = document.getElementById('sidebarNav');
+        const mainDisplay = document.getElementById('mainDisplay');
+        const toast = document.getElementById('toast');
+
+        function init() {
+            let sideHTML = '';
+            let mainHTML = '';
+
+            scriptData.forEach(group => {
+                sideHTML += `<div class="group-label">${group.group}</div>`;
+                group.categories.forEach(cat => {
+                    sideHTML += `<div class="nav-link" id="nav-${cat.id}" data-cat="${cat.id}" onclick="showTab('${cat.id}', this)"><span>${cat.name}</span></div>`;
+                    
+                    mainHTML += `
+                        <div id="${cat.id}" class="category-block">
+                            <h2 class="cat-title">${cat.name}</h2>
+                            <div class="grid">
+                                ${cat.items.map(text => `<div class="card" onclick="copyCard(this)">${text}</div>`).join('')}
+                            </div>
+                        </div>
+                    `;
+                });
+            });
+
+            sidebar.innerHTML = sideHTML;
+            mainDisplay.innerHTML = mainHTML;
+
+            // Trigger the first tab automatically on load
+            const firstCatId = scriptData[0].categories[0].id;
+            const firstNavLink = document.getElementById(`nav-${firstCatId}`);
+            showTab(firstCatId, firstNavLink);
+        }
+
+        /**
+         * UPDATED: Exclusive Visibility Logic
+         * Hides all other blocks and shows only the selected one.
+         */
+        function showTab(id, el) {
+            // 1. Manage Active State for Navigation
+            document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
+            el.classList.add('active');
+
+            // 2. Manage Visibility for Content Blocks
+            document.querySelectorAll('.category-block').forEach(block => {
+                block.style.display = 'none';
+            });
+
+            const target = document.getElementById(id);
+            if(target) {
+                target.style.display = 'block';
+                // Reset scroll position of the content area when switching tabs
+                document.querySelector('.content-area').scrollTop = 0;
+            }
+        }
+
+        function copyCard(el) {
+            const rawText = el.innerText.replace('\nClick to copy', '');
+            navigator.clipboard.writeText(rawText).then(() => {
+                el.style.borderColor = 'var(--accent)';
+                el.style.background = 'rgba(16, 185, 129, 0.1)';
+                toast.classList.add('show');
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                    el.style.borderColor = 'var(--glass-border)';
+                    el.style.background = 'var(--glass-bg)';
+                }, 2000);
+            });
+        }
+
+        /**
+         * UPDATED: Filter logic
+         * When searching, it displays matching blocks regardless of tab selection
+         * but resets to the active tab when the search is cleared.
+         */
+        function filterContent() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const cards = document.querySelectorAll('.card');
+            const blocks = document.querySelectorAll('.category-block');
+
+            if (query === "") {
+                // Return to normal tab view if search is empty
+                const activeNav = document.querySelector('.nav-link.active');
+                if (activeNav) {
+                    showTab(activeNav.getAttribute('data-cat'), activeNav);
+                }
+                return;
+            }
+
+            cards.forEach(card => {
+                const text = card.textContent.replace('Click to copy', '');
+                if(text.toLowerCase().includes(query)) {
+                    card.style.display = 'block';
+                    const regex = new RegExp(`(${query})`, 'gi');
+                    card.innerHTML = text.replace(regex, `<span class="highlight">$1</span>`);
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            blocks.forEach(block => {
+                const hasVisible = Array.from(block.querySelectorAll('.card')).some(c => c.style.display !== 'none');
+                block.style.display = hasVisible ? 'block' : 'none';
+            });
+        }
+
+        init();
+    </script>
+</body>
+</html>

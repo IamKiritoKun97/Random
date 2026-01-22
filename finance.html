@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Easy Money Tracker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap');
+        
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #0b0f1a;
+            color: #ffffff;
+        }
+
+        .card {
+            background: #161b2a;
+            border: 1px solid #232a3d;
+            border-radius: 24px;
+        }
+
+        .input-box {
+            background: #1f2638 !important;
+            border: 1px solid #2d364d !important;
+            color: white !important;
+            border-radius: 12px;
+        }
+
+        .btn-add {
+            background: #3b82f6;
+            transition: all 0.2s;
+        }
+
+        .btn-add:active {
+            transform: scale(0.95);
+        }
+
+        .text-money-in { color: #4ade80; }
+        .text-money-out { color: #f87171; }
+        
+        th { cursor: pointer; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.05em; color: #94a3b8; padding: 16px; }
+        td { padding: 16px; border-bottom: 1px solid #232a3d; }
+    </style>
+</head>
+<body class="min-h-screen p-4">
+
+    <div class="max-w-4xl mx-auto">
+        <!-- Top Section: Summary -->
+        <div class="flex flex-col md:flex-row gap-4 mb-6">
+            <div class="card flex-1 p-6 flex flex-col items-center justify-center">
+                <p class="text-gray-400 text-sm mb-1">Total Money Left</p>
+                <h1 id="totalLeft" class="text-3xl font-bold text-blue-400">₱0.00</h1>
+            </div>
+            <div class="card flex-1 p-6 flex flex-col items-center justify-center border-l-4 border-l-green-500">
+                <p class="text-gray-400 text-sm mb-1">Total Money In</p>
+                <p id="totalIn" class="text-xl font-semibold text-money-in">₱0.00</p>
+            </div>
+            <div class="card flex-1 p-6 flex flex-col items-center justify-center border-l-4 border-l-red-500">
+                <p class="text-gray-400 text-sm mb-1">Total Bills/Debt</p>
+                <p id="totalOut" class="text-xl font-semibold text-money-out">₱0.00</p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <!-- Left Side: Add New -->
+            <div class="lg:col-span-4">
+                <div class="card p-6 sticky top-4">
+                    <h2 class="text-xl font-bold mb-4">Add New</h2>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="text-sm text-gray-400 block mb-1">Is this money in or out?</label>
+                            <select id="type" class="input-box w-full p-3 outline-none">
+                                <option value="plus">Money Coming In (+)</option>
+                                <option value="minus">Bill / Debt (-)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-sm text-gray-400 block mb-1">Name / Description</label>
+                            <input type="text" id="name" placeholder="e.g. Salary or Payback" class="input-box w-full p-3 outline-none">
+                        </div>
+                        <div>
+                            <label class="text-sm text-gray-400 block mb-1">How much?</label>
+                            <input type="number" id="amount" placeholder="0" class="input-box w-full p-3 outline-none">
+                        </div>
+                        <div>
+                            <label class="text-sm text-gray-400 block mb-1">When?</label>
+                            <input type="date" id="date" class="input-box w-full p-3 outline-none">
+                        </div>
+                        <button onclick="addItem()" class="btn-add w-full py-4 rounded-xl font-bold text-white mt-2">Save This</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Side: List -->
+            <div class="lg:col-span-8">
+                <div class="card overflow-hidden">
+                    <div class="p-6 border-b border-gray-800 flex justify-between items-center">
+                        <h2 class="text-xl font-bold">Your Money Schedule</h2>
+                        <button onclick="clearAll()" class="text-xs text-gray-500 hover:text-red-400">Clear All</button>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left">
+                            <thead>
+                                <tr>
+                                    <th onclick="changeSort('date')">Date ↕</th>
+                                    <th onclick="changeSort('name')">Name ↕</th>
+                                    <th onclick="changeSort('amount')" class="text-right">Amount ↕</th>
+                                    <th class="text-right">Wallet Balance</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody id="listBody" class="text-sm">
+                                <!-- Items will show up here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Default data provided by user
+        let items = [
+            { id: 1, type: 'plus', name: 'Starting Cash', amount: 6089, date: '2025-01-22' },
+            { id: 2, type: 'minus', name: 'SPayLater', amount: 10500, date: '2025-02-05' },
+            { id: 3, type: 'minus', name: 'Maribank', amount: 5200, date: '2025-02-04' },
+            { id: 4, type: 'minus', name: 'Unionbank', amount: 7600, date: '2025-01-29' },
+            { id: 5, type: 'plus', name: 'Easybet Pay', amount: 12000, date: '2025-01-23' },
+            { id: 6, type: 'plus', name: 'Easybet Pay', amount: 12000, date: '2025-01-29' },
+            { id: 7, type: 'plus', name: 'Wedding Fee', amount: 8000, date: '2025-01-29' }
+        ];
+
+        let sortBy = 'date';
+        let sortAsc = true;
+
+        function updateEverything() {
+            const list = document.getElementById('listBody');
+            
+            // 1. Sort the items
+            const sortedItems = [...items].sort((a, b) => {
+                let valA = a[sortBy];
+                let valB = b[sortBy];
+                if (sortBy === 'date') { valA = new Date(valA); valB = new Date(valB); }
+                if (valA < valB) return sortAsc ? -1 : 1;
+                if (valA > valB) return sortAsc ? 1 : -1;
+                return 0;
+            });
+
+            // 2. Calculate totals and running wallet balance
+            // We calculate wallet balance based on DATE order always
+            const dateOrder = [...items].sort((a, b) => new Date(a.date) - new Date(b.date));
+            let walletMap = {};
+            let currentWallet = 0;
+            let sumIn = 0;
+            let sumOut = 0;
+
+            dateOrder.forEach(item => {
+                if (item.type === 'plus') {
+                    currentWallet += item.amount;
+                    sumIn += item.amount;
+                } else {
+                    currentWallet -= item.amount;
+                    sumOut += item.amount;
+                }
+                walletMap[item.id] = currentWallet;
+            });
+
+            // 3. Update the Top Cards
+            document.getElementById('totalLeft').innerText = formatPeso(currentWallet);
+            document.getElementById('totalIn').innerText = formatPeso(sumIn);
+            document.getElementById('totalOut').innerText = formatPeso(sumOut);
+
+            // 4. Update the Table
+            list.innerHTML = '';
+            sortedItems.forEach(item => {
+                const balanceAtThisPoint = walletMap[item.id];
+                const row = document.createElement('tr');
+                const isPlus = item.type === 'plus';
+
+                row.innerHTML = `
+                    <td class="text-gray-300">${simpleDate(item.date)}</td>
+                    <td class="font-semibold">${item.name}</td>
+                    <td class="text-right font-bold ${isPlus ? 'text-money-in' : 'text-money-out'}">
+                        ${isPlus ? '+' : '-'}${item.amount.toLocaleString()}
+                    </td>
+                    <td class="text-right font-bold ${balanceAtThisPoint < 0 ? 'text-red-500' : 'text-gray-100'}">
+                        ${formatPeso(balanceAtThisPoint)}
+                    </td>
+                    <td class="text-center">
+                        <button onclick="removeItem(${item.id})" class="text-gray-600 hover:text-red-400 px-2">✕</button>
+                    </td>
+                `;
+                list.appendChild(row);
+            });
+        }
+
+        function addItem() {
+            const type = document.getElementById('type').value;
+            const name = document.getElementById('name').value;
+            const amount = parseFloat(document.getElementById('amount').value);
+            const date = document.getElementById('date').value;
+
+            if (!name || isNaN(amount) || !date) {
+                return;
+            }
+
+            items.push({ id: Date.now(), type, name, amount, date });
+            
+            // Reset input fields
+            document.getElementById('name').value = '';
+            document.getElementById('amount').value = '';
+            updateEverything();
+        }
+
+        function removeItem(id) {
+            items = items.filter(i => i.id !== id);
+            updateEverything();
+        }
+
+        function clearAll() {
+            if(confirm('Delete everything?')) {
+                items = [];
+                updateEverything();
+            }
+        }
+
+        function changeSort(key) {
+            if (sortBy === key) {
+                sortAsc = !sortAsc;
+            } else {
+                sortBy = key;
+                sortAsc = true;
+            }
+            updateEverything();
+        }
+
+        function formatPeso(num) {
+            return '₱' + num.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        function simpleDate(d) {
+            const date = new Date(d);
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        }
+
+        // Set date input to today
+        document.getElementById('date').valueAsDate = new Date();
+        
+        // Load the list
+        updateEverything();
+    </script>
+</body>
+</html>
+

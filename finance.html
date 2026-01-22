@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Money Tracker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap');
+        
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #0b0f1a;
+            color: #ffffff;
+        }
+
+        .card {
+            background: #161b2a;
+            border: 1px solid #232a3d;
+            border-radius: 24px;
+        }
+
+        .input-box {
+            background: #1f2638 !important;
+            border: 1px solid #2d364d !important;
+            color: white !important;
+            border-radius: 12px;
+        }
+
+        .btn-add {
+            background: #3b82f6;
+            transition: all 0.2s;
+        }
+
+        .btn-add:active {
+            transform: scale(0.95);
+        }
+
+        .text-money-in { color: #4ade80; }
+        .text-money-out { color: #f87171; }
+        
+        th { cursor: pointer; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.05em; color: #94a3b8; padding: 16px; transition: color 0.2s; }
+        th:hover { color: #3b82f6; }
+        td { padding: 16px; border-bottom: 1px solid #232a3d; transition: all 0.3s ease; }
+
+        .paid-row {
+            background: rgba(15, 23, 42, 0.6);
+        }
+        
+        .paid-text {
+            color: #475569;
+            text-decoration: line-through;
+        }
+
+        .custom-checkbox {
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            accent-color: #3b82f6;
+        }
+
+        .income-badge {
+            background: rgba(74, 222, 128, 0.1);
+            color: #4ade80;
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body class="min-h-screen p-4">
+
+    <div class="max-w-5xl mx-auto">
+        <!-- Top Section: Live Numbers -->
+        <div class="flex flex-col md:flex-row gap-4 mb-6">
+            <div class="card flex-1 p-6 flex flex-col items-center justify-center border-b-4 border-b-blue-500">
+                <p class="text-gray-400 text-xs mb-1 uppercase tracking-widest text-center">Actual Money in Hand</p>
+                <h1 id="totalLeft" class="text-3xl font-bold text-blue-400">₱0.00</h1>
+                <p class="text-[10px] text-gray-500 mt-1 uppercase">Deducts only when you mark "Done"</p>
+            </div>
+            <div class="card flex-1 p-6 flex flex-col items-center justify-center border-b-4 border-b-green-500">
+                <p class="text-gray-400 text-xs mb-1 uppercase tracking-widest text-center">Total Income</p>
+                <p id="totalIn" class="text-xl font-semibold text-money-in">₱0.00</p>
+            </div>
+            <div class="card flex-1 p-6 flex flex-col items-center justify-center border-b-4 border-b-red-500">
+                <p class="text-gray-400 text-xs mb-1 uppercase tracking-widest text-center">Debt to Settle</p>
+                <p id="totalOut" class="text-xl font-semibold text-money-out">₱0.00</p>
+                <p class="text-[10px] text-gray-500 mt-1 uppercase">Remaining Unpaid</p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <!-- Left Side: Add Form -->
+            <div class="lg:col-span-4">
+                <div class="card p-6 sticky top-4">
+                    <h2 class="text-xl font-bold mb-4">Add Transaction</h2>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="text-sm text-gray-400 block mb-1">Type</label>
+                            <select id="type" class="input-box w-full p-3 outline-none">
+                                <option value="plus">Money Coming In (+)</option>
+                                <option value="minus">Bill / Debt (-)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-sm text-gray-400 block mb-1">Name</label>
+                            <input type="text" id="name" placeholder="e.g. Salary, SPayLater" class="input-box w-full p-3 outline-none">
+                        </div>
+                        <div>
+                            <label class="text-sm text-gray-400 block mb-1">How much (₱)?</label>
+                            <input type="number" id="amount" placeholder="0" class="input-box w-full p-3 outline-none">
+                        </div>
+                        <div>
+                            <label class="text-sm text-gray-400 block mb-1">Date</label>
+                            <input type="date" id="date" class="input-box w-full p-3 outline-none">
+                        </div>
+                        <button onclick="addItem()" class="btn-add w-full py-4 rounded-xl font-bold text-white mt-2 shadow-lg">Save to List</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Side: List -->
+            <div class="lg:col-span-8">
+                <div class="card overflow-hidden">
+                    <div class="p-6 border-b border-gray-800 flex justify-between items-center bg-slate-800/20">
+                        <div>
+                            <h2 class="text-xl font-bold">Money Schedule</h2>
+                            <p class="text-xs text-gray-500">Check "Done" when you actually pay a bill</p>
+                        </div>
+                        <button onclick="clearAll()" class="text-xs text-gray-500 hover:text-red-400 transition">Reset All</button>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left">
+                            <thead>
+                                <tr>
+                                    <th class="w-16 text-center">Done</th>
+                                    <th onclick="changeSort('date')">Date <span id="sortIconDate">↕</span></th>
+                                    <th onclick="changeSort('name')">Name <span id="sortIconName">↕</span></th>
+                                    <th onclick="changeSort('amount')" class="text-right">Amount <span id="sortIconAmount">↕</span></th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody id="listBody" class="text-sm">
+                                <!-- List items -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Load data or defaults
+        let items = JSON.parse(localStorage.getItem('realTimeMoneyData')) || [
+            { id: 1, type: 'plus', name: 'Starting Cash', amount: 6089, date: '2025-01-22', paid: true },
+            { id: 2, type: 'minus', name: 'SPayLater', amount: 10500, date: '2025-02-05', paid: false },
+            { id: 3, type: 'minus', name: 'Maribank', amount: 5200, date: '2025-02-04', paid: false },
+            { id: 4, type: 'minus', name: 'Unionbank', amount: 7600, date: '2025-01-29', paid: false },
+            { id: 5, type: 'plus', name: 'Easybet Pay', amount: 12000, date: '2025-01-23', paid: true },
+            { id: 6, type: 'plus', name: 'Easybet Pay', amount: 12000, date: '2025-01-29', paid: false },
+            { id: 7, type: 'plus', name: 'Wedding Fee', amount: 8000, date: '2025-01-29', paid: false }
+        ];
+
+        let sortBy = 'date';
+        let sortAsc = true;
+
+        function updateEverything() {
+            const list = document.getElementById('listBody');
+            localStorage.setItem('realTimeMoneyData', JSON.stringify(items));
+
+            let totalIncome = 0;
+            let totalDebtToPay = 0;
+            let currentWallet = 0;
+
+            // Update sort icons
+            document.getElementById('sortIconDate').innerText = sortBy === 'date' ? (sortAsc ? '↑' : '↓') : '↕';
+            document.getElementById('sortIconName').innerText = sortBy === 'name' ? (sortAsc ? '↑' : '↓') : '↕';
+            document.getElementById('sortIconAmount').innerText = sortBy === 'amount' ? (sortAsc ? '↑' : '↓') : '↕';
+
+            // Sort items for display
+            const sortedItems = [...items].sort((a, b) => {
+                let valA = a[sortBy];
+                let valB = b[sortBy];
+
+                // Improved Date Sorting: Treat strings as actual Time objects
+                if (sortBy === 'date') {
+                    valA = new Date(valA).getTime();
+                    valB = new Date(valB).getTime();
+                }
+                
+                // Case insensitive string sort for names
+                if (sortBy === 'name') {
+                    valA = valA.toLowerCase();
+                    valB = valB.toLowerCase();
+                }
+
+                if (valA < valB) return sortAsc ? -1 : 1;
+                if (valA > valB) return sortAsc ? 1 : -1;
+                return 0;
+            });
+
+            // Calculate Totals based on current status
+            items.forEach(item => {
+                if (item.type === 'plus') {
+                    totalIncome += item.amount;
+                    currentWallet += item.amount;
+                } else {
+                    if (!item.paid) {
+                        totalDebtToPay += item.amount;
+                    } else {
+                        currentWallet -= item.amount;
+                    }
+                }
+            });
+
+            // Update Header Cards
+            document.getElementById('totalLeft').innerText = formatPeso(currentWallet);
+            document.getElementById('totalIn').innerText = formatPeso(totalIncome);
+            document.getElementById('totalOut').innerText = formatPeso(totalDebtToPay);
+
+            // Render Table
+            list.innerHTML = '';
+            sortedItems.forEach(item => {
+                const isPlus = item.type === 'plus';
+                const row = document.createElement('tr');
+                
+                if (item.paid && !isPlus) row.classList.add('paid-row');
+
+                const checkHTML = !isPlus 
+                    ? `<input type="checkbox" class="custom-checkbox" ${item.paid ? 'checked' : ''} onchange="togglePaid(${item.id})">`
+                    : `<span class="income-badge">INC</span>`;
+
+                row.innerHTML = `
+                    <td class="text-center">${checkHTML}</td>
+                    <td class="text-gray-400 ${item.paid && !isPlus ? 'paid-text' : ''}">${simpleDate(item.date)}</td>
+                    <td class="font-semibold ${item.paid && !isPlus ? 'paid-text' : ''}">${item.name}</td>
+                    <td class="text-right font-bold ${isPlus ? 'text-money-in' : 'text-money-out'} ${item.paid && !isPlus ? 'opacity-50 line-through' : ''}">
+                        ${isPlus ? '+' : '-'}${item.amount.toLocaleString()}
+                    </td>
+                    <td class="text-center">
+                        <button onclick="removeItem(${item.id})" class="text-gray-600 hover:text-red-400 px-2 transition">✕</button>
+                    </td>
+                `;
+                list.appendChild(row);
+            });
+        }
+
+        function togglePaid(id) {
+            const item = items.find(i => i.id === id);
+            if (item && item.type === 'minus') {
+                item.paid = !item.paid;
+                updateEverything();
+            }
+        }
+
+        function addItem() {
+            const type = document.getElementById('type').value;
+            const name = document.getElementById('name').value;
+            const amount = parseFloat(document.getElementById('amount').value);
+            const date = document.getElementById('date').value;
+
+            if (!name || isNaN(amount) || !date) return;
+
+            items.push({ 
+                id: Date.now(), 
+                type, 
+                name, 
+                amount, 
+                date,
+                paid: false 
+            });
+            
+            document.getElementById('name').value = '';
+            document.getElementById('amount').value = '';
+            updateEverything();
+        }
+
+        function removeItem(id) {
+            items = items.filter(i => i.id !== id);
+            updateEverything();
+        }
+
+        function clearAll() {
+            if(confirm('Delete everything and start fresh?')) {
+                items = [];
+                updateEverything();
+            }
+        }
+
+        function changeSort(key) {
+            if (sortBy === key) sortAsc = !sortAsc;
+            else { sortBy = key; sortAsc = true; }
+            updateEverything();
+        }
+
+        function formatPeso(num) {
+            return '₱' + num.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        function simpleDate(d) {
+            const date = new Date(d);
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        }
+
+        document.getElementById('date').valueAsDate = new Date();
+        updateEverything();
+    </script>
+</body>
+</html>
+

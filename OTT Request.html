@@ -16,14 +16,10 @@
             --text-primary: #ffffff;
             --text-secondary: #a1a1aa;
             --slack: #e01e5a;
+            --gold: #f59e0b;
         }
 
-        * { 
-            box-sizing: border-box; 
-            margin: 0; 
-            padding: 0; 
-            font-family: 'Inter', sans-serif; 
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
 
         body {
             background-color: var(--bg);
@@ -40,20 +36,20 @@
 
         .app-container {
             width: 100%;
-            max-width: 1100px;
+            max-width: 1200px;
             background: var(--card-glass);
-            backdrop-filter: blur(20px) saturate(160%);
-            -webkit-backdrop-filter: blur(20px) saturate(160%);
+            backdrop-filter: blur(25px) saturate(160%);
+            -webkit-backdrop-filter: blur(25px) saturate(160%);
             border: 1px solid var(--border);
             border-radius: 28px;
             padding: 40px;
             display: grid;
-            grid-template-columns: 380px 1fr;
+            grid-template-columns: 400px 1fr;
             gap: 40px;
             box-shadow: 0 40px 100px rgba(0,0,0,0.7);
         }
 
-        /* --- Input Side --- */
+        /* --- Left Side: Inputs --- */
         h1 { 
             font-family: 'Outfit', sans-serif;
             font-size: 1.2rem; 
@@ -67,7 +63,7 @@
 
         .label { 
             font-size: 11px; 
-            font-weight: 600;
+            font-weight: 700;
             text-transform: uppercase; 
             letter-spacing: 1.2px; 
             color: var(--text-secondary); 
@@ -91,16 +87,31 @@
         .field:focus { 
             border-color: var(--accent); 
             background: rgba(255,255,255,0.1); 
-            box-shadow: 0 0 15px rgba(0, 242, 255, 0.2);
         }
 
-        textarea.field { 
-            height: 140px; 
-            resize: none; 
-            line-height: 1.5; 
+        textarea.field { height: 140px; resize: none; line-height: 1.5; }
+
+        .sheet-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            padding: 15px;
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid #22c55e;
+            color: #22c55e;
+            border-radius: 14px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            transition: 0.3s;
         }
 
-        /* --- Output Side --- */
+        .sheet-btn:hover { background: #22c55e; color: #fff; }
+
+        /* --- Right Side: Previews --- */
         .meta-grid { 
             display: grid; 
             grid-template-columns: repeat(3, 1fr); 
@@ -118,76 +129,31 @@
             text-align: center;
         }
 
-        .meta-card:hover { 
-            background: rgba(0, 242, 255, 0.08); 
-            border-color: var(--accent); 
-        }
+        .meta-card:hover { border-color: var(--accent); background: rgba(0, 242, 255, 0.08); }
 
-        .meta-label { 
-            font-size: 9px; 
-            font-weight: 700;
-            color: var(--text-secondary); 
-            text-transform: uppercase; 
-            display: block; 
-            margin-bottom: 5px; 
-        }
+        .meta-label { font-size: 8px; font-weight: 800; color: var(--text-secondary); text-transform: uppercase; display: block; margin-bottom: 5px; }
 
-        .meta-val { 
-            font-size: 11px; 
-            font-weight: 600; 
-            color: #fff; 
-            white-space: nowrap; 
-            overflow: hidden; 
-            text-overflow: ellipsis; 
-        }
+        .meta-val { font-size: 10px; font-weight: 600; color: #fff; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-        .preview-list { display: flex; flex-direction: column; gap: 20px; }
+        .preview-list { display: flex; flex-direction: column; gap: 15px; }
 
         .card { 
             background: rgba(0,0,0,0.3); 
             border: 1px solid var(--border); 
             border-radius: 18px; 
-            padding: 24px; 
+            padding: 20px; 
             cursor: pointer; 
             transition: 0.3s; 
             position: relative; 
         }
 
-        .card:hover { 
-            border-color: var(--accent); 
-            background: rgba(255,255,255,0.02); 
-            transform: translateY(-3px); 
-        }
+        .card:hover { border-color: var(--accent); transform: translateY(-3px); }
 
-        .tag { 
-            font-size: 10px; 
-            font-weight: 800; 
-            text-transform: uppercase; 
-            color: var(--accent); 
-            display: block; 
-            margin-bottom: 12px; 
-            letter-spacing: 1px; 
-        }
+        .tag { font-size: 9px; font-weight: 800; text-transform: uppercase; color: var(--accent); display: block; margin-bottom: 8px; letter-spacing: 1px; }
 
-        .content { 
-            font-size: 15px; /* Slightly larger for readability */
-            font-weight: 500;
-            line-height: 1.4; 
-            white-space: pre-wrap; 
-            color: #e4e4e7; 
-        }
+        .content { font-size: 14px; font-weight: 500; line-height: 1.4; white-space: pre-wrap; color: #e4e4e7; }
         
-        .copy-hint { 
-            position: absolute; 
-            top: 24px; 
-            right: 24px; 
-            font-size: 9px; 
-            font-weight: 700;
-            color: var(--text-secondary); 
-            background: rgba(255,255,255,0.05);
-            padding: 2px 8px;
-            border-radius: 4px;
-        }
+        .copy-hint { position: absolute; top: 20px; right: 20px; font-size: 8px; font-weight: 700; color: var(--text-secondary); }
 
         /* --- Toast Notification --- */
         #toast { 
@@ -203,15 +169,11 @@
             font-size: 13px; 
             font-weight: 700; 
             z-index: 100; 
-            box-shadow: 0 10px 40px rgba(0,0,0,0.6); 
         }
 
         #toast.show { visibility: visible; animation: pop 2.5s ease-in-out; }
 
-        @keyframes pop { 
-            0%, 100% { opacity: 0; bottom: 20px; } 
-            15%, 85% { opacity: 1; bottom: 30px; } 
-        }
+        @keyframes pop { 0%, 100% { opacity: 0; } 15%, 85% { opacity: 1; } }
 
         @media (max-width: 950px) { 
             .app-container { grid-template-columns: 1fr; padding: 25px; } 
@@ -223,68 +185,86 @@
 
 <div class="app-container">
     <div class="input-pane">
-        <h1>OTT Request</h1>
+        <h1>OTT Portal</h1>
         
-        <label class="label">Customer Details</label>
-        <textarea id="block" class="field" oninput="gen()" placeholder="Rodney Naidoo | 4003945 |&#10;Email: kallenalecnaidoo@gmail.com&#10;Phone: +27624682345"></textarea>
+        <label class="label">Customer Info (Auto-Saves)</label>
+        <textarea id="block" class="field" oninput="run()" placeholder="Paste Name | ID | Email | Phone block here..."></textarea>
 
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px;">
             <div>
-                <label class="label">Amount (ZAR)</label>
-                <input type="text" id="amt" class="field" placeholder="e.g. R500" oninput="gen()">
+                <label class="label">Amount</label>
+                <input type="text" id="amt" class="field" placeholder="R500" oninput="run()">
             </div>
             <div>
-                <label class="label">Withdrawal Date</label>
-                <input type="date" id="dt" class="field" oninput="gen()">
+                <label class="label">Date</label>
+                <input type="date" id="dt" class="field" oninput="run()">
             </div>
         </div>
 
         <label class="label">Transaction UUID</label>
-        <input type="text" id="uid" class="field" placeholder="Paste UUID" oninput="gen()">
+        <input type="text" id="uid" class="field" placeholder="Paste UUID" oninput="run()">
         
-        <p style="font-size: 11px; color: var(--text-secondary); font-weight: 500;">Sender: help@easybet.co.za</p>
+        <a href="https://docs.google.com/spreadsheets/d/1tRqHqBu3ZurdbODmYX_PUWGqRV5k9WH4Y9RbRnzNE9M/edit?gid=0#gid=0" target="_blank" class="sheet-btn">
+            Open Spreadsheet Link
+        </a>
     </div>
 
     <div class="output-pane">
-        <!-- Quick Meta Copy Bar -->
         <div class="meta-grid">
-            <div class="meta-card" onclick="copyStr('support@ott-mobile.com', 'Recipient')">
+            <div class="meta-card" onclick="copyText('support@ott-mobile.com', 'To')">
                 <span class="meta-label">TO</span>
                 <div class="meta-val">support@ott-mobile.com</div>
             </div>
-            <div class="meta-card" onclick="copyStr('palisa@ott-mobile.com', 'CC')">
+            <div class="meta-card" onclick="copyText('palisa@ott-mobile.com', 'CC')">
                 <span class="meta-label">CC</span>
                 <div class="meta-val">palisa@ott-mobile.com</div>
             </div>
-            <div class="meta-card" onclick="copyStr('RESEND PIN REQUEST', 'Subject')">
+            <div class="meta-card" onclick="copyText('RESEND PIN REQUEST', 'Subject')">
                 <span class="meta-label">Subject</span>
                 <div class="meta-val">RESEND PIN REQUEST</div>
             </div>
         </div>
 
         <div class="preview-list">
-            <!-- Email Template -->
             <div class="card" onclick="copyId('email', 'Email Template')">
-                <span class="tag">Email Template</span>
+                <span class="tag">Email Body</span>
                 <span class="copy-hint">TAP TO COPY</span>
                 <div id="email" class="content"></div>
             </div>
 
-            <!-- Slack Reference -->
             <div class="card" onclick="copyId('slack', 'Slack Reference')" style="border-left: 4px solid var(--slack);">
                 <span class="tag" style="color: var(--slack);">Slack Reference</span>
                 <span class="copy-hint">TAP TO COPY</span>
                 <div id="slack" class="content"></div>
             </div>
+
+            <div class="card" onclick="copyId('spiel', 'Response Spiel')" style="border-left: 4px solid var(--gold);">
+                <span class="tag" style="color: var(--gold);">Customer Response Spiel</span>
+                <span class="copy-hint">TAP TO COPY</span>
+                <div id="spiel" class="content">Thanks for patiently waiting, I’ve already flagged this matter to the relevant team, and they are looking into it. 
+
+You should receive a notification once there is an update on the withdrawal. Please rest assured that this is being handled, and I’ll make sure you’re informed as soon as we receive feedback.</div>
+            </div>
         </div>
     </div>
 </div>
 
-<div id="toast">Copied to Clipboard!</div>
+<div id="toast">Copied!</div>
 
 <script>
-    // Set Current Date as Default
-    document.getElementById('dt').valueAsDate = new Date();
+    // Load Data from Local Storage
+    window.onload = function() {
+        const saved = JSON.parse(localStorage.getItem('ott_save_data'));
+        if (saved) {
+            document.getElementById('block').value = saved.block || '';
+            document.getElementById('amt').value = saved.amt || '';
+            document.getElementById('dt').value = saved.dt || '';
+            document.getElementById('uid').value = saved.uid || '';
+        } else {
+            document.getElementById('dt').valueAsDate = new Date();
+        }
+        run();
+    };
 
     function fmtDate(val) {
         if(!val) return "DD/MM/YYYY";
@@ -292,39 +272,43 @@
         return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;
     }
 
-    function gen() {
-        // --- Squash Logic ---
-        // Automatically filters out empty strings/lines from the pasted block
-        let rawBlock = document.getElementById('block').value;
-        let cleanBlock = rawBlock.split('\n').filter(line => line.trim() !== '').join('\n');
+    function run() {
+        // Persistence
+        const saveData = {
+            block: document.getElementById('block').value,
+            amt: document.getElementById('amt').value,
+            dt: document.getElementById('dt').value,
+            uid: document.getElementById('uid').value
+        };
+        localStorage.setItem('ott_save_data', JSON.stringify(saveData));
 
-        const amt = document.getElementById('amt').value || "{{Amount}}";
-        const date = fmtDate(document.getElementById('dt').value);
-        const uid = document.getElementById('uid').value || "{{UUID}}";
+        // Cleanup Block
+        let cleanBlock = saveData.block.split('\n').filter(line => line.trim() !== '').join('\n');
+        const amt = saveData.amt || "{{Amount}}";
+        const date = fmtDate(saveData.dt);
+        const uid = saveData.uid || "{{UUID}}";
 
-        // Template Building (No spacing between block and UUID line)
-        const emailTemplate = `Hi Team Need help resending this customer’s withdrawal of ${amt} on ${date}
+        const email = `Hi Team Need help resending this customer’s withdrawal of ${amt} on ${date}
 ${cleanBlock}
 Transaction UUID: ${uid}`;
 
-        const slackTemplate = `For reference: Resend PIN Request. Email sent to OTT.
+        const slack = `For reference: Resend PIN Request. Email sent to OTT.
 ${cleanBlock}
 Date: ${date}
 Amount: ${amt}
 Transaction UUID: ${uid}`;
 
-        document.getElementById('email').innerText = emailTemplate;
-        document.getElementById('slack').innerText = slackTemplate;
+        document.getElementById('email').innerText = email;
+        document.getElementById('slack').innerText = slack;
     }
 
-    function copyStr(str, label) {
+    function copyText(str, label) {
         navigator.clipboard.writeText(str);
         showToast(label + " Copied!");
     }
 
     function copyId(id, label) {
-        const text = document.getElementById(id).innerText;
-        navigator.clipboard.writeText(text);
+        navigator.clipboard.writeText(document.getElementById(id).innerText);
         showToast(label + " Copied!");
     }
 
@@ -334,9 +318,6 @@ Transaction UUID: ${uid}`;
         t.className = "show";
         setTimeout(() => t.className = "", 2500);
     }
-
-    // Initialize display on load
-    gen();
 </script>
 
 </body>

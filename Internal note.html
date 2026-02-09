@@ -1,10 +1,14 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <title>Easybet Internal Note</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  
+  <!-- Tab Icon / Favicon -->
+  <link rel="icon" type="image/png" href="Easybet logo.png">
+  <link rel="shortcut icon" type="image/png" href="Easybet logo.jpg">
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -43,7 +47,6 @@
       max-width: 600px;
       padding: 32px;
       background: var(--glass-bg);
-      autofill: none;
       backdrop-filter: blur(24px);
       -webkit-backdrop-filter: blur(24px);
       border: 1px solid var(--glass-border);
@@ -334,17 +337,9 @@
     const hasPOR = statuses.includes("Approved POR");
     const hasFICA = statuses.includes("FICA Verified");
 
-    // Auto-add FICA Verified if both docs are approved
     if (hasID && hasPOR) {
       if (!hasFICA) {
         statuses.push("FICA Verified");
-      }
-    } else {
-      // Logic for removing FICA verified if one is deselected
-      // However, usually we want to keep it if manual, but for this workflow we auto-sync
-      if (hasFICA && (!hasID || !hasPOR)) {
-         // Optionally remove it automatically:
-         // statuses = statuses.filter(item => item !== "FICA Verified");
       }
     }
   }
@@ -392,7 +387,6 @@
   async function copyText() {
     const text = document.getElementById("bubble").textContent;
     try {
-      // Standard clipboard API
       if (navigator.clipboard && window.isSecureContext) {
           await navigator.clipboard.writeText(text);
           showToast();
@@ -400,7 +394,6 @@
           throw new Error('Clipboard API unavailable');
       }
     } catch (err) {
-      // Fallback for older browsers or restricted iframes
       const el = document.createElement('textarea');
       el.value = text;
       el.setAttribute('readonly', '');

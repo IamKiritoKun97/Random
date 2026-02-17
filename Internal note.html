@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Easybet Internal Note</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  
+  <!-- Tab Icon / Favicon -->
+  <link rel="icon" type="image/png" href="Easybet logo.png">
+  <link rel="shortcut icon" type="image/jpg" href="Easybet logo.jpg">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --accent: #10b981;
+      --accent-glow: rgba(16, 185, 129, 0.4);
+      --bg-dark: #050505;
+      --glass-bg: rgba(255, 255, 255, 0.03);
+      --glass-border: rgba(255, 255, 255, 0.12);
+      --text-main: #f8fafc;
+      --text-dim: #94a3b8;
+      --input-bg: rgba(15, 15, 15, 0.8);
+    }
+
+    * { box-sizing: border-box; transition: all 0.2s ease; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      overflow-x: hidden;
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.15) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(59, 130, 246, 0.1) 0px, transparent 50%);
+    }
+
+    .glass-card {
+      width: 95%;
+      max-width: 600px;
+      padding: 32px;
+      background: var(--glass-bg);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid var(--glass-border);
+      border-radius: 24px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin: 0 0 24px 0;
+      text-align: center;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #fff 0%, #94a3b8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .section-label {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--text-dim);
+      margin-bottom: 8px;
+      font-weight: 700;
+      display: block;
+    }
+
+    .input-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    input, select {
+      width: 100%;
+      background: var(--input-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 10px;
+      padding: 12px;
+      color: var(--text-main);
+      font-size: 0.9rem;
+      outline: none;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+
+    select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      background-size: 16px;
+      padding-right: 40px;
+    }
+
+    optgroup {
+        background: #111;
+        color: var(--accent);
+        font-style: normal;
+        font-weight: 600;
+        padding: 8px;
+    }
+
+    option {
+        background: #1a1a1a;
+        color: #fff;
+        padding: 8px;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+
+    .status-picker {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .btn-add {
+      background: var(--accent);
+      color: #064e3b;
+      border: none;
+      border-radius: 10px;
+      padding: 0 16px;
+      font-weight: 700;
+      font-size: 0.85rem;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .btn-add:hover {
+      filter: brightness(1.1);
+      transform: translateY(-1px);
+    }
+
+    .tags-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 20px;
+      min-height: 20px;
+    }
+
+    .tag {
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      color: var(--accent);
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      animation: popIn 0.2s ease-out;
+    }
+
+    @keyframes popIn {
+      from { opacity: 0; transform: translateY(5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .tag-remove {
+      color: #f87171;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 1rem;
+    }
+
+    .bubble {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      padding: 20px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      line-height: 1.5;
+      cursor: pointer;
+      position: relative;
+      color: var(--accent);
+      white-space: pre-line;
+      word-break: break-all;
+    }
+
+    .bubble:active {
+      transform: scale(0.99);
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .copy-hint {
+      text-align: center;
+      font-size: 0.65rem;
+      color: var(--text-dim);
+      margin-top: 12px;
+    }
+
+    #toast {
+      visibility: hidden;
+      background: var(--accent);
+      color: #000;
+      font-weight: 700;
+      padding: 10px 24px;
+      border-radius: 8px;
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 100;
+      font-size: 0.85rem;
+    }
+
+    #toast.show { visibility: visible; animation: slideUp 0.3s ease forwards; }
+
+    @keyframes slideUp {
+      0% { transform: translate(-50%, 20px); opacity: 0; }
+      100% { transform: translate(-50%, 0); opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="glass-card">
+  <h1>Internal Notes</h1>
+
+  <div class="input-row">
+    <div>
+      <span class="section-label">Department</span>
+      <select id="department" onchange="saveAndRefresh()">
+        <option value="CS">CS</option>
+        <option value="FICA">FICA</option>
+        <option value="Withdrawals">Withdrawals</option>
+      </select>
+    </div>
+    <div>
+      <span class="section-label">User</span>
+      <input type="text" id="username" placeholder="Name/ID" oninput="saveAndRefresh()">
+    </div>
+  </div>
+
+  <span class="section-label">Quick Actions</span>
+  <div class="status-picker">
+    <select id="statusOptions">
+      <optgroup label="Approvals">
+          <option value="Approved ID">Approved ID</option>
+          <option value="Approved POR">Approved POR</option>
+          <option value="FICA Verified">FICA Verified</option>
+      </optgroup>
+      
+      <optgroup label="Reverted ID">
+          <option value="Reverted ID | Name Mismatch">Reverted ID | Name Mismatch</option>
+          <option value="Reverted ID | Unclear Copy">Reverted ID | Unclear Copy</option>
+          <option value="Reverted ID | Invalid">Reverted ID | Invalid</option>
+          <option value="Reverted ID | Doc Failed to Load">Reverted ID | Doc Failed to Load</option>
+          <option value="Reverted ID | Unclear">Reverted ID | Unclear</option>
+          <option value="Reverted ID | Outdated Date Stamp">Reverted ID | Outdated Date Stamp</option>
+      </optgroup>
+
+      <optgroup label="Reverted POR">
+          <option value="Reverted POR | Invalid">Reverted POR | Invalid</option>
+          <option value="Reverted POR | Name Mismatch">Reverted POR | Name Mismatch</option>
+          <option value="Reverted POR | Unclear">Reverted POR | Unclear</option>
+          <option value="Reverted POR | Outdated Date Stamp">Reverted POR | Outdated Date Stamp</option>
+          <option value="Reverted POR | Address is PO Box">Reverted POR | Address is PO Box</option>
+          <option value="Reverted POR | Doc Failed to Load">Reverted POR | Doc Failed to Load</option>
+          <option value="Reverted POR | No Address">Reverted POR | No Address</option>
+          <option value="Reverted POR | Address Mismatch">Reverted POR | Address Mismatch</option>
+      </optgroup>
+
+      <optgroup label="Updates">
+          <option value="Updated name from (Value) to (Value)">Update Name</option>
+          <option value="Updated Address from (Value) to (Value)">Update Address</option>
+          <option value="Updated phone number from (Value) to (Value)">Update Phone</option>
+          <option value="Updated email address from (Value) to (Value)">Update Email</option>
+          <option value="Updated ID code from (Value) to (Value)">Update ID Code</option>
+        <option value="Updated account number from (Value) to (Value)">Update Account number</option>
+      </optgroup>
+    </select>
+    <button class="btn-add" onclick="addStatus()">Add</button>
+  </div>
+
+  <div class="tags-container" id="tagsContainer"></div>
+
+  <span class="section-label">Output Preview</span>
+  <div id="bubble" class="bubble" role="button" onclick="copyText()"></div>
+  <p class="copy-hint">Click box to copy • Data persistent in browser</p>
+</div>
+
+<div id="toast">Copied to Clipboard</div>
+
+<script>
+  let statuses = [];
+
+  window.onload = () => {
+    // Load saved settings
+    if(localStorage.getItem('dept')) document.getElementById('department').value = localStorage.getItem('dept');
+    if(localStorage.getItem('user')) document.getElementById('username').value = localStorage.getItem('user');
+    
+    const savedStatuses = localStorage.getItem('statuses');
+    if(savedStatuses) {
+      statuses = JSON.parse(savedStatuses);
+      syncFICAStatus(); 
+      renderTags();
+    }
+    refreshBubble();
+    setInterval(refreshBubble, 1000);
+  };
+
+  function saveAndRefresh() {
+    localStorage.setItem('dept', document.getElementById('department').value);
+    localStorage.setItem('user', document.getElementById('username').value);
+    localStorage.setItem('statuses', JSON.stringify(statuses));
+    refreshBubble();
+  }
+
+  function addStatus() {
+    const val = document.getElementById('statusOptions').value;
+    if (!statuses.includes(val)) {
+      statuses.push(val);
+      syncFICAStatus(); 
+      renderTags();
+      saveAndRefresh();
+    }
+  }
+
+  function syncFICAStatus() {
+    const hasID = statuses.includes("Approved ID");
+    const hasPOR = statuses.includes("Approved POR");
+    const hasFICA = statuses.includes("FICA Verified");
+
+    if (hasID && hasPOR) {
+      if (!hasFICA) {
+        statuses.push("FICA Verified");
+      }
+    }
+  }
+
+  function removeStatus(index) {
+    statuses.splice(index, 1);
+    syncFICAStatus();
+    renderTags();
+    saveAndRefresh();
+  }
+
+  function renderTags() {
+    const container = document.getElementById('tagsContainer');
+    container.innerHTML = '';
+    statuses.forEach((status, index) => {
+      const tag = document.createElement('div');
+      tag.className = 'tag';
+      tag.innerHTML = `${status} <span class="tag-remove" onclick="removeStatus(${index})">&times;</span>`;
+      container.appendChild(tag);
+    });
+  }
+
+  function refreshBubble() {
+    const tz = "Africa/Johannesburg";
+    const now = new Date();
+
+    const parts = new Intl.DateTimeFormat("en-GB", {
+      timeZone: tz, year: "numeric", month: "2-digit", day: "2-digit",
+      hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false
+    }).formatToParts(now);
+
+    const get = (type) => parts.find(p => p.type === type).value;
+    const dateStr = `${get("day")}/${get("month")}/${get("year")}`;
+    const timeStr = `${get("hour")}:${get("minute")}:${get("second")}`;
+
+    const dept = document.getElementById("department").value;
+    const user = document.getElementById("username").value.trim() || "User";
+
+    const header = `${dateStr} ${timeStr} SAST ${dept} | ${user}`;
+    const output = statuses.length > 0 ? `${header}\n${statuses.join("\n")}` : header;
+    
+    document.getElementById("bubble").textContent = output;
+  }
+
+  async function copyText() {
+    const text = document.getElementById("bubble").textContent;
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(text);
+          showToast();
+      } else {
+          throw new Error('Clipboard API unavailable');
+      }
+    } catch (err) {
+      const el = document.createElement('textarea');
+      el.value = text;
+      el.setAttribute('readonly', '');
+      el.style.position = 'absolute';
+      el.style.left = '-9999px';
+      document.body.appendChild(el);
+      el.select();
+      document.execCommand('copy');
+      document.body.removeChild(el);
+      showToast();
+    }
+  }
+
+  function showToast() {
+    const toast = document.getElementById("toast");
+    toast.classList.add("show");
+    setTimeout(() => toast.classList.remove("show"), 2000);
+  }
+</script>
+
+</body>
+</html>

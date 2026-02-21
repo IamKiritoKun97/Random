@@ -5,10 +5,6 @@
   <title>Easybet Internal Note</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   
-  <!-- Tab Icon / Favicon -->
-  <link rel="icon" type="image/png" href="Easybet logo.png">
-  <link rel="shortcut icon" type="image/jpg" href="Easybet logo.jpg">
-
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -254,6 +250,10 @@
       <optgroup label="Approvals">
           <option value="Approved ID">Approved ID</option>
           <option value="Approved POR">Approved POR</option>
+          <option value="Approved ID | FraudCheck Photo Verified">Approved ID | FraudCheck Photo Verified</option>
+          <option value="Approved POR | Bank Verified">Approved POR | Bank Verified</option>
+          <option value="Approved ID | Photo internally reviewed">Approved ID | Photo internally reviewed</option>
+          <option value="Approved POR | Bank Internally Verified">Approved POR | Bank Internally Verified</option>
           <option value="FICA Verified">FICA Verified</option>
       </optgroup>
       
@@ -283,7 +283,7 @@
           <option value="Updated phone number from (Value) to (Value)">Update Phone</option>
           <option value="Updated email address from (Value) to (Value)">Update Email</option>
           <option value="Updated ID code from (Value) to (Value)">Update ID Code</option>
-        <option value="Updated account number from (Value) to (Value)">Update Account number</option>
+          <option value="Updated account number from (Value) to (Value)">Update Account number</option>
       </optgroup>
     </select>
     <button class="btn-add" onclick="addStatus()">Add</button>
@@ -302,7 +302,6 @@
   let statuses = [];
 
   window.onload = () => {
-    // Load saved settings
     if(localStorage.getItem('dept')) document.getElementById('department').value = localStorage.getItem('dept');
     if(localStorage.getItem('user')) document.getElementById('username').value = localStorage.getItem('user');
     
@@ -334,20 +333,18 @@
   }
 
   function syncFICAStatus() {
-    const hasID = statuses.includes("Approved ID");
-    const hasPOR = statuses.includes("Approved POR");
+    // Logic to auto-add FICA Verified if basic ID and POR are present
+    const hasID = statuses.some(s => s.includes("Approved ID"));
+    const hasPOR = statuses.some(s => s.includes("Approved POR"));
     const hasFICA = statuses.includes("FICA Verified");
 
-    if (hasID && hasPOR) {
-      if (!hasFICA) {
-        statuses.push("FICA Verified");
-      }
+    if (hasID && hasPOR && !hasFICA) {
+      statuses.push("FICA Verified");
     }
   }
 
   function removeStatus(index) {
     statuses.splice(index, 1);
-    syncFICAStatus();
     renderTags();
     saveAndRefresh();
   }
@@ -388,13 +385,7 @@
   async function copyText() {
     const text = document.getElementById("bubble").textContent;
     try {
-      if (navigator.clipboard && window.isSecureContext) {
-          await navigator.clipboard.writeText(text);
-          showToast();
-      } else {
-          throw new Error('Clipboard API unavailable');
-      }
-    } catch (err) {
+      // Standard clipboard API with fallback
       const el = document.createElement('textarea');
       el.value = text;
       el.setAttribute('readonly', '');
@@ -405,6 +396,8 @@
       document.execCommand('copy');
       document.body.removeChild(el);
       showToast();
+    } catch (err) {
+      console.error('Failed to copy', err);
     }
   }
 

@@ -1,0 +1,498 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Easybet Internal Note</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --accent: #10b981;
+      --accent-glow: rgba(16, 185, 129, 0.4);
+      --error: #ef4444;
+      --error-glow: rgba(239, 68, 68, 0.4);
+      --bg-dark: #050505;
+      --glass-bg: rgba(255, 255, 255, 0.03);
+      --glass-border: rgba(255, 255, 255, 0.12);
+      --text-main: #f8fafc;
+      --text-dim: #94a3b8;
+      --input-bg: rgba(15, 15, 15, 0.8);
+    }
+    * { box-sizing: border-box; transition: all 0.2s ease; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      overflow-x: hidden;
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.15) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(59, 130, 246, 0.1) 0px, transparent 50%);
+      padding: 20px;
+    }
+    .glass-card {
+      width: 100%;
+      max-width: 950px;
+      background: var(--glass-bg);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid var(--glass-border);
+      border-radius: 24px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+      display: flex;
+      flex-direction: row;
+      overflow: hidden;
+      height: 780px;
+    }
+    .main-content {
+      flex: 1;
+      padding: 32px;
+      display: flex;
+      flex-direction: column;
+      border-right: 1px solid var(--glass-border);
+      overflow-y: auto;
+    }
+    .tags-sidebar {
+      width: 340px;
+      background: rgba(0, 0, 0, 0.2);
+      display: flex;
+      flex-direction: column;
+      padding: 24px;
+    }
+    h1 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin: 0 0 24px 0;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #fff 0%, #94a3b8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .section-label {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--text-dim);
+      font-weight: 700;
+      display: block;
+      margin-bottom: 8px;
+    }
+    .input-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .ticket-row {
+      margin-bottom: 20px;
+    }
+    input, select {
+      width: 100%;
+      background: var(--input-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 10px;
+      padding: 12px;
+      color: var(--text-main);
+      font-size: 0.9rem;
+      outline: none;
+    }
+    select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      background-size: 16px;
+      padding-right: 40px;
+      appearance: none;
+    }
+    input:focus, select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+    .status-picker-container {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 24px;
+    }
+    .status-picker-main {
+      display: flex;
+      gap: 8px;
+    }
+    .dynamic-fields {
+      display: none;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--glass-border);
+      animation: fadeIn 0.3s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .btn-add {
+      background: var(--accent);
+      color: #064e3b;
+      border: none;
+      border-radius: 10px;
+      padding: 0 20px;
+      font-weight: 700;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+    .tags-scroll-area {
+      flex: 1;
+      overflow-y: auto;
+      margin-top: 12px;
+    }
+    .tags-container { display: flex; flex-direction: column; gap: 8px; }
+    .tag {
+      background: rgba(16, 185, 129, 0.08);
+      border: 1px solid rgba(16, 185, 129, 0.15);
+      color: var(--accent);
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-size: 0.75rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      line-height: 1.4;
+    }
+    .tag-remove { color: #f87171; cursor: pointer; font-size: 1.2rem; padding-left: 10px; line-height: 1; }
+    .bubble {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      padding: 20px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      line-height: 1.5;
+      cursor: pointer;
+      color: var(--accent);
+      white-space: pre-line;
+      flex: 1;
+      overflow-y: auto;
+      transition: border-color 0.2s, background-color 0.2s;
+    }
+    .bubble:hover {
+      background: rgba(0, 0, 0, 0.5);
+      border-color: var(--accent);
+    }
+    #toast {
+      visibility: hidden;
+      background: var(--accent);
+      color: #064e3b;
+      font-weight: 700;
+      padding: 12px 32px;
+      border-radius: 12px;
+      position: fixed;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      z-index: 1000;
+      font-size: 0.9rem;
+      box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.4);
+      opacity: 0;
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    #toast.error {
+      background: var(--error);
+      color: #fff;
+      box-shadow: 0 10px 25px -5px rgba(239, 68, 68, 0.4);
+    }
+    #toast.show {
+      visibility: visible;
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+    .btn-clear {
+      background: transparent;
+      border: none;
+      color: #f87171;
+      font-size: 0.65rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 10px; }
+    @media (max-width: 768px) {
+      .glass-card { flex-direction: column; height: auto; max-height: 95vh; }
+      .tags-sidebar { width: 100%; height: 250px; border-top: 1px solid var(--glass-border); }
+      .main-content { border-right: none; height: 500px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="glass-card">
+  <div class="main-content">
+    <h1>Internal Notes</h1>
+
+    <div class="input-row">
+      <div>
+        <span class="section-label">Department</span>
+        <select id="department" onchange="saveAndRefresh()">
+          <option value="CS">CS</option>
+          <option value="FICA">FICA</option>
+          <option value="WD">WD</option>
+        </select>
+      </div>
+      <div>
+        <span class="section-label">User</span>
+        <input type="text" id="username" placeholder="Name/ID" oninput="saveAndRefresh()">
+      </div>
+    </div>
+
+    <div class="ticket-row">
+      <span class="section-label">Ticket ID</span>
+      <input type="text" id="ticketId" placeholder="e.g. CS-123456, FWA-1234 or CSEMAIL-123456" oninput="saveAndRefresh()">
+    </div>
+
+    <span class="section-label">Quick Actions</span>
+    <div class="status-picker-container">
+      <div class="status-picker-main">
+        <select id="statusOptions" onchange="toggleDynamicFields()">
+          <optgroup label="Approvals">
+              <option value="Approved ID">Approved ID</option>
+              <option value="Approved POR">Approved POR</option>
+              <option value="Approved ID | FraudCheck Photo Verified">Approved ID | FraudCheck Photo Verified</option>
+              <option value="Approved POR | Bank Verified">Approved POR | Bank Verified</option>
+              <option value="Approved ID | Photo internally reviewed">Approved ID | Photo internally reviewed</option>
+              <option value="Approved POR | Bank Internally Verified">Approved POR | Bank Internally Verified</option>
+              <option value="FICA Verified">FICA Verified</option>
+          </optgroup>
+          <optgroup label="Reverted ID">
+              <option value="Reverted ID | Name Mismatch">Reverted ID | Name Mismatch</option>
+              <option value="Reverted ID | Unclear Copy">Reverted ID | Unclear Copy</option>
+              <option value="Reverted ID | Invalid">Reverted ID | Invalid</option>
+              <option value="Reverted ID | Doc Failed to Load">Reverted ID | Doc Failed to Load</option>
+              <option value="Reverted ID | Unclear">Reverted ID | Unclear</option>
+              <option value="Reverted ID | Outdated Date Stamp">Reverted ID | Outdated Date Stamp</option>
+          </optgroup>
+          <optgroup label="Reverted POR">
+              <option value="Reverted POR | Invalid">Reverted POR | Invalid</option>
+              <option value="Reverted POR | Name Mismatch">Reverted POR | Name Mismatch</option>
+              <option value="Reverted POR | Unclear">Reverted POR | Unclear</option>
+              <option value="Reverted POR | Outdated Date Stamp">Reverted POR | Outdated Date Stamp</option>
+              <option value="Reverted POR | Address is PO Box">Reverted POR | Address is PO Box</option>
+              <option value="Reverted POR | Doc Failed to Load">Reverted POR | Doc Failed to Load</option>
+              <option value="Reverted POR | No Address">Reverted POR | No Address</option>
+              <option value="Reverted POR | Address Mismatch">Reverted POR | Address Mismatch</option>
+          </optgroup>
+          <optgroup label="Disabilities & OTC">
+              <option value="Manually disabled due to a duplicate Name and Date of Birth: {ID1}">Duplicate Name/DOB</option>
+              <option value="Manually disabled due to a duplicate ID Code: {ID1}">Duplicate ID Code</option>
+              <option value="Manually disabled due to a duplicate Bank Account Number: {ID1}">Duplicate Bank Acc</option>
+              <option value="OTC has been granted to {ID1}, and the other account {ID2} will remain disabled.">OTC Granted (ID 1 to ID 2)</option>
+              <option value="{ID1} will remain disabled because OTC was granted to the other account, {ID2}.">OTC Refused (ID 1 to ID 2)</option>
+          </optgroup>
+          <optgroup label="Updates">
+              <option value="Updated name from {OLD} to {NEW}">Update Name</option>
+              <option value="Updated Address from {OLD} to {NEW}">Update Address</option>
+              <option value="Updated phone number from {OLD} to {NEW}">Update Phone</option>
+              <option value="Updated email address from {OLD} to {NEW}">Update Email</option>
+              <option value="Updated ID code from {OLD} to {NEW}">Update ID Code</option>
+              <option value="Updated account number from {OLD} to {NEW}">Update Account number</option>
+          </optgroup>
+        </select>
+        <button class="btn-add" onclick="addStatus()">Add</button>
+      </div>
+      
+      <div id="dynamicInputs" class="dynamic-fields">
+        <input type="text" id="val1" placeholder="Value/ID 1">
+        <input type="text" id="val2" placeholder="Value/ID 2">
+      </div>
+    </div>
+
+    <span class="section-label">Output Preview</span>
+    <div id="bubble" class="bubble" role="button" onclick="copyText()"></div>
+    <p style="text-align:center; font-size:0.6rem; color:var(--text-dim); margin-top:8px;">Click box to copy • Persistent data</p>
+  </div>
+
+  <div class="tags-sidebar">
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+      <span class="section-label">Selected Tags</span>
+      <button id="btnClearAll" class="btn-clear" onclick="clearAllTags()">Clear All</button>
+    </div>
+    <div class="tags-scroll-area">
+      <div class="tags-container" id="tagsContainer"></div>
+    </div>
+  </div>
+</div>
+
+<div id="toast">Copied to Clipboard</div>
+
+<script>
+  let statuses = [];
+
+  window.onload = () => {
+    if(localStorage.getItem('dept')) document.getElementById('department').value = localStorage.getItem('dept');
+    if(localStorage.getItem('user')) document.getElementById('username').value = localStorage.getItem('user');
+    if(localStorage.getItem('ticketId')) document.getElementById('ticketId').value = localStorage.getItem('ticketId');
+    const saved = localStorage.getItem('statuses');
+    if(saved) { statuses = JSON.parse(saved); renderTags(); }
+    refreshBubble();
+    setInterval(refreshBubble, 1000);
+    toggleDynamicFields();
+  };
+
+  function toggleDynamicFields() {
+    const val = document.getElementById('statusOptions').value;
+    const fields = document.getElementById('dynamicInputs');
+    const v1 = document.getElementById('val1');
+    const v2 = document.getElementById('val2');
+    
+    const isUpdate = val.includes('{OLD}');
+    const isIDAction = val.includes('{ID1}');
+    const needsTwo = val.includes('{NEW}') || val.includes('{ID2}');
+
+    fields.style.display = (isUpdate || isIDAction) ? 'grid' : 'none';
+    
+    if(isUpdate) {
+        v1.placeholder = "Old Value";
+        v2.placeholder = "New Value";
+        v2.style.display = 'block';
+    } else if(isIDAction) {
+        v1.placeholder = "User ID 1";
+        v2.placeholder = "User ID 2";
+        v2.style.display = needsTwo ? 'block' : 'none';
+    }
+  }
+
+  function saveAndRefresh() {
+    localStorage.setItem('dept', document.getElementById('department').value);
+    localStorage.setItem('user', document.getElementById('username').value);
+    localStorage.setItem('ticketId', document.getElementById('ticketId').value);
+    localStorage.setItem('statuses', JSON.stringify(statuses));
+    refreshBubble();
+  }
+
+  function addStatus() {
+    let rawTemplate = document.getElementById('statusOptions').value;
+    let finalString = rawTemplate;
+    
+    const v1 = document.getElementById('val1').value.trim() || "(Empty)";
+    const v2 = document.getElementById('val2').value.trim() || "(Empty)";
+
+    finalString = finalString.replace('{OLD}', v1).replace('{ID1}', v1);
+    finalString = finalString.replace('{NEW}', v2).replace('{ID2}', v2);
+
+    if (statuses.includes(finalString)) {
+      showToast("Already added to list!", true);
+      return;
+    }
+
+    if(rawTemplate.includes('{OLD}')) {
+        const actionPrefix = rawTemplate.split('from')[0];
+        if(statuses.some(s => s.startsWith(actionPrefix))) {
+            showToast("An update for this category already exists!", true);
+            return;
+        }
+    }
+
+    statuses.push(finalString);
+    document.getElementById('val1').value = '';
+    document.getElementById('val2').value = '';
+
+    syncFICA(); 
+    renderTags();
+    saveAndRefresh();
+  }
+
+  function syncFICA() {
+    const hasID = statuses.some(s => s.toLowerCase().includes("approved id"));
+    const hasPOR = statuses.some(s => s.toLowerCase().includes("approved por"));
+    if (hasID && hasPOR && !statuses.includes("FICA Verified")) {
+        statuses.push("FICA Verified");
+    }
+  }
+
+  function removeStatus(index) {
+    statuses.splice(index, 1);
+    renderTags();
+    saveAndRefresh();
+  }
+
+  function clearAllTags() {
+    statuses = [];
+    renderTags();
+    saveAndRefresh();
+  }
+
+  function renderTags() {
+    const container = document.getElementById('tagsContainer');
+    container.innerHTML = statuses.length === 0 ? '<span style="color:var(--text-dim); font-size:0.75rem;">No actions...</span>' : '';
+    document.getElementById('btnClearAll').style.visibility = statuses.length ? 'visible' : 'hidden';
+    
+    statuses.forEach((s, i) => {
+      const tag = document.createElement('div');
+      tag.className = 'tag';
+      tag.innerHTML = `<span class="tag-text">${s}</span><span class="tag-remove" onclick="removeStatus(${i})">&times;</span>`;
+      container.appendChild(tag);
+    });
+  }
+
+  function refreshBubble() {
+    const tz = "Africa/Johannesburg";
+    const now = new Date();
+    const parts = new Intl.DateTimeFormat("en-GB", {
+      timeZone: tz, year: "numeric", month: "2-digit", day: "2-digit",
+      hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false
+    }).formatToParts(now);
+
+    const get = (t) => parts.find(p => p.type === t).value;
+    const dept = document.getElementById("department").value;
+    const user = document.getElementById("username").value.trim() || "User";
+    const ticketId = document.getElementById("ticketId").value.trim();
+    
+    let header = `${get("day")}/${get("month")}/${get("year")} ${get("hour")}:${get("minute")}:${get("second")} SAST ${dept} | ${user}`;
+    
+    // Add Ticket ID if present
+    if (ticketId) {
+      header += ` | Ticket ID: ${ticketId}`;
+    }
+
+    const output = statuses.length > 0 ? `${header}\n${statuses.join("\n")}` : header;
+    const b = document.getElementById("bubble");
+    if (b.textContent !== output) b.textContent = output;
+  }
+
+  function copyText() {
+    const el = document.createElement('textarea');
+    el.value = document.getElementById("bubble").textContent;
+    el.setAttribute('readonly', '');
+    el.style.position = 'absolute';
+    el.style.left = '-9999px';
+    document.body.appendChild(el);
+    el.select();
+    try {
+      document.execCommand('copy');
+      showToast("Copied to Clipboard", false);
+    } catch (err) {
+      console.error('Copy failed', err);
+    }
+    document.body.removeChild(el);
+  }
+
+  function showToast(message, isError) {
+    const toast = document.getElementById("toast");
+    toast.textContent = message;
+    if(isError) toast.classList.add("error");
+    else toast.classList.remove("error");
+    toast.classList.add("show");
+    setTimeout(() => toast.classList.remove("show"), 2000);
+  }
+</script>
+
+</body>
+</html>

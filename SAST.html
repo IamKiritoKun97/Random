@@ -8,13 +8,13 @@
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #05070a;
+            --bg-color: #030508;
             --accent: #ffcc00; /* Easybet Yellow */
             --text-primary: #ffffff;
             --text-secondary: #94a3b8;
             --success: #10b981;
             --danger: #ef4444;
-            --glass-bg: rgba(17, 24, 33, 0.7);
+            --glass-bg: rgba(13, 17, 23, 0.7);
             --glass-border: rgba(255, 255, 255, 0.08);
         }
 
@@ -31,62 +31,78 @@
             position: relative;
         }
 
-        /* Animated Mesh Background */
+        /* Ambient Background Mesh */
         .mesh-gradient {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0; width: 100%; height: 100%;
             z-index: 0;
-            filter: blur(80px);
-            opacity: 0.4;
+            filter: blur(100px);
+            opacity: 0.3;
         }
 
         .blob {
             position: absolute;
-            width: 40vw;
-            height: 40vw;
+            width: 50vw;
+            height: 50vw;
             border-radius: 50%;
-            background: var(--accent);
-            animation: move 20s infinite alternate;
+            background: radial-gradient(circle, var(--accent) 0%, transparent 70%);
+            animation: float-bg 20s infinite alternate ease-in-out;
         }
 
         .blob-2 {
-            background: #4f46e5;
-            right: -10%;
-            bottom: -10%;
+            background: radial-gradient(circle, #4f46e5 0%, transparent 70%);
+            right: -10%; bottom: -10%;
             animation-duration: 25s;
+            animation-delay: -5s;
         }
 
-        @keyframes move {
-            from { transform: translate(-20%, -20%) rotate(0deg); }
-            to { transform: translate(20%, 20%) rotate(360deg); }
+        @keyframes float-bg {
+            0% { transform: translate(-10%, -10%) scale(1); }
+            100% { transform: translate(10%, 10%) scale(1.1); }
         }
 
-        /* Glassmorphism Card */
+        /* Cursor Glow Follower */
+        #cursor-glow {
+            position: fixed;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(255, 204, 0, 0.08) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 1;
+            transform: translate(-50%, -50%);
+            transition: opacity 0.5s ease;
+            opacity: 0;
+        }
+
+        /* Floating Glass Card */
         .glass-card {
             background: var(--glass-bg);
-            backdrop-filter: blur(20px) saturate(180%);
-            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            backdrop-filter: blur(25px) saturate(160%);
+            -webkit-backdrop-filter: blur(25px) saturate(160%);
             border: 1px solid var(--glass-border);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8),
-                        inset 0 0 0 1px rgba(255, 255, 255, 0.05);
-            border-radius: 40px;
-            padding: 3rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7),
+                        inset 0 1px 1px rgba(255, 255, 255, 0.1);
+            border-radius: 48px;
+            padding: 3.5rem;
             text-align: center;
             position: relative;
-            transition: transform 0.1s ease-out;
             width: 95%;
-            max-width: 680px;
+            max-width: 640px;
             z-index: 10;
+            animation: card-float 6s infinite ease-in-out;
+        }
+
+        @keyframes card-float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
         }
 
         .clock-container {
-            margin: 2rem 0;
+            margin: 2.5rem 0;
             display: flex;
             flex-direction: column;
-            gap: 1.25rem;
+            gap: 1rem;
         }
 
         .clock-row {
@@ -94,149 +110,115 @@
             flex-direction: column;
             align-items: center;
             cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
-            padding: 1.5rem;
-            border-radius: 28px;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 1.25rem;
+            border-radius: 24px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.04);
             position: relative;
+            overflow: hidden;
+        }
+
+        .clock-row::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+            transition: 0.5s;
         }
 
         .clock-row:hover {
-            background: rgba(255, 255, 255, 0.07);
-            border-color: rgba(255, 204, 0, 0.4);
-            transform: scale(1.02);
-            box-shadow: 0 20px 40px -15px rgba(0,0,0,0.6);
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 204, 0, 0.3);
         }
 
-        .clock-row:active {
-            transform: scale(0.98);
+        .clock-row:hover::before {
+            left: 100%;
         }
 
         .clock-label {
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             text-transform: uppercase;
-            letter-spacing: 0.3em;
+            letter-spacing: 0.4em;
             color: var(--text-secondary);
-            margin-bottom: 0.75rem;
-            font-weight: 700;
-        }
-
-        .time-wrapper {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 16px;
+            margin-bottom: 0.5rem;
+            font-weight: 800;
         }
 
         .time-val {
             font-family: 'JetBrains Mono', monospace;
-            font-size: 4.2rem;
+            font-size: 4rem;
             font-weight: 700;
             letter-spacing: -3px;
             line-height: 1;
-            background: linear-gradient(to bottom, #fff, #cbd5e1);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            transition: color 0.3s ease;
+            color: #fff;
         }
 
         .clock-row:hover .time-val {
-            background: linear-gradient(to bottom, var(--accent), #ffaa00);
-            -webkit-background-clip: text;
+            color: var(--accent);
+            text-shadow: 0 0 20px rgba(255, 204, 0, 0.3);
         }
 
         .ampm-tag {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             color: var(--text-secondary);
             font-weight: 600;
-            background: rgba(255, 255, 255, 0.1);
-            padding: 4px 12px;
-            border-radius: 10px;
-            font-family: 'Inter', sans-serif;
-            letter-spacing: 1px;
+            margin-left: 12px;
+            opacity: 0.7;
         }
 
-        /* Shift Tracker UI */
+        /* Progress UI Enhancements */
         .shift-container {
-            background: rgba(0, 0, 0, 0.4);
-            border-radius: 24px;
-            padding: 1.5rem 2rem;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            margin-top: 1rem;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 28px;
+            padding: 1.75rem;
+            border: 1px solid rgba(255, 255, 255, 0.03);
         }
 
         .progress-bar-bg {
-            height: 8px;
+            height: 6px;
             background: rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
+            border-radius: 10px;
             margin-top: 1.25rem;
             overflow: hidden;
-            position: relative;
         }
 
         .progress-bar-fill {
             height: 100%;
-            background: linear-gradient(90deg, #ffcc00, #ff8800);
+            background: var(--accent);
             width: 0%;
-            transition: width 1s ease-in-out;
-            box-shadow: 0 0 20px rgba(255, 204, 0, 0.4);
-            border-radius: 12px;
+            transition: width 1s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 0 15px var(--accent);
         }
 
-        /* Toast UI */
         #copy-toast {
             position: fixed;
-            bottom: 40px;
-            left: 50%;
-            transform: translateX(-50%) translateY(100px);
-            background: #fff;
+            top: 30px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
             color: #000;
-            padding: 12px 28px;
-            border-radius: 40px;
-            font-weight: 700;
-            font-size: 0.95rem;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-            transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
-            z-index: 100;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        #copy-toast.show {
-            transform: translateX(-50%) translateY(0);
-        }
-
-        .status-pill {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 6px 14px;
+            padding: 12px 24px;
             border-radius: 100px;
-            background: rgba(255, 255, 255, 0.05);
-            font-size: 0.7rem;
             font-weight: 700;
-            letter-spacing: 1px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transform: translateY(-100px);
+            transition: transform 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+            z-index: 1000;
         }
 
-        .dot {
-            height: 8px;
-            width: 8px;
-            border-radius: 50%;
-            animation: pulse 2s infinite;
-        }
+        #copy-toast.show { transform: translateY(0); }
 
-        @keyframes pulse {
-            0% { transform: scale(1); opacity: 1; box-shadow: 0 0 0 0px rgba(16, 185, 129, 0.7); }
-            70% { transform: scale(1.1); opacity: 0.7; box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
-            100% { transform: scale(1); opacity: 1; box-shadow: 0 0 0 0px rgba(16, 185, 129, 0); }
+        .status-dot {
+            height: 10px; width: 10px; border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
         }
 
         @media (max-width: 640px) {
-            .time-val { font-size: 3rem; letter-spacing: -1px; }
-            .glass-card { padding: 2rem 1.25rem; }
-            .ampm-tag { font-size: 0.9rem; }
+            .time-val { font-size: 2.8rem; letter-spacing: -1px; }
+            .glass-card { padding: 2rem 1.5rem; border-radius: 32px; }
         }
     </style>
 </head>
@@ -247,54 +229,51 @@
         <div class="blob blob-2"></div>
     </div>
 
-    <div id="copy-toast">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-        <span>Copied to clipboard!</span>
-    </div>
+    <div id="cursor-glow"></div>
 
-    <div class="glass-card" id="main-card">
-        <div class="flex justify-center items-center gap-3 mb-2">
-            <span class="text-[10px] bg-slate-800 text-slate-400 px-2 py-1 rounded-md border border-slate-700 font-bold">ZA</span>
-            <span class="uppercase tracking-[0.4em] text-[10px] font-black text-slate-400">South Africa Standard Time</span>
+    <div id="copy-toast">Copied to clipboard!</div>
+
+    <div class="glass-card">
+        <!-- Top Bar -->
+        <div class="flex flex-col items-center gap-2 mb-6">
+            <div class="flex items-center gap-2 opacity-60">
+                <span class="text-[9px] bg-white/10 px-1.5 py-0.5 rounded font-bold border border-white/10">ZA</span>
+                <span class="uppercase tracking-[0.5em] text-[10px] font-black">SA Standard Time</span>
+            </div>
+            <div class="text-slate-400 text-sm font-medium" id="date">Loading...</div>
         </div>
 
         <div class="clock-container">
-            <!-- 12-Hour Row -->
             <div class="clock-row" onclick="copyTime('12')">
-                <span class="clock-label">Standard Format</span>
-                <div class="time-wrapper">
+                <span class="clock-label">Standard</span>
+                <div class="flex items-baseline">
                     <span class="time-val" id="hms-12">00:00:00</span>
                     <span class="ampm-tag" id="ampm-12">AM</span>
                 </div>
             </div>
 
-            <!-- 24-Hour Row -->
             <div class="clock-row" onclick="copyTime('24')">
-                <span class="clock-label">Military / 24H Format</span>
-                <div class="time-wrapper">
+                <span class="clock-label">24-Hour</span>
+                <div class="flex items-baseline">
                     <span class="time-val" id="hms-24">00:00:00</span>
                     <span class="ampm-tag" id="ampm-24">AM</span>
                 </div>
             </div>
         </div>
 
-        <div class="text-slate-400 text-lg font-light mb-8 italic" id="date">
-            Loading Date...
-        </div>
-
         <!-- Shift Tracker -->
         <div class="shift-container">
-            <div class="flex justify-between items-center mb-4">
-                <div class="text-[10px] font-black uppercase tracking-[0.2em] text-[#ffcc00]" id="shift-header">PHT Shift Progress</div>
-                <div class="status-pill">
-                    <span class="dot" id="status-dot"></span>
-                    <span id="status-text">OFF SHIFT</span>
+            <div class="flex justify-between items-center mb-6">
+                <div class="text-[10px] font-black uppercase tracking-widest text-[#ffcc00]" id="shift-header">PHT Shift Progress</div>
+                <div class="bg-white/5 px-3 py-1 rounded-full border border-white/5 flex items-center">
+                    <span class="status-dot" id="status-dot"></span>
+                    <span class="text-[10px] font-bold tracking-tighter" id="status-text">OFF SHIFT</span>
                 </div>
             </div>
             
-            <div class="grid grid-cols-2 gap-4">
+            <div class="grid grid-cols-2 gap-8">
                 <div class="text-left">
-                    <span class="block text-[9px] uppercase tracking-widest text-slate-500 mb-1 font-bold">Hours Worked</span>
+                    <span class="block text-[9px] uppercase tracking-widest text-slate-500 mb-1 font-bold">Elapsed</span>
                     <span class="font-['JetBrains_Mono'] text-xl font-bold text-white" id="hours-worked">0h 00m</span>
                 </div>
                 <div class="text-right">
@@ -308,101 +287,81 @@
             </div>
         </div>
 
-        <!-- Branding -->
-        <div class="mt-10 pt-6 border-t border-white/5 flex justify-between items-center">
-            <div class="flex items-center gap-2 text-[#ffcc00] font-black tracking-tighter text-xl">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+        <!-- Brand Footer -->
+        <div class="mt-8 pt-6 border-t border-white/5 flex justify-between items-center">
+            <div class="flex items-center gap-2 text-[#ffcc00] font-black tracking-tighter text-2xl group cursor-default">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M12 2L4.5 20.29L5.21 21L12 18L18.79 21L19.5 20.29L12 2Z"/>
                 </svg>
                 EASYBET
             </div>
-            <div class="text-slate-500 text-[10px] font-bold uppercase tracking-widest opacity-60">
-                Operations Live Dashboard
+            <div class="text-right">
+                <div class="text-slate-500 text-[9px] font-black uppercase tracking-[0.2em]">Ops Console</div>
+                <div class="text-[8px] text-slate-600 font-mono">v2.0.4-Luxe</div>
             </div>
         </div>
     </div>
 
     <script>
+        // Cursor Follow Logic
+        const glow = document.getElementById('cursor-glow');
+        document.addEventListener('mousemove', (e) => {
+            glow.style.opacity = '1';
+            glow.style.left = e.clientX + 'px';
+            glow.style.top = e.clientY + 'px';
+        });
+
         function copyTime(format) {
-            let textToCopy = "";
-            const hms12 = document.getElementById('hms-12').textContent;
-            const ampm12 = document.getElementById('ampm-12').textContent;
-            const hms24 = document.getElementById('hms-24').textContent;
-            const ampm24 = document.getElementById('ampm-24').textContent;
+            const text = format === '12' 
+                ? `${document.getElementById('hms-12').textContent} ${document.getElementById('ampm-12').textContent}`
+                : `${document.getElementById('hms-24').textContent}`;
+            
+            const el = document.createElement('textarea');
+            el.value = text;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
 
-            if (format === '12') {
-                textToCopy = `${hms12} ${ampm12}`;
-            } else {
-                textToCopy = `${hms24} ${ampm24}`;
-            }
-
-            const textArea = document.createElement("textarea");
-            textArea.value = textToCopy;
-            document.body.appendChild(textArea);
-            textArea.select();
-            try {
-                document.execCommand('copy');
-                showToast(`Copied ${format}H Format: ${textToCopy}`);
-            } catch (err) {
-                console.error('Copy failed', err);
-            }
-            document.body.removeChild(textArea);
-        }
-
-        function showToast(message) {
             const toast = document.getElementById('copy-toast');
-            toast.querySelector('span').textContent = message;
+            toast.textContent = `Copied ${format}H: ${text}`;
             toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 3000);
+            setTimeout(() => toast.classList.remove('show'), 2500);
         }
 
         function updateClock() {
             const now = new Date();
             
-            const options12 = { timeZone: 'Africa/Johannesburg', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true };
-            const options24 = { timeZone: 'Africa/Johannesburg', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
-            const dateOptions = { timeZone: 'Africa/Johannesburg', weekday: 'long', month: 'long', day: '2-digit', year: 'numeric' };
+            const sa12 = now.toLocaleTimeString('en-US', { timeZone: 'Africa/Johannesburg', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
+            const sa24 = now.toLocaleTimeString('en-GB', { timeZone: 'Africa/Johannesburg', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
+            const saDate = now.toLocaleDateString('en-US', { timeZone: 'Africa/Johannesburg', weekday: 'long', month: 'short', day: '2-digit', year: 'numeric' });
 
-            const saTimeStr12 = now.toLocaleTimeString('en-US', options12);
-            const saTimeStr24 = now.toLocaleTimeString('en-GB', options24);
-            const saDateStr = now.toLocaleDateString('en-US', dateOptions);
-
-            const parts12 = saTimeStr12.split(' ');
+            const parts12 = sa12.split(' ');
             document.getElementById('hms-12').textContent = parts12[0];
             document.getElementById('ampm-12').textContent = parts12[1];
-            document.getElementById('hms-24').textContent = saTimeStr24;
+            document.getElementById('hms-24').textContent = sa24;
             document.getElementById('ampm-24').textContent = parts12[1];
-            document.getElementById('date').textContent = saDateStr;
+            document.getElementById('date').textContent = saDate;
 
-            // Shift Logic
+            // Shift Calculation
             const phtNow = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Manila' }));
             const currentDay = phtNow.getDay(); 
-            const currentHour = phtNow.getHours();
-            const currentMinute = phtNow.getMinutes();
-            const totalMinutesToday = (currentHour * 60) + currentMinute;
+            const totalMins = (phtNow.getHours() * 60) + phtNow.getMinutes();
 
-            let shiftStartHour = 22;
-            let shiftStartMinute = 0;
-            const shiftEndHour = 6;
+            let startH = 22, startM = 0;
+            if (currentDay === 1) { startH = 21; startM = 30; }
 
-            if (currentDay === 1) { // Monday
-                shiftStartHour = 21;
-                shiftStartMinute = 30;
-            }
+            const startTotal = (startH * 60) + startM;
+            const endTotal = 360; // 06:00 AM
+            const duration = (1440 - startTotal) + endTotal;
 
-            const startTotalMinutes = (shiftStartHour * 60) + shiftStartMinute;
-            const endTotalMinutes = (shiftEndHour * 60);
-            const totalDuration = (1440 - startTotalMinutes) + endTotalMinutes;
-
-            let minutesWorked = 0;
-            let onShift = false;
-
-            if (totalMinutesToday >= startTotalMinutes) {
+            let worked = 0, onShift = false;
+            if (totalMins >= startTotal) {
                 onShift = true;
-                minutesWorked = totalMinutesToday - startTotalMinutes;
-            } else if (totalMinutesToday < endTotalMinutes) {
+                worked = totalMins - startTotal;
+            } else if (totalMins < endTotal) {
                 onShift = true;
-                minutesWorked = (1440 - startTotalMinutes) + totalMinutesToday;
+                worked = (1440 - startTotal) + totalMins;
             }
 
             const statusText = document.getElementById('status-text');
@@ -414,35 +373,23 @@
             if (onShift) {
                 statusText.textContent = "ON SHIFT";
                 statusDot.style.backgroundColor = "#10b981";
-                statusDot.style.boxShadow = "0 0 15px #10b981";
-                const minutesRemaining = totalDuration - minutesWorked;
-                workedEl.textContent = `${Math.floor(minutesWorked / 60)}h ${String(minutesWorked % 60).padStart(2, '0')}m`;
-                remainingEl.textContent = `${Math.floor(minutesRemaining / 60)}h ${String(minutesRemaining % 60).padStart(2, '0')}m`;
-                progressFill.style.width = `${(minutesWorked / totalDuration) * 100}%`;
+                statusDot.style.boxShadow = "0 0 10px #10b981";
+                const remaining = duration - worked;
+                workedEl.textContent = `${Math.floor(worked / 60)}h ${String(worked % 60).padStart(2, '0')}m`;
+                remainingEl.textContent = `${Math.floor(remaining / 60)}h ${String(remaining % 60).padStart(2, '0')}m`;
+                progressFill.style.width = `${(worked / duration) * 100}%`;
             } else {
                 statusText.textContent = "OFF SHIFT";
                 statusDot.style.backgroundColor = "#ef4444";
-                statusDot.style.boxShadow = "0 0 15px #ef4444";
+                statusDot.style.boxShadow = "0 0 10px #ef4444";
                 workedEl.textContent = "0h 00m";
-                remainingEl.textContent = `Shift Paused`;
-                progressFill.style.width = `0%`;
+                remainingEl.textContent = "---";
+                progressFill.style.width = "0%";
             }
         }
 
         setInterval(updateClock, 1000);
         updateClock();
-
-        // 3D Tilt Effect
-        const card = document.getElementById('main-card');
-        document.addEventListener('mousemove', (e) => {
-            const rotateX = (window.innerHeight / 2 - e.clientY) / 40;
-            const rotateY = (e.clientX - window.innerWidth / 2) / 40;
-            card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
-        });
-
-        document.addEventListener('mouseleave', () => {
-            card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg)`;
-        });
     </script>
 </body>
 </html>

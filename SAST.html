@@ -15,6 +15,7 @@
             --text-secondary: #94a3b8;
             --success: #22c55e;
             --danger: #ef4444;
+            --border-glow: rgba(255, 204, 0, 0.15);
         }
         body {
             background-color: var(--bg-color);
@@ -37,27 +38,99 @@
             position: relative;
             transition: transform 0.3s ease;
             width: 90%;
-            max-width: 600px;
+            max-width: 650px;
             z-index: 10;
         }
-        .time-display {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 5rem;
-            font-weight: 700;
-            letter-spacing: -2px;
-            line-height: 1;
-            margin: 0.5rem 0;
+        
+        /* Premium Clock Section */
+        .clock-container {
+            margin: 1.5rem 0 2rem 0;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            position: relative;
+        }
+
+        .clock-row {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 1rem;
+            border-radius: 24px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .clock-row:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: var(--border-glow);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5);
+        }
+
+        .clock-row:hover .time-val {
+            color: var(--accent);
+        }
+
+        .clock-label {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .time-wrapper {
             display: flex;
             align-items: baseline;
             justify-content: center;
-            gap: 10px;
+            gap: 12px;
         }
-        .ampm {
-            font-size: 2rem;
+
+        .time-val {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 3.8rem;
+            font-weight: 700;
+            letter-spacing: -2px;
+            line-height: 1;
+            transition: color 0.3s ease;
+        }
+
+        .ampm-tag {
+            font-size: 1.4rem;
             color: var(--text-secondary);
             font-weight: 400;
-            margin-left: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 2px 8px;
+            border-radius: 8px;
+            font-family: 'Inter', sans-serif;
         }
+
+        /* Toast notification */
+        #copy-toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--accent);
+            color: #000;
+            padding: 10px 24px;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            box-shadow: 0 10px 25px rgba(255, 204, 0, 0.3);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 100;
+        }
+        #copy-toast.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
         .location-tag {
             text-transform: uppercase;
             letter-spacing: 0.3em;
@@ -68,13 +141,14 @@
             align-items: center;
             justify-content: center;
             gap: 10px;
-            margin-bottom: 0.5rem;
+            margin-bottom: 1rem;
         }
         .date-display {
-            font-size: 1.25rem;
+            font-size: 1.1rem;
             color: var(--text-secondary);
-            font-weight: 300;
-            margin-bottom: 2rem;
+            font-weight: 400;
+            margin-bottom: 1.5rem;
+            opacity: 0.8;
         }
         .shift-container {
             background: rgba(0, 0, 0, 0.2);
@@ -157,8 +231,8 @@
             100% { opacity: 1; }
         }
         @media (max-width: 640px) {
-            .time-display { font-size: 3.5rem; }
-            .ampm { font-size: 1.5rem; }
+            .time-val { font-size: 2.8rem; }
+            .ampm-tag { font-size: 1rem; }
             .glass-card { padding: 2rem 1.5rem; }
         }
         .glow {
@@ -166,9 +240,9 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 500px;
-            height: 500px;
-            background: radial-gradient(circle, rgba(255, 204, 0, 0.03) 0%, rgba(10, 14, 20, 0) 70%);
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(255, 204, 0, 0.04) 0%, rgba(10, 14, 20, 0) 70%);
             z-index: 1;
         }
     </style>
@@ -176,6 +250,7 @@
 <body>
 
     <div class="glow"></div>
+    <div id="copy-toast">Copied to clipboard!</div>
 
     <div class="glass-card">
         <div class="location-tag">
@@ -183,9 +258,24 @@
             <span>South Africa Standard Time</span>
         </div>
 
-        <div class="time-display" id="clock">
-            <span id="hours-mins">00:00</span><span class="text-slate-600">:</span><span id="seconds" class="text-slate-400">00</span>
-            <span class="ampm" id="ampm">AM</span>
+        <div class="clock-container">
+            <!-- 12-Hour Row -->
+            <div class="clock-row" onclick="copyTime('12')">
+                <span class="clock-label">12-Hour Format</span>
+                <div class="time-wrapper">
+                    <span class="time-val" id="hms-12">00:00:00</span>
+                    <span class="ampm-tag" id="ampm-12">AM</span>
+                </div>
+            </div>
+
+            <!-- 24-Hour Row -->
+            <div class="clock-row" onclick="copyTime('24')">
+                <span class="clock-label">24-Hour Format</span>
+                <div class="time-wrapper">
+                    <span class="time-val" id="hms-24">00:00:00</span>
+                    <span class="ampm-tag" id="ampm-24">AM</span>
+                </div>
+            </div>
         </div>
 
         <div class="date-display" id="date">
@@ -225,41 +315,74 @@
     </div>
 
     <script>
+        function copyTime(format) {
+            let textToCopy = "";
+            const hms12 = document.getElementById('hms-12').textContent;
+            const ampm12 = document.getElementById('ampm-12').textContent;
+            const hms24 = document.getElementById('hms-24').textContent;
+            const ampm24 = document.getElementById('ampm-24').textContent;
+
+            if (format === '12') {
+                textToCopy = `${hms12} ${ampm12}`;
+            } else {
+                textToCopy = `${hms24} ${ampm24}`;
+            }
+
+            const textArea = document.createElement("textarea");
+            textArea.value = textToCopy;
+            document.body.appendChild(textArea);
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                showToast(`Copied ${format}h: ${textToCopy}`);
+            } catch (err) {
+                console.error('Copy failed', err);
+            }
+            document.body.removeChild(textArea);
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('copy-toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2000);
+        }
+
         function updateClock() {
             const now = new Date();
             
-            // 1. Update SAST Clock
-            const timeOptions = { timeZone: 'Africa/Johannesburg', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true };
-            const dateOptions = { timeZone: 'Africa/Johannesburg', month: 'short', day: '2-digit', year: 'numeric' };
+            // 1. Update SAST Clocks
+            const options12 = { timeZone: 'Africa/Johannesburg', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true };
+            const options24 = { timeZone: 'Africa/Johannesburg', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+            const dateOptions = { timeZone: 'Africa/Johannesburg', month: 'long', day: '2-digit', year: 'numeric' };
 
-            const saTimeStr = now.toLocaleTimeString('en-US', timeOptions);
+            const saTimeStr12 = now.toLocaleTimeString('en-US', options12);
+            const saTimeStr24 = now.toLocaleTimeString('en-GB', options24);
             const saDateStr = now.toLocaleDateString('en-US', dateOptions);
 
-            const parts = saTimeStr.split(' ');
-            const timeParts = parts[0].split(':');
-            const ampm = parts[1];
+            // Parsing 12h
+            const parts12 = saTimeStr12.split(' ');
+            document.getElementById('hms-12').textContent = parts12[0];
+            document.getElementById('ampm-12').textContent = parts12[1];
 
-            document.getElementById('hours-mins').textContent = `${timeParts[0]}:${timeParts[1]}`;
-            document.getElementById('seconds').textContent = timeParts[2];
-            document.getElementById('ampm').textContent = ampm;
+            // Parsing 24h
+            document.getElementById('hms-24').textContent = saTimeStr24;
+            // For the 24h AM/PM as requested
+            document.getElementById('ampm-24').textContent = parts12[1];
+
             document.getElementById('date').textContent = saDateStr;
 
-            // 2. Calculate PHT Shift (Philippine Standard Time)
+            // 2. Calculate PHT Shift
             const phtNow = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Manila' }));
-            const currentDay = phtNow.getDay(); // 0=Sun, 1=Mon, ..., 6=Sat
+            const currentDay = phtNow.getDay(); 
             const currentHour = phtNow.getHours();
             const currentMinute = phtNow.getMinutes();
             const totalMinutesToday = (currentHour * 60) + currentMinute;
 
-            // Shift Configuration
-            // Regular: 22:00 (10 PM) to 06:00 (6 AM) next day
-            // Monday (Meeting): 21:30 (9:30 PM) to 06:00 (6 AM) next day
-            
             let shiftStartHour = 22;
             let shiftStartMinute = 0;
             const shiftEndHour = 6;
             
-            // If it's Monday, start at 9:30 PM (21:30)
             if (currentDay === 1) {
                 shiftStartHour = 21;
                 shiftStartMinute = 30;
@@ -267,20 +390,15 @@
 
             const startTotalMinutes = (shiftStartHour * 60) + shiftStartMinute;
             const endTotalMinutes = (shiftEndHour * 60);
-            
-            // Total duration in minutes (handles crossing midnight)
             const totalDuration = (1440 - startTotalMinutes) + endTotalMinutes;
 
             let minutesWorked = 0;
             let onShift = false;
 
-            // Logic to check if currently on shift (Shift crosses midnight)
             if (totalMinutesToday >= startTotalMinutes) {
-                // Between start time and midnight
                 onShift = true;
                 minutesWorked = totalMinutesToday - startTotalMinutes;
             } else if (totalMinutesToday < endTotalMinutes) {
-                // Between midnight and end time
                 onShift = true;
                 minutesWorked = (1440 - startTotalMinutes) + totalMinutesToday;
             }
@@ -291,8 +409,7 @@
             const remainingEl = document.getElementById('hours-remaining');
             const progressFill = document.getElementById('progress-fill');
 
-            // Format start time for header display (12hr format)
-            const displayStartHour = shiftStartHour > 12 ? shiftStartHour - 12 : shiftStartHour;
+            const displayStartHour = shiftStartHour > 12 ? shiftStartHour - 12 : (shiftStartHour === 0 ? 12 : shiftStartHour);
             const displayStartMins = String(shiftStartMinute).padStart(2, '0');
             const displayAmpm = shiftStartHour >= 12 ? 'PM' : 'AM';
             headerEl.textContent = `PHT Shift Progress (${displayStartHour}:${displayStartMins}${displayAmpm} - 06:00AM)`;
@@ -301,19 +418,15 @@
                 statusText.textContent = "ON SHIFT";
                 statusText.parentElement.querySelector('.dot').style.backgroundColor = "#22c55e";
                 statusText.parentElement.querySelector('.dot').style.boxShadow = "0 0 10px #22c55e";
-                
                 const minutesRemaining = totalDuration - minutesWorked;
-                
                 workedEl.textContent = `${Math.floor(minutesWorked / 60)}h ${String(minutesWorked % 60).padStart(2, '0')}m`;
                 remainingEl.textContent = `${Math.floor(minutesRemaining / 60)}h ${String(minutesRemaining % 60).padStart(2, '0')}m`;
-                
                 const progressPercent = (minutesWorked / totalDuration) * 100;
                 progressFill.style.width = `${progressPercent}%`;
             } else {
                 statusText.textContent = "OFF SHIFT";
                 statusText.parentElement.querySelector('.dot').style.backgroundColor = "#ef4444";
                 statusText.parentElement.querySelector('.dot').style.boxShadow = "0 0 10px #ef4444";
-                
                 workedEl.textContent = "0h 00m";
                 remainingEl.textContent = `${Math.floor(totalDuration / 60)}h ${String(totalDuration % 60).padStart(2, '0')}m`;
                 progressFill.style.width = `0%`;
@@ -323,11 +436,10 @@
         setInterval(updateClock, 1000);
         updateClock();
 
-        // Parallax Effect
         document.addEventListener('mousemove', (e) => {
             const card = document.querySelector('.glass-card');
-            const xAxis = (window.innerWidth / 2 - e.pageX) / 50;
-            const yAxis = (window.innerHeight / 2 - e.pageY) / 50;
+            const xAxis = (window.innerWidth / 2 - e.pageX) / 60;
+            const yAxis = (window.innerHeight / 2 - e.pageY) / 60;
             card.style.transform = `rotateY(${xAxis}deg) rotateX(${yAxis}deg)`;
         });
 

@@ -14,8 +14,8 @@
             --text-primary: #ffffff;
             --text-secondary: #94a3b8;
             --success: #22c55e;
+            --danger: #ef4444;
         }
-
         body {
             background-color: var(--bg-color);
             color: var(--text-primary);
@@ -27,7 +27,6 @@
             margin: 0;
             overflow: hidden;
         }
-
         .glass-card {
             background: linear-gradient(145deg, #161e29, #0d131a);
             border: 1px solid rgba(255, 255, 255, 0.05);
@@ -41,7 +40,6 @@
             max-width: 600px;
             z-index: 10;
         }
-
         .time-display {
             font-family: 'JetBrains Mono', monospace;
             font-size: 5rem;
@@ -54,14 +52,12 @@
             justify-content: center;
             gap: 10px;
         }
-
         .ampm {
             font-size: 2rem;
             color: var(--text-secondary);
             font-weight: 400;
             margin-left: 10px;
         }
-
         .location-tag {
             text-transform: uppercase;
             letter-spacing: 0.3em;
@@ -74,22 +70,18 @@
             gap: 10px;
             margin-bottom: 0.5rem;
         }
-
         .date-display {
             font-size: 1.25rem;
             color: var(--text-secondary);
             font-weight: 300;
             margin-bottom: 2rem;
         }
-
-        /* Shift Tracker Styling */
         .shift-container {
             background: rgba(0, 0, 0, 0.2);
             border-radius: 20px;
             padding: 1.5rem;
             border: 1px solid rgba(255, 255, 255, 0.03);
         }
-
         .shift-header {
             font-size: 0.7rem;
             text-transform: uppercase;
@@ -98,17 +90,14 @@
             margin-bottom: 1rem;
             font-weight: 700;
         }
-
         .stats-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 1rem;
         }
-
         .stat-box {
             text-align: left;
         }
-
         .stat-label {
             font-size: 0.65rem;
             color: var(--text-secondary);
@@ -116,13 +105,11 @@
             display: block;
             margin-bottom: 4px;
         }
-
         .stat-value {
             font-family: 'JetBrains Mono', monospace;
             font-size: 1.1rem;
             font-weight: 600;
         }
-
         .progress-bar-bg {
             height: 6px;
             background: rgba(255, 255, 255, 0.05);
@@ -130,7 +117,6 @@
             margin-top: 1rem;
             overflow: hidden;
         }
-
         .progress-bar-fill {
             height: 100%;
             background: var(--accent);
@@ -138,7 +124,6 @@
             transition: width 1s linear;
             box-shadow: 0 0 10px rgba(255, 204, 0, 0.3);
         }
-
         .brand-footer {
             margin-top: 2rem;
             padding-top: 1.5rem;
@@ -149,7 +134,6 @@
             font-size: 0.75rem;
             color: var(--text-secondary);
         }
-
         .easybet-logo {
             color: var(--accent);
             font-weight: 800;
@@ -158,7 +142,6 @@
             align-items: center;
             gap: 6px;
         }
-
         .dot {
             height: 8px;
             width: 8px;
@@ -168,19 +151,16 @@
             box-shadow: 0 0 10px var(--success);
             animation: pulse 2s infinite;
         }
-
         @keyframes pulse {
             0% { opacity: 1; }
             50% { opacity: 0.4; }
             100% { opacity: 1; }
         }
-
         @media (max-width: 640px) {
             .time-display { font-size: 3.5rem; }
             .ampm { font-size: 1.5rem; }
             .glass-card { padding: 2rem 1.5rem; }
         }
-
         .glow {
             position: absolute;
             top: 50%;
@@ -214,7 +194,7 @@
 
         <!-- Shift Tracker -->
         <div class="shift-container" id="shift-tracker">
-            <div class="shift-header">PHT Shift Progress (22:00 - 06:00)</div>
+            <div class="shift-header" id="shift-header">PHT Shift Progress</div>
             <div class="stats-grid">
                 <div class="stat-box">
                     <span class="stat-label">Hours Worked</span>
@@ -265,44 +245,69 @@
             document.getElementById('date').textContent = saDateStr;
 
             // 2. Calculate PHT Shift (Philippine Standard Time)
-            // Shift: 10 PM (22:00) to 6 AM (06:00) next day
             const phtNow = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Manila' }));
+            const currentDay = phtNow.getDay(); // 0=Sun, 1=Mon, ..., 6=Sat
             const currentHour = phtNow.getHours();
             const currentMinute = phtNow.getMinutes();
+            const totalMinutesToday = (currentHour * 60) + currentMinute;
+
+            // Shift Configuration
+            // Regular: 22:00 (10 PM) to 06:00 (6 AM) next day
+            // Monday (Meeting): 21:30 (9:30 PM) to 06:00 (6 AM) next day
             
-            // Total shift duration is 8 hours (480 minutes)
-            const totalShiftMinutes = 8 * 60;
+            let shiftStartHour = 22;
+            let shiftStartMinute = 0;
+            const shiftEndHour = 6;
             
+            // If it's Monday, start at 9:30 PM (21:30)
+            if (currentDay === 1) {
+                shiftStartHour = 21;
+                shiftStartMinute = 30;
+            }
+
+            const startTotalMinutes = (shiftStartHour * 60) + shiftStartMinute;
+            const endTotalMinutes = (shiftEndHour * 60);
+            
+            // Total duration in minutes (handles crossing midnight)
+            const totalDuration = (1440 - startTotalMinutes) + endTotalMinutes;
+
             let minutesWorked = 0;
             let onShift = false;
 
-            // Logic to handle shift spanning midnight
-            if (currentHour >= 22) {
-                // Between 10 PM and Midnight
-                minutesWorked = (currentHour - 22) * 60 + currentMinute;
+            // Logic to check if currently on shift (Shift crosses midnight)
+            if (totalMinutesToday >= startTotalMinutes) {
+                // Between start time and midnight
                 onShift = true;
-            } else if (currentHour < 6) {
-                // Between Midnight and 6 AM
-                minutesWorked = (currentHour + 2) * 60 + currentMinute; // +2 hours from previous day's 10pm-midnight
+                minutesWorked = totalMinutesToday - startTotalMinutes;
+            } else if (totalMinutesToday < endTotalMinutes) {
+                // Between midnight and end time
                 onShift = true;
+                minutesWorked = (1440 - startTotalMinutes) + totalMinutesToday;
             }
 
+            const headerEl = document.getElementById('shift-header');
             const statusText = document.getElementById('status-text');
             const workedEl = document.getElementById('hours-worked');
             const remainingEl = document.getElementById('hours-remaining');
             const progressFill = document.getElementById('progress-fill');
+
+            // Format start time for header display (12hr format)
+            const displayStartHour = shiftStartHour > 12 ? shiftStartHour - 12 : shiftStartHour;
+            const displayStartMins = String(shiftStartMinute).padStart(2, '0');
+            const displayAmpm = shiftStartHour >= 12 ? 'PM' : 'AM';
+            headerEl.textContent = `PHT Shift Progress (${displayStartHour}:${displayStartMins}${displayAmpm} - 06:00AM)`;
 
             if (onShift) {
                 statusText.textContent = "ON SHIFT";
                 statusText.parentElement.querySelector('.dot').style.backgroundColor = "#22c55e";
                 statusText.parentElement.querySelector('.dot').style.boxShadow = "0 0 10px #22c55e";
                 
-                const minutesRemaining = totalShiftMinutes - minutesWorked;
+                const minutesRemaining = totalDuration - minutesWorked;
                 
                 workedEl.textContent = `${Math.floor(minutesWorked / 60)}h ${String(minutesWorked % 60).padStart(2, '0')}m`;
                 remainingEl.textContent = `${Math.floor(minutesRemaining / 60)}h ${String(minutesRemaining % 60).padStart(2, '0')}m`;
                 
-                const progressPercent = (minutesWorked / totalShiftMinutes) * 100;
+                const progressPercent = (minutesWorked / totalDuration) * 100;
                 progressFill.style.width = `${progressPercent}%`;
             } else {
                 statusText.textContent = "OFF SHIFT";
@@ -310,7 +315,7 @@
                 statusText.parentElement.querySelector('.dot').style.boxShadow = "0 0 10px #ef4444";
                 
                 workedEl.textContent = "0h 00m";
-                remainingEl.textContent = "8h 00m";
+                remainingEl.textContent = `${Math.floor(totalDuration / 60)}h ${String(totalDuration % 60).padStart(2, '0')}m`;
                 progressFill.style.width = `0%`;
             }
         }

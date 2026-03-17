@@ -1,0 +1,450 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EASYBET PRO | MIDNIGHT EDITION</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23E11D48'/><path d='M30 30H70V40H30V30ZM30 45H70V55H30V45ZM30 60H55V70H30V60Z' fill='white'/></svg>">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --easy-red: #e11d48;
+            --pure-black: #000000;
+            --soft-black: #0a0a0a;
+            --border-color: rgba(255, 255, 255, 0.1);
+            --text-main: #e2e8f0;
+            --text-muted: #71717a;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--pure-black);
+            color: var(--text-main);
+        }
+
+        /* Pure Black Glassmorphism */
+        .glass-sidebar {
+            background: var(--pure-black);
+            border-right: 1px solid var(--border-color);
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-color);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .glass-card:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: var(--easy-red);
+            transform: translateY(-2px);
+        }
+
+        .active-nav {
+            background: var(--easy-red) !important;
+            color: white !important;
+            box-shadow: 0 0 20px rgba(225, 29, 72, 0.2);
+        }
+
+        .sidebar-scroll::-webkit-scrollbar {
+            width: 3px;
+        }
+        .sidebar-scroll::-webkit-scrollbar-thumb {
+            background: #27272a;
+            border-radius: 10px;
+        }
+
+        .copy-feedback {
+            position: absolute;
+            inset: 0;
+            background: rgba(225, 29, 72, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 800;
+            letter-spacing: 2px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.15s;
+            z-index: 10;
+        }
+
+        .copy-feedback.show { opacity: 1; }
+
+        .typewriter {
+            overflow: hidden;
+            border-right: 2px solid var(--easy-red);
+            white-space: nowrap;
+            animation: typing 0.6s steps(40, end), blink-caret .75s step-end infinite;
+        }
+
+        @keyframes typing { from { width: 0 } to { width: 100% } }
+        @keyframes blink-caret { from, to { border-color: transparent } 50% { border-color: var(--easy-red); } }
+
+        .edit-mode-active .edit-controls { display: flex !important; }
+
+        input, textarea {
+            background: #0f0f0f !important;
+            border: 1px solid var(--border-color) !important;
+            color: white !important;
+        }
+        
+        input:focus, textarea:focus {
+            border-color: var(--easy-red) !important;
+            outline: none;
+        }
+
+        .btn-primary {
+            background: var(--easy-red);
+            transition: all 0.2s;
+        }
+        .btn-primary:hover {
+            filter: brightness(1.2);
+            box-shadow: 0 0 15px rgba(225, 29, 72, 0.4);
+        }
+
+        /* Specific fix for the pinned heart to ensure it stays vibrant red */
+        .pinned-heart {
+            color: var(--easy-red) !important;
+            fill: var(--easy-red) !important;
+        }
+    </style>
+</head>
+<body class="h-screen flex overflow-hidden">
+
+    <!-- Sidebar -->
+    <aside class="w-72 glass-sidebar flex-shrink-0 flex flex-col z-20">
+        <div class="p-8">
+            <div class="flex items-center space-x-3 mb-10">
+                <div class="w-9 h-9 bg-rose-600 rounded-lg flex items-center justify-center font-black text-white">E</div>
+                <h1 class="text-white font-extrabold text-xl tracking-tighter">Easybet<span class="text-rose-600">.</span></h1>
+            </div>
+            <div class="relative">
+                <input type="text" id="searchSidebar" placeholder="Search Directory..." 
+                    class="w-full rounded-lg py-2.5 px-4 text-xs font-medium placeholder-zinc-600">
+            </div>
+        </div>
+        
+        <div class="flex-1 overflow-y-auto sidebar-scroll px-4 pb-10 space-y-8">
+            <div id="sidebarFavSection" class="hidden">
+                <h3 class="px-4 text-[10px] font-black text-rose-500 uppercase tracking-[0.3em] mb-4">Pinned</h3>
+                <nav id="favCategoryList" class="space-y-1"></nav>
+            </div>
+
+            <div>
+                <h3 class="px-4 text-[10px] font-black text-zinc-600 uppercase tracking-[0.3em] mb-4">Categories</h3>
+                <nav id="categoryList" class="space-y-1"></nav>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col relative overflow-hidden bg-black">
+        <header class="h-20 border-b border-zinc-900 flex items-center justify-between px-10 flex-shrink-0">
+            <h2 id="currentCategoryTitle" class="text-lg font-bold text-zinc-100 typewriter">System Standby</h2>
+            
+            <div class="flex items-center space-x-6">
+                <button id="headerAddBtn" onclick="openEditModal(null)" 
+                    class="hidden btn-primary text-white px-5 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest flex items-center space-x-2">
+                    <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="4"><path d="M12 4v16m8-8H4" /></svg>
+                    <span>Add Entry</span>
+                </button>
+
+                <div class="flex items-center space-x-1 border-l border-zinc-800 pl-6">
+                    <button onclick="exportData()" title="Export" class="p-2 text-zinc-500 hover:text-white transition-colors">
+                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+                    </button>
+                    <button onclick="triggerImport()" title="Import" class="p-2 text-zinc-500 hover:text-white transition-colors">
+                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
+                    </button>
+                    <input type="file" id="importFile" class="hidden" accept=".json" onchange="importData(event)">
+                </div>
+
+                <label class="flex items-center cursor-pointer border-l border-zinc-800 pl-6 group">
+                    <span class="mr-3 text-[10px] font-black text-zinc-600 group-hover:text-rose-500 transition-colors uppercase tracking-widest">Edit Mode</span>
+                    <div class="relative">
+                        <input type="checkbox" id="editToggle" class="sr-only">
+                        <div class="w-9 h-5 bg-zinc-800 rounded-full transition-colors" id="toggleBg"></div>
+                        <div class="absolute left-1 top-1 bg-zinc-400 w-3 h-3 rounded-full transition-transform" id="toggleDot"></div>
+                    </div>
+                </label>
+            </div>
+        </header>
+
+        <div class="flex-1 overflow-y-auto p-10">
+            <div id="spielContainer" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                <!-- Welcome -->
+                <div class="col-span-full flex flex-col items-center justify-center py-32 text-center">
+                    <div class="w-16 h-16 bg-zinc-900 border border-zinc-800 rounded-2xl flex items-center justify-center mb-6 text-zinc-700">
+                        <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-width="1.5" d="M12 4v16m8-8H4" /></svg>
+                    </div>
+                    <p class="text-zinc-500 text-xs font-bold uppercase tracking-[0.2em]">Select a Category to Start</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modals -->
+    <div id="editModal" class="fixed inset-0 bg-black/90 backdrop-blur-sm hidden z-[100] flex items-center justify-center p-4">
+        <div class="bg-zinc-950 border border-zinc-800 rounded-2xl w-full max-w-xl shadow-2xl">
+            <div class="p-6 border-b border-zinc-900 flex justify-between items-center">
+                <h3 class="font-black text-zinc-100 text-xs uppercase tracking-widest" id="modalTitle">Entry Editor</h3>
+                <button onclick="closeModal()" class="text-zinc-600 hover:text-white"><svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></button>
+            </div>
+            <div class="p-6">
+                <textarea id="editArea" placeholder="Paste spiel here..." class="w-full h-64 p-5 rounded-xl text-sm leading-relaxed focus:outline-none transition-all resize-none font-medium"></textarea>
+            </div>
+            <div class="px-6 py-5 bg-zinc-900/30 flex justify-end space-x-4">
+                <button onclick="closeModal()" class="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Cancel</button>
+                <button onclick="saveSpielChanges()" class="btn-primary px-6 py-2 rounded-lg text-[10px] font-black text-white uppercase tracking-widest">Save System</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Modal -->
+    <div id="deleteModal" class="fixed inset-0 bg-black/95 hidden z-[110] flex items-center justify-center p-4">
+        <div class="bg-zinc-950 border border-rose-900/30 rounded-2xl w-full max-w-xs p-8 text-center">
+            <h3 class="text-lg font-bold text-white mb-2">Delete Entry?</h3>
+            <p class="text-zinc-500 text-xs mb-8">This will be removed from your local Easybet directory.</p>
+            <button onclick="confirmDelete()" class="w-full py-3 bg-rose-600 text-white font-black text-[10px] uppercase tracking-widest rounded-lg mb-2">Confirm Delete</button>
+            <button onclick="closeDeleteModal()" class="w-full py-3 text-zinc-600 font-bold text-[10px] uppercase tracking-widest">Abort</button>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="fixed bottom-10 right-10 bg-rose-600 py-3 px-6 rounded-lg shadow-2xl translate-y-24 opacity-0 transition-all duration-300 z-[1000]">
+        <span id="toastText" class="text-white text-[10px] font-black uppercase tracking-widest">Action Complete</span>
+    </div>
+
+    <script>
+        const rawCategories = [
+            "10% Aviator Cashback Bonus", "10% Cashback Slots Bonus", "15% Cashback for Luck Numbers",
+            "15% Cashback for Sports", "15% Cashback on Sports and Lucky numbers", "50% Win Boost ( Aviator )",
+            "150% First Deposit Match on Slots", "150% First Deposit Match on Sports and Lucky Numbers",
+            "Abusive Spiels", "Bank account details update", "Birthday Bonus", "Closing Spiel",
+            "Deleted account spiels", "Email address update", "FICA verification", "Fica Verified Promo",
+            "Losing Leg Refund", "Mobile number update", "No Easybet Account", "Opening and closing",
+            "OTP Registration", "R50 Sign up bonus", "R50 Sign up bonus wagering requirements",
+            "Reactivation / Disabled accounts", "Refer a Friend Bonus", "Resend PIN and reversal",
+            "Registration Incorrect numbers", "R500 First Bet Match", "Withdrawal", "Others"
+        ].sort((a, b) => a.localeCompare(b, undefined, {numeric: true, sensitivity: 'base'}));
+
+        let customSpiels = JSON.parse(localStorage.getItem('easybet_v3_spiels')) || {};
+        let pinnedCategories = JSON.parse(localStorage.getItem('easybet_v3_pinned')) || [];
+        let activeCategoryName = null;
+        let currentEditingIndex = null;
+        let pendingDeleteIndex = null;
+
+        const categoryList = document.getElementById('categoryList');
+        const favCategoryList = document.getElementById('favCategoryList');
+        const sidebarFavSection = document.getElementById('sidebarFavSection');
+        const spielContainer = document.getElementById('spielContainer');
+        const currentCategoryTitle = document.getElementById('currentCategoryTitle');
+        const searchSidebar = document.getElementById('searchSidebar');
+        const toast = document.getElementById('toast');
+        const toastText = document.getElementById('toastText');
+        const editToggle = document.getElementById('editToggle');
+        const editModal = document.getElementById('editModal');
+        const deleteModal = document.getElementById('deleteModal');
+        const editArea = document.getElementById('editArea');
+        const headerAddBtn = document.getElementById('headerAddBtn');
+
+        function togglePinned(e, cat) {
+            e.stopPropagation();
+            const index = pinnedCategories.indexOf(cat);
+            if (index > -1) pinnedCategories.splice(index, 1);
+            else pinnedCategories.push(cat);
+            saveToStorage();
+            renderSidebar();
+        }
+
+        function createNavItem(cat) {
+            const isPinned = pinnedCategories.includes(cat);
+            const isActive = activeCategoryName === cat;
+            const div = document.createElement('div');
+            div.className = `group flex items-center px-2`;
+            div.dataset.category = cat;
+
+            const btn = document.createElement('button');
+            btn.className = `flex-1 text-left px-4 py-3 rounded-lg transition-all text-[10px] font-bold uppercase tracking-wider truncate ${isActive ? 'active-nav' : 'text-zinc-500 hover:text-white hover:bg-zinc-900'}`;
+            btn.textContent = cat;
+            btn.onclick = () => selectCategory(cat);
+
+            const favBtn = document.createElement('button');
+            // Added explicit "pinned-heart" class to ensure the red remains solid
+            favBtn.className = `p-2 transition-colors ${isPinned ? 'pinned-heart' : 'text-zinc-700 hover:text-rose-600 opacity-0 group-hover:opacity-100'}`;
+            favBtn.innerHTML = `<svg class="h-3 w-3" fill="${isPinned ? 'currentColor' : 'none'}" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>`;
+            favBtn.onclick = (e) => togglePinned(e, cat);
+
+            div.appendChild(btn);
+            div.appendChild(favBtn);
+            return div;
+        }
+
+        function renderSidebar(filter = '') {
+            categoryList.innerHTML = '';
+            favCategoryList.innerHTML = '';
+            const filtered = rawCategories.filter(cat => cat.toLowerCase().includes(filter.toLowerCase()));
+            if (pinnedCategories.length > 0 && !filter) {
+                sidebarFavSection.classList.remove('hidden');
+                pinnedCategories.forEach(cat => favCategoryList.appendChild(createNavItem(cat)));
+            } else sidebarFavSection.classList.add('hidden');
+            filtered.forEach(cat => {
+                if (!pinnedCategories.includes(cat) || filter) categoryList.appendChild(createNavItem(cat));
+            });
+        }
+
+        function selectCategory(cat) {
+            activeCategoryName = cat;
+            currentCategoryTitle.classList.remove('typewriter');
+            void currentCategoryTitle.offsetWidth;
+            currentCategoryTitle.textContent = cat;
+            currentCategoryTitle.classList.add('typewriter');
+            headerAddBtn.classList.remove('hidden');
+            renderSidebar(searchSidebar.value);
+            renderSpiels();
+        }
+
+        function renderSpiels() {
+            spielContainer.innerHTML = '';
+            if (!activeCategoryName) return;
+            const spiels = customSpiels[activeCategoryName] || [];
+            if (spiels.length === 0) {
+                spielContainer.innerHTML = `<div class="col-span-full py-20 text-center text-zinc-600 text-[10px] font-black uppercase tracking-[0.3em]">No Data in Sector</div>`;
+                return;
+            }
+            spiels.forEach((text, index) => {
+                const bubble = document.createElement('div');
+                bubble.className = 'spiel-bubble glass-card p-6 rounded-2xl relative overflow-hidden group cursor-pointer';
+                bubble.innerHTML = `
+                    <div class="flex justify-between items-center mb-4">
+                        <span class="text-[9px] font-black text-zinc-600 uppercase tracking-widest">Entry.v${index + 1}</span>
+                        <div class="edit-controls hidden items-center space-x-1">
+                            <button onclick="openEditModal(${index})" class="p-1.5 text-zinc-600 hover:text-white"><svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg></button>
+                            <button onclick="triggerDelete(${index})" class="p-1.5 text-zinc-600 hover:text-rose-600"><svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg></button>
+                        </div>
+                    </div>
+                    <p class="whitespace-pre-line text-zinc-300 text-sm leading-relaxed font-medium">${text}</p>
+                    <div class="copy-feedback">COPIED</div>
+                `;
+                bubble.onclick = (e) => {
+                    if (e.target.closest('.edit-controls')) return;
+                    if (document.body.classList.contains('edit-mode-active')) return;
+                    copyText(text);
+                    const fb = bubble.querySelector('.copy-feedback');
+                    fb.classList.add('show');
+                    setTimeout(() => fb.classList.remove('show'), 800);
+                };
+                spielContainer.appendChild(bubble);
+            });
+        }
+
+        function openEditModal(index) {
+            if (!activeCategoryName) { showToast("Select Sector"); return; }
+            currentEditingIndex = index;
+            const spiels = customSpiels[activeCategoryName] || [];
+            document.getElementById('modalTitle').textContent = index === null ? `New Entry` : `Edit Entry`;
+            editArea.value = index === null ? "" : spiels[index];
+            editModal.classList.remove('hidden');
+            setTimeout(() => editArea.focus(), 100);
+        }
+
+        function closeModal() { editModal.classList.add('hidden'); }
+        function saveSpielChanges() {
+            const val = editArea.value.trim();
+            if (!val) { showToast("Empty Input"); return; }
+            if (!customSpiels[activeCategoryName]) customSpiels[activeCategoryName] = [];
+            if (currentEditingIndex === null) customSpiels[activeCategoryName].push(val);
+            else customSpiels[activeCategoryName][currentEditingIndex] = val;
+            saveToStorage();
+            closeModal();
+            renderSpiels();
+            showToast("System Updated");
+        }
+
+        function triggerDelete(index) { pendingDeleteIndex = index; deleteModal.classList.remove('hidden'); }
+        function closeDeleteModal() { deleteModal.classList.add('hidden'); }
+        function confirmDelete() {
+            if (pendingDeleteIndex !== null) {
+                customSpiels[activeCategoryName].splice(pendingDeleteIndex, 1);
+                saveToStorage(); renderSpiels(); showToast("Purged");
+            }
+            closeDeleteModal();
+        }
+
+        function saveToStorage() {
+            localStorage.setItem('easybet_v3_spiels', JSON.stringify(customSpiels));
+            localStorage.setItem('easybet_v3_pinned', JSON.stringify(pinnedCategories));
+        }
+
+        function copyText(text) {
+            const el = document.createElement('textarea');
+            el.value = text; document.body.appendChild(el);
+            el.select(); document.execCommand('copy');
+            document.body.removeChild(el);
+            showToast("Copied");
+        }
+
+        function showToast(text) {
+            toastText.textContent = text;
+            toast.style.transform = "translateY(0)"; toast.style.opacity = "1";
+            setTimeout(() => { toast.style.transform = "translateY(24px)"; toast.style.opacity = "0"; }, 2000);
+        }
+
+        editToggle.addEventListener('change', (e) => {
+            const dot = document.getElementById('toggleDot');
+            const bg = document.getElementById('toggleBg');
+            if (e.target.checked) {
+                document.body.classList.add('edit-mode-active');
+                dot.style.transform = 'translateX(16px)';
+                bg.style.backgroundColor = 'var(--easy-red)';
+                dot.style.backgroundColor = 'white';
+            } else {
+                document.body.classList.remove('edit-mode-active');
+                dot.style.transform = 'translateX(0)';
+                bg.style.backgroundColor = '#27272a';
+                dot.style.backgroundColor = '#71717a';
+            }
+        });
+
+        function exportData() {
+            const data = { spiels: customSpiels, pinned: pinnedCategories };
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a'); a.href = url; a.download = `Easybet_Backup.json`; a.click();
+        }
+        function triggerImport() { document.getElementById('importFile').click(); }
+        function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    customSpiels = data.spiels || {}; pinnedCategories = data.pinned || [];
+                    saveToStorage(); renderSidebar(); if (activeCategoryName) renderSpiels();
+                    showToast("Restored");
+                } catch(err) { showToast("Error"); }
+            };
+            reader.readAsText(file);
+        }
+
+        new Sortable(favCategoryList, {
+            animation: 150,
+            onEnd: () => {
+                pinnedCategories = Array.from(favCategoryList.querySelectorAll('[data-category]')).map(el => el.dataset.category);
+                saveToStorage();
+            }
+        });
+
+        searchSidebar.oninput = (e) => renderSidebar(e.target.value);
+        renderSidebar();
+    </script>
+</body>
+</html>

@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EASYBET PRO | COSMIC EDITION</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230C4A6E'/><circle cx='35' cy='35' r='8' fill='%23E2E8F0'/><circle cx='65' cy='45' r='5' fill='%23E2E8F0'/><circle cx='75' cy='25' r='6' fill='%23E2E8F0' opacity='0.8'/></svg>">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --cosmic-blue: #0C4A6E;
+            --deep-space: #0A1626;
+            --starlight: #1E3A5F;
+            --soft-indigo: #1E40AF;
+            --glow-blue: 0 0 20px rgba(16, 185, 129, 0.4);
+            --glow-intense: 0 0 35px rgba(16, 185, 129, 0.6);
+            --text-primary: #F8FAFC;
+            --text-secondary: #CBD5E1;
+            --text-muted: #94A3B8;
+            --border-soft: rgba(148, 163, 184, 0.12);
+            --success-emerald: #10B981;
+            --glass-bg: rgba(15, 23, 42, 0.85);
+        }
+        * {
+            transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform;
+            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+            transition-duration: 250ms;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--deep-space);
+            color: var(--text-primary);
+            background-image:
+                radial-gradient(circle at 20% 30%, rgba(16,185,129,0.08) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(99,102,241,0.06) 0%, transparent 50%),
+                radial-gradient(circle at 40% 10%, rgba(16,185,129,0.04) 0%, transparent 50%);
+            position: relative;
+            overflow: hidden;
+            min-height: 100vh;
+        }
+        .glass-sidebar {
+            background: var(--glass-bg);
+            border-right: 1px solid var(--border-soft);
+            backdrop-filter: blur(32px) saturate(120%);
+            box-shadow: 12px 0 60px rgba(0, 0, 0, 0.8);
+        }
+        .glass-card {
+            background: linear-gradient(145deg, rgba(255,255,255,0.06), rgba(15,23,42,0.9));
+            border: 1px solid var(--border-soft);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.08);
+            position: relative;
+        }
+        .glass-card:hover {
+            border-color: rgba(16,185,129,0.3);
+            box-shadow: var(--glow-blue), 0 30px 60px rgba(0,0,0,0.7);
+        }
+        /* Edit Mode Styles */
+        .edit-mode-active .edit-controls {
+            display: flex !important;
+        }
+        .edit-mode-active .spiel-bubble {
+            cursor: move;
+            user-select: none;
+        }
+        .edit-mode-active .spiel-bubble:hover {
+            border-color: var(--success-emerald);
+        }
+        .active-nav {
+            background: linear-gradient(to right, var(--success-emerald), #059669) !important;
+            color: white !important;
+            box-shadow: var(--glow-intense) !important;
+        }
+        .sidebar-scroll::-webkit-scrollbar { width: 6px; }
+        .sidebar-scroll::-webkit-scrollbar-thumb { background: var(--success-emerald); border-radius: 10px; }
+        .typewriter {
+            font-family: 'Space Grotesk', sans-serif;
+            background: linear-gradient(135deg, var(--text-primary), var(--success-emerald));
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--success-emerald), #059669);
+            box-shadow: var(--glow-blue);
+        }
+        .sortable-ghost {
+            opacity: 0.2;
+            border: 2px dashed var(--success-emerald) !important;
+            background: rgba(16, 185, 129, 0.05) !important;
+            transform: scale(0.98);
+        }
+        .drag-handle {
+            cursor: grab;
+        }
+        .drag-handle:active {
+            cursor: grabbing;
+        }
+        .sidebar-item {
+            cursor: pointer;
+        }
+        .sidebar-item.sortable-chosen {
+            background: rgba(16, 185, 129, 0.1);
+        }
+    </style>
+</head>
+<body class="h-screen flex overflow-hidden">
+
+<!-- Sidebar -->
+<aside class="w-80 glass-sidebar flex-shrink-0 flex flex-col z-20">
+    <div class="p-9">
+        <div class="flex items-center space-x-4 mb-12">
+            <div class="w-12 h-12 bg-emerald-600 rounded-3xl flex items-center justify-center font-black text-white text-2xl border border-white/20">E</div>
+            <div>
+                <h1 class="text-white font-black text-3xl tracking-tight">Easybet<span class="text-emerald-400">.</span></h1>
+                <p class="text-[10px] font-black text-emerald-400 tracking-[0.2em] -mt-1 uppercase">Cosmic Edition</p>
+            </div>
+        </div>
+        <div class="relative">
+            <input type="text" id="searchSidebar" placeholder="Search sectors..." class="w-full bg-slate-900/50 border border-slate-700/50 rounded-3xl py-4 px-6 text-sm text-white focus:ring-2 focus:ring-emerald-500/30 outline-none transition-all">
+        </div>
+        <button onclick="openNewCategoryModal()" class="mt-8 w-full flex items-center justify-center gap-x-3 py-4 bg-slate-900/70 border-2 border-dashed border-emerald-500/40 rounded-3xl text-xs font-black text-emerald-300 hover:border-emerald-400 transition-all">
+            NEW SECTOR
+        </button>
+    </div>
+    <div class="flex-1 overflow-y-auto sidebar-scroll px-6 pb-12 space-y-10">
+        <div id="sidebarFavSection" class="hidden">
+            <h3 class="px-3 text-[10px] font-black text-emerald-400 uppercase tracking-widest mb-4">PINNED</h3>
+            <nav id="favCategoryList" class="space-y-2"></nav>
+        </div>
+        <div>
+            <h3 class="px-3 text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-4">ALL SECTORS</h3>
+            <nav id="categoryList" class="space-y-2"></nav>
+        </div>
+    </div>
+</aside>
+
+<!-- Main Content -->
+<main class="flex-1 flex flex-col relative overflow-hidden">
+    <header class="h-24 border-b border-slate-800/60 flex items-center justify-between px-12 flex-shrink-0 backdrop-blur-3xl bg-slate-900/60">
+        <h2 id="currentCategoryTitle" class="text-3xl font-black typewriter leading-tight">System Standby</h2>
+        <div class="flex items-center space-x-6">
+            <button id="headerAddBtn" onclick="openEditModal(null)" class="hidden btn-primary text-white px-6 py-3 rounded-3xl text-xs font-black uppercase tracking-wider flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path d="M12 4v16m8-8H4"/></svg>
+                ADD ENTRY
+            </button>
+            
+            <div class="flex items-center gap-4 border-l border-slate-700/60 pl-6">
+                <button onclick="exportData()" title="Export" class="p-2 text-zinc-400 hover:text-emerald-400 transition-colors"><svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg></button>
+                <button onclick="triggerImport()" title="Import" class="p-2 text-zinc-400 hover:text-emerald-400 transition-colors"><svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg></button>
+                <input type="file" id="importFile" class="hidden" accept=".json" onchange="importData(event)">
+            </div>
+
+            <label class="flex items-center cursor-pointer border-l border-slate-700/60 pl-6">
+                <span class="mr-3 text-xs font-black text-zinc-400 uppercase">Edit Mode</span>
+                <div class="relative w-12 h-6 bg-slate-800 rounded-full border border-slate-700">
+                    <input type="checkbox" id="editToggle" class="sr-only peer">
+                    <div class="absolute inset-0 rounded-full bg-slate-700 peer-checked:bg-emerald-600 transition-all"></div>
+                    <div class="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform peer-checked:translate-x-6"></div>
+                </div>
+            </label>
+        </div>
+    </header>
+
+    <div class="flex-1 overflow-y-auto p-12 pb-20">
+        <div id="spielContainer" class="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-8">
+            <!-- Content will be injected here -->
+        </div>
+    </div>
+</main>
+
+<!-- Modals -->
+<div id="newCategoryModal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md hidden z-[100] flex items-center justify-center p-6">
+    <div class="glass-card rounded-3xl w-full max-w-md p-8">
+        <h3 class="text-xl font-black text-white mb-6 uppercase tracking-wider">New Sector</h3>
+        <input id="newCatName" type="text" placeholder="Sector Name..." class="w-full bg-slate-900 border border-slate-700 rounded-2xl px-6 py-4 text-white focus:border-emerald-500 outline-none mb-6">
+        <div class="flex justify-end gap-3">
+            <button onclick="closeNewCategoryModal()" class="px-6 py-3 text-zinc-400 font-bold uppercase text-xs">Cancel</button>
+            <button onclick="createNewCategory()" class="btn-primary text-white px-8 py-3 rounded-2xl text-xs font-black uppercase">Create</button>
+        </div>
+    </div>
+</div>
+
+<div id="editModal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md hidden z-[100] flex items-center justify-center p-6">
+    <div class="glass-card rounded-3xl w-full max-w-4xl flex flex-col max-h-[85vh]">
+        <div class="p-6 border-b border-slate-700 flex justify-between items-center">
+            <h3 id="modalTitle" class="text-sm font-black text-white uppercase tracking-widest">Entry Editor</h3>
+            <button onclick="closeModal()" class="text-zinc-500 hover:text-white"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"/></svg></button>
+        </div>
+        <div class="p-8 flex-1">
+            <textarea id="editArea" placeholder="Spiel content..." class="w-full h-full bg-slate-900 border border-slate-700 rounded-2xl p-6 text-white text-lg focus:border-emerald-500 outline-none resize-none"></textarea>
+        </div>
+        <div class="p-6 bg-slate-900/50 flex justify-end gap-4 rounded-b-3xl">
+            <button onclick="closeModal()" class="px-6 py-3 text-zinc-400 font-bold text-xs uppercase">Cancel</button>
+            <button onclick="saveSpielChanges()" class="btn-primary text-white px-10 py-3 rounded-2xl text-xs font-black uppercase">Save Entry</button>
+        </div>
+    </div>
+</div>
+
+<div id="deleteModal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md hidden z-[110] flex items-center justify-center p-6">
+    <div class="glass-card rounded-3xl w-full max-w-xs p-10 text-center">
+        <div class="w-16 h-16 bg-red-500/10 border border-red-500/20 rounded-2xl flex items-center justify-center mx-auto mb-6">
+            <svg class="w-8 h-8 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+        </div>
+        <h3 class="text-white font-black text-xl mb-2">Delete Spiel?</h3>
+        <p class="text-zinc-400 text-sm mb-8">This cannot be undone.</p>
+        <button onclick="confirmDelete()" class="w-full bg-red-600 hover:bg-red-700 text-white font-black py-4 rounded-2xl mb-3 text-xs uppercase tracking-widest">Delete</button>
+        <button onclick="closeDeleteModal()" class="w-full text-zinc-500 font-bold py-3 text-xs uppercase">Cancel</button>
+    </div>
+</div>
+
+<div id="toast" class="fixed bottom-10 right-10 bg-slate-900 border border-emerald-500/30 py-4 px-8 rounded-2xl shadow-2xl opacity-0 translate-y-10 transition-all duration-300 z-[1000] flex items-center gap-3">
+    <div class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+    <span id="toastText" class="text-white text-xs font-black uppercase tracking-widest"></span>
+</div>
+
+<script>
+const defaultCategories = [
+    "10% Aviator Cashback Bonus", "10% Cashback Slots Bonus", "15% Cashback for Luck Numbers",
+    "15% Cashback for Sports", "Abusive Spiels", "Bank account update", "Birthday Bonus", "Closing Spiel",
+    "Deleted account spiels", "Email address update", "FICA verification", "Losing Leg Refund", 
+    "Mobile number update", "No Easybet Account", "Opening and closing", "R50 Sign up bonus", 
+    "Reactivation", "Refer a Friend", "Withdrawal", "Others"
+];
+
+let customSpiels = JSON.parse(localStorage.getItem('easybet_v3_spiels')) || {};
+let pinnedCategories = JSON.parse(localStorage.getItem('easybet_v3_pinned')) || [];
+let userCustomCategories = JSON.parse(localStorage.getItem('easybet_v3_customcats')) || defaultCategories.slice().sort((a, b) => a.localeCompare(b, undefined, {numeric: true}));
+let activeCategoryName = null;
+let currentEditingIndex = null;
+let pendingDeleteIndex = null;
+
+const spielContainer = document.getElementById('spielContainer');
+const categoryList = document.getElementById('categoryList');
+const favCategoryList = document.getElementById('favCategoryList');
+const searchSidebar = document.getElementById('searchSidebar');
+const editToggle = document.getElementById('editToggle');
+const editArea = document.getElementById('editArea');
+
+// Sortable for Spiels
+const sortableSpiels = new Sortable(spielContainer, {
+    animation: 250,
+    ghostClass: 'sortable-ghost',
+    disabled: true, 
+    handle: '.drag-handle',
+    onEnd: function() {
+        if (!activeCategoryName) return;
+        const newSpiels = Array.from(spielContainer.querySelectorAll('.spiel-bubble')).map(el => el.getAttribute('data-raw-content'));
+        customSpiels[activeCategoryName] = newSpiels;
+        saveToStorage();
+        renderSpiels();
+        showToast("Order Updated");
+    }
+});
+
+// Sortable for Pinned List
+const sortableFavs = new Sortable(favCategoryList, {
+    animation: 200,
+    ghostClass: 'sortable-ghost',
+    onEnd: function() {
+        const newPinned = Array.from(favCategoryList.querySelectorAll('.sidebar-item')).map(el => el.getAttribute('data-cat'));
+        pinnedCategories = newPinned;
+        saveToStorage();
+        showToast("Pins Reordered");
+    }
+});
+
+// Sortable for Main Category List
+const sortableMain = new Sortable(categoryList, {
+    animation: 200,
+    ghostClass: 'sortable-ghost',
+    onEnd: function() {
+        // Only update if not filtering (to avoid breaking order during search)
+        if (searchSidebar.value) return;
+        const newCats = Array.from(categoryList.querySelectorAll('.sidebar-item')).map(el => el.getAttribute('data-cat'));
+        userCustomCategories = newCats;
+        saveToStorage();
+        showToast("Sector Reordered");
+    }
+});
+
+function saveToStorage() {
+    localStorage.setItem('easybet_v3_spiels', JSON.stringify(customSpiels));
+    localStorage.setItem('easybet_v3_pinned', JSON.stringify(pinnedCategories));
+    localStorage.setItem('easybet_v3_customcats', JSON.stringify(userCustomCategories));
+}
+
+function renderSidebar(filter = '') {
+    categoryList.innerHTML = '';
+    favCategoryList.innerHTML = '';
+    
+    // Ensure all categories are in userCustomCategories (for legacy support or missing items)
+    const combined = [...new Set([...userCustomCategories, ...defaultCategories])];
+    
+    const filtered = combined.filter(c => c.toLowerCase().includes(filter.toLowerCase()));
+
+    document.getElementById('sidebarFavSection').classList.toggle('hidden', pinnedCategories.length === 0 || filter !== '');
+
+    // Render Pinned (Don't filter these for simplicity in reordering logic)
+    if (!filter) {
+        pinnedCategories.forEach(cat => {
+            favCategoryList.appendChild(createSidebarItem(cat, true));
+        });
+    }
+
+    // Render Main List
+    filtered.forEach(cat => {
+        // If it's pinned, we still show it in the "All" list for accessibility, 
+        // but often users prefer it only in one place. We'll show it in both for now.
+        categoryList.appendChild(createSidebarItem(cat, pinnedCategories.includes(cat)));
+    });
+}
+
+function createSidebarItem(cat, isPinned) {
+    const isActive = activeCategoryName === cat;
+    const item = document.createElement('div');
+    item.className = `sidebar-item flex items-center group px-2 py-1 rounded-2xl transition-all ${isActive ? 'bg-emerald-500/10' : 'hover:bg-slate-800/40'}`;
+    item.setAttribute('data-cat', cat);
+    
+    item.innerHTML = `
+        <button onclick="selectCategory('${cat.replace(/'/g, "\\'")}')" class="flex-1 text-left px-4 py-3 text-xs font-bold uppercase truncate transition-all ${isActive ? 'text-emerald-400' : 'text-zinc-400 group-hover:text-white'}">${cat}</button>
+        <button onclick="togglePinned(event, '${cat.replace(/'/g, "\\'")}')" class="p-2 transition-all ${isPinned ? 'text-emerald-500' : 'text-zinc-700 opacity-0 group-hover:opacity-100 hover:text-emerald-400'}">
+            <svg class="w-4 h-4" fill="${isPinned?'currentColor':'none'}" stroke="currentColor" viewBox="0 0 24 24"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 000-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+        </button>
+    `;
+    return item;
+}
+
+function selectCategory(cat) {
+    activeCategoryName = cat;
+    document.getElementById('currentCategoryTitle').textContent = cat;
+    document.getElementById('headerAddBtn').classList.remove('hidden');
+    renderSidebar(searchSidebar.value);
+    renderSpiels();
+}
+
+function renderSpiels() {
+    spielContainer.innerHTML = '';
+    if (!activeCategoryName) return;
+
+    const spiels = customSpiels[activeCategoryName] || [];
+    if (spiels.length === 0) {
+        spielContainer.innerHTML = `<div class="col-span-full py-20 text-center text-zinc-600 text-xs font-black uppercase">Sector Empty</div>`;
+        return;
+    }
+
+    spiels.forEach((text, idx) => {
+        const card = document.createElement('div');
+        card.className = 'spiel-bubble glass-card p-8 rounded-3xl group relative overflow-hidden';
+        card.setAttribute('data-raw-content', text);
+        card.setAttribute('data-index', idx);
+        
+        card.innerHTML = `
+            <div class="flex justify-between items-start mb-6">
+                <span class="text-[10px] font-black text-zinc-500 uppercase tracking-widest">#${idx + 1}</span>
+                <div class="edit-controls hidden items-center gap-2">
+                    <div class="drag-handle p-2 text-zinc-600 hover:text-emerald-400" title="Drag to reorder">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"/></svg>
+                    </div>
+                    <button onclick="event.stopPropagation(); openEditModal(${idx})" class="p-2 text-zinc-500 hover:text-white bg-slate-800 rounded-lg" title="Edit Content">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+                    </button>
+                    <button onclick="event.stopPropagation(); triggerDelete(${idx})" class="p-2 text-zinc-500 hover:text-red-400 bg-slate-800 rounded-lg" title="Delete Entry">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                    </button>
+                </div>
+            </div>
+            <p class="text-zinc-200 text-sm leading-relaxed whitespace-pre-line">${text}</p>
+        `;
+
+        card.onclick = () => {
+            if (document.body.classList.contains('edit-mode-active')) return;
+            copyText(text);
+        };
+
+        spielContainer.appendChild(card);
+    });
+}
+
+function togglePinned(e, cat) {
+    e.stopPropagation();
+    const idx = pinnedCategories.indexOf(cat);
+    if (idx > -1) pinnedCategories.splice(idx, 1);
+    else pinnedCategories.push(cat);
+    saveToStorage();
+    renderSidebar(searchSidebar.value);
+}
+
+function openEditModal(idx) {
+    currentEditingIndex = idx;
+    document.getElementById('modalTitle').textContent = idx === null ? 'New Entry' : `Edit Entry #${idx + 1}`;
+    editArea.value = idx === null ? '' : (customSpiels[activeCategoryName][idx]);
+    document.getElementById('editModal').classList.remove('hidden');
+    editArea.focus();
+}
+
+function saveSpielChanges() {
+    const val = editArea.value.trim();
+    if (!val) { showToast("Empty Content"); return; }
+    if (!customSpiels[activeCategoryName]) customSpiels[activeCategoryName] = [];
+    
+    if (currentEditingIndex === null) {
+        customSpiels[activeCategoryName].push(val);
+    } else {
+        customSpiels[activeCategoryName][currentEditingIndex] = val;
+    }
+    
+    saveToStorage();
+    document.getElementById('editModal').classList.add('hidden');
+    renderSpiels();
+    showToast("System Updated");
+}
+
+function triggerDelete(idx) {
+    pendingDeleteIndex = idx;
+    document.getElementById('deleteModal').classList.remove('hidden');
+}
+
+function confirmDelete() {
+    if (pendingDeleteIndex !== null) {
+        customSpiels[activeCategoryName].splice(pendingDeleteIndex, 1);
+        saveToStorage();
+        document.getElementById('deleteModal').classList.add('hidden');
+        renderSpiels();
+        showToast("Purged");
+    }
+}
+
+function copyText(text) {
+    const el = document.createElement('textarea');
+    el.value = text;
+    document.body.appendChild(el);
+    el.select();
+    document.execCommand('copy');
+    document.body.removeChild(el);
+    showToast("Copied to Clipboard");
+}
+
+function showToast(text) {
+    const t = document.getElementById('toast');
+    document.getElementById('toastText').textContent = text;
+    t.classList.remove('opacity-0', 'translate-y-10');
+    t.classList.add('opacity-100', 'translate-y-0');
+    setTimeout(() => { 
+        t.classList.add('opacity-0', 'translate-y-10'); 
+        t.classList.remove('opacity-100', 'translate-y-0'); 
+    }, 2000);
+}
+
+editToggle.addEventListener('change', (e) => {
+    const isActive = e.target.checked;
+    document.body.classList.toggle('edit-mode-active', isActive);
+    sortableSpiels.option("disabled", !isActive);
+    showToast(isActive ? "Edit Mode Active" : "Read Only Mode");
+});
+
+function exportData() {
+    const data = {
+        spiels: customSpiels,
+        pinned: pinnedCategories,
+        customCats: userCustomCategories,
+        version: "3.2-cosmic",
+        exportDate: new Date().toISOString()
+    };
+    const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `Easybet_PRO_${new Date().toISOString().split('T')[0]}.json`;
+    a.click();
+}
+
+function triggerImport() { document.getElementById('importFile').click(); }
+
+function importData(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+        try {
+            const data = JSON.parse(event.target.result);
+            customSpiels = data.spiels || {};
+            pinnedCategories = data.pinned || [];
+            userCustomCategories = data.customCats || [];
+            saveToStorage();
+            renderSidebar();
+            if(activeCategoryName) renderSpiels();
+            showToast("Backup Restored");
+        } catch (err) {
+            showToast("Import Failed: Invalid File");
+        }
+    };
+    reader.readAsText(file);
+}
+
+function createNewCategory() {
+    const name = document.getElementById('newCatName').value.trim();
+    if (!name) return;
+    if (userCustomCategories.includes(name)) {
+        showToast("Sector Already Exists");
+        return;
+    }
+    userCustomCategories.unshift(name); // Add to top of main list
+    saveToStorage();
+    document.getElementById('newCategoryModal').classList.add('hidden');
+    document.getElementById('newCatName').value = '';
+    renderSidebar();
+    selectCategory(name);
+    showToast("New Sector Online");
+}
+
+function openNewCategoryModal() { document.getElementById('newCategoryModal').classList.remove('hidden'); }
+function closeNewCategoryModal() { document.getElementById('newCategoryModal').classList.add('hidden'); }
+function closeDeleteModal() { document.getElementById('deleteModal').classList.add('hidden'); }
+function closeModal() { document.getElementById('editModal').classList.add('hidden'); }
+
+searchSidebar.oninput = (e) => {
+    const val = e.target.value;
+    renderSidebar(val);
+    // Disable reordering during search to prevent saving weird filtered states
+    sortableMain.option("disabled", !!val);
+};
+
+renderSidebar();
+</script>
+</body>
+</html>

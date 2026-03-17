@@ -2,449 +2,605 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EASYBET PRO | MIDNIGHT EDITION</title>
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23E11D48'/><path d='M30 30H70V40H30V30ZM30 45H70V55H30V45ZM30 60H55V70H30V60Z' fill='white'/></svg>">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --easy-red: #e11d48;
-            --pure-black: #000000;
-            --soft-black: #0a0a0a;
-            --border-color: rgba(255, 255, 255, 0.1);
-            --text-main: #e2e8f0;
-            --text-muted: #71717a;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EASYBET PRO | MIDNIGHT EDITION</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23E11D48'/><path d='M30 30H70V40H30V30ZM30 45H70V55H30V45ZM30 60H55V70H30V60Z' fill='white'/></svg>">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --easy-red: #e11d48;
+      --neon-red: #ff1744;
+      --pure-black: #000000;
+      --soft-black: #0a0a0a;
+      --deep-bg: #050505;
+      --border-color: rgba(255, 255, 255, 0.08);
+      --text-main: #e2e8f0;
+      --text-muted: #71717a;
+      --glow-red: 0 0 25px rgba(225, 29, 72, 0.45);
+      --glow-intense: 0 0 40px rgba(255, 23, 68, 0.6);
+    }
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--pure-black);
-            color: var(--text-main);
-        }
+    * {
+      transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter;
+      transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+      transition-duration: 200ms;
+    }
 
-        /* Pure Black Glassmorphism */
-        .glass-sidebar {
-            background: var(--pure-black);
-            border-right: 1px solid var(--border-color);
-        }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--deep-bg);
+      color: var(--text-main);
+      background-image: 
+        radial-gradient(circle at 25% 25%, rgba(225,29,72,0.035) 0%, transparent 60%),
+        radial-gradient(circle at 75% 80%, rgba(225,29,72,0.035) 0%, transparent 60%);
+      position: relative;
+      overflow: hidden;
+    }
 
-        .glass-card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--border-color);
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-        }
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(transparent, rgba(0,0,0,0.6));
+      pointer-events: none;
+      z-index: -1;
+    }
 
-        .glass-card:hover {
-            background: rgba(255, 255, 255, 0.05);
-            border-color: var(--easy-red);
-            transform: translateY(-2px);
-        }
+    .glass-sidebar {
+      background: rgba(10, 10, 10, 0.92);
+      border-right: 1px solid var(--border-color);
+      backdrop-filter: blur(24px);
+      box-shadow: 10px 0 40px rgba(0, 0, 0, 0.7);
+    }
 
-        .active-nav {
-            background: var(--easy-red) !important;
-            color: white !important;
-            box-shadow: 0 0 20px rgba(225, 29, 72, 0.2);
-        }
+    .glass-card {
+      background: linear-gradient(145deg, rgba(255,255,255,0.045), rgba(10,10,10,0.85));
+      border: 1px solid var(--border-color);
+      box-shadow: 0 15px 35px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.06);
+      position: relative;
+      overflow: hidden;
+    }
 
-        .sidebar-scroll::-webkit-scrollbar {
-            width: 3px;
-        }
-        .sidebar-scroll::-webkit-scrollbar-thumb {
-            background: #27272a;
-            border-radius: 10px;
-        }
+    .glass-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(to right, transparent, var(--easy-red), transparent);
+      opacity: 0;
+    }
 
-        .copy-feedback {
-            position: absolute;
-            inset: 0;
-            background: rgba(225, 29, 72, 0.9);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 800;
-            letter-spacing: 2px;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.15s;
-            z-index: 10;
-        }
+    .glass-card:hover {
+      background: linear-gradient(145deg, rgba(255,255,255,0.07), rgba(10,10,10,0.9));
+      border-color: var(--neon-red);
+      box-shadow: var(--glow-red), 0 25px 50px rgba(0,0,0,0.7);
+      transform: translateY(-6px) scale(1.015);
+    }
 
-        .copy-feedback.show { opacity: 1; }
+    .glass-card:hover::before {
+      opacity: 1;
+    }
 
-        .typewriter {
-            overflow: hidden;
-            border-right: 2px solid var(--easy-red);
-            white-space: nowrap;
-            animation: typing 0.6s steps(40, end), blink-caret .75s step-end infinite;
-        }
+    /* CRITICAL FIX: Ensure controls show up in edit mode */
+    .edit-mode-active .edit-controls {
+      display: flex !important;
+    }
 
-        @keyframes typing { from { width: 0 } to { width: 100% } }
-        @keyframes blink-caret { from, to { border-color: transparent } 50% { border-color: var(--easy-red); } }
+    .active-nav {
+      background: linear-gradient(to right, var(--easy-red), #ff2a5f) !important;
+      color: white !important;
+      box-shadow: var(--glow-intense) !important;
+      text-shadow: 0 0 12px rgba(255,255,255,0.8);
+    }
 
-        .edit-mode-active .edit-controls { display: flex !important; }
+    .sidebar-scroll::-webkit-scrollbar { width: 4px; }
+    .sidebar-scroll::-webkit-scrollbar-thumb {
+      background: linear-gradient(#e11d48, #ff1744);
+      border-radius: 20px;
+    }
 
-        input, textarea {
-            background: #0f0f0f !important;
-            border: 1px solid var(--border-color) !important;
-            color: white !important;
-        }
-        
-        input:focus, textarea:focus {
-            border-color: var(--easy-red) !important;
-            outline: none;
-        }
+    #searchSidebar {
+      background: rgba(15,15,15,0.8);
+      border: 1px solid rgba(225,29,72,0.2);
+    }
+    #searchSidebar:focus {
+      border-color: var(--neon-red);
+      box-shadow: var(--glow-red);
+      outline: none;
+    }
 
-        .btn-primary {
-            background: var(--easy-red);
-            transition: all 0.2s;
-        }
-        .btn-primary:hover {
-            filter: brightness(1.2);
-            box-shadow: 0 0 15px rgba(225, 29, 72, 0.4);
-        }
+    .neon-logo {
+      box-shadow: var(--glow-red);
+      animation: logoPulse 4s ease-in-out infinite;
+    }
 
-        /* Specific fix for the pinned heart to ensure it stays vibrant red */
-        .pinned-heart {
-            color: var(--easy-red) !important;
-            fill: var(--easy-red) !important;
-        }
-    </style>
+    @keyframes logoPulse {
+      0%, 100% { box-shadow: var(--glow-red); }
+      50% { box-shadow: var(--glow-intense); }
+    }
+
+    .typewriter {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      text-shadow: 0 0 20px var(--neon-red);
+      overflow: hidden;
+      border-right: 3px solid var(--neon-red);
+      white-space: nowrap;
+      animation: typing 0.7s steps(45, end) forwards, blink-caret 0.75s step-end infinite;
+    }
+
+    @keyframes typing { from { width: 0 } to { width: 100% } }
+    @keyframes blink-caret { 
+      from, to { border-color: transparent } 
+      50% { border-color: var(--neon-red); } 
+    }
+
+    .copy-feedback {
+      background: linear-gradient(90deg, #e11d48, #ff1744);
+      box-shadow: var(--glow-intense);
+      font-family: 'Space Grotesk', sans-serif;
+      pointer-events: none;
+    }
+
+    .btn-primary {
+      background: linear-gradient(to right, var(--easy-red), #ff2a5f);
+      box-shadow: var(--glow-red);
+      font-family: 'Space Grotesk', sans-serif;
+    }
+    .btn-primary:hover {
+      filter: brightness(1.15) saturate(1.3);
+      box-shadow: var(--glow-intense);
+      transform: scale(1.05);
+    }
+
+    #newCategoryModal > div, #editModal > div, #deleteModal > div {
+      animation: modalPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      box-shadow: 0 0 80px rgba(225, 29, 72, 0.35);
+    }
+    @keyframes modalPop {
+      0% { transform: scale(0.75) translateY(40px); opacity: 0; }
+      100% { transform: scale(1) translateY(0); opacity: 1; }
+    }
+  </style>
 </head>
 <body class="h-screen flex overflow-hidden">
-
-    <!-- Sidebar -->
-    <aside class="w-72 glass-sidebar flex-shrink-0 flex flex-col z-20">
-        <div class="p-8">
-            <div class="flex items-center space-x-3 mb-10">
-                <div class="w-9 h-9 bg-rose-600 rounded-lg flex items-center justify-center font-black text-white">E</div>
-                <h1 class="text-white font-extrabold text-xl tracking-tighter">Easybet<span class="text-rose-600">.</span></h1>
-            </div>
-            <div class="relative">
-                <input type="text" id="searchSidebar" placeholder="Search Directory..." 
-                    class="w-full rounded-lg py-2.5 px-4 text-xs font-medium placeholder-zinc-600">
-            </div>
+  <!-- Sidebar -->
+  <aside class="w-72 glass-sidebar flex-shrink-0 flex flex-col z-20">
+    <div class="p-8">
+      <div class="flex items-center space-x-3 mb-10">
+        <div class="w-9 h-9 neon-logo bg-rose-600 rounded-2xl flex items-center justify-center font-black text-white text-3xl shadow-inner">E</div>
+        <div>
+          <h1 class="text-white font-extrabold text-2xl tracking-[-0.04em]">Easybet<span class="text-rose-600">.</span></h1>
+          <p class="text-[10px] font-black text-rose-500 tracking-[0.125em] -mt-1">MIDNIGHT PRO</p>
         </div>
-        
-        <div class="flex-1 overflow-y-auto sidebar-scroll px-4 pb-10 space-y-8">
-            <div id="sidebarFavSection" class="hidden">
-                <h3 class="px-4 text-[10px] font-black text-rose-500 uppercase tracking-[0.3em] mb-4">Pinned</h3>
-                <nav id="favCategoryList" class="space-y-1"></nav>
-            </div>
+      </div>
+      <div class="relative">
+        <input type="text" id="searchSidebar" placeholder="Search sectors..." class="w-full rounded-2xl py-3 px-5 text-sm font-medium placeholder-zinc-500 focus:ring-1 focus:ring-rose-500">
+      </div>
 
-            <div>
-                <h3 class="px-4 text-[10px] font-black text-zinc-600 uppercase tracking-[0.3em] mb-4">Categories</h3>
-                <nav id="categoryList" class="space-y-1"></nav>
-            </div>
-        </div>
-    </aside>
-
-    <!-- Main Content -->
-    <main class="flex-1 flex flex-col relative overflow-hidden bg-black">
-        <header class="h-20 border-b border-zinc-900 flex items-center justify-between px-10 flex-shrink-0">
-            <h2 id="currentCategoryTitle" class="text-lg font-bold text-zinc-100 typewriter">System Standby</h2>
-            
-            <div class="flex items-center space-x-6">
-                <button id="headerAddBtn" onclick="openEditModal(null)" 
-                    class="hidden btn-primary text-white px-5 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest flex items-center space-x-2">
-                    <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="4"><path d="M12 4v16m8-8H4" /></svg>
-                    <span>Add Entry</span>
-                </button>
-
-                <div class="flex items-center space-x-1 border-l border-zinc-800 pl-6">
-                    <button onclick="exportData()" title="Export" class="p-2 text-zinc-500 hover:text-white transition-colors">
-                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
-                    </button>
-                    <button onclick="triggerImport()" title="Import" class="p-2 text-zinc-500 hover:text-white transition-colors">
-                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
-                    </button>
-                    <input type="file" id="importFile" class="hidden" accept=".json" onchange="importData(event)">
-                </div>
-
-                <label class="flex items-center cursor-pointer border-l border-zinc-800 pl-6 group">
-                    <span class="mr-3 text-[10px] font-black text-zinc-600 group-hover:text-rose-500 transition-colors uppercase tracking-widest">Edit Mode</span>
-                    <div class="relative">
-                        <input type="checkbox" id="editToggle" class="sr-only">
-                        <div class="w-9 h-5 bg-zinc-800 rounded-full transition-colors" id="toggleBg"></div>
-                        <div class="absolute left-1 top-1 bg-zinc-400 w-3 h-3 rounded-full transition-transform" id="toggleDot"></div>
-                    </div>
-                </label>
-            </div>
-        </header>
-
-        <div class="flex-1 overflow-y-auto p-10">
-            <div id="spielContainer" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                <!-- Welcome -->
-                <div class="col-span-full flex flex-col items-center justify-center py-32 text-center">
-                    <div class="w-16 h-16 bg-zinc-900 border border-zinc-800 rounded-2xl flex items-center justify-center mb-6 text-zinc-700">
-                        <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-width="1.5" d="M12 4v16m8-8H4" /></svg>
-                    </div>
-                    <p class="text-zinc-500 text-xs font-bold uppercase tracking-[0.2em]">Select a Category to Start</p>
-                </div>
-            </div>
-        </div>
-    </main>
-
-    <!-- Modals -->
-    <div id="editModal" class="fixed inset-0 bg-black/90 backdrop-blur-sm hidden z-[100] flex items-center justify-center p-4">
-        <div class="bg-zinc-950 border border-zinc-800 rounded-2xl w-full max-w-xl shadow-2xl">
-            <div class="p-6 border-b border-zinc-900 flex justify-between items-center">
-                <h3 class="font-black text-zinc-100 text-xs uppercase tracking-widest" id="modalTitle">Entry Editor</h3>
-                <button onclick="closeModal()" class="text-zinc-600 hover:text-white"><svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></button>
-            </div>
-            <div class="p-6">
-                <textarea id="editArea" placeholder="Paste spiel here..." class="w-full h-64 p-5 rounded-xl text-sm leading-relaxed focus:outline-none transition-all resize-none font-medium"></textarea>
-            </div>
-            <div class="px-6 py-5 bg-zinc-900/30 flex justify-end space-x-4">
-                <button onclick="closeModal()" class="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Cancel</button>
-                <button onclick="saveSpielChanges()" class="btn-primary px-6 py-2 rounded-lg text-[10px] font-black text-white uppercase tracking-widest">Save System</button>
-            </div>
-        </div>
+      <button onclick="openNewCategoryModal()" 
+              class="mt-6 w-full flex items-center justify-center gap-x-3 py-3.5 bg-zinc-900 hover:bg-zinc-800 border border-dashed border-rose-500/50 hover:border-rose-500 rounded-2xl text-xs font-black uppercase tracking-widest text-rose-400 hover:text-rose-300">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="4">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+        </svg>
+        NEW SECTOR
+      </button>
     </div>
 
-    <!-- Delete Modal -->
-    <div id="deleteModal" class="fixed inset-0 bg-black/95 hidden z-[110] flex items-center justify-center p-4">
-        <div class="bg-zinc-950 border border-rose-900/30 rounded-2xl w-full max-w-xs p-8 text-center">
-            <h3 class="text-lg font-bold text-white mb-2">Delete Entry?</h3>
-            <p class="text-zinc-500 text-xs mb-8">This will be removed from your local Easybet directory.</p>
-            <button onclick="confirmDelete()" class="w-full py-3 bg-rose-600 text-white font-black text-[10px] uppercase tracking-widest rounded-lg mb-2">Confirm Delete</button>
-            <button onclick="closeDeleteModal()" class="w-full py-3 text-zinc-600 font-bold text-[10px] uppercase tracking-widest">Abort</button>
+    <div class="flex-1 overflow-y-auto sidebar-scroll px-4 pb-10 space-y-8">
+      <div id="sidebarFavSection" class="hidden">
+        <h3 class="px-4 text-[10px] font-black text-rose-500 uppercase tracking-[0.3em] mb-4 flex items-center gap-2">
+          <span class="w-2 h-px bg-rose-500"></span> PINNED SECTORS
+        </h3>
+        <nav id="favCategoryList" class="space-y-1"></nav>
+      </div>
+      <div>
+        <h3 class="px-4 text-[10px] font-black text-zinc-500 uppercase tracking-[0.3em] mb-4 flex items-center gap-2">
+          <span class="w-2 h-px bg-zinc-700"></span> ALL SECTORS
+        </h3>
+        <nav id="categoryList" class="space-y-1"></nav>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="flex-1 flex flex-col relative overflow-hidden bg-black">
+    <header class="h-20 border-b border-zinc-900/80 flex items-center justify-between px-10 flex-shrink-0 bg-black/80 backdrop-blur-xl">
+      <h2 id="currentCategoryTitle" class="text-2xl font-bold text-white typewriter">System Standby</h2>
+      <div class="flex items-center space-x-8">
+        <button id="headerAddBtn" onclick="openEditModal(null)" class="hidden btn-primary text-white px-7 py-2.5 rounded-2xl text-xs font-black uppercase tracking-widest flex items-center gap-2 shadow-inner">
+          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="4"><path d="M12 4v16m8-8H4" /></svg>
+          NEW ENTRY
+        </button>
+
+        <div class="flex items-center gap-5 border-l border-zinc-800 pl-8">
+          <button onclick="exportData()" title="Export Backup" class="p-2.5 text-zinc-400 hover:text-white hover:scale-110">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+          </button>
+          <button onclick="triggerImport()" title="Import Backup" class="p-2.5 text-zinc-400 hover:text-white hover:scale-110">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
+          </button>
+          <input type="file" id="importFile" class="hidden" accept=".json" onchange="importData(event)">
         </div>
+
+        <label class="flex items-center cursor-pointer group border-l border-zinc-800 pl-8">
+          <span class="mr-4 text-xs font-black text-zinc-400 group-hover:text-rose-400">EDIT MODE</span>
+          <div class="relative w-11 h-6 bg-zinc-800 rounded-3xl shadow-inner">
+            <input type="checkbox" id="editToggle" class="sr-only peer">
+            <div id="toggleBg" class="absolute inset-0 rounded-3xl bg-zinc-800 peer-checked:bg-rose-600"></div>
+            <div id="toggleDot" class="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-3xl shadow-md transition-transform duration-200 peer-checked:translate-x-5"></div>
+          </div>
+        </label>
+      </div>
+    </header>
+
+    <div class="flex-1 overflow-y-auto p-10">
+      <div id="spielContainer" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8"></div>
     </div>
+  </main>
 
-    <!-- Toast -->
-    <div id="toast" class="fixed bottom-10 right-10 bg-rose-600 py-3 px-6 rounded-lg shadow-2xl translate-y-24 opacity-0 transition-all duration-300 z-[1000]">
-        <span id="toastText" class="text-white text-[10px] font-black uppercase tracking-widest">Action Complete</span>
+  <!-- New Category Modal -->
+  <div id="newCategoryModal" class="fixed inset-0 bg-black/95 backdrop-blur-2xl hidden z-[120] flex items-center justify-center p-6">
+    <div class="bg-zinc-950 border border-zinc-800 rounded-3xl w-full max-w-md shadow-2xl">
+      <div class="p-6 border-b border-zinc-800 flex justify-between items-center">
+        <h3 class="font-black text-white text-xs uppercase tracking-widest">CREATE NEW SECTOR</h3>
+        <button onclick="closeNewCategoryModal()" class="text-zinc-500 hover:text-white p-2">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="3" d="M6 18L18 6M6 6l12 12" /></svg>
+        </button>
+      </div>
+      <div class="p-8">
+        <input id="newCatName" type="text" placeholder="Sector title (e.g. Custom Promo 2025)" 
+               class="w-full bg-black border border-zinc-700 rounded-2xl px-6 py-4 text-sm focus:border-rose-500 focus:outline-none">
+      </div>
+      <div class="px-8 py-6 bg-black/40 flex justify-end gap-4 rounded-b-3xl">
+        <button onclick="closeNewCategoryModal()" class="uppercase text-xs font-black tracking-widest text-zinc-400 hover:text-white">Cancel</button>
+        <button onclick="createNewCategory()" class="btn-primary px-8 py-3 rounded-2xl text-xs font-black uppercase tracking-widest">CREATE SECTOR</button>
+      </div>
     </div>
+  </div>
 
-    <script>
-        const rawCategories = [
-            "10% Aviator Cashback Bonus", "10% Cashback Slots Bonus", "15% Cashback for Luck Numbers",
-            "15% Cashback for Sports", "15% Cashback on Sports and Lucky numbers", "50% Win Boost ( Aviator )",
-            "150% First Deposit Match on Slots", "150% First Deposit Match on Sports and Lucky Numbers",
-            "Abusive Spiels", "Bank account details update", "Birthday Bonus", "Closing Spiel",
-            "Deleted account spiels", "Email address update", "FICA verification", "Fica Verified Promo",
-            "Losing Leg Refund", "Mobile number update", "No Easybet Account", "Opening and closing",
-            "OTP Registration", "R50 Sign up bonus", "R50 Sign up bonus wagering requirements",
-            "Reactivation / Disabled accounts", "Refer a Friend Bonus", "Resend PIN and reversal",
-            "Registration Incorrect numbers", "R500 First Bet Match", "Withdrawal", "Others"
-        ].sort((a, b) => a.localeCompare(b, undefined, {numeric: true, sensitivity: 'base'}));
+  <!-- Edit Modal -->
+  <div id="editModal" class="fixed inset-0 bg-black/95 backdrop-blur-2xl hidden z-[100] flex items-center justify-center p-6">
+    <div class="bg-zinc-950 border border-zinc-800 rounded-3xl w-full max-w-2xl shadow-2xl">
+      <div class="p-6 border-b border-zinc-800 flex justify-between items-center">
+        <h3 class="font-black text-white text-xs uppercase tracking-widest" id="modalTitle">ENTRY EDITOR</h3>
+        <button onclick="closeModal()" class="text-zinc-500 hover:text-white p-2">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="3" d="M6 18L18 6M6 6l12 12" /></svg>
+        </button>
+      </div>
+      <div class="p-8">
+        <textarea id="editArea" placeholder="Paste or write the full spiel here..." class="w-full h-80 p-6 rounded-2xl bg-black border border-zinc-800 text-sm leading-relaxed resize-none font-medium focus:border-rose-500"></textarea>
+      </div>
+      <div class="px-8 py-6 bg-black/40 flex justify-end gap-4 rounded-b-3xl">
+        <button onclick="closeModal()" class="uppercase text-xs font-black tracking-widest text-zinc-400 hover:text-white">Cancel</button>
+        <button onclick="saveSpielChanges()" class="btn-primary px-8 py-3 rounded-2xl text-xs font-black uppercase tracking-widest">SAVE TO SYSTEM</button>
+      </div>
+    </div>
+  </div>
 
-        let customSpiels = JSON.parse(localStorage.getItem('easybet_v3_spiels')) || {};
-        let pinnedCategories = JSON.parse(localStorage.getItem('easybet_v3_pinned')) || [];
-        let activeCategoryName = null;
-        let currentEditingIndex = null;
-        let pendingDeleteIndex = null;
+  <!-- Delete Modal -->
+  <div id="deleteModal" class="fixed inset-0 bg-black/95 backdrop-blur-2xl hidden z-[110] flex items-center justify-center p-6">
+    <div class="bg-zinc-950 border border-rose-900/50 rounded-3xl w-full max-w-xs p-8 text-center">
+      <div class="w-16 h-16 mx-auto mb-6 rounded-2xl bg-rose-950/30 flex items-center justify-center">
+        <svg class="w-8 h-8 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+      </div>
+      <h3 class="text-xl font-bold text-white mb-2">Purge Entry?</h3>
+      <p class="text-zinc-400 text-xs mb-10">This action cannot be undone.</p>
+      <button onclick="confirmDelete()" class="w-full py-4 bg-rose-600 hover:bg-rose-700 text-white font-black text-xs uppercase tracking-widest rounded-2xl mb-3">YES, PURGE</button>
+      <button onclick="closeDeleteModal()" class="w-full py-4 text-zinc-400 font-bold text-xs uppercase tracking-widest">ABORT MISSION</button>
+    </div>
+  </div>
 
-        const categoryList = document.getElementById('categoryList');
-        const favCategoryList = document.getElementById('favCategoryList');
-        const sidebarFavSection = document.getElementById('sidebarFavSection');
-        const spielContainer = document.getElementById('spielContainer');
-        const currentCategoryTitle = document.getElementById('currentCategoryTitle');
-        const searchSidebar = document.getElementById('searchSidebar');
-        const toast = document.getElementById('toast');
-        const toastText = document.getElementById('toastText');
-        const editToggle = document.getElementById('editToggle');
-        const editModal = document.getElementById('editModal');
-        const deleteModal = document.getElementById('deleteModal');
-        const editArea = document.getElementById('editArea');
-        const headerAddBtn = document.getElementById('headerAddBtn');
+  <!-- Toast -->
+  <div id="toast" class="fixed bottom-10 right-10 bg-gradient-to-r from-rose-600 to-pink-600 py-3.5 px-7 rounded-2xl shadow-2xl translate-y-20 opacity-0 flex items-center gap-3 z-[1000] transition-all duration-300">
+    <span id="toastText" class="text-white text-xs font-black uppercase tracking-[0.125em]"></span>
+  </div>
 
-        function togglePinned(e, cat) {
-            e.stopPropagation();
-            const index = pinnedCategories.indexOf(cat);
-            if (index > -1) pinnedCategories.splice(index, 1);
-            else pinnedCategories.push(cat);
-            saveToStorage();
-            renderSidebar();
-        }
+  <script>
+    const rawCategories = [
+      "10% Aviator Cashback Bonus", "10% Cashback Slots Bonus", "15% Cashback for Luck Numbers", 
+      "15% Cashback for Sports", "15% Cashback on Sports and Lucky numbers", "50% Win Boost ( Aviator )", 
+      "150% First Deposit Match on Slots", "150% First Deposit Match on Sports and Lucky Numbers", 
+      "Abusive Spiels", "Bank account details update", "Birthday Bonus", "Closing Spiel", 
+      "Deleted account spiels", "Email address update", "FICA verification", "Fica Verified Promo", 
+      "Losing Leg Refund", "Mobile number update", "No Easybet Account", "Opening and closing", 
+      "OTP Registration", "R50 Sign up bonus", "R50 Sign up bonus wagering requirements", 
+      "Reactivation / Disabled accounts", "Refer a Friend Bonus", "Resend PIN and reversal", 
+      "Registration Incorrect numbers", "R500 First Bet Match", "Withdrawal", "Others"
+    ].sort((a, b) => a.localeCompare(b, undefined, {numeric: true, sensitivity: 'base'}));
 
-        function createNavItem(cat) {
-            const isPinned = pinnedCategories.includes(cat);
-            const isActive = activeCategoryName === cat;
-            const div = document.createElement('div');
-            div.className = `group flex items-center px-2`;
-            div.dataset.category = cat;
+    let customSpiels = JSON.parse(localStorage.getItem('easybet_v3_spiels')) || {};
+    let pinnedCategories = JSON.parse(localStorage.getItem('easybet_v3_pinned')) || [];
+    let userCustomCategories = JSON.parse(localStorage.getItem('easybet_v3_customcats')) || [];
+    let activeCategoryName = null;
+    let currentEditingIndex = null;
+    let pendingDeleteIndex = null;
 
-            const btn = document.createElement('button');
-            btn.className = `flex-1 text-left px-4 py-3 rounded-lg transition-all text-[10px] font-bold uppercase tracking-wider truncate ${isActive ? 'active-nav' : 'text-zinc-500 hover:text-white hover:bg-zinc-900'}`;
-            btn.textContent = cat;
-            btn.onclick = () => selectCategory(cat);
+    const categoryList = document.getElementById('categoryList');
+    const favCategoryList = document.getElementById('favCategoryList');
+    const sidebarFavSection = document.getElementById('sidebarFavSection');
+    const spielContainer = document.getElementById('spielContainer');
+    const currentCategoryTitle = document.getElementById('currentCategoryTitle');
+    const searchSidebar = document.getElementById('searchSidebar');
+    const toast = document.getElementById('toast');
+    const toastText = document.getElementById('toastText');
+    const editToggle = document.getElementById('editToggle');
+    const editModal = document.getElementById('editModal');
+    const deleteModal = document.getElementById('deleteModal');
+    const editArea = document.getElementById('editArea');
+    const headerAddBtn = document.getElementById('headerAddBtn');
 
-            const favBtn = document.createElement('button');
-            // Added explicit "pinned-heart" class to ensure the red remains solid
-            favBtn.className = `p-2 transition-colors ${isPinned ? 'pinned-heart' : 'text-zinc-700 hover:text-rose-600 opacity-0 group-hover:opacity-100'}`;
-            favBtn.innerHTML = `<svg class="h-3 w-3" fill="${isPinned ? 'currentColor' : 'none'}" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>`;
-            favBtn.onclick = (e) => togglePinned(e, cat);
+    function saveToStorage() {
+      localStorage.setItem('easybet_v3_spiels', JSON.stringify(customSpiels));
+      localStorage.setItem('easybet_v3_pinned', JSON.stringify(pinnedCategories));
+      localStorage.setItem('easybet_v3_customcats', JSON.stringify(userCustomCategories));
+    }
 
-            div.appendChild(btn);
-            div.appendChild(favBtn);
-            return div;
-        }
+    function togglePinned(e, cat) {
+      e.stopPropagation();
+      const index = pinnedCategories.indexOf(cat);
+      if (index > -1) pinnedCategories.splice(index, 1);
+      else pinnedCategories.push(cat);
+      saveToStorage();
+      renderSidebar();
+    }
 
-        function renderSidebar(filter = '') {
-            categoryList.innerHTML = '';
-            favCategoryList.innerHTML = '';
-            const filtered = rawCategories.filter(cat => cat.toLowerCase().includes(filter.toLowerCase()));
-            if (pinnedCategories.length > 0 && !filter) {
-                sidebarFavSection.classList.remove('hidden');
-                pinnedCategories.forEach(cat => favCategoryList.appendChild(createNavItem(cat)));
-            } else sidebarFavSection.classList.add('hidden');
-            filtered.forEach(cat => {
-                if (!pinnedCategories.includes(cat) || filter) categoryList.appendChild(createNavItem(cat));
-            });
-        }
+    function createNavItem(cat) {
+      const isPinned = pinnedCategories.includes(cat);
+      const isActive = activeCategoryName === cat;
+      const div = document.createElement('div');
+      div.className = `group flex items-center px-3 py-1 rounded-2xl`;
+      div.dataset.category = cat;
+      const btn = document.createElement('button');
+      btn.className = `flex-1 text-left px-5 py-3.5 rounded-2xl text-xs font-bold uppercase tracking-widest truncate ${isActive ? 'active-nav' : 'text-zinc-400 hover:text-white hover:bg-zinc-900/70'}`;
+      btn.textContent = cat;
+      btn.onclick = () => selectCategory(cat);
+      const favBtn = document.createElement('button');
+      favBtn.className = `p-3 ${isPinned ? 'text-rose-500' : 'text-zinc-700 group-hover:text-rose-400'} transition-all`;
+      favBtn.innerHTML = `<svg class="w-3.5 h-3.5" fill="${isPinned ? 'currentColor' : 'none'}" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>`;
+      favBtn.onclick = (e) => togglePinned(e, cat);
+      div.appendChild(btn);
+      div.appendChild(favBtn);
+      return div;
+    }
 
-        function selectCategory(cat) {
-            activeCategoryName = cat;
-            currentCategoryTitle.classList.remove('typewriter');
-            void currentCategoryTitle.offsetWidth;
-            currentCategoryTitle.textContent = cat;
-            currentCategoryTitle.classList.add('typewriter');
-            headerAddBtn.classList.remove('hidden');
-            renderSidebar(searchSidebar.value);
-            renderSpiels();
-        }
-
-        function renderSpiels() {
-            spielContainer.innerHTML = '';
-            if (!activeCategoryName) return;
-            const spiels = customSpiels[activeCategoryName] || [];
-            if (spiels.length === 0) {
-                spielContainer.innerHTML = `<div class="col-span-full py-20 text-center text-zinc-600 text-[10px] font-black uppercase tracking-[0.3em]">No Data in Sector</div>`;
-                return;
-            }
-            spiels.forEach((text, index) => {
-                const bubble = document.createElement('div');
-                bubble.className = 'spiel-bubble glass-card p-6 rounded-2xl relative overflow-hidden group cursor-pointer';
-                bubble.innerHTML = `
-                    <div class="flex justify-between items-center mb-4">
-                        <span class="text-[9px] font-black text-zinc-600 uppercase tracking-widest">Entry.v${index + 1}</span>
-                        <div class="edit-controls hidden items-center space-x-1">
-                            <button onclick="openEditModal(${index})" class="p-1.5 text-zinc-600 hover:text-white"><svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg></button>
-                            <button onclick="triggerDelete(${index})" class="p-1.5 text-zinc-600 hover:text-rose-600"><svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg></button>
-                        </div>
-                    </div>
-                    <p class="whitespace-pre-line text-zinc-300 text-sm leading-relaxed font-medium">${text}</p>
-                    <div class="copy-feedback">COPIED</div>
-                `;
-                bubble.onclick = (e) => {
-                    if (e.target.closest('.edit-controls')) return;
-                    if (document.body.classList.contains('edit-mode-active')) return;
-                    copyText(text);
-                    const fb = bubble.querySelector('.copy-feedback');
-                    fb.classList.add('show');
-                    setTimeout(() => fb.classList.remove('show'), 800);
-                };
-                spielContainer.appendChild(bubble);
-            });
-        }
-
-        function openEditModal(index) {
-            if (!activeCategoryName) { showToast("Select Sector"); return; }
-            currentEditingIndex = index;
-            const spiels = customSpiels[activeCategoryName] || [];
-            document.getElementById('modalTitle').textContent = index === null ? `New Entry` : `Edit Entry`;
-            editArea.value = index === null ? "" : spiels[index];
-            editModal.classList.remove('hidden');
-            setTimeout(() => editArea.focus(), 100);
-        }
-
-        function closeModal() { editModal.classList.add('hidden'); }
-        function saveSpielChanges() {
-            const val = editArea.value.trim();
-            if (!val) { showToast("Empty Input"); return; }
-            if (!customSpiels[activeCategoryName]) customSpiels[activeCategoryName] = [];
-            if (currentEditingIndex === null) customSpiels[activeCategoryName].push(val);
-            else customSpiels[activeCategoryName][currentEditingIndex] = val;
-            saveToStorage();
-            closeModal();
-            renderSpiels();
-            showToast("System Updated");
-        }
-
-        function triggerDelete(index) { pendingDeleteIndex = index; deleteModal.classList.remove('hidden'); }
-        function closeDeleteModal() { deleteModal.classList.add('hidden'); }
-        function confirmDelete() {
-            if (pendingDeleteIndex !== null) {
-                customSpiels[activeCategoryName].splice(pendingDeleteIndex, 1);
-                saveToStorage(); renderSpiels(); showToast("Purged");
-            }
-            closeDeleteModal();
-        }
-
-        function saveToStorage() {
-            localStorage.setItem('easybet_v3_spiels', JSON.stringify(customSpiels));
-            localStorage.setItem('easybet_v3_pinned', JSON.stringify(pinnedCategories));
-        }
-
-        function copyText(text) {
-            const el = document.createElement('textarea');
-            el.value = text; document.body.appendChild(el);
-            el.select(); document.execCommand('copy');
-            document.body.removeChild(el);
-            showToast("Copied");
-        }
-
-        function showToast(text) {
-            toastText.textContent = text;
-            toast.style.transform = "translateY(0)"; toast.style.opacity = "1";
-            setTimeout(() => { toast.style.transform = "translateY(24px)"; toast.style.opacity = "0"; }, 2000);
-        }
-
-        editToggle.addEventListener('change', (e) => {
-            const dot = document.getElementById('toggleDot');
-            const bg = document.getElementById('toggleBg');
-            if (e.target.checked) {
-                document.body.classList.add('edit-mode-active');
-                dot.style.transform = 'translateX(16px)';
-                bg.style.backgroundColor = 'var(--easy-red)';
-                dot.style.backgroundColor = 'white';
-            } else {
-                document.body.classList.remove('edit-mode-active');
-                dot.style.transform = 'translateX(0)';
-                bg.style.backgroundColor = '#27272a';
-                dot.style.backgroundColor = '#71717a';
-            }
+    function renderSidebar(filter = '') {
+      categoryList.innerHTML = '';
+      favCategoryList.innerHTML = '';
+      const allCats = [...new Set([...rawCategories, ...userCustomCategories])].sort((a, b) => a.localeCompare(b, undefined, {numeric: true, sensitivity: 'base'}));
+      const filtered = allCats.filter(cat => cat.toLowerCase().includes(filter.toLowerCase()));
+      
+      if (pinnedCategories.length > 0 && !filter) {
+        sidebarFavSection.classList.remove('hidden');
+        pinnedCategories.forEach(cat => {
+          if (allCats.includes(cat)) favCategoryList.appendChild(createNavItem(cat));
         });
+      } else sidebarFavSection.classList.add('hidden');
 
-        function exportData() {
-            const data = { spiels: customSpiels, pinned: pinnedCategories };
-            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a'); a.href = url; a.download = `Easybet_Backup.json`; a.click();
+      filtered.forEach(cat => {
+        if (!pinnedCategories.includes(cat) || filter) categoryList.appendChild(createNavItem(cat));
+      });
+    }
+
+    function selectCategory(cat) {
+      activeCategoryName = cat;
+      currentCategoryTitle.classList.remove('typewriter');
+      void currentCategoryTitle.offsetWidth; // Trigger reflow
+      currentCategoryTitle.textContent = cat;
+      currentCategoryTitle.classList.add('typewriter');
+      headerAddBtn.classList.remove('hidden');
+      renderSidebar(searchSidebar.value);
+      renderSpiels();
+    }
+
+    function renderSpiels() {
+      spielContainer.innerHTML = '';
+      if (!activeCategoryName) return;
+      
+      const spiels = customSpiels[activeCategoryName] || [];
+      if (spiels.length === 0) {
+        spielContainer.innerHTML = `<div class="col-span-full py-32 text-center">
+          <div class="inline-flex w-20 h-20 bg-zinc-900/70 rounded-3xl items-center justify-center mb-6">
+            <svg class="w-10 h-10 text-rose-500/20" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-width="1" d="M12 4v16m8-8H4" /></svg>
+          </div>
+          <p class="text-zinc-500 text-xs font-black uppercase tracking-widest">SECTOR EMPTY • ADD FIRST ENTRY</p>
+        </div>`;
+        return;
+      }
+
+      spiels.forEach((text, index) => {
+        const bubble = document.createElement('div');
+        bubble.className = 'spiel-bubble glass-card p-7 rounded-3xl relative cursor-pointer group';
+        bubble.innerHTML = `
+          <div class="flex justify-between items-start mb-5">
+            <span class="text-[10px] font-black text-zinc-500 uppercase tracking-widest">ENTRY • ${index + 1}</span>
+            <div class="edit-controls hidden items-center gap-1">
+              <button onclick="event.stopImmediatePropagation(); openEditModal(${index})" class="p-2 text-zinc-400 hover:text-white transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2.5" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
+              </button>
+              <button onclick="event.stopImmediatePropagation(); triggerDelete(${index})" class="p-2 text-zinc-400 hover:text-rose-500 transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+              </button>
+            </div>
+          </div>
+          <p class="whitespace-pre-line text-zinc-200 text-[13px] leading-relaxed">${text}</p>
+          <div class="copy-feedback absolute inset-0 flex items-center justify-center text-white font-black text-xl tracking-widest opacity-0 transition-opacity duration-300">COPIED ✓</div>
+        `;
+
+        bubble.onclick = (e) => {
+          // Prevent copy if we are in Edit Mode or clicked an icon
+          if (document.body.classList.contains('edit-mode-active')) return;
+          copyText(text);
+          const fb = bubble.querySelector('.copy-feedback');
+          fb.classList.add('opacity-100');
+          setTimeout(() => fb.classList.remove('opacity-100'), 800);
+        };
+        spielContainer.appendChild(bubble);
+      });
+    }
+
+    function openEditModal(index) {
+      if (!activeCategoryName) { showToast("SELECT SECTOR FIRST"); return; }
+      currentEditingIndex = index;
+      const spiels = customSpiels[activeCategoryName] || [];
+      document.getElementById('modalTitle').textContent = index === null ? `NEW ENTRY` : `EDIT ENTRY`;
+      editArea.value = index === null ? "" : spiels[index];
+      editModal.classList.remove('hidden');
+      setTimeout(() => editArea.focus(), 150);
+    }
+
+    function closeModal() { editModal.classList.add('hidden'); }
+
+    function saveSpielChanges() {
+      const val = editArea.value.trim();
+      if (!val) { showToast("ENTRY CANNOT BE EMPTY"); return; }
+      if (!customSpiels[activeCategoryName]) customSpiels[activeCategoryName] = [];
+      
+      if (currentEditingIndex === null) {
+        customSpiels[activeCategoryName].push(val);
+      } else {
+        customSpiels[activeCategoryName][currentEditingIndex] = val;
+      }
+      
+      saveToStorage();
+      closeModal();
+      renderSpiels();
+      showToast("SYSTEM UPDATED");
+    }
+
+    function triggerDelete(index) { 
+      pendingDeleteIndex = index; 
+      deleteModal.classList.remove('hidden'); 
+    }
+
+    function closeDeleteModal() { deleteModal.classList.add('hidden'); }
+
+    function confirmDelete() {
+      if (pendingDeleteIndex !== null && activeCategoryName) {
+        customSpiels[activeCategoryName].splice(pendingDeleteIndex, 1);
+        saveToStorage();
+        renderSpiels();
+        showToast("ENTRY PURGED");
+      }
+      closeDeleteModal();
+    }
+
+    function copyText(text) {
+      const el = document.createElement('textarea');
+      el.value = text;
+      el.setAttribute('readonly', '');
+      el.style.position = 'absolute';
+      el.style.left = '-9999px';
+      document.body.appendChild(el);
+      el.select();
+      document.execCommand('copy');
+      document.body.removeChild(el);
+      showToast("COPIED TO CLIPBOARD");
+    }
+
+    function showToast(text) {
+      toastText.textContent = text;
+      toast.classList.remove('opacity-0', 'translate-y-20');
+      toast.classList.add('opacity-100', 'translate-y-0');
+      setTimeout(() => {
+        toast.classList.add('opacity-0', 'translate-y-20');
+        toast.classList.remove('opacity-100', 'translate-y-0');
+      }, 2500);
+    }
+
+    editToggle.addEventListener('change', (e) => {
+      if (e.target.checked) {
+        document.body.classList.add('edit-mode-active');
+      } else {
+        document.body.classList.remove('edit-mode-active');
+      }
+    });
+
+    function exportData() {
+      const data = { 
+        spiels: customSpiels, 
+        pinned: pinnedCategories, 
+        customCategories: userCustomCategories 
+      };
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; 
+      a.download = `Easybet_Midnight_Backup.json`; 
+      a.click();
+    }
+
+    function triggerImport() { document.getElementById('importFile').click(); }
+
+    function importData(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const data = JSON.parse(e.target.result);
+          customSpiels = data.spiels || {};
+          pinnedCategories = data.pinned || [];
+          userCustomCategories = data.customCategories || [];
+          saveToStorage();
+          renderSidebar();
+          if (activeCategoryName) renderSpiels();
+          showToast("BACKUP RESTORED");
+        } catch(err) { 
+          showToast("INVALID BACKUP FILE"); 
         }
-        function triggerImport() { document.getElementById('importFile').click(); }
-        function importData(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const data = JSON.parse(e.target.result);
-                    customSpiels = data.spiels || {}; pinnedCategories = data.pinned || [];
-                    saveToStorage(); renderSidebar(); if (activeCategoryName) renderSpiels();
-                    showToast("Restored");
-                } catch(err) { showToast("Error"); }
-            };
-            reader.readAsText(file);
-        }
+      };
+      reader.readAsText(file);
+    }
 
-        new Sortable(favCategoryList, {
-            animation: 150,
-            onEnd: () => {
-                pinnedCategories = Array.from(favCategoryList.querySelectorAll('[data-category]')).map(el => el.dataset.category);
-                saveToStorage();
-            }
-        });
+    function openNewCategoryModal() {
+      document.getElementById('newCategoryModal').classList.remove('hidden');
+      setTimeout(() => document.getElementById('newCatName').focus(), 100);
+    }
 
-        searchSidebar.oninput = (e) => renderSidebar(e.target.value);
-        renderSidebar();
-    </script>
+    function closeNewCategoryModal() {
+      document.getElementById('newCategoryModal').classList.add('hidden');
+      document.getElementById('newCatName').value = '';
+    }
+
+    function createNewCategory() {
+      let name = document.getElementById('newCatName').value.trim();
+      if (!name) { showToast("NAME REQUIRED"); return; }
+      
+      const allExisting = [...rawCategories, ...userCustomCategories];
+      if (allExisting.includes(name)) {
+        showToast("SECTOR ALREADY EXISTS");
+        return;
+      }
+      
+      userCustomCategories.push(name);
+      saveToStorage();
+      closeNewCategoryModal();
+      renderSidebar();
+      selectCategory(name);
+      showToast("NEW SECTOR CREATED");
+    }
+
+    new Sortable(favCategoryList, {
+      animation: 180,
+      onEnd: () => {
+        pinnedCategories = Array.from(favCategoryList.querySelectorAll('[data-category]')).map(el => el.dataset.category);
+        saveToStorage();
+      }
+    });
+
+    searchSidebar.oninput = (e) => renderSidebar(e.target.value);
+    
+    // Initialize
+    renderSidebar();
+  </script>
 </body>
 </html>

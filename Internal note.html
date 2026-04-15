@@ -1,6 +1,3 @@
-
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,21 +6,29 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
     :root {
       --accent: #10b981;
-      --accent-glow: rgba(16, 185, 129, 0.4);
+      --accent-hover: #059669;
+      --accent-glow: rgba(16, 185, 129, 0.25);
       --error: #ef4444;
-      --error-glow: rgba(239, 68, 68, 0.4);
-      --bg-dark: #050505;
-      --glass-bg: rgba(255, 255, 255, 0.03);
-      --glass-border: rgba(255, 255, 255, 0.12);
-      --text-main: #f8fafc;
-      --text-dim: #94a3b8;
-      --input-bg: rgba(15, 15, 15, 0.8);
+      --error-glow: rgba(239, 68, 68, 0.3);
+      --bg-dark: #020202;
+      --card-bg: rgba(10, 10, 10, 0.6);
+      --glass-bg: rgba(255, 255, 255, 0.025);
+      --glass-border: rgba(255, 255, 255, 0.08);
+      --text-main: #f1f5f9;
+      --text-dim: #64748b;
+      --input-bg: rgba(0, 0, 0, 0.4);
+      --sidebar-bg: rgba(0, 0, 0, 0.15);
     }
-    * { box-sizing: border-box; transition: all 0.2s ease; }
+
+    * { 
+      box-sizing: border-box; 
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); 
+    }
+
     body {
       font-family: 'Inter', sans-serif;
       background-color: var(--bg-dark);
@@ -35,202 +40,376 @@
       min-height: 100vh;
       overflow-x: hidden;
       background-image: 
-        radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.15) 0px, transparent 50%),
-        radial-gradient(at 100% 100%, rgba(59, 130, 246, 0.1) 0px, transparent 50%);
-      padding: 20px;
+        radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.12) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(59, 130, 246, 0.08) 0px, transparent 50%);
+      padding: 24px;
     }
+
+    /* Scrollbar Polish */
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.2); }
+
     .glass-card {
       width: 100%;
-      max-width: 950px;
-      background: var(--glass-bg);
-      backdrop-filter: blur(24px);
-      -webkit-backdrop-filter: blur(24px);
+      max-width: 1000px;
+      background: var(--card-bg);
+      backdrop-filter: blur(40px);
+      -webkit-backdrop-filter: blur(40px);
       border: 1px solid var(--glass-border);
-      border-radius: 24px;
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+      border-radius: 28px;
+      box-shadow: 
+        0 0 0 1px rgba(255, 255, 255, 0.02) inset,
+        0 20px 40px -15px rgba(0, 0, 0, 0.7);
       display: flex;
       flex-direction: row;
       overflow: hidden;
-      height: 780px;
+      height: 820px;
     }
+
     .main-content {
       flex: 1;
-      padding: 32px;
+      padding: 40px;
       display: flex;
       flex-direction: column;
       border-right: 1px solid var(--glass-border);
       overflow-y: auto;
     }
+
     .tags-sidebar {
-      width: 340px;
-      background: rgba(0, 0, 0, 0.2);
+      width: 360px;
+      background: var(--sidebar-bg);
       display: flex;
       flex-direction: column;
-      padding: 24px;
+      padding: 32px;
     }
+
     h1 {
-      font-size: 1.5rem;
-      font-weight: 600;
-      margin: 0 0 24px 0;
-      letter-spacing: -0.02em;
-      background: linear-gradient(135deg, #fff 0%, #94a3b8 100%);
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin: 0 0 32px 0;
+      letter-spacing: -0.04em;
+      background: linear-gradient(to bottom right, #ffffff 30%, #64748b 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
+
     .section-label {
-      font-size: 0.65rem;
+      font-size: 0.625rem;
       text-transform: uppercase;
-      letter-spacing: 0.12em;
+      letter-spacing: 0.15em;
       color: var(--text-dim);
       font-weight: 700;
       display: block;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
     }
+
     .input-row {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin-bottom: 20px;
+      gap: 16px;
+      margin-bottom: 24px;
     }
+
     .ticket-row {
-      margin-bottom: 20px;
+      margin-bottom: 32px;
     }
+
     input, select {
       width: 100%;
       background: var(--input-bg);
       border: 1px solid var(--glass-border);
-      border-radius: 10px;
-      padding: 12px;
+      border-radius: 12px;
+      padding: 14px 16px;
       color: var(--text-main);
       font-size: 0.9rem;
       outline: none;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
+
     select {
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
       background-repeat: no-repeat;
-      background-position: right 12px center;
-      background-size: 16px;
-      padding-right: 40px;
+      background-position: right 14px center;
+      background-size: 14px;
+      padding-right: 44px;
       appearance: none;
     }
+
     input:focus, select:focus {
       border-color: var(--accent);
-      box-shadow: 0 0 0 3px var(--accent-glow);
+      box-shadow: 0 0 0 4px var(--accent-glow);
+      background: rgba(15, 15, 15, 0.6);
     }
+
+    /* --- QUICK ACTIONS REFINEMENT --- */
     .status-picker-container {
-      background: rgba(255, 255, 255, 0.02);
+      background: rgba(255, 255, 255, 0.015);
       border: 1px solid var(--glass-border);
-      border-radius: 16px;
-      padding: 16px;
-      margin-bottom: 24px;
+      border-radius: 20px;
+      padding: 20px;
+      margin-bottom: 32px;
     }
+
     .status-picker-main {
       display: flex;
-      gap: 8px;
+      gap: 12px;
+      align-items: stretch;
+      position: relative;
     }
+    
+    .multi-select-wrapper {
+      position: relative;
+      flex: 1;
+    }
+
+    .multi-select-display {
+      width: 100%;
+      background: var(--input-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      padding: 14px 16px;
+      color: var(--text-main);
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      min-height: 48px;
+    }
+
+    .multi-select-display:hover {
+      background: rgba(255, 255, 255, 0.03);
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    .multi-select-display:after {
+      content: '';
+      width: 12px;
+      height: 12px;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+      background-size: contain;
+      background-repeat: no-repeat;
+    }
+
+    .multi-select-dropdown {
+      position: absolute;
+      top: calc(100% + 10px);
+      left: 0;
+      right: 0;
+      background: #0a0a0a;
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      z-index: 100;
+      max-height: 400px;
+      overflow-y: auto;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+      display: none;
+      padding: 12px 0;
+    }
+
+    .multi-select-dropdown.open {
+      display: block;
+      animation: dropdownIn 0.2s ease-out;
+    }
+
+    @keyframes dropdownIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .dropdown-group-label {
+      padding: 16px 20px 8px 20px;
+      font-size: 0.65rem;
+      font-weight: 800;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      opacity: 0.9;
+    }
+
+    .dropdown-item {
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      cursor: pointer;
+      font-size: 0.875rem;
+      user-select: none;
+    }
+
+    .dropdown-item:hover {
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .dropdown-item input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--accent);
+      cursor: pointer;
+      margin: 0;
+      border-radius: 6px;
+    }
+
+    .selected-summary {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 220px;
+      color: var(--accent);
+      font-weight: 500;
+      font-size: 0.85rem;
+    }
+
     .dynamic-fields {
       display: none;
       grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-top: 12px;
-      padding-top: 12px;
+      gap: 12px;
+      margin-top: 16px;
+      padding-top: 16px;
       border-top: 1px solid var(--glass-border);
-      animation: fadeIn 0.3s ease;
     }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-5px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+
     .btn-add {
       background: var(--accent);
-      color: #064e3b;
+      color: #012e1f;
       border: none;
-      border-radius: 10px;
-      padding: 0 20px;
+      border-radius: 12px;
+      padding: 0 28px;
       font-weight: 700;
-      font-size: 0.85rem;
+      font-size: 0.875rem;
       cursor: pointer;
+      box-shadow: 0 4px 12px var(--accent-glow);
     }
-    .tags-scroll-area {
-      flex: 1;
-      overflow-y: auto;
-      margin-top: 12px;
+
+    .btn-add:hover {
+      background: #34d399;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px var(--accent-glow);
     }
-    .tags-container { display: flex; flex-direction: column; gap: 8px; }
-    .tag {
-      background: rgba(16, 185, 129, 0.08);
-      border: 1px solid rgba(16, 185, 129, 0.15);
-      color: var(--accent);
-      padding: 10px 12px;
-      border-radius: 8px;
-      font-size: 0.75rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      line-height: 1.4;
+
+    .btn-add:active {
+      transform: translateY(0);
     }
-    .tag-remove { color: #f87171; cursor: pointer; font-size: 1.2rem; padding-left: 10px; line-height: 1; }
+
+    /* --- BUBBLE PREVIEW --- */
     .bubble {
-      background: rgba(0, 0, 0, 0.4);
+      background: rgba(0, 0, 0, 0.6);
       border: 1px solid var(--glass-border);
-      border-radius: 16px;
-      padding: 20px;
+      border-radius: 20px;
+      padding: 24px;
       font-family: 'JetBrains Mono', monospace;
-      font-size: 0.85rem;
-      line-height: 1.5;
+      font-size: 0.875rem;
+      line-height: 1.6;
       cursor: pointer;
       color: var(--accent);
       white-space: pre-line;
       flex: 1;
       overflow-y: auto;
-      transition: border-color 0.2s, background-color 0.2s;
+      box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+      position: relative;
     }
+
     .bubble:hover {
-      background: rgba(0, 0, 0, 0.5);
+      background: rgba(0, 0, 0, 0.7);
       border-color: var(--accent);
     }
+
+    .bubble:after {
+      content: 'COPY';
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      font-size: 0.6rem;
+      letter-spacing: 0.1em;
+      font-weight: 800;
+      color: var(--text-dim);
+      opacity: 0.5;
+    }
+
+    /* --- SIDEBAR TAGS --- */
+    .tags-container { display: flex; flex-direction: column; gap: 10px; }
+    
+    .tag {
+      background: rgba(16, 185, 129, 0.06);
+      border: 1px solid rgba(16, 185, 129, 0.12);
+      color: var(--accent);
+      padding: 12px 16px;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      line-height: 1.4;
+    }
+
+    .tag:hover {
+      background: rgba(16, 185, 129, 0.1);
+      border-color: rgba(16, 185, 129, 0.2);
+    }
+
+    .tag-remove { 
+      color: #f87171; 
+      cursor: pointer; 
+      font-size: 1.25rem; 
+      padding: 4px;
+      margin-left: 8px;
+      line-height: 1;
+      opacity: 0.6;
+    }
+
+    .tag-remove:hover { opacity: 1; transform: scale(1.1); }
+
     #toast {
       visibility: hidden;
       background: var(--accent);
-      color: #064e3b;
+      color: #012e1f;
       font-weight: 700;
-      padding: 12px 32px;
-      border-radius: 12px;
+      padding: 14px 36px;
+      border-radius: 50px;
       position: fixed;
       bottom: 40px;
       left: 50%;
       transform: translateX(-50%) translateY(20px);
       z-index: 1000;
       font-size: 0.9rem;
-      box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.4);
+      box-shadow: 0 12px 30px -5px rgba(16, 185, 129, 0.4);
       opacity: 0;
-      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
+
     #toast.error {
       background: var(--error);
       color: #fff;
-      box-shadow: 0 10px 25px -5px rgba(239, 68, 68, 0.4);
+      box-shadow: 0 12px 30px -5px var(--error-glow);
     }
+
     #toast.show {
       visibility: visible;
       opacity: 1;
       transform: translateX(-50%) translateY(0);
     }
+
     .btn-clear {
       background: transparent;
       border: none;
       color: #f87171;
       font-size: 0.65rem;
-      font-weight: 700;
+      font-weight: 800;
       text-transform: uppercase;
+      letter-spacing: 0.1em;
       cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 6px;
     }
-    ::-webkit-scrollbar { width: 6px; }
-    ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 10px; }
+
+    .btn-clear:hover { background: rgba(239, 68, 68, 0.1); }
+
     @media (max-width: 768px) {
-      .glass-card { flex-direction: column; height: auto; max-height: 95vh; }
-      .tags-sidebar { width: 100%; height: 250px; border-top: 1px solid var(--glass-border); }
-      .main-content { border-right: none; height: 500px; }
+      .glass-card { flex-direction: column; height: auto; max-height: 95vh; border-radius: 0; }
+      .tags-sidebar { width: 100%; height: 300px; border-top: 1px solid var(--glass-border); }
+      .main-content { border-right: none; height: 600px; padding: 24px; }
     }
   </style>
 </head>
@@ -251,79 +430,87 @@
       </div>
       <div>
         <span class="section-label">User</span>
-        <input type="text" id="username" placeholder="Name/ID" oninput="saveAndRefresh()">
+        <input type="text" id="username" placeholder="Full name or ID" oninput="saveAndRefresh()">
       </div>
     </div>
 
     <div class="ticket-row">
       <span class="section-label">Ticket ID</span>
-      <input type="text" id="ticketId" placeholder="e.g. CS-123456, FWA-1234 or CSEMAIL-123456" oninput="saveAndRefresh()">
+      <input type="text" id="ticketId" placeholder="CS-123456, FWA-1234..." oninput="saveAndRefresh()">
     </div>
 
     <span class="section-label">Quick Actions</span>
     <div class="status-picker-container">
       <div class="status-picker-main">
-        <select id="statusOptions" onchange="toggleDynamicFields()">
-          <optgroup label="Approvals">
-              <option value="Approved ID">Approved ID</option>
-              <option value="Approved POR">Approved POR</option>
-              <option value="Approved ID | FraudCheck Photo Verified">Approved ID | FraudCheck Photo Verified</option>
-              <option value="Approved POR | Bank Verified">Approved POR | Bank Verified</option>
-              <option value="Approved ID | Photo internally reviewed">Approved ID | Photo internally reviewed</option>
-              <option value="Approved POR | Bank Internally Verified">Approved POR | Bank Internally Verified</option>
-              <option value="FICA Verified">FICA Verified</option>
-          </optgroup>
-          <optgroup label="Reverted ID">
-              <option value="Reverted ID | Name Mismatch">Reverted ID | Name Mismatch</option>
-              <option value="Reverted ID | Unclear Copy">Reverted ID | Unclear Copy</option>
-              <option value="Reverted ID | Invalid">Reverted ID | Invalid</option>
-              <option value="Reverted ID | Doc Failed to Load">Reverted ID | Doc Failed to Load</option>
-              <option value="Reverted ID | Unclear">Reverted ID | Unclear</option>
-              <option value="Reverted ID | Outdated Date Stamp">Reverted ID | Outdated Date Stamp</option>
-          </optgroup>
-          <optgroup label="Reverted POR">
-              <option value="Reverted POR | Invalid">Reverted POR | Invalid</option>
-              <option value="Reverted POR | Name Mismatch">Reverted POR | Name Mismatch</option>
-              <option value="Reverted POR | Unclear">Reverted POR | Unclear</option>
-              <option value="Reverted POR | Outdated Date Stamp">Reverted POR | Outdated Date Stamp</option>
-              <option value="Reverted POR | Address is PO Box">Reverted POR | Address is PO Box</option>
-              <option value="Reverted POR | Doc Failed to Load">Reverted POR | Doc Failed to Load</option>
-              <option value="Reverted POR | No Address">Reverted POR | No Address</option>
-              <option value="Reverted POR | Address Mismatch">Reverted POR | Address Mismatch</option>
-          </optgroup>
-          <optgroup label="Disabilities & OTC">
-              <option value="Manually disabled due to a duplicate Name and Date of Birth: {ID1}">Duplicate Name/DOB</option>
-              <option value="Manually disabled due to a duplicate ID Code: {ID1}">Duplicate ID Code</option>
-              <option value="Manually disabled due to a duplicate Bank Account Number: {ID1}">Duplicate Bank Acc</option>
-              <option value="OTC has been granted to {ID1}, and the other account {ID2} will remain disabled.">OTC Granted (ID 1 to ID 2)</option>
-              <option value="{ID1} will remain disabled because OTC was granted to the other account, {ID2}.">OTC Refused (ID 1 to ID 2)</option>
-          </optgroup>
-          <optgroup label="Updates">
-              <option value="Updated name from {OLD} to {NEW}">Update Name</option>
-              <option value="Updated Address from {OLD} to {NEW}">Update Address</option>
-              <option value="Updated phone number from {OLD} to {NEW}">Update Phone</option>
-              <option value="Updated email address from {OLD} to {NEW}">Update Email</option>
-              <option value="Updated ID code from {OLD} to {NEW}">Update ID Code</option>
-              <option value="Updated account number from {OLD} to {NEW}">Update Account number</option>
-          </optgroup>
-        </select>
-        <button class="btn-add" onclick="addStatus()">Add</button>
+        <div class="multi-select-wrapper">
+          <div class="multi-select-display" id="multiSelectDisplay" onclick="toggleDropdown()">
+            <span id="displayPlaceholder" style="color:var(--text-dim)">Click to select actions...</span>
+            <span class="selected-summary" id="selectedSummary"></span>
+          </div>
+          <div class="multi-select-dropdown" id="multiSelectDropdown">
+              <!-- RESTORED ALL ORIGINAL OPTIONS -->
+              <div class="dropdown-group-label">Approvals</div>
+              <label class="dropdown-item"><input type="checkbox" value="Approved ID"> <span class="dropdown-item-text">Approved ID</span></label>
+              <label class="dropdown-item"><input type="checkbox" value="Approved POR"> <span class="dropdown-item-text">Approved POR</span></label>
+              <label class="dropdown-item"><input type="checkbox" value="Approved ID | FraudCheck Photo Verified"> <span class="dropdown-item-text">Approved ID | FraudCheck Photo Verified</span></label>
+              <label class="dropdown-item"><input type="checkbox" value="Approved POR | Bank Verified"> <span class="dropdown-item-text">Approved POR | Bank Verified</span></label>
+              <label class="dropdown-item"><input type="checkbox" value="Approved ID | Photo internally reviewed"> <span class="dropdown-item-text">Approved ID | Photo internally reviewed</span></label>
+              <label class="dropdown-item"><input type="checkbox" value="Approved POR | Bank Internally Verified"> <span class="dropdown-item-text">Approved POR | Bank Internally Verified</span></label>
+              <label class="dropdown-item"><input type="checkbox" value="FICA Verified"> <span class="dropdown-item-text">FICA Verified</span></label>
+
+              <div class="dropdown-group-label">Reverted ID</div>
+              <label class="dropdown-item"><input type="checkbox" value="Reverted ID | Name Mismatch"> <span class="dropdown-item-text">Reverted ID | Name Mismatch</span></label>
+              <label class="dropdown-item"><input type="checkbox" value="Reverted ID | Unclear Copy"> <span class="dropdown-item-text">Reverted ID | Unclear Copy</span></label>
+              <label class="dropdown-item"><input type="checkbox" value="Reverted ID | Invalid"> <span class="dropdown-item-text">Reverted ID | Invalid</span></label>
+              <label class="dropdown-item"><input type="checkbox" value="Reverted ID | Doc Failed to Load"> <span class="dropdown-item-text">Reverted ID | Doc Failed to Load</span></label>
+              <label class="dropdown-item"><input type="checkbox" value="Reverted ID | Unclear"> <span class="dropdown-item-text">Reverted ID | Unclear</span></label>
+              <label class="dropdown-item"><input type="checkbox" value="Reverted ID | Outdated Date Stamp"> <span class="dropdown-item-text">Reverted ID | Outdated Date Stamp</span></label>
+
+              <div class="dropdown-group-label">Reverted POR</div>
+              <label class="dropdown-item"><input type="checkbox" value="Reverted POR | Invalid"> <span class="dropdown-item-text">Reverted POR | Invalid</span></label>
+              <label class="dropdown-item"><input type="checkbox" value="Reverted POR | Name Mismatch"> <span class="dropdown-item-text">Reverted POR | Name Mismatch</span></label>
+              <label class="dropdown-item"><input type="checkbox" value="Reverted POR | Unclear"> <span class="dropdown-item-text">Reverted POR | Unclear</span></label>
+              <label class="dropdown-item"><input type="checkbox" value="Reverted POR | Outdated Date Stamp"> <span class="dropdown-item-text">Reverted POR | Outdated Date Stamp</span></label>
+              <label class="dropdown-item"><input type="checkbox" value="Reverted POR | Address is PO Box"> <span class="dropdown-item-text">Reverted POR | Address is PO Box</span></label>
+              <label class="dropdown-item"><input type="checkbox" value="Reverted POR | Doc Failed to Load"> <span class="dropdown-item-text">Reverted POR | Doc Failed to Load</span></label>
+              <label class="dropdown-item"><input type="checkbox" value="Reverted POR | No Address"> <span class="dropdown-item-text">Reverted POR | No Address</span></label>
+              <label class="dropdown-item"><input type="checkbox" value="Reverted POR | Address Mismatch"> <span class="dropdown-item-text">Reverted POR | Address Mismatch</span></label>
+
+              <div class="dropdown-group-label">Disabilities & OTC</div>
+              <label class="dropdown-item"><input type="checkbox" value="Manually disabled due to a duplicate Name and Date of Birth: {ID1}"> <span class="dropdown-item-text">Duplicate Name/DOB</span></label>
+              <label class="dropdown-item"><input type="checkbox" value="Manually disabled due to a duplicate ID Code: {ID1}"> <span class="dropdown-item-text">Duplicate ID Code</span></label>
+              <label class="dropdown-item"><input type="checkbox" value="Manually disabled due to a duplicate Bank Account Number: {ID1}"> <span class="dropdown-item-text">Duplicate Bank Acc</span></label>
+              <label class="dropdown-item"><input type="checkbox" value="OTC has been granted to {ID1}, and the other account {ID2} will remain disabled."> <span class="dropdown-item-text">OTC Granted (ID 1 to ID 2)</span></label>
+              <label class="dropdown-item"><input type="checkbox" value="{ID1} will remain disabled because OTC was granted to the other account, {ID2}."> <span class="dropdown-item-text">OTC Refused (ID 1 to ID 2)</span></label>
+
+              <div class="dropdown-group-label">Updates</div>
+              <label class="dropdown-item"><input type="checkbox" value="Updated name from {OLD} to {NEW}"> <span class="dropdown-item-text">Update Name</span></label>
+              <label class="dropdown-item"><input type="checkbox" value="Updated Address from {OLD} to {NEW}"> <span class="dropdown-item-text">Update Address</span></label>
+              <label class="dropdown-item"><input type="checkbox" value="Updated phone number from {OLD} to {NEW}"> <span class="dropdown-item-text">Update Phone</span></label>
+              <label class="dropdown-item"><input type="checkbox" value="Updated email address from {OLD} to {NEW}"> <span class="dropdown-item-text">Update Email</span></label>
+              <label class="dropdown-item"><input type="checkbox" value="Updated ID code from {OLD} to {NEW}"> <span class="dropdown-item-text">Update ID Code</span></label>
+              <label class="dropdown-item"><input type="checkbox" value="Updated account number from {OLD} to {NEW}"> <span class="dropdown-item-text">Update Account number</span></label>
+          </div>
+        </div>
+        <button class="btn-add" onclick="addStatuses()">Add</button>
       </div>
       
       <div id="dynamicInputs" class="dynamic-fields">
-        <input type="text" id="val1" placeholder="Value/ID 1">
-        <input type="text" id="val2" placeholder="Value/ID 2">
+        <input type="text" id="val1" placeholder="Old Value / ID 1">
+        <input type="text" id="val2" placeholder="New Value / ID 2">
       </div>
     </div>
 
     <span class="section-label">Output Preview</span>
     <div id="bubble" class="bubble" role="button" onclick="copyText()"></div>
-    <p style="text-align:center; font-size:0.6rem; color:var(--text-dim); margin-top:8px;">Click box to copy • Persistent data</p>
+    <p style="text-align:center; font-size:0.65rem; color:var(--text-dim); margin-top:12px; font-weight: 500;">
+      Click area to copy • Data is persistent
+    </p>
   </div>
 
   <div class="tags-sidebar">
-    <div style="display:flex; justify-content:space-between; align-items:center;">
-      <span class="section-label">Selected Tags</span>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
+      <span class="section-label">Active Actions</span>
       <button id="btnClearAll" class="btn-clear" onclick="clearAllTags()">Clear All</button>
     </div>
     <div class="tags-scroll-area">
@@ -338,36 +525,132 @@
   let statuses = [];
 
   window.onload = () => {
+    // Load persisted state
     if(localStorage.getItem('dept')) document.getElementById('department').value = localStorage.getItem('dept');
     if(localStorage.getItem('user')) document.getElementById('username').value = localStorage.getItem('user');
     if(localStorage.getItem('ticketId')) document.getElementById('ticketId').value = localStorage.getItem('ticketId');
     const saved = localStorage.getItem('statuses');
-    if(saved) { statuses = JSON.parse(saved); renderTags(); }
+    if(saved) { 
+      statuses = JSON.parse(saved); 
+      renderTags(); 
+    }
+    
     refreshBubble();
     setInterval(refreshBubble, 1000);
-    toggleDynamicFields();
+    
+    // Checkbox interaction listeners
+    const checkboxes = document.querySelectorAll('.dropdown-item input[type="checkbox"]');
+    checkboxes.forEach(cb => {
+      cb.addEventListener('change', () => {
+        updateSelectedSummary();
+        toggleDynamicFields();
+      });
+    });
+
+    // Outer click handler for dropdown
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.multi-select-wrapper')) {
+        document.getElementById('multiSelectDropdown').classList.remove('open');
+      }
+    });
   };
 
+  function toggleDropdown() {
+    document.getElementById('multiSelectDropdown').classList.toggle('open');
+  }
+
+  function updateSelectedSummary() {
+    const checkboxes = document.querySelectorAll('.dropdown-item input[type="checkbox"]:checked');
+    const summary = document.getElementById('selectedSummary');
+    const placeholder = document.getElementById('displayPlaceholder');
+    
+    if (checkboxes.length === 0) {
+      summary.textContent = '';
+      placeholder.style.display = 'block';
+    } else {
+      placeholder.style.display = 'none';
+      summary.textContent = checkboxes.length === 1 
+        ? checkboxes[0].parentNode.querySelector('.dropdown-item-text').textContent
+        : `${checkboxes.length} actions selected`;
+    }
+  }
+
   function toggleDynamicFields() {
-    const val = document.getElementById('statusOptions').value;
+    const checkboxes = document.querySelectorAll('.dropdown-item input[type="checkbox"]:checked');
     const fields = document.getElementById('dynamicInputs');
     const v1 = document.getElementById('val1');
     const v2 = document.getElementById('val2');
     
-    const isUpdate = val.includes('{OLD}');
-    const isIDAction = val.includes('{ID1}');
-    const needsTwo = val.includes('{NEW}') || val.includes('{ID2}');
+    let needsInputs = false;
+    let needsTwo = false;
+    let isUpdate = false;
+    let isIDAction = false;
 
-    fields.style.display = (isUpdate || isIDAction) ? 'grid' : 'none';
+    checkboxes.forEach(cb => {
+        const val = cb.value;
+        // Logic to show inputs if tokens exist in value
+        if (val.includes('{OLD}') || val.includes('{ID1}')) needsInputs = true;
+        if (val.includes('{NEW}') || val.includes('{ID2}')) needsTwo = true;
+        if (val.includes('{OLD}')) isUpdate = true;
+        if (val.includes('{ID1}')) isIDAction = true;
+    });
+
+    fields.style.display = needsInputs ? 'grid' : 'none';
     
-    if(isUpdate) {
+    if (isUpdate) {
         v1.placeholder = "Old Value";
         v2.placeholder = "New Value";
-        v2.style.display = 'block';
-    } else if(isIDAction) {
+        v2.style.display = needsTwo ? 'block' : 'none';
+    } else if (isIDAction) {
         v1.placeholder = "User ID 1";
         v2.placeholder = "User ID 2";
         v2.style.display = needsTwo ? 'block' : 'none';
+    }
+  }
+
+  function addStatuses() {
+    const checkboxes = document.querySelectorAll('.dropdown-item input[type="checkbox"]:checked');
+    if (checkboxes.length === 0) {
+        showToast("Please select at least one action", true);
+        return;
+    }
+
+    const v1 = document.getElementById('val1').value.trim() || "(Empty)";
+    const v2 = document.getElementById('val2').value.trim() || "(Empty)";
+    let addedCount = 0;
+
+    checkboxes.forEach(cb => {
+        let rawTemplate = cb.value;
+        // Global replace for both old and new tokens
+        let finalString = rawTemplate.replace(/{OLD}|{ID1}/g, v1).replace(/{NEW}|{ID2}/g, v2);
+
+        if (!statuses.includes(finalString)) {
+            // Logic to prevent multiple updates of the same type (e.g. two Name updates)
+            if(rawTemplate.includes('{OLD}')) {
+                const prefix = rawTemplate.split('from')[0];
+                if(!statuses.some(s => s.startsWith(prefix))) {
+                    statuses.push(finalString);
+                    addedCount++;
+                }
+            } else {
+                statuses.push(finalString);
+                addedCount++;
+            }
+        }
+        cb.checked = false;
+    });
+
+    if (addedCount > 0) {
+        document.getElementById('val1').value = '';
+        document.getElementById('val2').value = '';
+        document.getElementById('multiSelectDropdown').classList.remove('open');
+        updateSelectedSummary();
+        toggleDynamicFields();
+        syncFICA(); 
+        renderTags();
+        saveAndRefresh();
+    } else {
+        showToast("Duplicates or conflicting updates skipped", true);
     }
   }
 
@@ -377,38 +660,6 @@
     localStorage.setItem('ticketId', document.getElementById('ticketId').value);
     localStorage.setItem('statuses', JSON.stringify(statuses));
     refreshBubble();
-  }
-
-  function addStatus() {
-    let rawTemplate = document.getElementById('statusOptions').value;
-    let finalString = rawTemplate;
-    
-    const v1 = document.getElementById('val1').value.trim() || "(Empty)";
-    const v2 = document.getElementById('val2').value.trim() || "(Empty)";
-
-    finalString = finalString.replace('{OLD}', v1).replace('{ID1}', v1);
-    finalString = finalString.replace('{NEW}', v2).replace('{ID2}', v2);
-
-    if (statuses.includes(finalString)) {
-      showToast("Already added to list!", true);
-      return;
-    }
-
-    if(rawTemplate.includes('{OLD}')) {
-        const actionPrefix = rawTemplate.split('from')[0];
-        if(statuses.some(s => s.startsWith(actionPrefix))) {
-            showToast("An update for this category already exists!", true);
-            return;
-        }
-    }
-
-    statuses.push(finalString);
-    document.getElementById('val1').value = '';
-    document.getElementById('val2').value = '';
-
-    syncFICA(); 
-    renderTags();
-    saveAndRefresh();
   }
 
   function syncFICA() {
@@ -433,13 +684,18 @@
 
   function renderTags() {
     const container = document.getElementById('tagsContainer');
-    container.innerHTML = statuses.length === 0 ? '<span style="color:var(--text-dim); font-size:0.75rem;">No actions...</span>' : '';
+    container.innerHTML = statuses.length === 0 
+      ? '<span style="color:var(--text-dim); font-size:0.75rem; font-weight:500;">No active actions...</span>' 
+      : '';
     document.getElementById('btnClearAll').style.visibility = statuses.length ? 'visible' : 'hidden';
     
     statuses.forEach((s, i) => {
       const tag = document.createElement('div');
       tag.className = 'tag';
-      tag.innerHTML = `<span class="tag-text">${s}</span><span class="tag-remove" onclick="removeStatus(${i})">&times;</span>`;
+      tag.innerHTML = `
+        <span class="tag-text">${s}</span>
+        <span class="tag-remove" onclick="removeStatus(${i})">&times;</span>
+      `;
       container.appendChild(tag);
     });
   }
@@ -458,11 +714,7 @@
     const ticketId = document.getElementById("ticketId").value.trim();
     
     let header = `${get("day")}/${get("month")}/${get("year")} ${get("hour")}:${get("minute")}:${get("second")} SAST ${dept} | ${user}`;
-    
-    // Add Ticket ID if present
-    if (ticketId) {
-      header += ` | ${ticketId}`;
-    }
+    if (ticketId) header += ` | ${ticketId}`;
 
     const output = statuses.length > 0 ? `${header}\n${statuses.join("\n")}` : header;
     const b = document.getElementById("bubble");
@@ -470,8 +722,9 @@
   }
 
   function copyText() {
+    const text = document.getElementById("bubble").textContent;
     const el = document.createElement('textarea');
-    el.value = document.getElementById("bubble").textContent;
+    el.value = text;
     el.setAttribute('readonly', '');
     el.style.position = 'absolute';
     el.style.left = '-9999px';
@@ -492,7 +745,7 @@
     if(isError) toast.classList.add("error");
     else toast.classList.remove("error");
     toast.classList.add("show");
-    setTimeout(() => toast.classList.remove("show"), 2000);
+    setTimeout(() => toast.classList.remove("show"), 2500);
   }
 </script>
 

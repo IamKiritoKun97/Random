@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -147,7 +146,7 @@
       margin-bottom: 36px;
     }
 
-    input, select {
+    input {
       width: 100%;
       background: var(--input-bg);
       border: 1px solid var(--glass-border);
@@ -159,19 +158,90 @@
       box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
     }
 
-    select {
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
-      background-repeat: no-repeat;
-      background-position: right 16px center;
-      background-size: 14px;
-      padding-right: 48px;
-      appearance: none;
-    }
-
-    input:focus, select:focus {
+    input:focus {
       border-color: var(--accent);
       background: rgba(255, 255, 255, 0.08);
       box-shadow: 0 0 0 4px var(--accent-glow);
+    }
+
+    /* --- CUSTOM SELECT STYLING --- */
+    .custom-select-wrapper {
+      position: relative;
+      width: 100%;
+    }
+
+    .custom-select-trigger {
+      width: 100%;
+      background: var(--input-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 14px;
+      padding: 16px;
+      color: var(--text-main);
+      font-size: 0.95rem;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+
+    .custom-select-trigger:after {
+      content: "";
+      width: 12px;
+      height: 12px;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+      background-size: contain;
+      background-repeat: no-repeat;
+      transition: transform 0.3s ease;
+    }
+
+    .custom-select-wrapper.open .custom-select-trigger:after {
+      transform: rotate(180deg);
+    }
+
+    .custom-select-wrapper.open .custom-select-trigger {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 4px var(--accent-glow);
+    }
+
+    .custom-options {
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 0;
+      right: 0;
+      background: #0f1715; /* Matched to Quick Actions background */
+      backdrop-filter: blur(25px);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      z-index: 200;
+      display: none;
+      overflow: hidden;
+      box-shadow: 0 25px 60px -12px rgba(0, 0, 0, 0.9);
+      padding: 12px 0; /* Matched to Quick Actions padding */
+    }
+
+    .custom-select-wrapper.open .custom-options {
+      display: block;
+      animation: dropdownIn 0.3s var(--anim-easing);
+    }
+
+    .custom-option {
+      padding: 12px 20px; /* Matched to dropdown-item padding */
+      color: var(--text-dim);
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 500;
+      user-select: none;
+    }
+
+    .custom-option:hover {
+      background: rgba(16, 185, 129, 0.08); /* Matched to Quick Actions hover */
+      color: var(--text-main);
+    }
+
+    .custom-option.selected {
+      background: rgba(16, 185, 129, 0.12);
+      color: var(--accent);
     }
 
     /* --- QUICK ACTIONS REFINEMENT --- */
@@ -442,11 +512,16 @@
     <div class="input-row">
       <div>
         <span class="section-label">Department</span>
-        <select id="department" onchange="saveAndRefresh()">
-          <option value="CS">CS</option>
-          <option value="FICA">FICA</option>
-          <option value="WD">WD</option>
-        </select>
+        <div class="custom-select-wrapper" id="deptWrapper">
+            <div class="custom-select-trigger" id="deptTrigger" onclick="toggleDeptDropdown()">
+                <span id="deptSelected">CS</span>
+            </div>
+            <div class="custom-options" id="deptOptions">
+                <div class="custom-option selected" onclick="selectDept('CS')">CS</div>
+                <div class="custom-option" onclick="selectDept('FICA')">FICA</div>
+                <div class="custom-option" onclick="selectDept('WD')">WD</div>
+            </div>
+        </div>
       </div>
       <div>
         <span class="section-label">User</span>
@@ -543,11 +618,14 @@
 
 <script>
   let statuses = [];
+  let selectedDept = "CS"; // Default
   const mainCard = document.getElementById('mainContainer');
 
   window.onload = () => {
     // --- LOAD SAVED DATA ---
-    if(localStorage.getItem('dept')) document.getElementById('department').value = localStorage.getItem('dept');
+    const savedDept = localStorage.getItem('dept');
+    if(savedDept) selectDept(savedDept);
+    
     if(localStorage.getItem('user')) document.getElementById('username').value = localStorage.getItem('user');
     if(localStorage.getItem('ticketId')) document.getElementById('ticketId').value = localStorage.getItem('ticketId');
     const saved = localStorage.getItem('statuses');
@@ -569,8 +647,13 @@
     });
 
     document.addEventListener('click', (e) => {
+      // Close Multi-Select
       if (!e.target.closest('.multi-select-wrapper')) {
         document.getElementById('multiSelectDropdown').classList.remove('open');
+      }
+      // Close Dept-Select
+      if (!e.target.closest('#deptWrapper')) {
+        document.getElementById('deptWrapper').classList.remove('open');
       }
     });
 
@@ -588,6 +671,26 @@
         triggerEntranceAnimation();
     });
   };
+
+  // --- CUSTOM DEPT SELECT LOGIC ---
+  function toggleDeptDropdown() {
+    document.getElementById('deptWrapper').classList.toggle('open');
+  }
+
+  function selectDept(val) {
+    selectedDept = val;
+    document.getElementById('deptSelected').textContent = val;
+    
+    // Update visual selection
+    const opts = document.querySelectorAll('.custom-option');
+    opts.forEach(opt => {
+        opt.classList.remove('selected');
+        if(opt.textContent === val) opt.classList.add('selected');
+    });
+
+    document.getElementById('deptWrapper').classList.remove('open');
+    saveAndRefresh();
+  }
 
   function triggerEntranceAnimation() {
     mainCard.classList.remove('is-inactive');
@@ -691,7 +794,7 @@
   }
 
   function saveAndRefresh() {
-    localStorage.setItem('dept', document.getElementById('department').value);
+    localStorage.setItem('dept', selectedDept);
     localStorage.setItem('user', document.getElementById('username').value);
     localStorage.setItem('ticketId', document.getElementById('ticketId').value);
     localStorage.setItem('statuses', JSON.stringify(statuses));
@@ -745,7 +848,7 @@
     }).formatToParts(now);
 
     const get = (t) => parts.find(p => p.type === t).value;
-    const dept = document.getElementById("department").value;
+    const dept = selectedDept;
     const user = document.getElementById("username").value.trim() || "User";
     const ticketId = document.getElementById("ticketId").value.trim();
     

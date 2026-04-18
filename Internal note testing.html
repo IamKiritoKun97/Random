@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Internal Note</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;800&family=JetBrains+Mono:wght@400;500&display=swap&font-display=swap" rel="stylesheet">
+  <style>
+    :root {
+      /* Premium Cinematic Palette */
+      --accent: #ffffff;
+      --accent-muted: rgba(255, 255, 255, 0.6);
+      --accent-hover: #e0e0e0;
+      --error: #ff4d4d;
+      
+      /* Glassmorphism System */
+      --glass-panel: rgba(8, 10, 15, 0.45); 
+      --glass-sidebar: rgba(2, 3, 5, 0.3); 
+      --glass-surface: rgba(255, 255, 255, 0.03);
+      --glass-surface-hover: rgba(255, 255, 255, 0.06);
+      --glass-surface-active: rgba(255, 255, 255, 0.09);
+      
+      /* Refined thin borders */
+      --glass-border: rgba(255, 255, 255, 0.06);
+      --glass-border-strong: rgba(255, 255, 255, 0.15);
+      --inner-highlight: inset 0 1px 0 0 rgba(255, 255, 255, 0.08);
+      
+      /* Typography */
+      --text-main: #ffffff;
+      --text-dim: rgba(255, 255, 255, 0.7);
+      --text-muted: rgba(255, 255, 255, 0.4);
+      
+      /* Soft Depth & Glows */
+      --shadow-ambient: 0 30px 80px rgba(0, 0, 0, 0.6);
+      --shadow-dropdown: 0 40px 100px rgba(0, 0, 0, 0.8);
+      --premium-glow: 0 0 24px rgba(255, 255, 255, 0.06);
+      
+      /* Layout & Animation */
+      --anim-duration: 400ms;
+      --anim-easing: cubic-bezier(0.16, 1, 0.3, 1);
+      --p-outer: clamp(20px, 4%, 40px);
+      --gap-base: clamp(16px, 3%, 24px);
+    }
+
+    /* PERFORMANCE FIX: Removed wildcard transitions that cause heavy layout shifts */
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      padding: clamp(12px, 3vw, 32px);
+      color: var(--text-main);
+      background-color: #07090c;
+      background-image: linear-gradient(to bottom, rgba(4, 6, 10, 0.5), rgba(2, 3, 5, 0.8)), url('wallpaper.jpg'); 
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+    }
+
+    .glass-card {
+      display: flex;
+      flex-direction: row;
+      position: relative;
+      width: min(1100px, 98%);
+      height: min(880px, 95%);
+      min-width: 480px; 
+      min-height: 480px;
+      max-width: 98vw;
+      max-height: 95vh;
+      background: var(--glass-panel);
+      backdrop-filter: blur(40px) saturate(120%);
+      -webkit-backdrop-filter: blur(40px) saturate(120%);
+      border: 1px solid var(--glass-border);
+      border-radius: 24px;
+      box-shadow: var(--shadow-ambient), var(--inner-highlight);
+      overflow: hidden;
+      opacity: 0;
+      transform: translateY(15px);
+      transition: transform 0.6s var(--anim-easing), opacity 0.6s var(--anim-easing);
+      will-change: transform, opacity;
+    }
+
+    .glass-card.is-visible { opacity: 1; transform: translateY(0); }
+
+    .resizer {
+      position: absolute;
+      width: 32px;
+      height: 32px;
+      right: 0; bottom: 0;
+      cursor: nwse-resize;
+      z-index: 1001;
+      display: flex;
+      align-items: flex-end;
+      justify-content: flex-end;
+      padding: 10px;
+    }
+
+    .resizer::after {
+      content: "";
+      width: 8px; height: 8px;
+      border-right: 2px solid var(--text-muted);
+      border-bottom: 2px solid var(--text-muted);
+      border-radius: 2px;
+      opacity: 0.4;
+      transition: all 0.2s ease;
+    }
+
+    .resizer:hover::after { opacity: 1; border-color: var(--accent); }
+
+    ::-webkit-scrollbar { width: 4px; height: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.15); border-radius: 10px; }
+
+    .main-content {
+      flex: 3; 
+      padding: var(--p-outer);
+      display: flex;
+      flex-direction: column;
+      border-right: 1px solid var(--glass-border);
+      overflow-y: auto;
+      min-width: 0; 
+      scrollbar-gutter: stable;
+    }
+
+    .tags-sidebar {
+      flex: 1.2; 
+      min-width: 220px;
+      max-width: 400px;
+      background: var(--glass-sidebar);
+      display: flex;
+      flex-direction: column;
+      padding: var(--p-outer);
+      position: relative;
+      overflow-y: auto;
+    }
+
+    h1 {
+      font-size: clamp(1.1rem, 3vw, 1.3rem);
+      font-weight: 600;
+      margin: 0 0 var(--gap-base) 0;
+      letter-spacing: -0.01em;
+      opacity: 0.95;
+      flex-shrink: 0;
+    }
+
+    .section-label {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--text-muted);
+      font-weight: 600;
+      display: block;
+      margin-bottom: 10px;
+    }
+
+    .input-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 16px;
+      margin-bottom: var(--gap-base);
+    }
+
+    .ticket-row { margin-bottom: var(--gap-base); }
+
+    input {
+      width: 100%;
+      background: var(--glass-surface);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      padding: 12px 16px;
+      color: var(--text-main);
+      font-size: 0.9rem;
+      outline: none;
+      font-family: 'Inter', sans-serif;
+      transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    input:focus {
+      border-color: var(--glass-border-strong);
+      background: var(--glass-surface-active);
+      box-shadow: 0 0 0 1px var(--glass-border-strong), var(--premium-glow);
+    }
+
+    .custom-select-wrapper { position: relative; width: 100%; }
+
+    .custom-select-trigger {
+      width: 100%;
+      background: var(--glass-surface);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      padding: 12px 16px;
+      color: var(--text-main);
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 500;
+      min-height: 46px;
+      transition: all 0.2s ease;
+    }
+
+    .custom-select-trigger:hover {
+      border-color: var(--glass-border-strong);
+      background: var(--glass-surface-hover);
+    }
+
+    .custom-options {
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 0; right: 0;
+      background: rgba(12, 15, 20, 0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border-strong);
+      border-radius: 12px;
+      z-index: 1010;
+      display: none;
+      padding: 6px;
+      box-shadow: var(--shadow-dropdown);
+      animation: dropdown-fade-in 0.2s ease forwards;
+    }
+
+    @keyframes dropdown-fade-in {
+        from { opacity: 0; transform: translateY(-4px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .custom-select-wrapper.open .custom-options { display: block; }
+
+    .custom-option {
+        padding: 12px 16px;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        color: var(--text-dim);
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .custom-option:hover { background: var(--glass-surface-active); color: var(--text-main); }
+    .custom-option.selected { color: var(--text-main); background: rgba(255, 255, 255, 0.08); }
+
+    .status-picker-container {
+      background: rgba(0, 0, 0, 0.1);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      padding: 20px;
+      margin-bottom: var(--gap-base);
+    }
+
+    .status-picker-main {
+      display: flex;
+      flex-wrap: wrap; 
+      gap: 12px;
+    }
+
+    .multi-select-wrapper { position: relative; flex: 2; min-width: 150px; }
+
+    .multi-select-display {
+      width: 100%;
+      background: var(--glass-surface);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      padding: 12px 16px;
+      color: var(--text-main);
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      min-height: 46px;
+      transition: all 0.2s ease;
+    }
+
+    .multi-select-dropdown {
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 0; right: 0;
+      background: rgba(10, 12, 16, 0.9);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border-strong);
+      border-radius: 16px;
+      z-index: 1010;
+      max-height: 340px;
+      overflow-y: auto;
+      display: none;
+      padding: 12px;
+      box-shadow: var(--shadow-dropdown);
+      animation: dropdown-fade-in 0.2s ease forwards;
+    }
+
+    .multi-select-dropdown.open { display: block; }
+
+    .dropdown-group-label {
+      padding: 16px 12px 8px 12px;
+      font-size: 0.6rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+    }
+
+    .dropdown-item {
+      padding: 10px 12px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      border-radius: 10px;
+      transition: background 0.2s ease;
+    }
+
+    .dropdown-item:hover { background: var(--glass-surface-active); color: var(--text-main); }
+
+    .btn-add {
+      flex: 1;
+      min-width: 120px;
+      background: var(--accent);
+      color: #000;
+      border: none;
+      border-radius: 12px;
+      padding: 0 20px;
+      font-weight: 600;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      cursor: pointer;
+      min-height: 46px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-add:hover { background: var(--accent-hover); transform: translateY(-1px); }
+
+    .dynamic-fields {
+      display: none;
+      grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--glass-border);
+    }
+
+    .btn-clear {
+      background: var(--glass-surface);
+      border: 1px solid var(--glass-border);
+      color: var(--text-muted);
+      font-size: 0.65rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      cursor: pointer;
+      padding: 6px 16px;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-clear:hover { background: var(--glass-surface-hover); color: var(--text-main); }
+
+    .bubble {
+      background: rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      padding: 20px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      line-height: 1.6;
+      cursor: pointer;
+      color: var(--text-dim);
+      white-space: pre-line;
+      flex: 1;
+      overflow-y: auto;
+      position: relative;
+      min-height: 100px;
+      transition: all 0.2s ease;
+    }
+
+    .bubble:hover { border-color: var(--glass-border-strong); color: var(--text-main); }
+    .bubble:after {
+      content: 'COPY';
+      position: absolute;
+      top: 12px; right: 16px;
+      font-size: 0.55rem;
+      letter-spacing: 0.15em;
+      font-weight: 600;
+      color: var(--text-muted);
+      opacity: 0.6;
+    }
+
+    .tags-container { display: flex; flex-direction: column; gap: 8px; }
+    
+    .tag {
+      background: var(--glass-surface);
+      border: 1px solid var(--glass-border);
+      color: var(--text-dim);
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      transition: all 0.2s ease;
+    }
+
+    .tag:hover { background: var(--glass-surface-hover); transform: translateY(-1px); color: var(--text-main); }
+    .tag-remove { color: var(--text-muted); cursor: pointer; padding-left: 10px; font-size: 1rem; }
+    .tag-remove:hover { color: var(--error); }
+
+    #toast {
+      visibility: hidden;
+      background: var(--accent);
+      color: #000;
+      font-weight: 600;
+      padding: 14px 28px;
+      border-radius: 100px;
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      z-index: 2000;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      opacity: 0;
+      transition: all 0.3s var(--anim-easing);
+    }
+
+    #toast.show { visibility: visible; opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    @media (max-width: 780px) {
+      body { padding: 0; }
+      .glass-card { flex-direction: column; width: 100% !important; height: 100% !important; border-radius: 0; }
+      .tags-sidebar { flex: none; width: 100%; height: 40%; order: 2; }
+      .main-content { order: 1; height: 60%; border-right: none; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="glass-card" id="mainContainer">
+  <div class="resizer" id="resizeHandle"></div>
+
+  <div class="main-content">
+    <h1>Internal Notes</h1>
+
+    <div class="input-row">
+      <div>
+        <span class="section-label">Department</span>
+        <div class="custom-select-wrapper" id="deptWrapper">
+            <div class="custom-select-trigger" id="deptTrigger" onclick="toggleDeptDropdown()">
+                <span id="deptSelected">CS</span>
+            </div>
+            <div class="custom-options" id="deptOptions">
+                <div class="custom-option selected" onclick="selectDept('CS')">CS</div>
+                <div class="custom-option" onclick="selectDept('FICA')">FICA</div>
+                <div class="custom-option" onclick="selectDept('WD')">WD</div>
+            </div>
+        </div>
+      </div>
+      <div>
+        <span class="section-label">Agent name</span>
+        <input type="text" id="username" placeholder="Name/ID">
+      </div>
+    </div>
+
+    <div class="ticket-row">
+      <span class="section-label">Conversation ID</span>
+      <input type="text" id="ticketId" placeholder="e.g. CS-123456">
+    </div>
+
+    <span class="section-label">Dropdown options</span>
+    <div class="status-picker-container">
+      <div class="status-picker-main">
+        <div class="multi-select-wrapper">
+          <div class="multi-select-display" id="multiSelectDisplay" onclick="toggleDropdown()">
+            <span id="displayPlaceholder" style="color:var(--text-muted)">Staging area...</span>
+            <span class="selected-summary" id="selectedSummary"></span>
+          </div>
+          <div class="multi-select-dropdown" id="multiSelectDropdown">
+              <div class="dropdown-group-label">Approvals</div>
+              <label class="dropdown-item"><input type="checkbox" value="Approved ID"> <span class="dropdown-item-text">Approved ID</span></label>
+              <label class="dropdown-item"><input type="checkbox" value="Approved POR"> <span class="dropdown-item-text">Approved POR</span></label>
+              <label class="dropdown-item"><input type="checkbox" value="Approved ID | FraudCheck Photo Verified"> <span class="dropdown-item-text">Approved ID | FraudCheck Photo Verified</span></label>
+              <label class="dropdown-item"><input type="checkbox" value="Approved POR | Bank Verified"> <span class="dropdown-item-text">Approved POR | Bank Verified</span></label>
+              <label class="dropdown-item"><input type="checkbox" value="Approved ID | Photo internally reviewed"> <span class="dropdown-item-text">Approved ID | Photo internally reviewed</span></label>
+              <label class="dropdown-item"><input type="checkbox" value="Approved POR | Bank Internally Verified"> <span class="dropdown-item-text">Approved POR | Bank Internally Verified</span></label>
+              <label class="dropdown-item"><input type="checkbox" value="FICA Verified"> <span class="dropdown-item-text">FICA Verified</span></label>
+
+              <div class="dropdown-group-label">Reverted ID</div>
+              <label class="dropdown-item"><input type="checkbox" value="Reverted ID | Name Mismatch"> <span class="dropdown-item-text">Reverted ID | Name Mismatch</span></label>
+              <label class="dropdown-item"><input type="checkbox" value="Reverted ID | Unclear Copy"> <span class="dropdown-item-text">Reverted ID | Unclear Copy</span></label>
+              <label class="dropdown-item"><input type="checkbox" value="Reverted ID | Invalid"> <span class="dropdown-item-text">Reverted ID | Invalid</span></label>
+              <label class="dropdown-item"><input type="checkbox" value="Reverted ID | Doc Failed to Load"> <span class="dropdown-item-text">Reverted ID | Doc Failed to Load</span></label>
+              <label class="dropdown-item"><input type="checkbox" value="Reverted ID | Unclear"> <span class="dropdown-item-text">Reverted ID | Unclear</span></label>
+              <label class="dropdown-item"><input type="checkbox" value="Reverted ID | Outdated Date Stamp"> <span class="dropdown-item-text">Reverted ID | Outdated Date Stamp</span></label>
+
+              <div class="dropdown-group-label">Reverted POR</div>
+              <label class="dropdown-item"><input type="checkbox" value="Reverted POR | Invalid"> <span class="dropdown-item-text">Reverted POR | Invalid</span></label>
+              <label class="dropdown-item"><input type="checkbox" value="Reverted POR | Name Mismatch"> <span class="dropdown-item-text">Reverted POR | Name Mismatch</span></label>
+              <label class="dropdown-item"><input type="checkbox" value="Reverted POR | Unclear"> <span class="dropdown-item-text">Reverted POR | Unclear</span></label>
+              <label class="dropdown-item"><input type="checkbox" value="Reverted POR | Outdated Date Stamp"> <span class="dropdown-item-text">Reverted POR | Outdated Date Stamp</span></label>
+              <label class="dropdown-item"><input type="checkbox" value="Reverted POR | Address is PO Box"> <span class="dropdown-item-text">Reverted POR | Address is PO Box</span></label>
+              <label class="dropdown-item"><input type="checkbox" value="Reverted POR | Doc Failed to Load"> <span class="dropdown-item-text">Reverted POR | Doc Failed to Load</span></label>
+              <label class="dropdown-item"><input type="checkbox" value="Reverted POR | No Address"> <span class="dropdown-item-text">Reverted POR | No Address</span></label>
+              <label class="dropdown-item"><input type="checkbox" value="Reverted POR | Address Mismatch"> <span class="dropdown-item-text">Reverted POR | Address Mismatch</span></label>
+
+              <div class="dropdown-group-label">Disable & OTC</div>
+              <label class="dropdown-item"><input type="checkbox" value="Manually disabled due to a duplicate Name and Date of Birth: {ID1}"> <span class="dropdown-item-text">Duplicate Name/DOB</span></label>
+              <label class="dropdown-item"><input type="checkbox" value="Manually disabled due to a duplicate ID Code: {ID1}"> <span class="dropdown-item-text">Duplicate ID Code</span></label>
+              <label class="dropdown-item"><input type="checkbox" value="Manually disabled due to a duplicate Bank Account Number: {ID1}"> <span class="dropdown-item-text">Duplicate Bank Acc</span></label>
+              <label class="dropdown-item"><input type="checkbox" value="OTC has been granted to {ID1}, and the other account {ID2} will remain disabled."> <span class="dropdown-item-text">OTC Granted (ID 1 to ID 2)</span></label>
+              <label class="dropdown-item"><input type="checkbox" value="{ID1} will remain disabled because OTC was granted to the other account, {ID2}."> <span class="dropdown-item-text">OTC Refused (ID 1 to ID 2)</span></label>
+              <label class="dropdown-item"><input type="checkbox" value="We can proceed with reactivating this account once the customer provides a valid ID, proof of residence, and an ID selfie, provided all documents return a 'Green' status in XDS."> <span class="dropdown-item-text">Reactivation Pending (XDS)</span></label>
+
+              <div class="dropdown-group-label">Updates</div>
+              <label class="dropdown-item"><input type="checkbox" value="Updated name from {OLD} to {NEW}"> <span class="dropdown-item-text">Update Name</span></label>
+              <label class="dropdown-item"><input type="checkbox" value="Updated Address from {OLD} to {NEW}"> <span class="dropdown-item-text">Update Address</span></label>
+              <label class="dropdown-item"><input type="checkbox" value="Updated phone number from {OLD} to {NEW}"> <span class="dropdown-item-text">Update Phone</span></label>
+              <label class="dropdown-item"><input type="checkbox" value="Updated email address from {OLD} to {NEW}"> <span class="dropdown-item-text">Update Email</span></label>
+              <label class="dropdown-item"><input type="checkbox" value="Updated ID code from {OLD} to {NEW}"> <span class="dropdown-item-text">Update ID Code</span></label>
+              <label class="dropdown-item"><input type="checkbox" value="Updated account number from {OLD} to {NEW}"> <span class="dropdown-item-text">Update Account number</span></label>
+          </div>
+        </div>
+        <button class="btn-add" onclick="addStatuses()">Add</button>
+      </div>
+      
+      <div id="dynamicInputs" class="dynamic-fields">
+        <input type="text" id="val1" placeholder="Val 1">
+        <input type="text" id="val2" placeholder="Val 2">
+      </div>
+    </div>
+
+    <span class="section-label">Live Preview</span>
+    <div id="bubble" class="bubble" role="button" onclick="copyText()"></div>
+  </div>
+
+  <div class="tags-sidebar">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 12px;">
+      <span class="section-label" style="margin-bottom:0;">Action Stack</span>
+      <button id="btnClearAll" class="btn-clear" onclick="clearAllTags()">Reset</button>
+    </div>
+    <div class="tags-container" id="tagsContainer"></div>
+  </div>
+</div>
+
+<div id="toast">Copied to Clipboard</div>
+
+<script>
+  // Cached DOM elements for performance
+  const dom = {
+    mainCard: document.getElementById('mainContainer'),
+    resizeHandle: document.getElementById('resizeHandle'),
+    username: document.getElementById('username'),
+    ticketId: document.getElementById('ticketId'),
+    bubble: document.getElementById('bubble'),
+    tagsContainer: document.getElementById('tagsContainer'),
+    multiSelectDropdown: document.getElementById('multiSelectDropdown'),
+    deptWrapper: document.getElementById('deptWrapper'),
+    multiSelectDisplay: document.getElementById('selectedSummary'),
+    placeholder: document.getElementById('displayPlaceholder'),
+    dynamicInputs: document.getElementById('dynamicInputs'),
+    val1: document.getElementById('val1'),
+    val2: document.getElementById('val2'),
+    toast: document.getElementById('toast'),
+    clearBtn: document.getElementById('btnClearAll')
+  };
+
+  let statuses = [];
+  let selectedDept = "CS"; 
+
+  window.onload = () => {
+    // Initial Load Logic
+    const savedDept = localStorage.getItem('dept');
+    if(savedDept) selectDept(savedDept);
+    
+    if(localStorage.getItem('user')) dom.username.value = localStorage.getItem('user');
+    if(localStorage.getItem('ticketId')) dom.ticketId.value = localStorage.getItem('ticketId');
+    
+    const saved = localStorage.getItem('statuses');
+    if(saved) { statuses = JSON.parse(saved); renderTags(); } else { renderTags(); }
+    
+    const savedWidth = localStorage.getItem('cardWidth');
+    const savedHeight = localStorage.getItem('cardHeight');
+    if (savedWidth && window.innerWidth > 780) dom.mainCard.style.width = savedWidth + "px";
+    if (savedHeight && window.innerWidth > 780) dom.mainCard.style.height = savedHeight + "px";
+
+    refreshBubble();
+
+    // Event listeners for performance (instead of intervals)
+    dom.username.addEventListener('input', saveAndRefresh);
+    dom.ticketId.addEventListener('input', saveAndRefresh);
+
+    const checkboxes = document.querySelectorAll('.dropdown-item input[type="checkbox"]');
+    checkboxes.forEach(cb => {
+      cb.addEventListener('change', () => {
+        updateSelectedSummary();
+        toggleDynamicFields();
+      });
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.multi-select-wrapper')) dom.multiSelectDropdown.classList.remove('open');
+      if (!e.target.closest('#deptWrapper')) dom.deptWrapper.classList.remove('open');
+    });
+
+    initResize();
+    
+    // Smooth appearance
+    requestAnimationFrame(() => {
+        dom.mainCard.classList.add('is-visible');
+    });
+  };
+
+  function initResize() {
+    let startX, startY, startWidth, startHeight;
+
+    dom.resizeHandle.addEventListener('mousedown', (e) => {
+      startX = e.clientX;
+      startY = e.clientY;
+      startWidth = dom.mainCard.offsetWidth;
+      startHeight = dom.mainCard.offsetHeight;
+      
+      const handleMouseMove = (e) => {
+        const newWidth = startWidth + (e.clientX - startX);
+        const newHeight = startHeight + (e.clientY - startY);
+        if (newWidth > 480 && newWidth < (window.innerWidth * 0.98)) {
+            dom.mainCard.style.width = newWidth + 'px';
+        }
+        if (newHeight > 480 && newHeight < (window.innerHeight * 0.95)) {
+            dom.mainCard.style.height = newHeight + 'px';
+        }
+      };
+
+      const stopResize = () => {
+        document.removeEventListener('mousemove', handleMouseMove);
+        document.removeEventListener('mouseup', stopResize);
+        localStorage.setItem('cardWidth', dom.mainCard.offsetWidth);
+        localStorage.setItem('cardHeight', dom.mainCard.offsetHeight);
+        document.body.style.cursor = 'default';
+      };
+
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', stopResize);
+      document.body.style.cursor = 'nwse-resize';
+      e.preventDefault();
+    });
+  }
+
+  function toggleDeptDropdown() { dom.deptWrapper.classList.toggle('open'); }
+
+  function selectDept(val) {
+    selectedDept = val;
+    document.getElementById('deptSelected').textContent = val;
+    const opts = document.querySelectorAll('.custom-option');
+    opts.forEach(opt => {
+        opt.classList.toggle('selected', opt.textContent === val);
+    });
+    dom.deptWrapper.classList.remove('open');
+    saveAndRefresh();
+  }
+
+  function toggleDropdown() { dom.multiSelectDropdown.classList.toggle('open'); }
+
+  function updateSelectedSummary() {
+    const checkboxes = dom.multiSelectDropdown.querySelectorAll('input[type="checkbox"]:checked');
+    if (checkboxes.length === 0) {
+      dom.multiSelectDisplay.textContent = '';
+      dom.placeholder.style.display = 'block';
+    } else {
+      dom.placeholder.style.display = 'none';
+      dom.multiSelectDisplay.textContent = checkboxes.length === 1 
+         ? checkboxes[0].parentNode.querySelector('.dropdown-item-text').textContent
+         : `${checkboxes.length} selected`;
+    }
+  }
+
+  function toggleDynamicFields() {
+    const checkboxes = dom.multiSelectDropdown.querySelectorAll('input[type="checkbox"]:checked');
+    let needsInputs = false, needsTwo = false, isUpdate = false, isIDAction = false;
+
+    checkboxes.forEach(cb => {
+        const val = cb.value;
+        if (val.includes('{OLD}') || val.includes('{ID1}')) needsInputs = true;
+        if (val.includes('{NEW}') || val.includes('{ID2}')) needsTwo = true;
+        if (val.includes('{OLD}')) isUpdate = true;
+        if (val.includes('{ID1}')) isIDAction = true;
+    });
+
+    dom.dynamicInputs.style.display = needsInputs ? 'grid' : 'none';
+    if (isUpdate) {
+        dom.val1.placeholder = "Old Value";
+        dom.val2.placeholder = "New Value";
+        dom.val2.style.display = needsTwo ? 'block' : 'none';
+    } else if (isIDAction) {
+        dom.val1.placeholder = "User ID 1";
+        dom.val2.placeholder = "User ID 2";
+        dom.val2.style.display = needsTwo ? 'block' : 'none';
+    }
+  }
+
+  function addStatuses() {
+    const checkboxes = dom.multiSelectDropdown.querySelectorAll('input[type="checkbox"]:checked');
+    if (checkboxes.length === 0) { showToast("No items selected", true); return; }
+
+    const v1 = dom.val1.value.trim() || "(Empty)";
+    const v2 = dom.val2.value.trim() || "(Empty)";
+    let addedCount = 0;
+
+    checkboxes.forEach(cb => {
+        let rawTemplate = cb.value;
+        let finalString = rawTemplate.replace(/{OLD}|{ID1}/g, v1).replace(/{NEW}|{ID2}/g, v2);
+
+        if (!statuses.includes(finalString)) {
+            if(rawTemplate.includes('{OLD}')) {
+                const prefix = rawTemplate.split('from')[0];
+                if(!statuses.some(s => s.startsWith(prefix))) { statuses.push(finalString); addedCount++; }
+            } else { statuses.push(finalString); addedCount++; }
+        }
+        cb.checked = false;
+    });
+
+    if (addedCount > 0) {
+        dom.val1.value = ''; dom.val2.value = '';
+        dom.multiSelectDropdown.classList.remove('open');
+        updateSelectedSummary();
+        toggleDynamicFields();
+        syncFICA(); 
+        renderTags();
+        saveAndRefresh();
+    } else { showToast("Action already exists", true); }
+  }
+
+  function saveAndRefresh() {
+    localStorage.setItem('dept', selectedDept);
+    localStorage.setItem('user', dom.username.value);
+    localStorage.setItem('ticketId', dom.ticketId.value);
+    localStorage.setItem('statuses', JSON.stringify(statuses));
+    refreshBubble();
+  }
+
+  function syncFICA() {
+    const hasID = statuses.some(s => s.toLowerCase().includes("approved id"));
+    const hasPOR = statuses.some(s => s.toLowerCase().includes("approved por"));
+    if (hasID && hasPOR && !statuses.includes("FICA Verified")) { statuses.push("FICA Verified"); }
+  }
+
+  function removeStatus(index) { statuses.splice(index, 1); renderTags(); saveAndRefresh(); }
+
+  function clearAllTags() { statuses = []; renderTags(); saveAndRefresh(); }
+
+  function renderTags() {
+    const container = dom.tagsContainer;
+    container.innerHTML = '';
+    
+    dom.clearBtn.style.visibility = statuses.length ? 'visible' : 'hidden';
+    
+    if (statuses.length === 0) {
+      container.innerHTML = `
+        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding-top: 40px; opacity: 0.7;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--text-muted); margin-bottom: 12px;">
+            <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+            <polyline points="2 12 12 17 22 12"></polyline>
+            <polyline points="2 17 12 22 22 17"></polyline>
+          </svg>
+          <span style="color: var(--text-muted); font-size: 0.7rem;">Actions will appear here as you commit selections.</span>
+        </div>
+      `;
+    } else {
+      statuses.forEach((s, i) => {
+        const tag = document.createElement('div');
+        tag.className = 'tag';
+        tag.innerHTML = `<span>${s}</span><span class="tag-remove" onclick="removeStatus(${i})">×</span>`;
+        container.appendChild(tag);
+      });
+    }
+  }
+
+  function refreshBubble() {
+    const tz = "Africa/Johannesburg";
+    const now = new Date();
+    const parts = new Intl.DateTimeFormat("en-GB", {
+      timeZone: tz, year: "numeric", month: "2-digit", day: "2-digit",
+      hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false
+    }).formatToParts(now);
+
+    const get = (t) => parts.find(p => p.type === t).value;
+    const dept = selectedDept;
+    const user = dom.username.value.trim() || "AGENT";
+    const ticketId = dom.ticketId.value.trim();
+    
+    let header = `${get("day")}/${get("month")}/${get("year")} ${get("hour")}:${get("minute")}:${get("second")} SAST ${dept} | ${user}`;
+    if (ticketId) header += ` | ${ticketId}`;
+
+    const output = statuses.length > 0 ? `${header}\n${statuses.join("\n")}` : header;
+    if (dom.bubble.textContent !== output) dom.bubble.textContent = output;
+  }
+
+  async function copyText() {
+    // Ensure timestamp is fresh on copy
+    refreshBubble();
+    const text = dom.bubble.textContent;
+    
+    try {
+        const el = document.createElement('textarea');
+        el.value = text;
+        el.style.position = 'fixed'; el.style.opacity = '0';
+        document.body.appendChild(el);
+        el.select();
+        document.execCommand('copy');
+        document.body.removeChild(el);
+        showToast("Copied to clipboard", false);
+    } catch (err) {
+        showToast("Failed to copy", true);
+    }
+  }
+
+  function showToast(message, isError) {
+    dom.toast.textContent = message;
+    dom.toast.style.background = isError ? "var(--error)" : "var(--accent)";
+    dom.toast.style.color = isError ? "white" : "black";
+    dom.toast.classList.add("show");
+    setTimeout(() => dom.toast.classList.remove("show"), 2500);
+  }
+</script>
+
+</body>
+</html>

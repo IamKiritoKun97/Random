@@ -3,19 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Deposit Turnover</title>
+    <title>Deposit turnover</title>
     <style>
         :root {
-            --bg-deep: #0a0a0c;
-            --glass-bg: rgba(255, 255, 255, 0.03);
-            --glass-border: rgba(255, 255, 255, 0.08);
-            --accent-silver: #e0e0e0;
-            --accent-muted: #888888;
-            --text-primary: #f2f2f2;
-            --text-secondary: #a1a1a1;
+            /* --- WALLPAPER CONFIGURATION --- */
+            /* Replace the URL below with any Unsplash or direct image link */
+            --wallpaper-url: url("https://images.unsplash.com/photo-1770131100714-12a6989ec31d?q=80&w=697&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
+            
+            /* --- THEME COLORS --- */
+            --bg-overlay: rgba(0, 0, 0, 0.6); /* Darkens wallpaper for readability */
+            --glass-bg: rgba(15, 15, 15, 0.45);
+            --glass-border: rgba(255, 255, 255, 0.12);
+            --accent-silver: #ffffff;
+            --accent-muted: #bcbcbc;
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.7);
             --status-met: #4ade80;
             --status-pending: #fbbf24;
-            --panel-blur: blur(16px);
+            --panel-blur: blur(24px);
+            --input-bg: rgba(255, 255, 255, 0.05);
         }
 
         * {
@@ -26,76 +32,103 @@
         }
 
         body {
-            background-color: var(--bg-deep);
-            background-image: 
-                radial-gradient(circle at 20% 20%, rgba(60, 60, 60, 0.15) 0%, transparent 40%),
-                radial-gradient(circle at 80% 80%, rgba(40, 40, 40, 0.15) 0%, transparent 40%);
-            color: var(--text-primary);
+            margin: 0;
+            padding: 0;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 40px 20px;
+            color: var(--text-primary);
+            position: relative;
+            /* Wallpaper Logic */
+            background-image: var(--wallpaper-url);
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+            overflow-x: hidden;
+        }
+
+        /* Subtle dark overlay to ensure high contrast for text */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-overlay);
+            z-index: -1;
         }
 
         .dashboard {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 1fr 1.1fr;
             width: 100%;
-            max-width: 1100px;
-            gap: 24px;
-            animation: fadeIn 0.8s ease-out;
+            max-width: 1150px;
+            gap: 28px;
+            padding: 40px 20px;
+            animation: fadeIn 1s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: 1;
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
+            from { opacity: 0; transform: translateY(30px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* --- Panels --- */
+        /* --- Glass Panels --- */
         .panel {
             background: var(--glass-bg);
             backdrop-filter: var(--panel-blur);
             -webkit-backdrop-filter: var(--panel-blur);
             border: 1px solid var(--glass-border);
-            border-radius: 24px;
-            padding: 40px;
+            border-radius: 28px;
+            padding: 48px;
             display: flex;
             flex-direction: column;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+            transition: border-color 0.4s ease;
+        }
+
+        .panel:hover {
+            border-color: rgba(255, 255, 255, 0.2);
         }
 
         .header-section {
-            margin-bottom: 32px;
+            margin-bottom: 36px;
         }
 
         .header-section h1 {
-            font-size: 1.5rem;
-            font-weight: 700;
+            font-size: 1.8rem;
+            font-weight: 800;
             letter-spacing: -0.5px;
             color: var(--accent-silver);
             text-transform: uppercase;
+            margin-bottom: 4px;
         }
 
         .header-section p {
             color: var(--text-secondary);
-            font-size: 0.9rem;
-            margin-top: 4px;
+            font-size: 0.95rem;
+            font-weight: 400;
+            opacity: 0.8;
         }
 
-        /* --- Left Side: Inputs --- */
+        /* --- Form Elements --- */
         .input-group {
             margin-bottom: 24px;
         }
 
         .input-group label {
             display: block;
-            font-size: 0.85rem;
-            font-weight: 500;
+            font-size: 0.8rem;
+            font-weight: 600;
             color: var(--text-secondary);
-            margin-bottom: 10px;
-            transition: color 0.3s;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .input-wrapper {
@@ -106,180 +139,200 @@
 
         .input-wrapper span {
             position: absolute;
-            left: 16px;
+            left: 18px;
             color: var(--text-secondary);
             font-weight: 600;
-            font-size: 0.95rem;
+            font-size: 1rem;
             pointer-events: none;
         }
 
         input {
             width: 100%;
-            background: rgba(255, 255, 255, 0.03);
+            background: var(--input-bg);
             border: 1px solid var(--glass-border);
-            border-radius: 12px;
-            padding: 14px 14px 14px 34px;
+            border-radius: 14px;
+            padding: 16px 16px 16px 40px;
             color: var(--text-primary);
-            font-size: 1rem;
+            font-size: 1.1rem;
+            font-weight: 500;
             outline: none;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         input:focus {
-            border-color: rgba(255, 255, 255, 0.3);
-            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255, 255, 255, 0.4);
+            background: rgba(255, 255, 255, 0.1);
             box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.05);
         }
 
         input::placeholder {
-            color: rgba(255, 255, 255, 0.15);
+            color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Remove arrows from number input */
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
         }
 
         .error-msg {
-            color: #ef4444;
+            color: #ff6b6b;
             font-size: 0.75rem;
-            margin-top: 6px;
+            margin-top: 8px;
             display: none;
         }
 
         .btn-reset {
-            margin-top: auto;
+            margin-top: 20px;
             background: transparent;
             border: 1px solid var(--glass-border);
             color: var(--text-secondary);
-            padding: 12px;
-            border-radius: 12px;
+            padding: 14px 24px;
+            border-radius: 14px;
             cursor: pointer;
             font-size: 0.9rem;
-            font-weight: 500;
-            transition: all 0.2s;
+            font-weight: 600;
+            transition: all 0.3s ease;
             align-self: flex-start;
         }
 
         .btn-reset:hover {
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.1);
             color: var(--text-primary);
+            border-color: rgba(255, 255, 255, 0.3);
         }
 
-        /* --- Right Side: Preview --- */
+        /* --- Preview / Results --- */
         .preview-panel {
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
             position: relative;
             overflow: hidden;
             display: flex;
             flex-direction: column;
             justify-content: center;
-            border: 1px dashed var(--glass-border);
+            border: 1px solid var(--glass-border);
+            background: rgba(0, 0, 0, 0.2);
         }
 
         .preview-panel:hover {
-            background: rgba(255, 255, 255, 0.05);
-            border-color: rgba(255, 255, 255, 0.2);
-            transform: translateY(-2px);
-        }
-
-        .preview-panel:active {
-            transform: scale(0.995);
+            background: rgba(255, 255, 255, 0.07);
+            border-color: rgba(255, 255, 255, 0.4);
+            transform: translateY(-4px) scale(1.01);
         }
 
         .copy-hint {
             position: absolute;
-            top: 20px;
-            right: 20px;
-            font-size: 0.7rem;
+            top: 24px;
+            right: 24px;
+            font-size: 0.65rem;
             color: var(--text-secondary);
             text-transform: uppercase;
-            letter-spacing: 1px;
-            opacity: 0.5;
+            letter-spacing: 2px;
+            opacity: 0.6;
+            font-weight: 700;
         }
 
         .result-title {
-            font-size: 0.9rem;
-            font-weight: 600;
+            font-size: 0.85rem;
+            font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 1.5px;
-            margin-bottom: 8px;
+            letter-spacing: 2px;
+            margin-bottom: 12px;
             color: var(--text-secondary);
         }
 
         .result-value {
-            font-size: 3rem;
-            font-weight: 800;
-            margin-bottom: 24px;
+            font-size: 3.5rem;
+            font-weight: 900;
+            margin-bottom: 28px;
             line-height: 1;
+            letter-spacing: -2px;
+            text-shadow: 0 10px 20px rgba(0,0,0,0.2);
         }
 
         .explanation-text {
-            font-size: 1rem;
-            line-height: 1.6;
+            font-size: 1.1rem;
+            line-height: 1.7;
             color: var(--text-secondary);
-            max-width: 400px;
+            max-width: 480px;
         }
 
         .empty-state {
             text-align: center;
             color: var(--text-secondary);
             font-style: italic;
+            font-size: 1.1rem;
+            opacity: 0.5;
         }
 
-        /* --- Toast Notification --- */
+        /* --- Notifications --- */
         .toast {
             position: fixed;
-            bottom: 30px;
-            background: var(--text-primary);
-            color: var(--bg-deep);
-            padding: 12px 24px;
-            border-radius: 50px;
-            font-weight: 600;
-            font-size: 0.9rem;
-            transform: translateY(100px);
-            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            bottom: 40px;
+            background: #ffffff;
+            color: #000000;
+            padding: 16px 32px;
+            border-radius: 16px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            transform: translateY(150px);
+            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
             z-index: 1000;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
         }
 
         .toast.show {
             transform: translateY(0);
         }
 
-        /* --- Reference Footer --- */
+        /* --- Footer --- */
         .footer {
-            margin-top: 48px;
-            max-width: 800px;
+            margin: 40px 0;
+            max-width: 850px;
             text-align: center;
+            z-index: 1;
         }
 
         .clause-text {
-            font-size: 0.75rem;
-            line-height: 1.6;
+            font-size: 0.8rem;
+            line-height: 1.8;
             color: var(--text-secondary);
             opacity: 0.7;
-            margin-bottom: 16px;
+            margin-bottom: 20px;
+            padding: 0 20px;
         }
 
         .terms-link {
             color: var(--accent-silver);
             text-decoration: none;
-            font-size: 0.75rem;
-            font-weight: 600;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-            padding-bottom: 2px;
-            transition: all 0.2s;
+            font-size: 0.8rem;
+            font-weight: 700;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+            padding-bottom: 4px;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         .terms-link:hover {
             color: white;
             border-bottom-color: white;
+            letter-spacing: 1.5px;
         }
 
-        /* --- Responsive --- */
-        @media (max-width: 900px) {
+        /* --- Mobile Responsiveness --- */
+        @media (max-width: 950px) {
             .dashboard {
                 grid-template-columns: 1fr;
+                padding-top: 20px;
             }
             .panel {
-                padding: 30px;
+                padding: 32px;
+            }
+            .result-value {
+                font-size: 2.5rem;
             }
         }
     </style>
@@ -296,7 +349,7 @@
 
             <div class="form-content">
                 <div class="input-group">
-                    <label for="totalDeposit">Total Deposit Amount / DEP </label>
+                    <label for="totalDeposit">Total Deposit Amount / DEP</label>
                     <div class="input-wrapper">
                         <span>R</span>
                         <input type="number" id="totalDeposit" placeholder="0.00" step="0.01">
@@ -305,7 +358,7 @@
                 </div>
 
                 <div class="input-group">
-                    <label for="totalWagering">Total Amount Wagered / PIS or PAID IN SUM</label>
+                    <label for="totalWagering">Total Amount Wagered / PIS</label>
                     <div class="input-wrapper">
                         <span>R</span>
                         <input type="number" id="totalWagering" placeholder="0.00" step="0.01">
@@ -314,7 +367,7 @@
                 </div>
 
                 <div class="input-group">
-                    <label for="earlyCashout">Total Early Cash Out Amount / ECO (If any)</label>
+                    <label for="earlyCashout">Total Early Cash Out / ECO</label>
                     <div class="input-wrapper">
                         <span>R</span>
                         <input type="number" id="earlyCashout" placeholder="0.00" step="0.01" value="0.00">
@@ -328,10 +381,10 @@
 
         <!-- Preview Panel -->
         <div id="previewArea" class="panel preview-panel" onclick="copyToClipboard()">
-            <div class="copy-hint">Tap to Copy</div>
+            <div class="copy-hint">Click to Copy Summary</div>
             
             <div id="liveResult">
-                <div class="empty-state">Enter values to generate preview...</div>
+                <div class="empty-state">Awaiting input data...</div>
             </div>
         </div>
     </div>
@@ -340,7 +393,7 @@
         <p class="clause-text">
             <strong>Clause 7.11.</strong> If the value of a deposit has not been played through in full once before a withdrawal is requested, Easybet reserves the right to refuse a requested withdrawal until the value of such deposit has been played through in full. Under no circumstances will refunds be considered for Easyload, 1voucher, OTT and Bluvoucher voucher transactions.
         </p>
-        <a href="https://easybet.co.za/page/terms-conditions/withdrawals" class="terms-link" target="_blank">View Full Terms & Conditions</a>
+        <a href="https://easybet.co.za/page/terms-conditions/withdrawals" class="terms-link" target="_blank">Full Terms & Conditions</a>
     </div>
 
     <div id="copyToast" class="toast">Details copied to clipboard</div>
@@ -369,28 +422,28 @@
                 return;
             }
 
-            // Calculation Logic (Untouched)
+            // Calculation Logic
             const qualifyingPlay = wagering - cashout;
             const remaining = deposit - qualifyingPlay;
 
             let statusColor = remaining <= 0 ? 'var(--status-met)' : 'var(--status-pending)';
-            let titleText = remaining <= 0 ? "Withdrawal Ready" : "Remaining Wagering Required";
+            let titleText = remaining <= 0 ? "Withdrawal Ready" : "Wagering Required";
             let valueDisplay = remaining <= 0 ? "Requirement Met!" : `R${remaining.toFixed(2)}`;
             
             let explanationText = "";
             if (remaining <= 0) {
-                explanationText = `Great news! You have successfully played through your deposit of R${deposit.toFixed(2)}. `;
+                explanationText = `Excellent! You have successfully played through your deposit of R${deposit.toFixed(2)}. Your account is eligible for withdrawal. `;
             } else {
-                explanationText = `To meet our withdrawal requirements, you need to wager an additional R${remaining.toFixed(2)}. `;
+                explanationText = `To meet the withdrawal requirement, you need to wager an additional R${remaining.toFixed(2)}. `;
             }
 
             if (cashout > 0) {
-                explanationText += `Please note that your 'Early Cash Out' amount of R${cashout.toFixed(2)} does not count towards your play-through requirement, which has been adjusted accordingly.`;
+                explanationText += `Note: Your 'Early Cash Out' of R${cashout.toFixed(2)} is excluded from play-through progress per our policy.`;
             } else {
-                explanationText += `This is based on your total deposit of R${deposit.toFixed(2)} and current qualifying play.`;
+                explanationText += `This is calculated based on your total deposit of R${deposit.toFixed(2)} and qualifying play.`;
             }
 
-            // Update UI
+            // Update UI with smooth transition
             liveResult.innerHTML = `
                 <div class="result-title">${titleText}</div>
                 <div class="result-value" style="color: ${statusColor}">${valueDisplay}</div>
@@ -409,14 +462,24 @@
 
             const fullText = `Easybet Status: ${title}\nValue: ${value}\n\nDetails: ${explanation}`;
 
+            // Robust copy method
             const textArea = document.createElement("textarea");
             textArea.value = fullText;
+            textArea.style.position = "fixed";
+            textArea.style.left = "-9999px";
+            textArea.style.top = "0";
             document.body.appendChild(textArea);
+            textArea.focus();
             textArea.select();
-            document.execCommand('copy');
+            
+            try {
+                document.execCommand('copy');
+                showToast();
+            } catch (err) {
+                console.error('Unable to copy', err);
+            }
+            
             document.body.removeChild(textArea);
-
-            showToast();
         }
 
         function showToast() {

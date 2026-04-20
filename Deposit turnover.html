@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PIS DEP ECO Withdrawal Eligibility Tool </title>
+    <style>
+        :root {
+            --bg-deep: #0a0a0c;
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --accent-silver: #e0e0e0;
+            --accent-muted: #888888;
+            --text-primary: #f2f2f2;
+            --text-secondary: #a1a1a1;
+            --status-met: #4ade80;
+            --status-pending: #fbbf24;
+            --panel-blur: blur(16px);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-deep);
+            background-image: 
+                radial-gradient(circle at 20% 20%, rgba(60, 60, 60, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 80% 80%, rgba(40, 40, 40, 0.15) 0%, transparent 40%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            width: 100%;
+            max-width: 1100px;
+            gap: 24px;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- Panels --- */
+        .panel {
+            background: var(--glass-bg);
+            backdrop-filter: var(--panel-blur);
+            -webkit-backdrop-filter: var(--panel-blur);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+
+        .header-section {
+            margin-bottom: 32px;
+        }
+
+        .header-section h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            color: var(--accent-silver);
+            text-transform: uppercase;
+        }
+
+        .header-section p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-top: 4px;
+        }
+
+        /* --- Left Side: Inputs --- */
+        .input-group {
+            margin-bottom: 24px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+            transition: color 0.3s;
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-wrapper span {
+            position: absolute;
+            left: 16px;
+            color: var(--text-secondary);
+            font-weight: 600;
+            font-size: 0.95rem;
+            pointer-events: none;
+        }
+
+        input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 14px 14px 14px 34px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        input:focus {
+            border-color: rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.06);
+            box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.05);
+        }
+
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.15);
+        }
+
+        .error-msg {
+            color: #ef4444;
+            font-size: 0.75rem;
+            margin-top: 6px;
+            display: none;
+        }
+
+        .btn-reset {
+            margin-top: auto;
+            background: transparent;
+            border: 1px solid var(--glass-border);
+            color: var(--text-secondary);
+            padding: 12px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            align-self: flex-start;
+        }
+
+        .btn-reset:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+        }
+
+        /* --- Right Side: Preview --- */
+        .preview-panel {
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            border: 1px dashed var(--glass-border);
+        }
+
+        .preview-panel:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .preview-panel:active {
+            transform: scale(0.995);
+        }
+
+        .copy-hint {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.5;
+        }
+
+        .result-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+        }
+
+        .result-value {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 24px;
+            line-height: 1;
+        }
+
+        .explanation-text {
+            font-size: 1rem;
+            line-height: 1.6;
+            color: var(--text-secondary);
+            max-width: 400px;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+
+        /* --- Toast Notification --- */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            background: var(--text-primary);
+            color: var(--bg-deep);
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transform: translateY(100px);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 1000;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+        }
+
+        .toast.show {
+            transform: translateY(0);
+        }
+
+        /* --- Reference Footer --- */
+        .footer {
+            margin-top: 48px;
+            max-width: 800px;
+            text-align: center;
+        }
+
+        .clause-text {
+            font-size: 0.75rem;
+            line-height: 1.6;
+            color: var(--text-secondary);
+            opacity: 0.7;
+            margin-bottom: 16px;
+        }
+
+        .terms-link {
+            color: var(--accent-silver);
+            text-decoration: none;
+            font-size: 0.75rem;
+            font-weight: 600;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            padding-bottom: 2px;
+            transition: all 0.2s;
+        }
+
+        .terms-link:hover {
+            color: white;
+            border-bottom-color: white;
+        }
+
+        /* --- Responsive --- */
+        @media (max-width: 900px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            .panel {
+                padding: 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="dashboard">
+        <!-- Input Panel -->
+        <div class="panel">
+            <div class="header-section">
+                <h1>Easybet</h1>
+                <p>Withdrawal Eligibility Tool</p>
+            </div>
+
+            <div class="form-content">
+                <div class="input-group">
+                    <label for="totalDeposit">Total Deposit Amount / DEP </label>
+                    <div class="input-wrapper">
+                        <span>R</span>
+                        <input type="number" id="totalDeposit" placeholder="0.00" step="0.01">
+                    </div>
+                    <div id="errDeposit" class="error-msg">Please enter a valid deposit amount.</div>
+                </div>
+
+                <div class="input-group">
+                    <label for="totalWagering">Total Amount Wagered / PIS or PAID IN SUM</label>
+                    <div class="input-wrapper">
+                        <span>R</span>
+                        <input type="number" id="totalWagering" placeholder="0.00" step="0.01">
+                    </div>
+                    <div id="errWagering" class="error-msg">Please enter a valid wagering amount.</div>
+                </div>
+
+                <div class="input-group">
+                    <label for="earlyCashout">Total Early Cash Out Amount / ECO (If any)</label>
+                    <div class="input-wrapper">
+                        <span>R</span>
+                        <input type="number" id="earlyCashout" placeholder="0.00" step="0.01" value="0.00">
+                    </div>
+                    <div id="errCashout" class="error-msg">Please enter a valid amount (or 0).</div>
+                </div>
+            </div>
+
+            <button class="btn-reset" onclick="resetForm()">Clear Form</button>
+        </div>
+
+        <!-- Preview Panel -->
+        <div id="previewArea" class="panel preview-panel" onclick="copyToClipboard()">
+            <div class="copy-hint">Tap to Copy</div>
+            
+            <div id="liveResult">
+                <div class="empty-state">Enter values to generate preview...</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p class="clause-text">
+            <strong>Clause 7.11.</strong> If the value of a deposit has not been played through in full once before a withdrawal is requested, Easybet reserves the right to refuse a requested withdrawal until the value of such deposit has been played through in full. Under no circumstances will refunds be considered for Easyload, 1voucher, OTT and Bluvoucher voucher transactions.
+        </p>
+        <a href="https://easybet.co.za/page/terms-conditions/withdrawals" class="terms-link" target="_blank">View Full Terms & Conditions</a>
+    </div>
+
+    <div id="copyToast" class="toast">Details copied to clipboard</div>
+
+    <script>
+        const inputs = ['totalDeposit', 'totalWagering', 'earlyCashout'];
+        
+        // Listen for live updates
+        inputs.forEach(id => {
+            document.getElementById(id).addEventListener('input', updateCalculator);
+        });
+
+        function updateCalculator() {
+            const deposit = parseFloat(document.getElementById('totalDeposit').value);
+            const wagering = parseFloat(document.getElementById('totalWagering').value);
+            const cashout = parseFloat(document.getElementById('earlyCashout').value) || 0;
+
+            const liveResult = document.getElementById('liveResult');
+
+            // Hide errors while typing
+            document.querySelectorAll('.error-msg').forEach(el => el.style.display = 'none');
+
+            // Handle empty state
+            if (isNaN(deposit) || isNaN(wagering)) {
+                liveResult.innerHTML = '<div class="empty-state">Enter values to generate preview...</div>';
+                return;
+            }
+
+            // Calculation Logic (Untouched)
+            const qualifyingPlay = wagering - cashout;
+            const remaining = deposit - qualifyingPlay;
+
+            let statusColor = remaining <= 0 ? 'var(--status-met)' : 'var(--status-pending)';
+            let titleText = remaining <= 0 ? "Withdrawal Ready" : "Remaining Wagering Required";
+            let valueDisplay = remaining <= 0 ? "Requirement Met!" : `R${remaining.toFixed(2)}`;
+            
+            let explanationText = "";
+            if (remaining <= 0) {
+                explanationText = `Great news! You have successfully played through your deposit of R${deposit.toFixed(2)}. `;
+            } else {
+                explanationText = `To meet our withdrawal requirements, you need to wager an additional R${remaining.toFixed(2)}. `;
+            }
+
+            if (cashout > 0) {
+                explanationText += `Please note that your 'Early Cash Out' amount of R${cashout.toFixed(2)} does not count towards your play-through requirement, which has been adjusted accordingly.`;
+            } else {
+                explanationText += `This is based on your total deposit of R${deposit.toFixed(2)} and current qualifying play.`;
+            }
+
+            // Update UI
+            liveResult.innerHTML = `
+                <div class="result-title">${titleText}</div>
+                <div class="result-value" style="color: ${statusColor}">${valueDisplay}</div>
+                <div class="explanation-text">${explanationText}</div>
+            `;
+        }
+
+        function copyToClipboard() {
+            const deposit = parseFloat(document.getElementById('totalDeposit').value);
+            if (isNaN(deposit)) return;
+
+            const resultContainer = document.getElementById('liveResult');
+            const title = resultContainer.querySelector('.result-title').innerText;
+            const value = resultContainer.querySelector('.result-value').innerText;
+            const explanation = resultContainer.querySelector('.explanation-text').innerText;
+
+            const fullText = `Easybet Status: ${title}\nValue: ${value}\n\nDetails: ${explanation}`;
+
+            const textArea = document.createElement("textarea");
+            textArea.value = fullText;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+
+            showToast();
+        }
+
+        function showToast() {
+            const toast = document.getElementById('copyToast');
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2500);
+        }
+
+        function resetForm() {
+            inputs.forEach(id => {
+                document.getElementById(id).value = id === 'earlyCashout' ? '0.00' : '';
+            });
+            updateCalculator();
+        }
+    </script>
+</body>
+</html>

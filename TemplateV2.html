@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Equipment Handling | CSR Workspace</title>
+    <!-- Premium Inline SVG Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2'%3E%3C/path%3E%3Crect x='8' y='2' width='8' height='4' rx='1' ry='1'%3E%3C/rect%3E%3Cpath d='M9 14h6'%3E%3C/path%3E%3Cpath d='M9 18h6'%3E%3C/path%3E%3Cpath d='M9 10h6'%3E%3C/path%3E%3C/svg%3E">
+    
+    <style>
+        /* --- PREMIUM DESIGN TOKENS --- */
+        :root {
+            --bg-dark: #0a0a0c;
+            --card-bg: rgba(25, 25, 30, 0.6);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --accent: #ffffff;
+            --accent-dim: rgba(255, 255, 255, 0.1);
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.6);
+            --glass-blur: 24px;
+            --radius: 12px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+            margin: 0;
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* --- WALLPAPER PIPELINE STYLES --- */
+        #bg-layer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(135deg, #111111 0%, #000000 100%);
+            background-size: cover;
+            background-position: center;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+        }
+
+        #bg-layer.is-loaded {
+            opacity: 1;
+        }
+
+        #bg-layer.is-fallback {
+            opacity: 1;
+            background: radial-gradient(circle at top right, #1a1a1a, #000);
+        }
+
+        /* --- LAYOUT --- */
+        .app-wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 60px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+        }
+
+        .main-header {
+            text-align: center;
+            animation: fadeInDown 0.6s ease-out;
+        }
+
+        .main-header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin: 0 0 10px 0;
+            letter-spacing: -0.02em;
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            /* FIX: Allow dropdown to overflow */
+            overflow: visible;
+        }
+
+        /* --- COMPONENTS --- */
+        .glass-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(var(--glass-blur));
+            -webkit-backdrop-filter: blur(var(--glass-blur));
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius);
+            padding: 24px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            /* FIX: Allow dropdown to overflow */
+            overflow: visible;
+        }
+
+        .selection-area {
+            animation: fadeInUp 0.5s ease-out;
+            /* FIX: Higher stacking context for selection area */
+            position: relative;
+            z-index: 5000;
+            overflow: visible;
+        }
+
+        .dropdown-label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 12px;
+            color: var(--text-secondary);
+        }
+
+        /* --- CUSTOM DARK SEARCHABLE DROPDOWN STYLES --- */
+        .custom-select {
+            position: relative;
+            width: 100%;
+            /* FIX: Elevated z-index */
+            z-index: 6000;
+        }
+
+        .custom-select-trigger {
+            width: 100%;
+            min-height: 56px;
+            padding: 14px 48px 14px 16px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            background: rgba(255, 255, 255, 0.07);
+            color: #fff;
+            font-size: 16px;
+            text-align: left;
+            cursor: pointer;
+            backdrop-filter: blur(18px);
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .custom-select-trigger:hover {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(255, 255, 255, 0.25);
+        }
+
+        .custom-select-trigger::after {
+            content: '';
+            width: 10px;
+            height: 10px;
+            border-right: 2px solid #fff;
+            border-bottom: 2px solid #fff;
+            transform: rotate(45deg);
+            margin-top: -4px;
+            transition: var(--transition);
+        }
+
+        .custom-select.is-open .custom-select-trigger::after {
+            transform: rotate(-135deg);
+            margin-top: 4px;
+        }
+
+        .custom-select-menu {
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: calc(100% + 10px);
+            /* FIX: Highest z-index for dropdown visibility */
+            z-index: 99999;
+            max-height: 320px;
+            display: flex;
+            flex-direction: column;
+            padding: 10px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            background: rgba(12, 14, 18, 0.98);
+            backdrop-filter: blur(24px);
+            box-shadow: 0 24px 80px rgba(0, 0, 0, 0.6);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: var(--transition);
+            overflow: visible;
+        }
+
+        .custom-select.is-open .custom-select-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .custom-select-search {
+            width: 100%;
+            margin-bottom: 10px;
+            padding: 12px 14px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+            outline: none;
+            font-size: 14px;
+        }
+
+        .custom-select-search:focus {
+            border-color: rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .custom-select-options {
+            overflow-y: auto;
+            flex-grow: 1;
+        }
+
+        .custom-select-option {
+            width: 100%;
+            display: block;
+            padding: 12px 14px;
+            border: 0;
+            border-radius: 8px;
+            background: transparent;
+            color: rgba(255, 255, 255, 0.8);
+            text-align: left;
+            cursor: pointer;
+            font-size: 15px;
+            transition: var(--transition);
+            margin-bottom: 2px;
+        }
+
+        .custom-select-option:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+
+        .custom-select-option.is-selected {
+            background: rgba(255, 255, 255, 0.15);
+            color: #fff;
+            font-weight: 600;
+        }
+
+        /* --- EMPTY STATE --- */
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            color: var(--text-secondary);
+            border: 2px dashed rgba(255, 255, 255, 0.05);
+            border-radius: var(--radius);
+        }
+
+        .empty-icon {
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        .empty-state h3 {
+            margin: 0 0 10px 0;
+            color: white;
+        }
+
+        /* --- CONTENT GRID --- */
+        .content-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            animation: fadeIn 0.4s ease-out;
+            /* FIX: Keep content grid low in z-index */
+            position: relative;
+            z-index: 1;
+        }
+
+        .card-pair {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            position: relative;
+            z-index: 1;
+        }
+
+        #textAreas {
+            position: relative;
+            z-index: 1;
+        }
+
+        .editor-card {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            padding: 0;
+            overflow: hidden; /* Kept hidden for card design per instruction */
+            position: relative;
+            z-index: 1;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px 0;
+        }
+
+        .textarea-label {
+            font-weight: 600;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .styled-textarea {
+            width: 100%;
+            background: transparent;
+            border: none;
+            color: white;
+            padding: 20px;
+            font-size: 1.05rem;
+            line-height: 1.6;
+            resize: none;
+            outline: none;
+            font-family: inherit;
+            min-height: 200px;
+        }
+
+        /* --- BUTTONS --- */
+        .copy-icon-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .copy-icon-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        /* --- TOAST --- */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: white;
+            color: black;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-weight: 600;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            z-index: 100000;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            pointer-events: none;
+        }
+
+        .toast.visible {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* --- SCROLLBAR --- */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* --- ANIMATIONS --- */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* --- RESPONSIVE --- */
+        @media (max-width: 900px) {
+            .card-pair {
+                grid-template-columns: 1fr;
+            }
+            .main-header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="bg-layer"></div>
+
+    <div class="app-wrapper">
+        <header class="main-header">
+            <h1>Equipment Handling</h1>
+            <p class="subtitle">Quick action notes and scheduling templates for centralized operations.</p>
+        </header>
+
+        <main class="container">
+            <div class="selection-area glass-card">
+                <label class="dropdown-label">Action Required</label>
+                
+                <!-- Custom Searchable Dropdown Wrapper -->
+                <div id="customDropdown" class="custom-select">
+                    <button type="button" class="custom-select-trigger">Select Action</button>
+                    <div class="custom-select-menu">
+                        <input type="text" class="custom-select-search" placeholder="Search actions...">
+                        <div class="custom-select-options">
+                            <!-- Options will be injected here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hidden Native Select for compatibility -->
+                <select id="actionReason" style="display: none;">
+                    <option value="">Select Action</option>
+                    <option value="replacementNeeded">.Replacement is needed</option>
+                    <option value="declinedReplacement">.Declined the replacement</option>
+                    <option value="checkAndReplace">.Check O2 and only replace if necessary</option>
+                    <option value="voiceMail">Voicemail</option>
+                    <option value="mailOut">.Mail out the documents</option>
+                    <option value="accountOnhold">.Account is on hold</option>
+                    <option value="billingIssue">.Account is on hold billing issue</option>
+                    <option value="firstTouch">First Touch</option>
+                    <option value="pocAvailability">POC Availability</option>
+                    <option value="poc6LPM">POC 6LPM</option>
+                    <option value="disPatch">.Sent to dispatch</option>
+                    <option value="electionLive">.Election Live</option>
+                    <option value="electionVoicemail">.Election Voicemail</option>
+                    <option value="blindDelivery">.Blind delivery</option>
+                    <option value="electronicSignature">Acceptable Electronic Signature Examples</option>
+                    <option value="homeFill">K0738</option>
+                    <option value="reCert">RECERT/REQUAL/RELEASE TO BILL</option>
+                    <option value="uploadedDocs">Uploaded Documents</option>
+                    <option value="mediCare">Sent to scheduling - Medicare</option>
+                    <option value="nonMed">Sent to scheduling - Non-Medicare</option>
+                    <option value="branchReview">ARP Branch Review</option>
+                    <option value="inQuiry">.Email, inquiry about pick-up and delivery on Weekends</option>
+                    <option value="inQuiry1">.Email, best day to delivery</option>
+                    <option value="parachute6Mwt">Parachute 6MWT</option>
+                    <option value="parachuteSwo">Parachute SWO</option>
+                    <option value="noriDian">Noridian Same and Sim</option>
+                    <option value="pusBack">OTL Pushback to CS</option>
+                    <option value="nPi">NPI</option>
+                    <option value="swoRequirements">SWO Requirements</option>
+                    <option value="walkEr">Walker Roshanda</option>
+                    <option value="tranSition">Transition but no BT</option>
+                    <option value="agedAccounts">Aged Accounts</option>
+                    <option value="templateSwo">SWO Template</option>
+                    <option value="templateCmn">CMN Template</option>
+                    <option value="sixMwt">6MWT Template</option>
+                    <option value="humanaLookup">Humana Lookup</option>
+                    <option value="reKey">Rekey</option>
+                    <option value="rekeyedOrder">Rekey order</option>
+                    <option value="missingTickets">.Email, missing delivery tickets and 60month letter</option>
+                    <option value="swoCmnexpiry">.Email - SWO/CMN almost expire</option>
+                    <option value="highLiterflow">Change to a high liter-flow oxygen</option>
+                    <option value="branChes">List of branches that handles their own scheduling</option>
+                    <option value="ownScheduling">.Email, branch handles their own scheduling - Patient called in</option>
+                    <option value="backPacking">Backpacking Guide</option>
+                    <option value="authIssue">.AUTH ISSUE</option>
+                    <option value="futureFirsttouch">First touch, future RUL</option>
+                    <option value="projectDoctor">.Project Doctor</option>
+                    <option value="projectPatient">.Project Patient</option>
+                    <option value="priorAuth">.Prior Authorization</option>
+                    <option value="docsMail">Mail out documents (RUL)</option>
+                    <option value="docuSign">DocuSign Assistance</option>
+                    <option value="coDe">ZZZcoDe</option>
+                </select>
+            </div>
+
+            <div id="emptyState" class="empty-state">
+                <div class="empty-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line></svg>
+                </div>
+                <h3>Ready to assist</h3>
+                <p>Select an action above to generate your standard instructions and scheduling notes.</p>
+            </div>
+
+            <div id="textAreas" class="content-grid" style="display: none;">
+                <div class="card-pair">
+                    <div class="glass-card editor-card">
+                        <div class="card-header">
+                            <label for="staticText" class="textarea-label">Standard Instructions</label>
+                            <button class="copy-icon-btn" data-target="staticText" title="Copy Standard Instructions">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                        <textarea id="staticText" class="styled-textarea" placeholder="Standard content will appear here..."></textarea>
+                    </div>
+
+                    <div class="glass-card editor-card">
+                        <div class="card-header">
+                            <label for="dynamicText" class="textarea-label">Scheduling Notes</label>
+                            <button class="copy-icon-btn" data-target="dynamicText" title="Copy Scheduling Notes">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                        </div>
+                        <textarea id="dynamicText" class="styled-textarea" placeholder="Scheduling notes will appear here..."></textarea>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="toast" class="toast">Copied!</div>
+
+    <script>
+        const REMOTE_WALLPAPER_URL = "https://images.unsplash.com/photo-1775334006478-865fa1b777de?q=80&w=1920&auto=format&fit=crop";
+        const LOCAL_WALLPAPER_URL = "wallpaper.jpg";
+
+        function setWallpaperSource(url) {
+            return new Promise((resolve, reject) => {
+                const img = new Image();
+                img.crossOrigin = "anonymous";
+                img.onload = async () => {
+                    try { if (img.decode) await img.decode(); resolve(url); } catch (e) { resolve(url); }
+                };
+                img.onerror = reject;
+                img.src = url;
+            });
+        }
+
+        async function initWallpaper() {
+            const bgLayer = document.getElementById("bg-layer");
+            if (!bgLayer) return;
+            const sources = [REMOTE_WALLPAPER_URL, LOCAL_WALLPAPER_URL];
+            for (const source of sources) {
+                try {
+                    const loadedSource = await setWallpaperSource(source);
+                    bgLayer.style.backgroundImage = `linear-gradient(135deg, rgba(0,0,0,0.85), rgba(0,0,0,0.5)), url("${loadedSource}")`;
+                    bgLayer.classList.add("is-loaded");
+                    return;
+                } catch (e) { continue; }
+            }
+            bgLayer.classList.add("is-fallback");
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            initWallpaper();
+
+            const actionDropdown = document.getElementById('actionReason');
+            const customDropdown = document.getElementById('customDropdown');
+            const customTrigger = customDropdown.querySelector('.custom-select-trigger');
+            const customMenu = customDropdown.querySelector('.custom-select-menu');
+            const customSearch = customDropdown.querySelector('.custom-select-search');
+            const customOptionsContainer = customDropdown.querySelector('.custom-select-options');
+            
+            const textAreasDiv = document.getElementById('textAreas');
+            const emptyState = document.getElementById('emptyState');
+            const staticTextarea = document.getElementById('staticText');
+            const dynamicTextarea = document.getElementById('dynamicText');
+            const toast = document.getElementById('toast');
+
+            const actionTextMap = {
+                replacementNeeded: {
+                    static: "5 YEAR RUL / REPLACEMENT IS NEEDED\n\nStandard Procedure:\nPlease do not remove billing items or oxygen equipment from this order to avoid billing issues.\n\nPatient's request:\nCall with ETA\nExchange HOC with a new one, if possible\n\nRequired Signatures:\nDelivery Ticket – #CODE\nPickup/Exchange Ticket – #CODE\n60month letter when completing exchange/restart located in OTL.\n\n2 Liter-flow\nSet up Autopay if needed. For questions, call 484 567 0666.",
+                    dynamic: "[Scheduling] Insurance verified. Patient understood the 5-year O2 renewal, will continue services and requested equipment replacement. Permanent address is ADDRESS. Best contact PHONE. Available on DATE for replacement."
+                },
+                declinedReplacement: {
+                    static: "5 YEAR RUL / SIGNATURE ONLY\n\nStandard Procedure:\nPlease do not remove billing items or oxygen equipment from this order to avoid billing issues.\n\nPatient's request:\nCall with ETA\nPatient declined a replacement but willing to sign the new 5 year service agreement.\n\nRequired Signatures:\nDelivery Ticket – #CODE\nPickup/Exchange Ticket – #CODE\n60month letter when completing exchange/restart located in OTL.\n\n2 Liter-flow\nSet up Autopay if needed. For questions, call 484 567 0666.",
+                    dynamic: "[Scheduling] Insurance verified. Patient understood the 5-year O2 renewal, will continue services but declined replacement. Address CODE. Contact CODE. Available DATE to sign contract."
+                },
+                checkAndReplace: {
+                    static: "5 YEAR RUL / CHECK ONLY, REPLACE IF NECESSARY\n\nStandard Procedure:\nPlease do not remove billing items or oxygen equipment from this order to avoid billing issues.\n\nPatient's request:\nCall with ETA\nCheck HOC, replace only if necessary\n\nRequired Signatures:\nDelivery Ticket – #CODE\nPickup/Exchange Ticket – #CODE\n60month letter when completing exchange/restart located in OTL.\n\n2 Liter-flow\nSet up Autopay if needed. For questions, call 484 567 0666.",
+                    dynamic: "[Scheduling] Insurance verified. Patient understood the 5-year O2 renewal, will continue services but requested an equipment check with replacement only if needed. Address ADDRESS. Contact PHONE. Available DATE for the check."
+                },
+                voiceMail: {
+                    static: "Hi, this is Raymond from AdaptHealth and its family of companies on a recorded line. \n\nThis is regarding the 5-year renewal of your durable medical equipment and we received the documents that we need from your doctor.\n\nFor HIPAA compliance, could you please confirm your DATE OF BIRTH or ADDRESS before we proceed?\n\nYour account will reach 5 years on [DATE]. \nAs part of the renewal process, you'll need to sign a new agreement to ensure insurance continues covering costs, including maintenance, repairs, replacement, and supplies that you are getting from the local office. \n\n1. Do you plan to continue with our services?\n2. Are you having any issues with your oxygen equipment?\n\n- If yes: Please provide the delivery date, your address, and your phone number.\n- If no: How would you like to sign the contract—email, postal mail, or in person?\n\nThank you for your time. If you have any questions or need assistance, please call us at 484-567-0666.",
+                    dynamic: "[VOICEMAIL]\n\nHi! This is Raymond from AdaptHealth and its family of companies on a recorded line.\n\nThis is about 5-year renewal of your durable medical equipment and we received the documents that we need from your doctor. Give us a call back using 484-567-0666."
+                },
+                mailOut: {
+                    static: "Hello\n\nCould you please confirm if the patient’s address is within your service area?\n\nThe patient is ready to sign the contract for the O2 5-Year Renewal and prefers to receive it by mail. Attached are the necessary documents, please include a self-addressed stamped envelope for the return.\n\nIf you need any additional details, please let me know. Your prompt attention to this matter is appreciated.\n\nThank you,",
+                    dynamic: "[Scheduling] This patient is due for her 5-year requalification. We contacted the patient, she declined a replacement at this time, but willing to sign the contract for renewal but prefer to receive it via postal mail. ***Please send the RUL documents on [DATE]"
+                },
+                accountOnhold: {
+                    static: "Hello\n\nI hope this email finds you well. I am writing to request confirmation on whether the address provided for our patient falls within your service area.\n\nI’m reaching out regarding a patient at [ADDRESS] who is due for an O2 5-Year Renewal. The account is currently on hold, should we proceed with creating a new work order, or would you prefer we send it for branch review to resolve the hold?\n\nIf you need any additional details, please let me know. Your prompt attention to this matter is appreciated.\n\nThank you,",
+                    dynamic: "[Scheduling] The account is on hold, sent an email to CODE, will update once got a response from them."
+                },
+                billingIssue: {
+                    static: "Hello\n\nI hope this email finds you well. I am writing to request confirmation on whether the address provided for our patient falls within your service area.\n\nThe patient is due for an O2 5 YEAR RENEWAL. The account is currently on hold, and it's unclear whether this is due to unresolved billing issues or another reason. We need confirmation on whether we can proceed with calling the patient to schedule a pick-up and exchange, or if the patient needs to settle the balance first. Please advise on the necessary steps to take.",
+                    dynamic: "[VOICEMAIL]\n\nHi! This is Raymond from AdaptHealth and its family of companies on a recorded line. \n\nThis message is for [Patient's name]\n\nWe are reaching out to remind you that your account is due for a 5-year renewal. Once the balance is settled, please call us at 484-567-0666."
+                },
+                firstTouch: {
+                    static: "****************************************** RUL **************************************************\nAssessment Team Review: Q\n\nDoes the insurance cap?\n\nTesting type: 6MWT\nPatient SpO2 on room air at rest: CODE%\nPatient SpO2 on room air during exertion: CODE%\nPatient SpO2 while wearing 02 at 2LPM with exertion CODE%",
+                    dynamic: "What’s needed: \n\n| Item/s: E1390 &\n| RUL Date: \n| Doctor call: 0/5\n| Patient Call: 0/3\n| Faxes sent: 0/5"
+                },
+                pocAvailability: {
+                    static: "Hello\n\nWe received a prescription for a POC and would like to confirm if one is available for this patient. The prescription is attached for your reference.",
+                    dynamic: "What’s needed: POC Availability / SWO\n\n| Item/s: E1390 & E1392"
+                },
+                poc6LPM: {
+                    static: "Hello\n\nWe received a prescription for a Portable Oxygen Concentrator with a requirement of up to 6 LPM. Could you please confirm if we have a unit available?",
+                    dynamic: "Remark/s: Sent email to branch to inquire about 6LPM POC availability."
+                },
+                disPatch: {
+                    static: "[Scheduling] Updated both work order and pick-up/exchange ticket and sent it to dispatch DATE.",
+                    dynamic: "CODE"
+                },
+                electionLive: {
+                    static: "1. Are you still using your oxygen therapy?\n2. How often do you use it?\n3. Current liter flow setting?\n4. Doctor's name/phone?",
+                    dynamic: "Called patient to confirm PCP/Pulmonologist. Routed to VM."
+                },
+                electionVoicemail: {
+                    static: "Calling regarding your 5-year oxygen renewal. We need to obtain updated documents from your doctor.",
+                    dynamic: "LVM for patient regarding durable medical equipment renewal. 484-567-0666."
+                },
+                blindDelivery: {
+                    static: "5-Year Renewal / Blind Delivery. Proceed with delivery even if patient does not answer phone.",
+                    dynamic: "[Scheduling] Unsuccessful contact attempts. Set up for blind delivery DATE."
+                },
+                electronicSignature: {
+                    static: "Acceptable Examples: Chart Accepted by, Electronically signed by, Verified by, Reviewed by, Released by, Signed by.",
+                    dynamic: "CODE"
+                },
+                homeFill: {
+                    static: "Local branches that cannot provide Homefills: Marshall Tx, AHS Plattsburgh, Halprin Syracuse...",
+                    dynamic: "Manufacturer discontinued these units. Local office will provide refilled tanks instead."
+                },
+                reCert: {
+                    static: "REQUAL: 1 year NO payments\nRECERT: 1 year or more, but not five years, with payments.",
+                    dynamic: "Update for Recertification Accounts. Manual Hold Reason = Recert SWO."
+                },
+                uploadedDocs: {
+                    static: "SCHEDULING | Remark/s: Account under uploaded workload. New order created.",
+                    dynamic: "CODE"
+                },
+                mediCare: {
+                    static: "What's needed: Scheduling/ 60 Month Restart\n| RUL: \n| SWO Expiration:",
+                    dynamic: "Created New Sales Order - CODE. New Pickup/Exchange - CODE."
+                },
+                nonMed: {
+                    static: "What's needed: Scheduling/ 60 Month Restart\n| RUL: \n| CMN Expiration:",
+                    dynamic: "Logged CMN. Created New Sales Order - CODE."
+                },
+                branchReview: {
+                    static: "Additional Information: Contacted the patient multiple times but unsuccessful. Moved to Branch Review.",
+                    dynamic: "[Scheduling] Moved to Branch Review after 3 attempts."
+                },
+                inQuiry: {
+                    static: "Subject: Inquiry About Saturday Pick-Up and Delivery Services",
+                    dynamic: "CODE"
+                },
+                inQuiry1: {
+                    static: "Inquiry regarding missing delivery on [DATE]. Best available date to reschedule?",
+                    dynamic: "[Scheduling] Inquiry sent to CODE for rescheduling."
+                },
+                parachute6Mwt: {
+                    static: "Requesting a copy of a qualifying 6-minute walk test from any year.",
+                    dynamic: "CODE"
+                },
+                parachuteSwo: {
+                    static: "Patient is due for 60 Month Restart. Please complete, sign and date attached CMN/SWO.",
+                    dynamic: "Checked status. Document required for 5-year O2 requalification."
+                },
+                noriDian: {
+                    static: "Noridian Same and Similar Credentials\nUsername: raymond.tariao\nPassword: MVSu0XdzCRT13$?!",
+                    dynamic: "CODE"
+                },
+                pusBack: {
+                    static: "[Scheduling] Checked account and SO#CODE has error message: [MESSAGE]",
+                    dynamic: "CODE"
+                },
+                nPi: {
+                    static: "1134303902\n1417968751\n1033480488",
+                    dynamic: "CODE"
+                },
+                swoRequirements: {
+                    static: "Order Date, General description, Physician name/NPI, Signature.",
+                    dynamic: "CODE"
+                },
+                walkEr: {
+                    static: "NC Mount Airy - 148 is being taken care by Holly Collins the Branch Manager.",
+                    dynamic: "BRANCHES TAKING CARE OF THEIR OWN SCHEDULING."
+                },
+                tranSition: {
+                    static: "O2 5 YEAR RENEWAL Transition",
+                    dynamic: "Confirming if address falls within service area for Aerocare transition."
+                },
+                agedAccounts: {
+                    static: "SO#CODE sitting in 1.1 for CODE days. Recreated to SO#CODE.",
+                    dynamic: "[Scheduling Aged Cleanup Project] Recreated SO to clear aged status."
+                },
+                templateSwo: {
+                    static: "Patient due for 60-month Oxygen Recertification. Kindly complete CMN.",
+                    dynamic: "Fax: 484-362-1480"
+                },
+                templateCmn: {
+                    static: "Doctor must accurately fill out form for insurance billing purposes.",
+                    dynamic: "Fax: 484-362-1480"
+                },
+                sixMwt: {
+                    static: "Requesting 6MWT with SpO2 at 88% or below.",
+                    dynamic: "CODE"
+                },
+                humanaLookup: {
+                    static: "[Scheduling] Insurance updated via Humana Lookup.",
+                    dynamic: "CODE"
+                },
+                reKey: {
+                    static: "REKEY_PLACEHOLDER", 
+                    dynamic: "PT ID: CODE\nBT DATABASE: STLukes/OHH/Aerocare"
+                },
+                rekeyedOrder: {
+                    static: "Rekeyed order [CODE] confirmed after fixing errors.",
+                    dynamic: "CODE"
+                },
+                missingTickets: {
+                    static: "O2 5 YEAR RENEWAL / MISSING DELIVERY TICKETS AND 60MONTH LETTER",
+                    dynamic: "Requesting confirmation of delivery ticket/60-month letter from local office."
+                },
+                swoCmnexpiry: {
+                    static: "O2 5 YEAR RENEWAL - Expiring SWO/CMN",
+                    dynamic: "Coordinating pick-up/exchange before document expires on [DATE]."
+                },
+                highLiterflow: {
+                    static: "Medicare requires clinical documentation (progress notes) for flow rate increases.",
+                    dynamic: "CODE"
+                },
+                branChes: {
+                    static: "Aerocare: Bentonville, Russellville, Springdale, Walterboro...\nStLukes: Abilene, Minnesota...",
+                    dynamic: "CODE"
+                },
+                backPacking: {
+                    static: "Camping Essentials: Tent, Sleeping pad, Chair, Headlight.",
+                    dynamic: "Efficient packing guide for balance and accessibility."
+                },
+                futureFirsttouch: {
+                    static: "Patient currently being reviewed by Centralized RUL team. RUL on MM/DD/YYYY.",
+                    dynamic: "SWO can't be sent until [DATE]."
+                },
+                projectDoctor: {
+                    static: "Calling to check if Dr. [NAME] is currently practicing at your office.",
+                    dynamic: "[VOICEMAIL] Reaching out to confirm patient management."
+                },
+                authIssue: {
+                    static: "Sitting in 1.1 because authorization team requires clinical notes within 6 months.",
+                    dynamic: "Flipped back to appointment needed."
+                },
+                projectPatient: {
+                    static: "Checking who your current doctor is to ensure correct information.",
+                    dynamic: "Respectful inquiry regarding doctor verification."
+                },
+                priorAuth: {
+                    static: "O2 5 YEAR RENEWAL / PRIOR AUTHORIZATION request for branch assistance.",
+                    dynamic: "Sent email to local office regarding authorization status."
+                },
+                docsMail: {
+                    static: "Patient declined replacement but willing to sign via mail.",
+                    dynamic: "[Scheduling] Mailing RUL documents per patient request."
+                },
+                docuSign: {
+                    static: "Patient declined replacement but willing to sign via DocuSign.",
+                    dynamic: "[Scheduling] Coordination for DocuSign signature sent to Kari."
+                },
+                coDe: {
+                    static: "CODE",
+                    dynamic: "CODE"
+                }
+            };
+
+            // Alphabetical Sort logic for native select options
+            const options = Array.from(actionDropdown.options).slice(1);
+            options.sort((a, b) => a.textContent.toUpperCase().localeCompare(b.textContent.toUpperCase()));
+            while (actionDropdown.options.length > 1) actionDropdown.remove(1);
+            options.forEach(option => actionDropdown.add(option));
+
+            // Custom Dropdown Logic
+            function buildCustomDropdown() {
+                customOptionsContainer.innerHTML = '';
+                Array.from(actionDropdown.options).forEach(opt => {
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = 'custom-select-option';
+                    btn.textContent = opt.textContent;
+                    btn.dataset.value = opt.value;
+                    btn.addEventListener('click', () => selectOption(opt.value, opt.textContent));
+                    customOptionsContainer.appendChild(btn);
+                });
+            }
+
+            function selectOption(val, text) {
+                actionDropdown.value = val;
+                customTrigger.textContent = text;
+                customDropdown.classList.remove('is-open');
+                
+                // Dispatch change event to trigger existing template logic
+                actionDropdown.dispatchEvent(new Event('change'));
+                
+                // Highlight selected
+                customOptionsContainer.querySelectorAll('.custom-select-option').forEach(btn => {
+                    btn.classList.toggle('is-selected', btn.dataset.value === val);
+                });
+            }
+
+            customTrigger.addEventListener('click', (e) => {
+                e.stopPropagation();
+                customDropdown.classList.toggle('is-open');
+                if (customDropdown.classList.contains('is-open')) customSearch.focus();
+            });
+
+            customSearch.addEventListener('input', (e) => {
+                const term = e.target.value.toLowerCase();
+                customOptionsContainer.querySelectorAll('.custom-select-option').forEach(btn => {
+                    const matches = btn.textContent.toLowerCase().includes(term);
+                    btn.style.display = matches ? 'block' : 'none';
+                });
+            });
+
+            document.addEventListener('click', () => customDropdown.classList.remove('is-open'));
+            customMenu.addEventListener('click', (e) => e.stopPropagation());
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') customDropdown.classList.remove('is-open');
+            });
+
+            // Initial build
+            buildCustomDropdown();
+
+            // Original template logic
+            function autoResize(textarea) {
+                textarea.style.height = 'auto';
+                textarea.style.height = textarea.scrollHeight + 'px';
+            }
+
+            function showToast(msg = "Copied!") {
+                toast.textContent = msg;
+                toast.classList.add('visible');
+                setTimeout(() => toast.classList.remove('visible'), 2000);
+            }
+
+            function copyToClipboard(text) {
+                const temp = document.createElement('textarea');
+                temp.value = text;
+                document.body.appendChild(temp);
+                temp.select();
+                try { document.execCommand('copy'); showToast(); } catch (err) { }
+                document.body.removeChild(temp);
+            }
+
+            actionDropdown.addEventListener('change', function() {
+                const val = this.value;
+                if (actionTextMap[val]) {
+                    emptyState.style.display = 'none';
+                    textAreasDiv.style.display = 'block';
+
+                    if (val === 'reKey') {
+                        const today = new Date();
+                        const dateStr = `${today.getMonth() + 1}/${today.getDate()}/${today.getFullYear()}`;
+                        staticTextarea.value = `${dateStr} - Rekey to show the rental equipment the patient has.\n\nREKEYED SO#CODE: Rekey to show the rental equipment the patient has.`;
+                    } else {
+                        staticTextarea.value = actionTextMap[val].static;
+                    }
+                    dynamicTextarea.value = actionTextMap[val].dynamic;
+
+                    setTimeout(() => {
+                        autoResize(staticTextarea);
+                        autoResize(dynamicTextarea);
+                    }, 50);
+                } else {
+                    emptyState.style.display = 'block';
+                    textAreasDiv.style.display = 'none';
+                }
+            });
+
+            staticTextarea.addEventListener('input', () => autoResize(staticTextarea));
+            dynamicTextarea.addEventListener('input', () => autoResize(dynamicTextarea));
+
+            document.querySelectorAll('.copy-icon-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const targetId = btn.getAttribute('data-target');
+                    const area = document.getElementById(targetId);
+                    if (area) copyToClipboard(area.value);
+                });
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,844 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Easybet Email Productivity Tracker Pro</title>
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>">
+    <style>
+        :root {
+            --glass: rgba(15, 23, 42, 0.75);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --accent: #3b82f6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+            --blur: 20px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            background: #0f172a;
+            color: var(--text-main);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Wallpaper Layer */
+        #wallpaper-layer {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+            background-size: cover;
+            background-position: center;
+            transition: opacity 1s ease-in-out;
+            background-image: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        }
+
+        #wallpaper-layer::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        /* Container & Layout */
+        .app-container {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 340px 1fr 340px;
+            grid-template-rows: auto 1fr;
+            gap: 20px;
+            padding: 20px;
+            max-width: 1800px;
+            margin: 0 auto;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        /* Header */
+        header {
+            grid-column: 1 / -1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 20px;
+            background: var(--glass);
+            backdrop-filter: blur(var(--blur));
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            font-size: 1.2rem;
+        }
+
+        .brand span { color: var(--accent); }
+
+        .live-clock {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+
+        /* Standardized Glass Cards */
+        .glass-card {
+            background: var(--glass);
+            backdrop-filter: blur(var(--blur));
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+
+        .card-title {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-dim);
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 700;
+        }
+
+        /* Main Content Zones */
+        .scroll-zone {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+        .scroll-zone::-webkit-scrollbar { width: 4px; }
+        .scroll-zone::-webkit-scrollbar-thumb { background: var(--glass-border); border-radius: 10px; }
+
+        /* Action Zone (Center) */
+        .action-zone {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .current-hour-card {
+            flex: 1;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+        }
+
+        .big-count {
+            font-size: 8rem;
+            font-weight: 900;
+            line-height: 0.9;
+            margin: 15px 0;
+            background: linear-gradient(to bottom, #fff, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .btn {
+            cursor: pointer;
+            border: none;
+            border-radius: 12px;
+            font-weight: 700;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: white;
+            user-select: none;
+        }
+        .btn:active { transform: scale(0.96); }
+
+        .btn-primary { background: var(--accent); box-shadow: 0 10px 25px -10px var(--accent); }
+        .btn-plus { flex: 2; height: 100px; font-size: 2.5rem; }
+        .btn-minus { flex: 0.5; height: 100px; background: rgba(255,255,255,0.05); font-size: 1.8rem; }
+        .btn-minus:hover { background: var(--danger); }
+
+        /* History Table Styling */
+        .history-row {
+            display: grid;
+            grid-template-columns: 1fr auto auto;
+            align-items: center;
+            padding: 12px;
+            border-bottom: 1px solid var(--glass-border);
+            font-size: 0.85rem;
+            border-radius: 12px;
+            transition: background 0.2s;
+        }
+        .history-row.missed { background: rgba(239, 68, 68, 0.08); border-left: 3px solid var(--danger); }
+        .history-row.complete { background: rgba(16, 185, 129, 0.08); border-left: 3px solid var(--success); }
+
+        .history-controls { display: flex; gap: 8px; align-items: center; }
+        .mini-btn { width: 28px; height: 28px; border-radius: 6px; font-size: 1rem; }
+        .fill-btn { padding: 4px 8px; font-size: 0.7rem; background: var(--accent); border-radius: 6px; }
+
+        /* Status & Badges */
+        .status-badge {
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.65rem;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+        .bg-success { background: rgba(16, 185, 129, 0.2); color: var(--success); border: 1px solid var(--success); }
+        .bg-danger { background: rgba(239, 68, 68, 0.2); color: var(--danger); border: 1px solid var(--danger); }
+        .bg-warning { background: rgba(245, 158, 11, 0.2); color: var(--warning); border: 1px solid var(--warning); }
+
+        /* Correction Log */
+        .log-list { font-size: 0.75rem; color: var(--text-dim); }
+        .log-entry { margin-bottom: 6px; padding-bottom: 6px; border-bottom: 1px dotted var(--glass-border); }
+
+        /* Modal / Settings Overlay */
+        .overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(20px);
+            z-index: 2000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal { width: 90%; max-width: 500px; max-height: 80vh; overflow-y: auto; }
+        
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 0.8rem; color: var(--text-dim); margin-bottom: 5px; }
+        input, select, textarea {
+            width: 100%;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--glass-border);
+            padding: 10px;
+            border-radius: 10px;
+            color: white;
+            outline: none;
+        }
+
+        /* Toast */
+        #toast {
+            position: fixed;
+            bottom: 30px; left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--accent);
+            padding: 12px 30px;
+            border-radius: 50px;
+            z-index: 3000;
+            transition: transform 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.5);
+            font-weight: 600;
+        }
+        #toast.show { transform: translateX(-50%) translateY(0); }
+
+        /* Mobile Adjustments */
+        @media (max-width: 1100px) {
+            .app-container { grid-template-columns: 1fr; grid-template-rows: auto; overflow-y: auto; height: auto; }
+            body { overflow-y: auto; }
+            .scroll-zone { overflow: visible; }
+        }
+
+        .positive { color: var(--success); }
+        .negative { color: var(--danger); }
+        .indicator-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 6px; }
+
+        .smart-message {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid var(--accent);
+            padding: 15px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="wallpaper-layer"></div>
+    <div id="toast">Notification!</div>
+
+    <!-- Standby Mode -->
+    <div id="standby-screen" class="overlay">
+        <div style="text-align: center;">
+            <h1 style="font-size: 3.5rem; margin-bottom: 10px;">Standby</h1>
+            <p id="standby-subtext" style="color: var(--text-dim); margin-bottom: 30px;">Shift window inactive.</p>
+            <div class="live-clock" style="font-size: 3rem;" id="standby-clock">--:--:--</div>
+            <button class="btn btn-primary" style="margin-top: 40px; padding: 15px 40px;" onclick="closeOverlay('standby-screen')">Enter Dashboard</button>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="overlay">
+        <div class="glass-card modal">
+            <div class="card-title">App Settings</div>
+            <div class="form-group">
+                <label>Shift Start (Hour 0-23)</label>
+                <input type="number" id="set-start" value="22" min="0" max="23">
+            </div>
+            <div class="form-group">
+                <label>Shift End (Hour 0-23)</label>
+                <input type="number" id="set-end" value="6" min="0" max="23">
+            </div>
+            <div class="form-group">
+                <label>Target Emails Per Hour</label>
+                <input type="number" id="set-target" value="9" min="1">
+            </div>
+            <div class="form-group">
+                <label>Break Duration (Minutes)</label>
+                <input type="number" id="set-break" value="30" min="1">
+            </div>
+            <div class="form-group">
+                <label>Wallpaper URL</label>
+                <input type="text" id="set-wallpaper" placeholder="https://...">
+            </div>
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button class="btn btn-primary" style="flex: 1; height: 45px;" onclick="saveSettings()">Save Configuration</button>
+                <button class="btn" style="flex: 1; background: rgba(255,255,255,0.1);" onclick="closeOverlay('settings-modal')">Cancel</button>
+            </div>
+            <hr style="border: 0; border-top: 1px solid var(--glass-border); margin: 20px 0;">
+            <div class="card-title">Data Management</div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <button class="btn" style="height: 35px; font-size: 0.75rem; background: #334155;" onclick="exportData()">Export Backup</button>
+                <button class="btn" style="height: 35px; font-size: 0.75rem; background: #334155;" onclick="triggerImport()">Import Backup</button>
+                <button class="btn" style="height: 35px; font-size: 0.75rem; background: var(--danger);" onclick="resetAll()">Full Reset</button>
+                <button class="btn" style="height: 35px; font-size: 0.75rem; background: #475569;" onclick="clearLog()">Clear Log</button>
+            </div>
+            <input type="file" id="import-file" style="display: none" accept=".json">
+        </div>
+    </div>
+
+    <div class="app-container">
+        <header>
+            <div class="brand">EASYBET <span><3</span></div>
+            <div id="status-display" class="status-badge bg-warning">Initializing...</div>
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <div class="live-clock" id="header-clock">00:00:00</div>
+                <button class="btn" style="background: rgba(255,255,255,0.1); width: 40px; height: 40px; border-radius: 50%;" onclick="openOverlay('settings-modal')">⚙️</button>
+            </div>
+        </header>
+
+        <!-- Sidebar Left -->
+        <aside class="scroll-zone">
+            <div class="glass-card">
+                <div class="card-title">Live Guidance</div>
+                <div id="smart-action-box" class="smart-message">
+                    Welcome back! Your shift logic is active.
+                </div>
+            </div>
+
+            <div class="glass-card">
+                <div class="card-title">Recovery Intelligence</div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
+                    <div>
+                        <div style="font-size: 0.7rem; color: var(--text-dim);">Total Sent</div>
+                        <div id="stat-total" style="font-size: 1.5rem; font-weight: 800;">0</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 0.7rem; color: var(--text-dim);">Remaining</div>
+                        <div id="stat-remaining" style="font-size: 1.5rem; font-weight: 800;">72</div>
+                    </div>
+                </div>
+                <div style="margin-top: 10px;">
+                    <div style="font-size: 0.75rem; display: flex; justify-content: space-between; margin-bottom: 5px;">
+                        <span>Required Pace</span>
+                        <span id="stat-recovery-pace" class="positive">9.0 / hr</span>
+                    </div>
+                    <div style="width: 100%; height: 6px; background: rgba(255,255,255,0.05); border-radius: 10px;">
+                        <div id="shift-progress" style="width: 0%; height: 100%; background: var(--accent); border-radius: 10px; transition: width 1s;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-card" style="flex: 1;">
+                <div class="card-title">Correction Log <button class="fill-btn" style="background: transparent; border: 1px solid var(--glass-border);" onclick="clearLog()">Clear</button></div>
+                <div id="correction-log" class="log-list">
+                    <div style="text-align: center; color: var(--text-dim); margin-top: 20px;">No corrections recorded.</div>
+                </div>
+            </div>
+
+            <div class="glass-card">
+                <div class="card-title">Shift Notes</div>
+                <textarea id="shift-notes" placeholder="Issues, ticket numbers, etc..." style="height: 120px;"></textarea>
+            </div>
+        </aside>
+
+        <!-- Center Stage -->
+        <main class="action-zone">
+            <div class="glass-card current-hour-card">
+                <button class="btn" style="position: absolute; top: 20px; right: 20px; color: var(--text-dim); background: transparent;" onclick="resetCurrentHour()">Reset Hour</button>
+                <div class="card-title" id="current-hour-label">LOADING...</div>
+                
+                <div id="current-badge" class="status-badge bg-success" style="margin-bottom: 10px;">ON TRACK</div>
+                <div class="big-count" id="current-count">0</div>
+                <div id="current-target-label" style="color: var(--text-dim); font-size: 1.1rem; font-weight: 500;">Target: 9 | Remaining: 9</div>
+
+                <div style="width: 100%; max-width: 400px; height: 10px; background: rgba(255,255,255,0.05); border-radius: 20px; margin: 25px 0; overflow: hidden;">
+                    <div id="hour-progress" style="width: 0%; height: 100%; background: var(--accent); transition: width 0.5s;"></div>
+                </div>
+
+                <div style="display: flex; gap: 15px; width: 100%; max-width: 500px;">
+                    <button class="btn btn-minus" onclick="adjustCount(null, -1)">-</button>
+                    <button class="btn btn-primary btn-plus" onclick="adjustCount(null, 1)">+1</button>
+                </div>
+                <p style="margin-top: 20px; font-size: 0.75rem; color: var(--text-dim);">Shortcut: Press [Space] or [+] to add</p>
+            </div>
+
+            <!-- Shift End Summary (Hidden by default) -->
+            <div id="shift-report" class="glass-card" style="display: none; border: 2px solid var(--accent);">
+                <div class="card-title" style="color: var(--accent);">Final Shift Report</div>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; text-align: center;">
+                    <div><div style="font-size: 0.7rem;">TOTAL SENT</div><div id="rpt-total" style="font-size: 1.8rem; font-weight: 900;">0</div></div>
+                    <div><div style="font-size: 0.7rem;">MISSED</div><div id="rpt-missed" class="negative" style="font-size: 1.8rem; font-weight: 900;">0</div></div>
+                    <div><div style="font-size: 0.7rem;">STATUS</div><div id="rpt-status" class="status-badge bg-success" style="display: block; margin-top: 10px;">SUCCESS</div></div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Sidebar Right -->
+        <aside class="scroll-zone">
+            <div class="glass-card">
+                <div class="card-title">Break Manager <span id="break-badge" class="status-badge bg-warning">0 used</span></div>
+                <div class="live-clock" id="break-timer" style="font-size: 3rem; text-align: center; color: var(--warning); margin: 10px 0;">30:00</div>
+                <button class="btn" id="break-btn" style="background: var(--warning); color: #000; height: 50px;" onclick="toggleBreak()">START BREAK</button>
+            </div>
+
+            <div class="glass-card" style="flex: 1;">
+                <div class="card-title">Hourly Performance history</div>
+                <div id="history-list" style="display: flex; flex-direction: column; gap: 8px;">
+                    <!-- Injected via JS -->
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <script>
+        // --- CONSTANTS & CONFIG ---
+        const APP_ID = "easybet_tracker_pro_v2";
+        const DEFAULT_STATE = {
+            counts: {}, 
+            settings: {
+                start: 22,
+                end: 6,
+                target: 9,
+                breakLimit: 30,
+                wallpaper: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1964&auto=format&fit=crop"
+            },
+            break: { active: false, remaining: 1800, count: 0 },
+            notes: "",
+            logs: [],
+            lastCheckedHour: -1,
+            lastDate: new Date().toLocaleDateString()
+        };
+
+        let state = JSON.parse(JSON.stringify(DEFAULT_STATE));
+
+        // --- CORE UTILS ---
+        function format12hr(h) {
+            let ampm = h >= 12 ? 'PM' : 'AM';
+            let displayH = h % 12;
+            displayH = displayH ? displayH : 12; 
+            return `${displayH}:00 ${ampm}`;
+        }
+
+        function getShiftHours() {
+            let hours = [];
+            let curr = state.settings.start;
+            while (curr !== state.settings.end) {
+                hours.push(curr);
+                curr = (curr + 1) % 24;
+            }
+            return hours;
+        }
+
+        function getRemainingHours() {
+            const now = new Date().getHours();
+            const shift = getShiftHours();
+            const idx = shift.indexOf(now);
+            if (idx === -1) return 0;
+            return shift.length - idx;
+        }
+
+        // --- NOTIFICATIONS ---
+        function showToast(msg, isUrgent = false) {
+            const t = document.getElementById('toast');
+            t.innerText = msg;
+            t.style.background = isUrgent ? 'var(--danger)' : 'var(--accent)';
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 3000);
+        }
+
+        // --- DATA PERSISTENCE ---
+        function save() {
+            state.lastDate = new Date().toLocaleDateString();
+            localStorage.setItem(APP_ID, JSON.stringify(state));
+        }
+
+        function load() {
+            const saved = localStorage.getItem(APP_ID);
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                // Simple logic: if more than 12 hours since last update, reset counts unless in shift
+                state = { ...state, ...parsed };
+                // Load settings into inputs
+                document.getElementById('set-start').value = state.settings.start;
+                document.getElementById('set-end').value = state.settings.end;
+                document.getElementById('set-target').value = state.settings.target;
+                document.getElementById('set-break').value = state.settings.breakLimit;
+                document.getElementById('set-wallpaper').value = state.settings.wallpaper;
+                document.getElementById('shift-notes').value = state.notes;
+            }
+            applyWallpaper();
+        }
+
+        function applyWallpaper() {
+            const wp = document.getElementById('wallpaper-layer');
+            const url = state.settings.wallpaper;
+            if (url) wp.style.backgroundImage = `url(${url})`;
+        }
+
+        // --- ACTIONS ---
+        function adjustCount(hour, val) {
+            const targetHour = hour === null ? new Date().getHours() : hour;
+            const currentVal = state.counts[targetHour] || 0;
+            const newVal = Math.max(0, currentVal + val);
+            
+            state.counts[targetHour] = newVal;
+            
+            // Log if manual historical adjustment
+            if (hour !== null) {
+                const action = val > 0 ? "Added" : "Removed";
+                addLog(`${action} ${Math.abs(val)} to ${format12hr(hour)}`);
+                showToast(`Adjusted ${format12hr(hour)}`);
+            } else if (newVal >= state.settings.target && currentVal < state.settings.target) {
+                showToast("Hourly target reached! 🎯");
+            }
+
+            updateUI();
+            save();
+        }
+
+        function fillHour(hour) {
+            const needed = state.settings.target - (state.counts[hour] || 0);
+            if (needed > 0) {
+                state.counts[hour] = state.settings.target;
+                addLog(`Recovered ${needed} emails for ${format12hr(hour)}`);
+                showToast(`Recovered ${format12hr(hour)} target`);
+                updateUI();
+                save();
+            }
+        }
+
+        function addLog(msg) {
+            const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            state.logs.unshift(`[${time}] ${msg}`);
+            if (state.logs.length > 20) state.logs.pop();
+        }
+
+        function toggleBreak() {
+            state.break.active = !state.break.active;
+            const btn = document.getElementById('break-btn');
+            if (state.break.active) {
+                btn.innerText = "END BREAK";
+                btn.style.background = 'var(--danger)';
+                btn.style.color = '#fff';
+                state.break.count++;
+                addLog("Break started.");
+            } else {
+                btn.innerText = "START BREAK";
+                btn.style.background = 'var(--warning)';
+                btn.style.color = '#000';
+                addLog("Break ended.");
+            }
+            updateUI();
+            save();
+        }
+
+        // --- UI UPDATES ---
+        function updateUI() {
+            const now = new Date();
+            const currentH = now.getHours();
+            const shift = getShiftHours();
+            const isActive = shift.includes(currentH);
+
+            // 1. Current Hour Card
+            const count = state.counts[currentH] || 0;
+            const target = state.settings.target;
+            document.getElementById('current-count').innerText = count;
+            document.getElementById('current-hour-label').innerText = `${format12hr(currentH)} - ${format12hr((currentH + 1) % 24)}`;
+            document.getElementById('current-target-label').innerText = `Target: ${target} | Remaining: ${Math.max(0, target - count)}`;
+            
+            const hrProgress = (count / target) * 100;
+            document.getElementById('hour-progress').style.width = `${Math.min(100, hrProgress)}%`;
+            
+            const badge = document.getElementById('current-badge');
+            if (count >= target) {
+                badge.innerText = "COMPLETED"; badge.className = "status-badge bg-success";
+            } else if (count >= target * 0.7) {
+                badge.innerText = "ON TRACK"; badge.className = "status-badge bg-warning";
+            } else {
+                badge.innerText = "BEHIND"; badge.className = "status-badge bg-danger";
+            }
+
+            // 2. Statistics & Recovery
+            let totalSent = 0;
+            let missedTotal = 0;
+            shift.forEach(h => {
+                const c = state.counts[h] || 0;
+                totalSent += c;
+                if (shift.indexOf(h) < shift.indexOf(currentH)) {
+                    if (c < target) missedTotal += (target - c);
+                }
+            });
+
+            const totalTarget = shift.length * target;
+            const remainingTarget = totalTarget - totalSent;
+            const remainingHours = getRemainingHours();
+            const recoveryPace = remainingHours > 0 ? (remainingTarget / remainingHours).toFixed(1) : 0;
+
+            document.getElementById('stat-total').innerText = totalSent;
+            document.getElementById('stat-remaining').innerText = Math.max(0, remainingTarget);
+            document.getElementById('stat-recovery-pace').innerText = `${recoveryPace} / hr`;
+            document.getElementById('stat-recovery-pace').className = recoveryPace > target ? 'negative' : 'positive';
+            document.getElementById('shift-progress').style.width = `${Math.min(100, (totalSent / totalTarget) * 100)}%`;
+
+            // 3. History List
+            let historyHTML = '';
+            shift.forEach(h => {
+                const c = state.counts[h] || 0;
+                const isPast = shift.indexOf(h) < shift.indexOf(currentH);
+                const isCurrent = h === currentH;
+                let statusLabel = '';
+                let rowClass = '';
+
+                if (c >= target) { statusLabel = 'Complete'; rowClass = 'complete'; }
+                else if (isPast) { statusLabel = `Missed ${target - c}`; rowClass = 'missed'; }
+                else if (isCurrent) { statusLabel = 'Current'; }
+                else { statusLabel = 'Upcoming'; }
+
+                historyHTML += `
+                    <div class="history-row ${rowClass}">
+                        <div>
+                            <div style="font-weight: 700;">${format12hr(h)}</div>
+                            <div style="font-size: 0.7rem; color: var(--text-dim);">${statusLabel}</div>
+                        </div>
+                        <div style="font-family: 'JetBrains Mono'; font-weight: 800; font-size: 1.1rem; margin-right: 15px;">${c}</div>
+                        <div class="history-controls">
+                            <button class="btn mini-btn" style="background: rgba(255,255,255,0.1)" onclick="adjustCount(${h}, -1)">-</button>
+                            <button class="btn mini-btn" style="background: var(--accent)" onclick="adjustCount(${h}, 1)">+</button>
+                            ${(isPast && c < target) ? `<button class="btn fill-btn" onclick="fillHour(${h})">Fill</button>` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+            document.getElementById('history-list').innerHTML = historyHTML;
+
+            // 4. Smart Messages
+            const msgBox = document.getElementById('smart-action-box');
+            if (!isActive) {
+                msgBox.innerText = "Outside of shift window. Enjoy your time off!";
+                document.getElementById('status-display').innerText = "OFF SHIFT";
+                document.getElementById('status-display').className = "status-badge";
+            } else if (missedTotal > 0) {
+                msgBox.innerHTML = `⚠️ You missed <b class="negative">${missedTotal}</b> emails earlier. You need <b class="negative">${recoveryPace}</b>/hr to finish on target.`;
+                document.getElementById('status-display').innerText = "BEHIND TARGET";
+                document.getElementById('status-display').className = "status-badge bg-danger";
+            } else {
+                msgBox.innerText = "You are doing great! Keep up the current pace.";
+                document.getElementById('status-display').innerText = "PERFORMANCE GOOD";
+                document.getElementById('status-display').className = "status-badge bg-success";
+            }
+
+            // 5. Correction Log
+            const logBox = document.getElementById('correction-log');
+            if (state.logs.length === 0) {
+                logBox.innerHTML = '<div style="text-align: center; color: var(--text-dim); margin-top: 20px;">No corrections recorded.</div>';
+            } else {
+                logBox.innerHTML = state.logs.map(l => `<div class="log-entry">${l}</div>`).join('');
+            }
+
+            // 6. Break & Reports
+            document.getElementById('break-badge').innerText = `${state.break.count} used`;
+            
+            // Check for Shift end
+            const report = document.getElementById('shift-report');
+            if (!isActive && totalSent > 0) {
+                report.style.display = 'block';
+                document.getElementById('rpt-total').innerText = totalSent;
+                document.getElementById('rpt-missed').innerText = Math.max(0, totalTarget - totalSent);
+                const finalSuccess = totalSent >= totalTarget;
+                document.getElementById('rpt-status').innerText = finalSuccess ? "TARGET REACHED" : "TARGET MISSED";
+                document.getElementById('rpt-status').className = `status-badge ${finalSuccess ? 'bg-success' : 'bg-danger'}`;
+            } else {
+                report.style.display = 'none';
+            }
+        }
+
+        // --- SYSTEM LOOPS ---
+        setInterval(() => {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
+            document.getElementById('header-clock').innerText = timeStr;
+            document.getElementById('standby-clock').innerText = timeStr;
+
+            const h = now.getHours();
+            
+            // End of Hour Auditor
+            if (state.lastCheckedHour !== -1 && state.lastCheckedHour !== h) {
+                const shift = getShiftHours();
+                if (shift.includes(state.lastCheckedHour)) {
+                    const lastCount = state.counts[state.lastCheckedHour] || 0;
+                    if (lastCount < state.settings.target) {
+                        showToast(`Hour ${format12hr(state.lastCheckedHour)} finished below target!`, true);
+                        addLog(`SYSTEM: Hour ${format12hr(state.lastCheckedHour)} missed target by ${state.settings.target - lastCount}`);
+                    } else {
+                        showToast(`Great job! Target reached for ${format12hr(state.lastCheckedHour)}.`);
+                    }
+                }
+                updateUI();
+            }
+            state.lastCheckedHour = h;
+
+            // Break Logic
+            if (state.break.active && state.break.remaining > 0) {
+                state.break.remaining--;
+                const m = Math.floor(state.break.remaining / 60);
+                const s = state.break.remaining % 60;
+                document.getElementById('break-timer').innerText = `${m}:${s.toString().padStart(2, '0')}`;
+                if (state.break.remaining === 0) {
+                    toggleBreak();
+                    showToast("Break window closed!", true);
+                }
+            }
+
+            // Standby Overlay Logic
+            const isActive = getShiftHours().includes(h);
+            const standby = document.getElementById('standby-screen');
+            if (!isActive && standby.style.display === 'none' && !sessionStorage.getItem('bypass')) {
+                standby.style.display = 'flex';
+                document.getElementById('standby-subtext').innerText = `Shift is 10:00 PM to 6:00 AM. Next start: ${format12hr(state.settings.start)}`;
+            }
+        }, 1000);
+
+        // --- SETTINGS & DATA MGMT ---
+        function openOverlay(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeOverlay(id) { 
+            document.getElementById(id).style.display = 'none'; 
+            if (id === 'standby-screen') sessionStorage.setItem('bypass', 'true');
+        }
+
+        function saveSettings() {
+            state.settings.start = parseInt(document.getElementById('set-start').value);
+            state.settings.end = parseInt(document.getElementById('set-end').value);
+            state.settings.target = parseInt(document.getElementById('set-target').value);
+            state.settings.breakLimit = parseInt(document.getElementById('set-break').value);
+            state.settings.wallpaper = document.getElementById('set-wallpaper').value;
+            
+            // Update break time if changed
+            state.break.remaining = state.settings.breakLimit * 60;
+            
+            applyWallpaper();
+            save();
+            updateUI();
+            closeOverlay('settings-modal');
+            showToast("Settings Updated");
+        }
+
+        function resetAll() {
+            if (confirm("This will erase all counts, logs, and settings. Are you sure?")) {
+                localStorage.removeItem(APP_ID);
+                state = JSON.parse(JSON.stringify(DEFAULT_STATE));
+                location.reload();
+            }
+        }
+
+        function resetCurrentHour() {
+            if (confirm("Reset current hour to zero?")) {
+                state.counts[new Date().getHours()] = 0;
+                addLog("Current hour manually reset.");
+                updateUI();
+                save();
+            }
+        }
+
+        function clearLog() {
+            if (confirm("Clear the correction log?")) {
+                state.logs = [];
+                updateUI();
+                save();
+            }
+        }
+
+        function exportData() {
+            const data = JSON.stringify(state, null, 2);
+            const blob = new Blob([data], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `easybet_backup_${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+        }
+
+        function triggerImport() { document.getElementById('import-file').click(); }
+        document.getElementById('import-file').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                try {
+                    const imported = JSON.parse(event.target.result);
+                    state = { ...state, ...imported };
+                    save();
+                    location.reload();
+                } catch (err) {
+                    showToast("Invalid backup file", true);
+                }
+            };
+            reader.readAsText(file);
+        });
+
+        // --- KEYBOARD ---
+        window.addEventListener('keydown', (e) => {
+            if (e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT') return;
+            if (e.code === 'Space' || e.key === '+') {
+                e.preventDefault();
+                adjustCount(null, 1);
+            }
+        });
+
+        document.getElementById('shift-notes').addEventListener('input', (e) => {
+            state.notes = e.target.value;
+            save();
+        });
+
+        // --- START ---
+        window.onload = () => {
+            load();
+            updateUI();
+        };
+    </script>
+</body>
+</html>

@@ -726,6 +726,8 @@
               <label class="dropdown-item"><input type="checkbox" value="{ID1} will remain disabled because OTC was granted to the other account, {ID2}."> <span class="dropdown-item-text">OTC Refused (ID 1 to ID 2)</span></label>
               <label class="dropdown-item"><input type="checkbox" value="We can proceed with reactivating this account once the customer provides a valid ID, proof of residence, and an ID selfie, provided all documents return a 'Green' status in XDS."> <span class="dropdown-item-text">Reactivation Pending (XDS)</span></label>
                <label class="dropdown-item"><input type="checkbox" value="Reactivated as one-time courtesy"> <span class="dropdown-item-text">Reactivated as one-time courtesy</span></label>
+               <label class="dropdown-item"><input type="checkbox" value="Removed tag %%POSSIBLE_DUPLICATE%%"> <span class="dropdown-item-text">Removed tag %%POSSIBLE_DUPLICATE%%</span></label>
+
 
 
               <div class="dropdown-group-label">Updates</div>
@@ -735,7 +737,7 @@
               <label class="dropdown-item"><input type="checkbox" value="Updated email address from {OLD} to {NEW}"> <span class="dropdown-item-text">Update Email</span></label>
               <label class="dropdown-item"><input type="checkbox" value="Updated ID code from {OLD} to {NEW}"> <span class="dropdown-item-text">Update ID Code</span></label>
                <label class="dropdown-item"><input type="checkbox" value="Updated Bank Account Holder Name from {OLD} to {NEW}"> <span class="dropdown-item-text">Updated Bank Account Holder Name</span></label>
- <label class="dropdown-item"><input type="checkbox" value="Updated Bank Account Number from {OLD} to {NEW}"> <span class="dropdown-item-text">Update Bank Account Numberr</span></label>
+ <label class="dropdown-item"><input type="checkbox" value="Updated Bank Account Number from {OLD} to {NEW}"> <span class="dropdown-item-text">Update Bank Account Number</span></label>
  <label class="dropdown-item"><input type="checkbox" value="Updated Bank Name from {OLD} to {NEW}"> <span class="dropdown-item-text">Update Bank Name</span></label>
 
 <div class="dropdown-group-label">Account deletion</div>
@@ -837,7 +839,7 @@
 
     // OPTIMIZATION 14: Advanced Wallpaper Pipeline (Remote -> Local -> Gradient)
     // Safely edit this link to use any remote background image
-    const REMOTE_WALLPAPER_URL = "https://images.unsplash.com/photo-1775334006478-865fa1b777de?q=80&w=1074&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"; 
+    const REMOTE_WALLPAPER_URL = "https://images.unsplash.com/photo-1774278509343-1b349008cd24?q=80&w=1592&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"; 
     const LOCAL_WALLPAPER_URL = "wallpaper.jpg";
     let currentWallpaperBlobUrl = null;
 

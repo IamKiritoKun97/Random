@@ -1,0 +1,2518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FlowTrack Personal Finance</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='14' fill='%230f172a'/><text y='46' x='8' font-size='42' font-family='system-ui' fill='%233b82f6' font-weight='bold'>₱</text></svg>">
+<style>
+:root {
+  --bg: #050811;
+  --surface: #0b1329;
+  --surface2: #16223f;
+  --surface3: #22345e;
+  --border: #1d3368;
+  --accent: #3b82f6;
+  --accent2: #06b6d4;
+  --accent3: #8b5cf6;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --text: #f8fafc;
+  --text2: #cbd5e1;
+  --text3: #64748b;
+  --gold: #fbbf24;
+  --glow: rgba(59, 130, 246, 0.12);
+}
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+html, body {
+  height: 100%;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+}
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--surface3);
+  border-radius: 4px;
+}
+#app {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Sidebar Responsive Shell Styling */
+#sidebar {
+  width: 260px;
+  min-width: 260px;
+  background: var(--surface);
+  border-right: 1px solid rgba(29, 51, 104, 0.5);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  z-index: 50;
+  transition: transform 0.3s ease;
+}
+#main {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+.sb-brand {
+  padding: 24px 20px 16px;
+  border-bottom: 1px solid rgba(29, 51, 104, 0.5);
+}
+.sb-brand h1 {
+  font-size: 21px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #60a5fa, #06b6d4);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: .5px;
+}
+.sb-brand p {
+  font-size: 10px;
+  color: var(--text3);
+  margin-top: 4px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+.sb-section {
+  padding: 16px 20px 6px;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: var(--text3);
+  font-weight: 700;
+}
+.sb-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 20px;
+  margin: 2px 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all .2s ease;
+  color: var(--text2);
+  font-size: 13px;
+  font-weight: 500;
+}
+.sb-item:hover {
+  background: var(--surface2);
+  color: var(--text);
+  transform: translateX(2px);
+}
+.sb-item.active {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(6, 182, 212, 0.15));
+  color: #60a5fa;
+  font-weight: 600;
+  border-left: 3px solid var(--accent);
+}
+.sb-item svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+.sb-badge {
+  margin-left: auto;
+  background: var(--accent);
+  color: #fff;
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-weight: 700;
+}
+.sb-footer {
+  margin-top: auto;
+  padding: 16px;
+  border-top: 1px solid rgba(29, 51, 104, 0.5);
+  font-size: 11px;
+  color: var(--text3);
+  text-align: center;
+}
+
+/* Mobile top bar and overlay menu styles */
+#mobile-header {
+  display: none;
+  background: var(--surface);
+  border-bottom: 1px solid rgba(29, 51, 104, 0.5);
+  padding: 12px 16px;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 40;
+}
+#mobile-menu-btn {
+  background: none;
+  border: none;
+  color: var(--text);
+  cursor: pointer;
+  padding: 4px;
+}
+#mobile-sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(2px);
+  z-index: 45;
+}
+
+#topbar {
+  background: var(--surface);
+  border-bottom: 1px solid rgba(29, 51, 104, 0.5);
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-shrink: 0;
+}
+#topbar h2 {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+}
+.top-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.15s ease;
+}
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+}
+.btn-primary:hover {
+  background: #2563eb;
+  transform: translateY(-1px);
+}
+.btn-ghost {
+  background: var(--surface2);
+  color: var(--text2);
+  border: 1px solid rgba(29, 51, 104, 0.5);
+}
+.btn-ghost:hover {
+  background: var(--surface3);
+  color: var(--text);
+}
+.btn-success {
+  background: var(--success);
+  color: #fff;
+}
+.btn-success:hover {
+  background: #059669;
+}
+.btn-danger {
+  background: rgba(239, 68, 68, 0.2);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.4);
+}
+.btn-danger:hover {
+  background: var(--danger);
+  color: #fff;
+}
+.btn svg {
+  width: 16px;
+  height: 16px;
+}
+#content {
+  padding: 24px;
+  flex: 1;
+}
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.card {
+  background: var(--surface);
+  border: 1px solid rgba(29, 51, 104, 0.5);
+  border-radius: 16px;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+}
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+}
+.card.blue::before { background: linear-gradient(90deg, var(--accent), var(--accent2)); }
+.card.green::before { background: linear-gradient(90deg, var(--success), #34d399); }
+.card.purple::before { background: linear-gradient(90deg, var(--accent3), #ec4899); }
+.card.gold::before { background: linear-gradient(90deg, var(--gold), #f97316); }
+.card.red::before { background: linear-gradient(90deg, var(--danger), #fb923c); }
+.card-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text3);
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.card-value {
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: -.5px;
+}
+.card-value.pos { color: var(--success); }
+.card-value.neg { color: var(--danger); }
+.card-value.warn { color: var(--warning); }
+.card-sub {
+  font-size: 12px;
+  color: var(--text3);
+  margin-top: 6px;
+}
+.section-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.section-title span {
+  flex: 1;
+}
+.quick-actions-bar {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+  background: var(--surface);
+  padding: 16px;
+  border-radius: 16px;
+  border: 1px solid rgba(29, 51, 104, 0.5);
+}
+
+/* Consolidated Reminder Center to avoid eating vertical space */
+.reminders-center-card {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.08) 0%, rgba(239, 68, 68, 0.05) 100%);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  border-radius: 16px;
+  padding: 16px 20px;
+  margin-bottom: 20px;
+}
+.reminders-center-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+  color: var(--warning);
+  font-size: 14px;
+  margin-bottom: 12px;
+  border-bottom: 1px solid rgba(245, 158, 11, 0.15);
+  padding-bottom: 8px;
+}
+.reminders-center-list {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 10px;
+}
+.reminders-center-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--text2);
+  padding: 4px 0;
+}
+.reminders-center-item-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.reminders-center-item-dot.overdue { background: var(--danger); }
+.reminders-center-item-dot.soon { background: var(--warning); }
+.reminders-center-item-dot.today { background: var(--gold); }
+
+.onboarding-banner {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(6, 182, 212, 0.05) 100%);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.onboarding-banner-icon {
+  background: rgba(59, 130, 246, 0.2);
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent);
+  flex-shrink: 0;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+th {
+  text-align: left;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: .8px;
+  color: var(--text3);
+  font-weight: 700;
+  padding: 10px 16px;
+  border-bottom: 1px solid rgba(29, 51, 104, 0.5);
+  background: var(--surface2);
+}
+td {
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(29, 51, 104, 0.2);
+  font-size: 13px;
+  color: var(--text2);
+  vertical-align: middle;
+}
+tr:hover td {
+  background: var(--glow);
+}
+.tbl-wrap {
+  background: var(--surface);
+  border: 1px solid rgba(29, 51, 104, 0.5);
+  border-radius: 16px;
+  overflow-x: auto;
+  margin-bottom: 24px;
+}
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+.badge-blue { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
+.badge-green { background: rgba(16, 185, 129, 0.15); color: #34d399; }
+.badge-red { background: rgba(239, 68, 68, 0.15); color: #f87171; }
+.badge-yellow { background: rgba(251, 191, 36, 0.15); color: #fcd34d; }
+.badge-purple { background: rgba(139, 92, 246, 0.15); color: #a78bfa; }
+.badge-gray { background: rgba(100, 116, 139, 0.15); color: #94a3b8; }
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.8);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  backdrop-filter: blur(4px);
+}
+.modal {
+  background: var(--surface);
+  border: 1px solid rgba(29, 51, 104, 0.5);
+  border-radius: 20px;
+  width: 100%;
+  max-width: 550px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+.modal-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid rgba(29, 51, 104, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.modal-header h3 {
+  font-size: 16px;
+  font-weight: 700;
+}
+.modal-body {
+  padding: 24px;
+}
+.modal-footer {
+  padding: 16px 24px;
+  border-top: 1px solid rgba(29, 51, 104, 0.5);
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+.close-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text3);
+  padding: 6px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+}
+.close-btn:hover {
+  color: var(--text);
+  background: var(--surface2);
+}
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.form-group {
+  margin-bottom: 16px;
+  position: relative;
+}
+.form-group label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text2);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+}
+.form-group input, .form-group select, .form-group textarea {
+  width: 100%;
+  background: var(--surface2);
+  border: 1px solid rgba(29, 51, 104, 0.5);
+  border-radius: 10px;
+  padding: 11px 14px;
+  color: var(--text);
+  font-size: 13px;
+  outline: none;
+  transition: all 0.15s ease;
+}
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+.form-group textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+select option {
+  background: var(--surface2);
+  color: var(--text);
+}
+.form-group input[type="color"] {
+  padding: 6px;
+  height: 42px;
+  cursor: pointer;
+}
+.progress-bar {
+  height: 10px;
+  background: var(--surface3);
+  border-radius: 6px;
+  overflow: hidden;
+  margin-top: 10px;
+  position: relative;
+}
+.progress-fill {
+  height: 100%;
+  border-radius: 6px;
+  transition: width .3s ease;
+}
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--surface3);
+  border: 1px solid rgba(29, 51, 104, 0.5);
+  border-radius: 20px;
+  padding: 4px 12px;
+  font-size: 11px;
+  color: var(--text2);
+}
+.action-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 8px;
+  color: var(--text3);
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+}
+.action-btn:hover {
+  color: var(--text);
+  background: var(--surface2);
+}
+.action-btn.del:hover {
+  color: var(--danger);
+  background: rgba(239, 68, 68, 0.15);
+}
+.action-btn.pay:hover {
+  color: var(--success);
+  background: rgba(16, 185, 129, 0.15);
+}
+#toast-container {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.toast {
+  background: var(--surface2);
+  border: 1px solid rgba(29, 51, 104, 0.5);
+  border-radius: 12px;
+  padding: 14px 20px;
+  font-size: 13px;
+  min-width: 280px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+  animation: slideIn .2s ease-out;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.toast.success { border-color: var(--success); }
+.toast.error { border-color: var(--danger); }
+@keyframes slideIn {
+  from { transform: translateX(50px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+.empty-state {
+  text-align: center;
+  padding: 48px 24px;
+  color: var(--text3);
+  font-size: 13px;
+}
+.section-block {
+  background: var(--surface);
+  border: 1px solid rgba(29, 51, 104, 0.5);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+.due-warn { color: var(--warning); font-weight: bold; }
+.due-danger { color: var(--danger); font-weight: bold; }
+.due-ok { color: var(--success); font-weight: bold; }
+
+/* Institution Autocomplete dropdown styling */
+.inst-suggestions {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: var(--surface2);
+  border: 1px solid rgba(29, 51, 104, 0.6);
+  border-radius: 10px;
+  max-height: 180px;
+  overflow-y: auto;
+  z-index: 15;
+  display: none;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+.inst-suggestion-item {
+  padding: 10px 14px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: background 0.15s ease;
+}
+.inst-suggestion-item:hover {
+  background: var(--surface3);
+  color: var(--text);
+}
+
+/* RESPONSIVE DESIGN ADJUSTMENTS */
+@media (max-width: 1024px) {
+  .cards-grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  #mobile-header {
+    display: flex;
+  }
+  #sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    transform: translateX(-100%);
+    z-index: 100;
+  }
+  #sidebar.open {
+    transform: translateX(0);
+  }
+  #topbar {
+    display: none; /* Top actions handled inside the view content directly on mobile */
+  }
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+  #content {
+    padding: 16px;
+  }
+}
+</style>
+</head>
+<body>
+
+<div id="mobile-sidebar-overlay" onclick="toggleMobileSidebar()"></div>
+
+<div id="app">
+  <nav id="sidebar">
+    <div class="sb-brand">
+      <h1>FlowTrack</h1>
+      <p>Personal Finance</p>
+    </div>
+    <div style="padding: 8px 0; display: flex; flex-direction: column; flex: 1;">
+      <div class="sb-section">Overview</div>
+      <div class="sb-item active" onclick="nav('dashboard')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        Dashboard
+      </div>
+      <div class="sb-section">Accounts</div>
+      <div class="sb-item" onclick="nav('accounts')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+        My Accounts
+      </div>
+      <div class="sb-section">Transactions</div>
+      <div class="sb-item" onclick="nav('transactions')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        All Ledger
+      </div>
+      <div class="sb-item" onclick="nav('addtx')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+        Add Expense
+      </div>
+      <div class="sb-section">Planning</div>
+      <div class="sb-item" onclick="nav('recurring')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+        Recurring Bills
+        <span class="sb-badge" id="recurring-badge">0</span>
+      </div>
+      <div class="sb-item" onclick="nav('cashflow')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+        Future Balance
+      </div>
+      
+      <div class="sb-section" style="margin-top: auto;">Data Management</div>
+      <div class="sb-item" onclick="exportData()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        Export Backup
+      </div>
+      <div class="sb-item" onclick="triggerImport()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Import Backup
+      </div>
+      <div class="sb-item" onclick="confirmResetData()" style="color: #f87171;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+        Clear All Data
+      </div>
+      <div class="sb-item" onclick="downloadApp()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Download Offline
+      </div>
+    </div>
+    <div class="sb-footer">FlowTrack v3.2</div>
+  </nav>
+  
+  <div id="main">
+    <header id="mobile-header">
+      <button id="mobile-menu-btn" onclick="toggleMobileSidebar()">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <h2 id="mobile-page-title" style="font-size:16px; font-weight:700;">Dashboard</h2>
+      <div style="width:24px;"></div>
+    </header>
+
+    <div id="topbar">
+      <h2 id="page-title">Dashboard</h2>
+      <div class="top-actions" id="top-actions"></div>
+    </div>
+    <div id="content"></div>
+  </div>
+</div>
+
+<!-- Import Hidden File Input -->
+<input type="file" id="import-file-input" style="display:none" accept=".json" onchange="handleImport(event)">
+
+<!-- Dual Purpose Dialog Frame (Modals) -->
+<div class="modal-overlay" id="modal" style="display:none" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="modal-title">Modal</h3>
+      <button class="close-btn" onclick="closeModal()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+    <div class="modal-footer" id="modal-footer"></div>
+  </div>
+</div>
+
+<div id="toast-container"></div>
+
+<script>
+var STORE_KEY = 'flowtrack_v6_advanced';
+
+// PH Financial Library Core List
+var PH_FIN_INSTITUTIONS = {
+  "Banks": [
+    "BDO (Banco de Oro)", "BPI (Bank of the Philippine Islands)", "Metrobank", "LandBank", "UnionBank", 
+    "RCBC", "Security Bank", "Chinabank", "EastWest Bank", "PNB (Philippine National Bank)", 
+    "Robinsons Bank", "Maybank", "HSBC Philippines", "Citi Philippines", "AUB (Asia United Bank)", 
+    "PSBank", "Tonik Digital Bank", "Maya Bank", "CIMB Bank", "GoTyme Bank", "SeaBank", "Netbank", 
+    "UNO Digital Bank", "OwnBank", "UnionDigital", "OFBank (Overseas Filipino Bank)"
+  ],
+  "E-Wallets": [
+    "GCash", "Maya (E-Wallet)", "ShopeePay", "GrabPay", "Coins.ph", "Bayad Wallet", "JuanCash", "PalawanPay"
+  ],
+  "Credit Cards": [
+    "BDO Credit Card", "BPI Credit Card", "Metrobank Credit Card", "UnionBank Credit Card", "RCBC Credit Card", 
+    "Security Bank Credit Card", "EastWest Credit Card", "PNB Credit Card", "HSBC Credit Card", 
+    "Chinabank Credit Card", "AUB Credit Card", "Maybank Credit Card"
+  ]
+};
+
+// Start clean, populate requirements automatically on first setup
+function defaultDB() {
+  // Setup default accounts to back the default bills so we have valid references
+  var initialAccounts = [
+    {id: 'acc_gcash', name: 'GCash Wallet', type: 'ewallet', balance: 15000.00, color: '#3b82f6'},
+    {id: 'acc_bdo_savings', name: 'BDO Savings Account', type: 'savings', balance: 25000.00, color: '#10b981'},
+    {id: 'acc_bdo_cc', name: 'BDO Credit Card', type: 'credit', balance: 0.00, creditLimit: 50000.00, dueDate: '2026-06-15', color: '#ef4444'},
+    {id: 'acc_mari_cc', name: 'Maribank Credit Card', type: 'credit', balance: 0.00, creditLimit: 30000.00, dueDate: '2026-06-04', color: '#8b5cf6'}
+  ];
+
+  // Default Payday Configuration
+  var defaultPaycheck = {
+    amount: 12000.00,
+    frequency: 'Weekly',
+    day: 'Thursday', // weekly Thursday
+    startDate: '2026-06-01',
+    status: 'Active',
+    lastProcessedDate: '2026-06-01' // Initial processed marker
+  };
+
+  // Default Sinking Goal Configuration
+  var defaultSavingsGoal = {
+    target: 72000.00,
+    current: 36000.00, // Starts at 50% progress as requested
+    monthlyContribution: 6000.00,
+    account: 'acc_bdo_savings'
+  };
+
+  // Default Recurring Bills
+  var defaultBills = [
+    // Lifetime Utilities
+    {id: 'b1', name: 'PLDT LLC', amount: 1500.00, type: 'Utility', priority: 1, dueDay: 2, months: 'Lifetime', startMonth: '2026-06', account: 'acc_bdo_savings', category: 'Utilities', status: 'Active'},
+    {id: 'b2', name: 'PLDT Dita', amount: 1699.00, type: 'Utility', priority: 1, dueDay: 5, months: 'Lifetime', startMonth: '2026-06', account: 'acc_bdo_savings', category: 'Utilities', status: 'Active'},
+    {id: 'b3', name: 'VECO', amount: 4000.00, type: 'Utility', priority: 1, dueDay: 15, months: 'Lifetime', startMonth: '2026-06', account: 'acc_bdo_savings', category: 'Utilities', status: 'Active'},
+    {id: 'b3_2', name: 'MECO', amount: 2000.00, type: 'Utility', priority: 1, dueDay: 15, months: 'Lifetime', startMonth: '2026-06', account: 'acc_bdo_savings', category: 'Utilities', status: 'Active'},
+    
+    // Split Sinking Funds
+    {id: 'b4_1', name: 'Sinking Funds Part 1', amount: 3000.00, type: 'Savings Goal', priority: 4, dueDay: 15, months: 12, startMonth: '2026-06', account: 'acc_bdo_savings', category: 'Savings Goal', status: 'Active'},
+    {id: 'b4_2', name: 'Sinking Funds Part 2', amount: 3000.00, type: 'Savings Goal', priority: 4, dueDay: 30, months: 12, startMonth: '2026-06', account: 'acc_bdo_savings', category: 'Savings Goal', status: 'Active'},
+    
+    // Non-Utilities
+    {id: 'b5', name: 'Nina School', amount: 1500.00, type: 'Education', priority: 2, dueDay: 15, months: 60, startMonth: '2026-06', account: 'acc_gcash', category: 'Education', status: 'Active'},
+    {id: 'b6', name: 'Motor', amount: 1500.00, type: 'Loan', priority: 2, dueDay: 5, months: 12, startMonth: '2026-06', account: 'acc_gcash', category: 'Loan', status: 'Active'},
+    {id: 'b7', name: 'BDO Credit Card', amount: 4916.67, type: 'Credit Card', priority: 3, dueDay: 15, months: 12, startMonth: '2026-06', account: 'acc_bdo_cc', category: 'Credit Card', status: 'Active'},
+    {id: 'b8', name: 'Maribank Credit', amount: 3046.50, type: 'Credit Card', priority: 3, dueDay: 4, months: 12, startMonth: '2026-06', account: 'acc_mari_cc', category: 'Credit Card', status: 'Active'}
+  ];
+
+  return {
+    accounts: initialAccounts,
+    transactions: [],
+    recurring: defaultBills,
+    payday: defaultPaycheck,
+    savingsGoal: defaultSavingsGoal,
+    categories: ['Food','Transport','Utilities','Shopping','Entertainment','Health','Family','Home','Transfer','Income','Other','Savings Goal','Education','Loan','Credit Card'],
+    nextId: 1000,
+    paidThisMonthCount: 0,
+    paidThisMonthAmount: 0
+  };
+}
+
+function loadDB() {
+  try {
+    var s = localStorage.getItem(STORE_KEY);
+    if (s) {
+      var parsed = JSON.parse(s);
+      // Fallback migration to ensure paid counters exist
+      if (parsed.paidThisMonthCount === undefined) parsed.paidThisMonthCount = 0;
+      if (parsed.paidThisMonthAmount === undefined) parsed.paidThisMonthAmount = 0;
+      return parsed;
+    }
+  } catch(e) {}
+  return defaultDB();
+}
+
+var db = loadDB();
+
+function saveDB() {
+  localStorage.setItem(STORE_KEY, JSON.stringify(db));
+  updateBadges();
+}
+
+function genId() {
+  return 'id' + (db.nextId++);
+}
+
+// Strictly ₱ Money Formatting (Smart Money Format Requirement)
+function fmt(n) {
+  return '₱' + new Intl.NumberFormat('en-PH', {minimumFractionDigits:2, maximumFractionDigits:2}).format(n || 0);
+}
+
+// Strict MM/DD/YYYY Date Formatting (Smart Date Format Requirement)
+function fmtDate(d) {
+  if (!d) return '--';
+  var parts = d.split('-');
+  if (parts.length === 3) {
+    return parts[1] + '/' + parts[2] + '/' + parts[0];
+  }
+  var dt = new Date(d + 'T00:00:00');
+  var mm = String(dt.getMonth() + 1).padStart(2, '0');
+  var dd = String(dt.getDate()).padStart(2, '0');
+  var yyyy = dt.getFullYear();
+  return mm + '/' + dd + '/' + yyyy;
+}
+
+// Current system context date
+function today() {
+  return '2026-06-13'; // Context Sync Saturday, June 13, 2026
+}
+
+function daysUntil(d) {
+  if (!d) return null;
+  var diff = new Date(d + 'T00:00:00') - new Date(today() + 'T00:00:00');
+  return Math.round(diff / 86400000);
+}
+
+function getAccount(id) {
+  return db.accounts.find(function(a){return a.id === id;}) || null;
+}
+
+function acctName(id) {
+  var a = getAccount(id);
+  return a ? a.name : '--';
+}
+
+function acctOptions(selected) {
+  var html = '<option value="">-- Choose Account --</option>';
+  for (var i = 0; i < db.accounts.length; i++) {
+    var a = db.accounts[i];
+    html += '<option value="' + a.id + '"' + (selected === a.id ? ' selected' : '') + '>' + a.name + ' (' + fmt(a.balance) + ')</option>';
+  }
+  return html;
+}
+
+function catOptions(selected) {
+  var html = '';
+  for (var i = 0; i < db.categories.length; i++) {
+    var c = db.categories[i];
+    html += '<option' + (selected === c ? ' selected' : '') + '>' + c + '</option>';
+  }
+  return html;
+}
+
+function acctTypeBadge(t) {
+  var m = {credit:'badge-red', savings:'badge-blue', cash:'badge-green', loan:'badge-yellow', ewallet:'badge-purple', debit:'badge-gray'};
+  var cls = m[t] || 'badge-gray';
+  return '<span class="badge ' + cls + '">' + t + '</span>';
+}
+
+function dueClass(d) {
+  var n = daysUntil(d);
+  if (n === null) return '';
+  if (n < 0) return 'due-danger'; // Overdue
+  if (n <= 3) return 'due-warn';  // Due soon
+  return 'due-ok';
+}
+
+function totalCash() {
+  var s = 0;
+  for (var i = 0; i < db.accounts.length; i++) {
+    var a = db.accounts[i];
+    if (a.type !== 'credit' && a.type !== 'loan') s += (a.balance || 0);
+  }
+  return s;
+}
+
+function totalOwed() {
+  var s = 0;
+  for (var i = 0; i < db.accounts.length; i++) {
+    var a = db.accounts[i];
+    if (a.type === 'credit' || a.type === 'loan') s += (a.balance || 0);
+  }
+  return s;
+}
+
+function thisMonthSpend() {
+  var m = today().slice(0, 7);
+  var s = 0;
+  for (var i = 0; i < db.transactions.length; i++) {
+    var t = db.transactions[i];
+    if (t.date && t.date.startsWith(m) && t.type === 'expense') s += (t.amount || 0);
+  }
+  return s;
+}
+
+function thisMonthIncome() {
+  var m = today().slice(0, 7);
+  var s = 0;
+  for (var i = 0; i < db.transactions.length; i++) {
+    var t = db.transactions[i];
+    if (t.date && t.date.startsWith(m) && t.type === 'income') s += (t.amount || 0);
+  }
+  return s;
+}
+
+function updateBadges() {
+  var el = document.getElementById('recurring-badge');
+  if (!el) return;
+  var count = db.recurring.filter(function(r){return r.status === 'Active';}).length;
+  el.textContent = count;
+}
+
+function toast(msg, type) {
+  type = type || 'success';
+  var c = document.getElementById('toast-container');
+  if (!c) return;
+  var d = document.createElement('div');
+  d.className = 'toast ' + type;
+  var iconPath = type === 'success' ? 'M20 6L9 17l-5-5' : 'M18 6L6 18M6 6l12 12';
+  var iconColor = type === 'success' ? '#10b981' : '#ef4444';
+  d.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="' + iconColor + '" stroke-width="2.5"><path d="' + iconPath + '"/></svg><span>' + msg + '</span>';
+  c.appendChild(d);
+  setTimeout(function() { d.remove(); }, 3500);
+}
+
+// Mobile sidebar helper
+function toggleMobileSidebar() {
+  var sidebar = document.getElementById('sidebar');
+  var overlay = document.getElementById('mobile-sidebar-overlay');
+  if (sidebar.classList.contains('open')) {
+    sidebar.classList.remove('open');
+    overlay.style.display = 'none';
+  } else {
+    sidebar.classList.add('open');
+    overlay.style.display = 'block';
+  }
+}
+
+// =========================================================
+// SMART REMINDERS & NOTIFICATION DETECTOR (Consolidated Layout)
+// =========================================================
+function getRemindersList() {
+  var reminders = [];
+  for (var i = 0; i < db.recurring.length; i++) {
+    var r = db.recurring[i];
+    if (r.status !== 'Active') continue;
+    var billDate = r.startMonth + '-' + String(r.dueDay).padStart(2, '0');
+    var diff = daysUntil(billDate);
+    if (diff === null) continue;
+
+    if (diff < 0) {
+      reminders.push({ text: r.name + " is overdue.", type: "overdue" });
+    } else if (diff === 0) {
+      reminders.push({ text: r.name + " is due today!", type: "today" });
+    } else if (diff === 1) {
+      reminders.push({ text: r.name + " payment is due tomorrow.", type: "soon" });
+    } else if (diff === 3) {
+      reminders.push({ text: r.name + " is due in 3 days.", type: "soon" });
+    } else if (diff === 7) {
+      reminders.push({ text: r.name + " is due in 7 days.", type: "soon" });
+    }
+  }
+  return reminders;
+}
+
+// =========================================
+// SMART FINANCIAL HEALTH SCORE (0-100)
+// =========================================
+function calculateFinancialHealth() {
+  var score = 100;
+
+  // 1. Debt Ratio (Money Owed vs Total Money Available)
+  var cash = totalCash();
+  var owed = totalOwed();
+  if (owed > 0) {
+    if (cash === 0) {
+      score -= 30; // Maximum deduction for infinite debt ratio
+    } else {
+      var ratio = (owed / cash) * 100;
+      if (ratio > 100) score -= 30;
+      else if (ratio > 50) score -= 20;
+      else if (ratio > 20) score -= 10;
+    }
+  }
+
+  // 2. Overdue bills deduction
+  var overdueCount = 0;
+  for (var i = 0; i < db.recurring.length; i++) {
+    var r = db.recurring[i];
+    if (r.status === 'Active') {
+      var bDate = r.startMonth + '-' + String(r.dueDay).padStart(2, '0');
+      if ((daysUntil(bDate) || 0) < 0) {
+        overdueCount++;
+      }
+    }
+  }
+  score -= (overdueCount * 15);
+
+  // 3. Income vs Expenses this month
+  var monthlyIn = thisMonthIncome();
+  var monthlyOut = thisMonthSpend();
+  if (monthlyOut > monthlyIn && monthlyIn > 0) {
+    score -= 15; // Living beyond means this month
+  }
+
+  // 4. Savings consistency & reserves
+  if (cash < 10000) {
+    score -= 15; // Low cash reserve buffer
+  } else if (cash > 30000) {
+    score += 5; // Bonus buffer
+  }
+
+  score = Math.max(0, Math.min(100, score));
+
+  var rating = "Needs Attention";
+  if (score >= 85) rating = "Excellent";
+  else if (score >= 70) rating = "Good";
+  else if (score >= 50) rating = "Fair";
+
+  return { score: Math.round(score), rating: rating };
+}
+
+// =========================================
+// AUTOMATIC BACKGROUND PAYDAY PROCESSING
+// =========================================
+// Scans for paydays between last processed date and today (2026-06-13)
+function autoProcessPaydays() {
+  if (!db.payday || db.payday.status !== 'Active') return;
+  var startStr = db.payday.lastProcessedDate || db.payday.startDate;
+  var targetStr = today();
+
+  var start = new Date(startStr + 'T00:00:00');
+  var end = new Date(targetStr + 'T00:00:00');
+
+  // Let's increment daily to find all Thursdays
+  var cursor = new Date(start.getTime() + 86400000); // Start next day
+  var loggedCount = 0;
+
+  while (cursor <= end) {
+    // Thursday is day 4 in JS getDay()
+    if (cursor.getDay() === 4) {
+      var dateString = cursor.toISOString().split('T')[0];
+      
+      // Prevent duplicates: Check if we already logged this paycheck
+      var exists = db.transactions.some(function(t) {
+        return t.date === dateString && t.desc.indexOf('Weekly Pay') >= 0;
+      });
+
+      if (!exists) {
+        // Log transaction automatically
+        var tx = {
+          id: genId(),
+          date: dateString,
+          desc: 'Weekly Pay paycheck automatically processed',
+          amount: db.payday.amount,
+          type: 'income',
+          fromAccount: 'acc_gcash', // Default paycheck receipt account
+          category: 'Income',
+          notes: 'Auto-processed Thursday paycheck.'
+        };
+        db.transactions.push(tx);
+        
+        // Add funds to GCash Account automatically
+        var acc = getAccount('acc_gcash');
+        if (acc) {
+          acc.balance += db.payday.amount;
+        }
+        loggedCount++;
+      }
+    }
+    cursor.setDate(cursor.getDate() + 1);
+  }
+
+  if (loggedCount > 0) {
+    db.payday.lastProcessedDate = targetStr;
+    saveDB();
+    toast('Processed ' + loggedCount + ' automated payday paychecks!', 'success');
+  }
+}
+
+// Dynamic Navigation & Tab Manager
+var currentPage = 'dashboard';
+
+function nav(page) {
+  currentPage = page;
+  
+  // Mobile UI Sidebar Auto-dismiss on click
+  var sidebar = document.getElementById('sidebar');
+  if (sidebar.classList.contains('open')) {
+    sidebar.classList.remove('open');
+    document.getElementById('mobile-sidebar-overlay').style.display = 'none';
+  }
+
+  var items = document.querySelectorAll('.sb-item');
+  for (var i = 0; i < items.length; i++) {
+    var oc = items[i].getAttribute('onclick') || '';
+    items[i].classList.toggle('active', oc.indexOf("nav('" + page + "')") >= 0);
+  }
+  
+  var titles = {
+    dashboard: 'Financial Control Center', 
+    accounts: 'My Accounts & Portfolios', 
+    transactions: 'All Ledger Transactions', 
+    addtx: 'Add Flow Track Expense', 
+    recurring: 'Recurring Bills Scheduler', 
+    cashflow: 'Forecast Forecast Tool'
+  };
+  
+  document.getElementById('page-title').textContent = titles[page] || page;
+  document.getElementById('mobile-page-title').textContent = titles[page] || page;
+  document.getElementById('top-actions').innerHTML = '';
+  
+  var c = document.getElementById('content');
+  if (page === 'dashboard') renderDashboard(c);
+  else if (page === 'accounts') renderAccounts(c);
+  else if (page === 'transactions') renderTransactions(c);
+  else if (page === 'addtx') renderAddTx(c);
+  else if (page === 'recurring') renderRecurring(c);
+  else if (page === 'cashflow') renderCashFlow(c);
+}
+
+// DASHBOARD VIEW
+function renderDashboard(c) {
+  var cash = totalCash();
+  var owed = totalOwed();
+  var net = cash - owed;
+  var spend = thisMonthSpend();
+  var income = thisMonthIncome();
+  var activeRec = db.recurring.filter(function(r){return r.status === 'Active';});
+  var upcomingBillsTotal = activeRec.reduce(function(s,r){return s + r.amount;}, 0);
+
+  // Dynamic Savings Goal percentages
+  var goalProgress = db.savingsGoal ? (db.savingsGoal.current / db.savingsGoal.target) * 100 : 0;
+
+  // Real-time financial health state analysis
+  var health = calculateFinancialHealth();
+
+  // Consolidated Alert Card Center (Prevents giant list spacing issue)
+  var alertsList = getRemindersList();
+  var alertBannerHtml = '';
+  if (alertsList.length > 0) {
+    alertBannerHtml = '<div class="reminders-center-card">'
+      + '<div class="reminders-center-header">'
+      + '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>'
+      + '<span>Reminder Center (' + alertsList.length + ' Pending Notifications)</span>'
+      + '</div>'
+      + '<ul class="reminders-center-list">';
+    
+    for (var i = 0; i < alertsList.length; i++) {
+      var itemDotColorClass = alertsList[i].type;
+      alertBannerHtml += '<li class="reminders-center-item">'
+        + '<span class="reminders-center-item-dot ' + itemDotColorClass + '"></span>'
+        + '<span>' + alertsList[i].text + '</span>'
+        + '</li>';
+    }
+    
+    alertBannerHtml += '</ul></div>';
+  }
+
+  // Smart Quick Actions Row (Requirement: Smart Quick Actions)
+  var quickActionsHtml = '<div class="quick-actions-bar">'
+    + '<button class="btn btn-ghost" onclick="showTxModal(null, \'expense\')">+ Quick Expense</button>'
+    + '<button class="btn btn-ghost" onclick="showTxModal(null, \'income\')">+ Record Inflow</button>'
+    + '<button class="btn btn-ghost" onclick="showTransferModal()">⇄ Transfer Money</button>'
+    + '<button class="btn btn-ghost" onclick="showAccountModal(null)">+ Add PH Account</button>'
+    + '<button class="btn btn-ghost" onclick="nav(\'recurring\')">✓ Pay Scheduled Bill</button>'
+    + '</div>';
+
+  // FIX: SORT PRIMARILY BY DUE DATE PROXIMITY (Urgent due date bubbles to absolute top)
+  // Tie break using static priority levels
+  var sortedUpcomingRec = activeRec.slice().sort(function(a, b) {
+    var dateA = a.startMonth + '-' + String(a.dueDay).padStart(2, '0');
+    var dateB = b.startMonth + '-' + String(b.dueDay).padStart(2, '0');
+    var diffA = daysUntil(dateA) ?? 999999;
+    var diffB = daysUntil(dateB) ?? 999999;
+    
+    if (diffA !== diffB) {
+      return diffA - diffB; // Ascending proximity order
+    }
+    return (a.priority || 4) - (b.priority || 4); // Priority tie-breaker
+  }).slice(0, 6);
+
+  var recRows = '';
+  if (sortedUpcomingRec.length === 0) {
+    recRows = '<tr><td colspan="5"><div class="empty-state">No scheduled active bills remaining.</div></td></tr>';
+  } else {
+    for (var i = 0; i < sortedUpcomingRec.length; i++) {
+      var r = sortedUpcomingRec[i];
+      var billDate = r.startMonth + '-' + String(r.dueDay).padStart(2, '0');
+      var diff = daysUntil(billDate);
+      var badgeCls = 'due-ok';
+      var badgeText = diff + ' Days Left';
+
+      if (diff < 0) {
+        badgeCls = 'due-danger';
+        badgeText = 'Overdue';
+      } else if (diff === 0) {
+        badgeCls = 'due-warn';
+        badgeText = 'Due Today';
+      } else if (diff === 1) {
+        badgeCls = 'due-warn';
+        badgeText = 'Due Tomorrow';
+      } else if (diff <= 3) {
+        badgeCls = 'due-warn';
+        badgeText = 'Due Soon';
+      }
+
+      recRows += '<tr>'
+        + '<td style="font-weight:700">' + r.name + ' <span style="font-size:9px;color:var(--text3)">P' + r.priority + '</span></td>'
+        + '<td style="font-weight:800;color:var(--danger)">' + fmt(r.amount) + '</td>'
+        + '<td>' + fmtDate(billDate) + '</td>'
+        + '<td><span class="' + badgeCls + '">' + badgeText + '</span></td>'
+        + '<td><button class="btn btn-ghost btn-success" style="padding:4px 8px;font-size:11px" onclick="payRecurringBill(\'' + r.id + '\')">✓ Mark Paid</button></td>'
+        + '</tr>';
+    }
+  }
+
+  // Sinking Fund Progress UI Component
+  var savingsHtml = '<div class="section-block">'
+    + '<div class="section-title"><span>Smart Sinking Funds Savings Goal</span></div>'
+    + '<div style="display:flex;justify-content:space-between;margin-bottom:8px;font-size:13px">'
+    + '<span>Progress to goal: <strong>' + fmt(db.savingsGoal.current) + '</strong></span>'
+    + '<span style="color:var(--text3)">Target ' + fmt(db.savingsGoal.target) + '</span>'
+    + '</div>'
+    + '<div class="progress-bar"><div class="progress-fill" style="width:' + goalProgress + '%;background:linear-gradient(90deg, var(--accent3), var(--accent2))"></div></div>'
+    + '<div style="margin-top:8px;display:flex;justify-content:space-between;font-size:11px;color:var(--text3)">'
+    + '<span>' + goalProgress.toFixed(1) + '% Completed</span>'
+    + '<span>Contribution: ' + fmt(db.savingsGoal.monthlyContribution) + '/mo</span>'
+    + '</div>'
+    + '</div>';
+
+  var cards = '<div class="cards-grid">'
+    + '<div class="card blue"><div class="card-label">Total Money Available</div><div class="card-value pos">' + fmt(cash) + '</div><div class="card-sub">GCash, Savings & Cash</div></div>'
+    + '<div class="card red"><div class="card-label">Money Owed</div><div class="card-value neg">' + fmt(owed) + '</div><div class="card-sub">Credit Cards + Debt</div></div>'
+    + '<div class="card green"><div class="card-label">Net Worth</div><div class="card-value ' + (net >= 0 ? 'pos' : 'neg') + '">' + fmt(net) + '</div><div class="card-sub">Assets minus liabilities</div></div>'
+    + '<div class="card gold"><div class="card-label">Upcoming Bills Total</div><div class="card-value warn">' + fmt(upcomingBillsTotal) + '</div><div class="card-sub">' + activeRec.length + ' scheduled bills</div></div>'
+    + '<div class="card purple"><div class="card-label">Monthly Income</div><div class="card-value pos">' + fmt(income) + '</div><div class="card-sub">Processed inflows</div></div>'
+    + '<div class="card gold"><div class="card-label">Monthly Expenses</div><div class="card-value neg">' + fmt(spend) + '</div><div class="card-sub">Logged outgoings</div></div>'
+    + '<div class="card ' + (health.score >= 70 ? 'green' : 'red') + '"><div class="card-label">Financial Health Score</div><div class="card-value">' + health.score + '/100</div><div class="card-sub">' + health.rating + ' rating</div></div>'
+    + '</div>';
+
+  var recentTxs = db.transactions.slice().reverse().slice(0, 5);
+  var txRows = '';
+  if (recentTxs.length === 0) {
+    txRows = '<tr><td colspan="5"><div class="empty-state">No transaction logs logged recently.</div></td></tr>';
+  } else {
+    for (var i = 0; i < recentTxs.length; i++) {
+      var t = recentTxs[i];
+      var amtColor = t.type === 'income' ? 'var(--success)' : t.type === 'transfer' ? 'var(--accent2)' : 'var(--danger)';
+      var amtSign = t.type === 'income' ? '+' : t.type === 'transfer' ? '⇄ ' : '-';
+      txRows += '<tr>';
+      txRows += '<td style="color:var(--text3)">' + fmtDate(t.date) + '</td>';
+      txRows += '<td style="font-weight:600">' + t.desc + '</td>';
+      txRows += '<td>' + acctName(t.fromAccount || t.toAccount) + '</td>';
+      txRows += '<td><span class="badge badge-blue">' + (t.category || 'Other') + '</span></td>';
+      txRows += '<td style="font-weight:800;color:' + amtColor + '">' + amtSign + fmt(t.amount) + '</td>';
+      txRows += '</tr>';
+    }
+  }
+
+  var tablesBlock = '<div style="display:grid;grid-template-columns:1fr;gap:20px;margin-bottom:20px">'
+    + '<div><div class="section-title"><span>Scheduled Bills Priorities</span><button class="btn btn-ghost" style="padding:4px 8px;font-size:11px" onclick="nav(\'recurring\')">Full Planner</button></div>'
+    + '<div class="tbl-wrap"><table><thead><tr><th>Scheduled Bill</th><th>Amount Due</th><th>Due Date</th><th>Alert State</th><th>Clear Action</th></tr></thead><tbody>' + recRows + '</tbody></table></div></div>'
+    + '<div><div class="section-title"><span>Recent Activity Logs</span><button class="btn btn-ghost" style="padding:4px 8px;font-size:11px" onclick="nav(\'transactions\')">Ledger</button></div>'
+    + '<div class="tbl-wrap"><table><thead><tr><th>Date</th><th>Log Details</th><th>Wallet Charged</th><th>Category</th><th>Flow Impact</th></tr></thead><tbody>' + txRows + '</tbody></table></div></div>'
+    + '</div>';
+
+  c.innerHTML = alertBannerHtml + quickActionsHtml + cards + savingsHtml + tablesBlock;
+}
+
+// ACCOUNTS MANAGER VIEW
+function renderAccounts(c) {
+  document.getElementById('top-actions').innerHTML = '<button class="btn btn-primary" onclick="showAccountModal(null)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Account</button>';
+
+  var filterHeader = '<div style="margin-bottom:16px;display:flex;gap:12px;align-items:center">'
+    + '<input type="text" id="acct-search" placeholder="Search Philippine Bank or E-Wallet..." style="flex:1;background:var(--surface);border:1px solid rgba(29, 51, 104, 0.5);border-radius:10px;padding:10px 14px;color:var(--text)" oninput="filterAccounts()">'
+    + '</div>';
+
+  var container = document.createElement('div');
+  container.innerHTML = filterHeader + '<div id="accounts-grid-target"></div>';
+  c.innerHTML = '';
+  c.appendChild(container);
+
+  buildAccountsDisplay(db.accounts);
+}
+
+function buildAccountsDisplay(filteredList) {
+  var target = document.getElementById('accounts-grid-target');
+  if (!target) return;
+
+  var creditAccts = filteredList.filter(function(a){return a.type==='credit';});
+  var otherAccts = filteredList.filter(function(a){return a.type!=='credit';});
+
+  var creditHtml = '';
+  if (creditAccts.length > 0) {
+    creditHtml += '<div class="section-title" style="margin-top:16px"><span>Credit Lines (Dynamic Balances)</span></div>';
+    creditHtml += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-bottom:24px">';
+    for (var i = 0; i < creditAccts.length; i++) {
+      var a = creditAccts[i];
+      var used = a.balance || 0;
+      var limit = a.creditLimit || 0;
+      var avail = limit - used;
+      var pct = limit ? Math.min(100, (used/limit)*100) : 0;
+      var barColor = pct > 80 ? 'var(--danger)' : pct > 60 ? 'var(--warning)' : 'var(--success)';
+      var dc = dueClass(a.dueDate);
+      var dn = daysUntil(a.dueDate);
+      var dueStr = '';
+      if (a.dueDate) {
+        var dLabel = '';
+        if (dn !== null) {
+          dLabel = dn < 0 ? '(overdue)' : '(' + dn + ' days left)';
+        }
+        dueStr = '<div style="margin-top:12px;padding-top:12px;border-top:1px solid rgba(29, 51, 104, 0.4);font-size:12px;display:flex;justify-content:space-between">'
+          + '<span style="color:var(--text3)">Payment Due</span>'
+          + '<span class="' + dc + '">' + fmtDate(a.dueDate) + ' ' + dLabel + '</span>'
+          + '</div>';
+      }
+      creditHtml += '<div class="card" style="border-left:4px solid ' + a.color + '">'
+        + '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px">'
+        + '<div><div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text3);margin-bottom:4px">CREDIT LINE</div>'
+        + '<div style="font-weight:700;font-size:15px">' + a.name + '</div></div>'
+        + '<div style="display:flex;gap:4px">'
+        + '<button class="action-btn" onclick="showAccountModal(\'' + a.id + '\')" title="Edit"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>'
+        + '<button class="action-btn del" onclick="deleteAccount(\'' + a.id + '\')" title="Delete"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg></button>'
+        + '</div></div>'
+        + '<div style="display:flex;justify-content:space-between;margin-bottom:4px;font-size:12px"><span style="color:var(--text3)">Amount Due (Balance)</span><span style="color:var(--danger);font-weight:700">' + fmt(used) + '</span></div>'
+        + '<div style="display:flex;justify-content:space-between;margin-bottom:4px;font-size:12px"><span style="color:var(--text3)">Limit Cap</span><span style="font-weight:600">' + fmt(limit) + '</span></div>'
+        + '<div style="display:flex;justify-content:space-between;margin-bottom:8px;font-size:12px"><span style="color:var(--text3)">Available Limit</span><span style="color:var(--success);font-weight:700">' + fmt(avail) + '</span></div>'
+        + '<div class="progress-bar"><div class="progress-fill" style="width:' + pct + '%;background:' + barColor + '"></div></div>'
+        + '<div style="font-size:10px;color:var(--text3);margin-top:4px;text-align:right">' + pct.toFixed(1) + '% Credit Used</div>'
+        + dueStr
+        + '</div>';
+    }
+    creditHtml += '</div>';
+  }
+
+  var otherHtml = '<div class="section-title"><span>Savings, Cash and Wallets</span></div>';
+  if (otherAccts.length === 0 && creditAccts.length === 0) {
+    otherHtml += '<div class="empty-state">No wallets added yet. Click "Add Account" to start.</div>';
+  } else {
+    otherHtml += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px">';
+    for (var i = 0; i < otherAccts.length; i++) {
+      var a = otherAccts[i];
+      var balColor = (a.type === 'loan') ? 'var(--danger)' : 'var(--success)';
+      var subTypeLabel = a.type === 'loan' ? 'Remaining Liability' : 'Balance Available';
+      var dueHtml = a.dueDate ? '<div style="font-size:11px;margin-top:8px;color:var(--text3)" class="' + dueClass(a.dueDate) + '">Repayment Due: ' + fmtDate(a.dueDate) + '</div>' : '';
+      otherHtml += '<div class="card" style="border-left:4px solid ' + a.color + '">'
+        + '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px">'
+        + '<div><div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text3);margin-bottom:4px">' + a.type + '</div>'
+        + '<div style="font-weight:700;font-size:15px">' + a.name + '</div></div>'
+        + '<div style="display:flex;gap:4px">'
+        + '<button class="action-btn" onclick="showAccountModal(\'' + a.id + '\')" title="Edit"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>'
+        + '<button class="action-btn del" onclick="deleteAccount(\'' + a.id + '\')" title="Delete"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg></button>'
+        + '</div></div>'
+        + '<div style="font-size:22px;font-weight:800;color:' + balColor + '">' + fmt(a.balance) + '</div>'
+        + '<div style="font-size:11px;color:var(--text3);margin-top:2px">' + subTypeLabel + '</div>'
+        + dueHtml
+        + '</div>';
+    }
+    otherHtml += '</div>';
+  }
+
+  target.innerHTML = creditHtml + otherHtml;
+}
+
+function filterAccounts() {
+  var q = (document.getElementById('acct-search').value || '').toLowerCase();
+  var filtered = db.accounts.filter(function(a) {
+    return (a.name||'').toLowerCase().indexOf(q) >= 0 || (a.type||'').toLowerCase().indexOf(q) >= 0;
+  });
+  buildAccountsDisplay(filtered);
+}
+
+// LEDGER VIEW
+function renderTransactions(c) {
+  document.getElementById('top-actions').innerHTML = '<button class="btn btn-primary" onclick="showTxModal(null)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Record</button>';
+
+  var acctOptsHtml = '<option value="">All Accounts</option>';
+  for (var i = 0; i < db.accounts.length; i++) {
+    acctOptsHtml += '<option value="' + db.accounts[i].id + '">' + db.accounts[i].name + '</option>';
+  }
+
+  var staticContent = '<div id="tx-summary-cards" style="margin-bottom:20px"></div>'
+    + '<div style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap">'
+    + '<input type="text" id="tx-search" placeholder="Search details or categories..." style="flex:1;min-width:200px;background:var(--surface);border:1px solid rgba(29, 51, 104, 0.5);border-radius:10px;padding:10px 14px;color:var(--text);font-size:13px" oninput="filterTx()">'
+    + '<select id="tx-filter-type" style="background:var(--surface);border:1px solid rgba(29, 51, 104, 0.5);border-radius:10px;padding:10px 14px;color:var(--text);font-size:13px" onchange="filterTx()">'
+    + '<option value="">All Ledger Types</option><option value="expense">Expenses</option><option value="income">Inflow Income</option><option value="transfer">Transfers</option>'
+    + '</select>'
+    + '<select id="tx-filter-acct" style="background:var(--surface);border:1px solid rgba(29, 51, 104, 0.5);border-radius:10px;padding:10px 14px;color:var(--text);font-size:13px" onchange="filterTx()">' + acctOptsHtml + '</select>'
+    + '</div>'
+    + '<div class="tbl-wrap"><table><thead><tr><th>Date</th><th>Description</th><th>Category</th><th>Source Account</th><th>Destination Account</th><th>Amount</th><th>Actions</th></tr></thead>'
+    + '<tbody id="tx-tbody"></tbody></table></div>';
+
+  c.innerHTML = staticContent;
+  filterTx();
+}
+
+function calculateAndDisplayTxSummary(filteredTxs) {
+  var count = filteredTxs.length;
+  var income = 0;
+  var expenses = 0;
+  var net = 0;
+  var totalTransacted = 0;
+
+  for (var i = 0; i < filteredTxs.length; i++) {
+    var t = filteredTxs[i];
+    if (t.type === 'income') {
+      income += t.amount;
+    } else if (t.type === 'expense') {
+      expenses += t.amount;
+    }
+    totalTransacted += t.amount;
+  }
+  net = income - expenses;
+
+  var sCards = '<div class="cards-grid" style="grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));">'
+    + '<div class="card blue"><div class="card-label">Item Count</div><div class="card-value">' + count + ' items</div><div class="card-sub">Filtered Transactions</div></div>'
+    + '<div class="card green"><div class="card-label">Total Income</div><div class="card-value pos">' + fmt(income) + '</div><div class="card-sub">Incoming Inflows</div></div>'
+    + '<div class="card red"><div class="card-label">Total Expenses</div><div class="card-value neg">' + fmt(expenses) + '</div><div class="card-sub">Outgoing Expenses</div></div>'
+    + '<div class="card ' + (net >= 0 ? 'green' : 'red') + '"><div class="card-label">Net Ledger Impact</div><div class="card-value ' + (net >= 0 ? 'pos' : 'neg') + '">' + fmt(net) + '</div><div class="card-sub">Ledger impact</div></div>'
+    + '</div>';
+
+  var container = document.getElementById('tx-summary-cards');
+  if (container) container.innerHTML = sCards;
+}
+
+function buildTxRows(txs) {
+  if (!txs.length) return '<tr><td colspan="7"><div class="empty-state">No transaction logs match search filters.</div></td></tr>';
+  var html = '';
+  for (var i = 0; i < txs.length; i++) {
+    var t = txs[i];
+    var amtColor = t.type === 'income' ? 'var(--success)' : t.type === 'transfer' ? 'var(--accent2)' : 'var(--danger)';
+    var amtSign = t.type === 'income' ? '+' : t.type === 'transfer' ? '⇄ ' : '-';
+    html += '<tr>'
+      + '<td style="color:var(--text3);white-space:nowrap">' + fmtDate(t.date) + '</td>'
+      + '<td style="max-width:200px;font-weight:600">' + (t.desc || '') + '</td>'
+      + '<td><span class="badge badge-blue">' + (t.category || '--') + '</span></td>'
+      + '<td>' + (t.fromAccount ? acctName(t.fromAccount) : '--') + '</td>'
+      + '<td>' + (t.toAccount ? acctName(t.toAccount) : '--') + '</td>'
+      + '<td style="font-weight:800;white-space:nowrap;color:' + amtColor + '">' + amtSign + fmt(t.amount) + '</td>'
+      + '<td>'
+      + '<div style="display:flex;gap:4px">'
+      + '<button class="action-btn" onclick="showTxModal(\'' + t.id + '\')" title="Edit"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>'
+      + '<button class="action-btn del" onclick="deleteTx(\'' + t.id + '\')" title="Delete"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg></button>'
+      + '</div>'
+      + '</td></tr>';
+  }
+  return html;
+}
+
+function filterTx() {
+  var q = (document.getElementById('tx-search').value || '').toLowerCase();
+  var typ = document.getElementById('tx-filter-type').value;
+  var acct = document.getElementById('tx-filter-acct').value;
+  var txs = db.transactions.slice().reverse();
+  
+  txs = txs.filter(function(t) {
+    var matchQ = !q || (t.desc||'').toLowerCase().indexOf(q) >= 0 || (t.category||'').toLowerCase().indexOf(q) >= 0;
+    var matchT = !typ || t.type === typ;
+    var matchA = !acct || t.fromAccount === acct || t.toAccount === acct;
+    return matchQ && matchT && matchA;
+  });
+
+  calculateAndDisplayTxSummary(txs);
+  document.getElementById('tx-tbody').innerHTML = buildTxRows(txs);
+}
+
+// QUICK ADD EXPENSE PAGE
+function renderAddTx(c) {
+  var todayTxs = db.transactions.filter(function(t){return t.date === today() && t.type === 'expense';}).reverse();
+  var microRows = '';
+  if (!todayTxs.length) {
+    microRows = '<div class="empty-state" style="padding:20px">No quick expenses recorded today.</div>';
+  } else {
+    microRows = '<table style="width:100%"><tbody>';
+    var total = 0;
+    for (var i = 0; i < todayTxs.length; i++) {
+      var t = todayTxs[i];
+      total += t.amount;
+      microRows += '<tr><td style="padding:8px 4px;font-size:12px;color:var(--text2);font-weight:600">' + t.desc + '</td>'
+        + '<td style="padding:8px 4px;font-size:11px;color:var(--text3)">' + acctName(t.fromAccount) + '</td>'
+        + '<td style="padding:8px 4px;font-weight:800;color:var(--danger);text-align:right">-' + fmt(t.amount) + '</td>'
+        + '<td style="padding:8px 4px;text-align:right"><button class="action-btn del" onclick="deleteTxMicro(\'' + t.id + '\')" title="Remove"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg></button></td></tr>';
+    }
+    microRows += '</tbody></table><div style="border-top:1px solid rgba(29, 51, 104, 0.5);margin-top:8px;padding-top:8px;text-align:right;font-weight:800;font-size:13px">Today\'s Total Outflow: <span style="color:var(--danger)">-' + fmt(total) + '</span></div>';
+  }
+
+  c.innerHTML = '<div style="max-width:560px">'
+    + '<div class="section-block">'
+    + '<div class="section-title" style="margin-bottom:16px"><span>Quick Add Expense</span></div>'
+    + '<div class="form-group"><label>Expense Description</label><input type="text" id="q-desc" placeholder="e.g. Jeepney fare, Starbucks, lunch combo..."></div>'
+    + '<div class="form-row">'
+    + '<div class="form-group"><label>Amount (PHP)</label><input type="number" id="q-amount" min="0" step="0.01" placeholder="20.00"></div>'
+    + '<div class="form-group"><label>Date Registered</label><input type="date" id="q-date" value="' + today() + '"></div>'
+    + '</div>'
+    + '<div class="form-row">'
+    + '<div class="form-group"><label>Account to Pay From</label><select id="q-acct">' + acctOptions('') + '</select></div>'
+    + '<div class="form-group"><label>Expense Category</label><select id="q-cat">' + catOptions('Food') + '</select></div>'
+    + '</div>'
+    + '<div class="form-group"><label>Optional Notes</label><textarea id="q-notes" placeholder="Write any extra details..."></textarea></div>'
+    + '<button class="btn btn-primary" style="width:100%" onclick="quickAddTx()">✓ Save Expense Record</button>'
+    + '</div>'
+    + '<div class="section-block">'
+    + '<div class="section-title" style="margin-bottom:4px"><span>Micro Expense Log - Today</span></div>'
+    + '<p style="font-size:11px;color:var(--text3);margin-bottom:12px">Instantly capture every small expense here.</p>'
+    + '<div id="micro-list">' + microRows + '</div>'
+    + '</div></div>';
+}
+
+function quickAddTx() {
+  var desc = document.getElementById('q-desc').value.trim();
+  var amount = parseFloat(document.getElementById('q-amount').value);
+  var date = document.getElementById('q-date').value;
+  var acctId = document.getElementById('q-acct').value;
+  var cat = document.getElementById('q-cat').value;
+  var notes = document.getElementById('q-notes').value;
+
+  if (!desc || isNaN(amount) || amount <= 0 || !date || !acctId) { 
+    toast('Please fill in all required fields.', 'error'); 
+    return; 
+  }
+
+  var a = getAccount(acctId);
+  if (!a) { 
+    toast('Source account selection is invalid.', 'error'); 
+    return; 
+  }
+
+  // Overdraft Check (Req: Smart Validation except Credit Cards & Loans)
+  if (a.type !== 'credit' && a.type !== 'loan' && (a.balance - amount) < 0) {
+    toast('Transaction Blocked: Insufficient funds in ' + a.name + '.', 'error');
+    return;
+  }
+
+  var tx = {id:genId(), date:date, desc:desc, amount:amount, type:'expense', fromAccount:acctId, category:cat, notes:notes};
+  db.transactions.push(tx);
+
+  // Core Account Balance Deduction logic (Smart Account Balance System / Smart Credit Card System)
+  if (a.type === 'credit' || a.type === 'loan') {
+    a.balance += amount; // Credit Owed increases
+  } else {
+    a.balance -= amount; // Asset decreases
+  }
+
+  saveDB();
+  toast('Expense saved successfully!');
+  document.getElementById('q-desc').value = '';
+  document.getElementById('q-amount').value = '';
+  document.getElementById('q-notes').value = '';
+  renderAddTx(document.getElementById('content'));
+}
+
+function deleteTxMicro(id) {
+  var tx = db.transactions.find(function(t){ return t.id === id; });
+  if (tx) {
+    var a = getAccount(tx.fromAccount);
+    if (a) {
+      if (a.type === 'credit' || a.type === 'loan') {
+        a.balance = Math.max(0, a.balance - tx.amount);
+      } else {
+        a.balance += tx.amount;
+      }
+    }
+    db.transactions = db.transactions.filter(function(t){return t.id !== id;});
+    saveDB();
+    toast('Transaction removed successfully.');
+    renderAddTx(document.getElementById('content'));
+  }
+}
+
+// RECURRING BILLS MANAGER
+function renderRecurring(c) {
+  var allRec = db.recurring;
+  var activeRec = allRec.filter(function(r){return r.status === 'Active';});
+  var pausedRec = allRec.filter(function(r){return r.status === 'Paused';});
+  
+  // Real-time Dashboard Insight Metrics (Satisfies "Smart Dashboard Insights" rule)
+  var totalEstimatedCost = allRec.reduce(function(s,r){return s+r.amount;}, 0);
+  var activeMonthlyCost = activeRec.reduce(function(s,r){return s+r.amount;}, 0);
+  
+  // Weekly due calculation
+  var weeklyDueCount = 0;
+  var monthlyDueCount = 0;
+  var overdueCount = 0;
+  var lifetimeCount = 0;
+  var nextUpcomingBillName = "--";
+  var nextMinDays = 999999;
+
+  for (var i = 0; i < allRec.length; i++) {
+    var r = allRec[i];
+    if (r.months === 'Lifetime') lifetimeCount++;
+    if (r.status !== 'Active') continue;
+
+    var billDate = r.startMonth + '-' + String(r.dueDay).padStart(2, '0');
+    var diff = daysUntil(billDate);
+    if (diff !== null) {
+      if (diff < 0) overdueCount++;
+      if (diff >= 0 && diff <= 7) weeklyDueCount++;
+      if (diff >= 0 && diff <= 30) monthlyDueCount++;
+      if (diff < nextMinDays) {
+        nextMinDays = diff;
+        nextUpcomingBillName = r.name + " (" + fmtDate(billDate) + ")";
+      }
+    }
+  }
+
+  // Paycheck Settings panel
+  var paycheckHtml = '<div class="section-block">'
+    + '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px">'
+    + '<div class="section-title" style="margin-bottom:0"><span>Paycheck System Profile</span></div>'
+    + '<button class="btn btn-ghost" style="font-size:11px; padding:4px 8px" onclick="showPaycheckModal()">Configure Paycheck</button>'
+    + '</div>'
+    + '<div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; font-size:13px">'
+    + '<div>Paycheck Amount: <strong>' + fmt(db.payday.amount) + '</strong></div>'
+    + '<div>Frequency: <strong>' + db.payday.frequency + ' (Every ' + db.payday.day + ')</strong></div>'
+    + '<div>Status: <span class="badge badge-green">' + db.payday.status + '</span></div>'
+    + '</div>'
+    + '</div>';
+
+  var searchSection = '<div style="margin-bottom:16px;display:flex;gap:12px;align-items:center">'
+    + '<input type="text" id="rec-search" placeholder="Search recurring bills by name or account..." style="flex:1;background:var(--surface);border:1px solid rgba(29, 51, 104, 0.5);border-radius:10px;padding:10px 14px;color:var(--text)" oninput="filterRecurring()">'
+    + '<button class="btn btn-primary" onclick="showRecurringModal(null)">Add Recurring Bill</button>'
+    + '</div>';
+
+  // Integrated Dashboard Insights Grid
+  var insightCards = '<div class="cards-grid" style="grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); margin-bottom: 24px;">'
+    + '<div class="card blue"><div class="card-label">Total Bills Setup</div><div class="card-value">' + allRec.length + ' Profiles</div><div class="card-sub">' + activeRec.length + ' Active, ' + pausedRec.length + ' Paused</div></div>'
+    + '<div class="card purple"><div class="card-label">Estimated Monthly Total</div><div class="card-value neg">' + fmt(totalEstimatedCost) + '</div><div class="card-sub">All configured profiles</div></div>'
+    + '<div class="card gold"><div class="card-label">Active Total Cost</div><div class="card-value neg">' + fmt(activeMonthlyCost) + '</div><div class="card-sub">Active bills this cycle</div></div>'
+    + '<div class="card red"><div class="card-label">Overdue Bills</div><div class="card-value neg">' + overdueCount + ' Overdue</div><div class="card-sub">Require immediate action</div></div>'
+    + '<div class="card blue"><div class="card-label">Due This Week</div><div class="card-value warn">' + weeklyDueCount + ' Bills</div><div class="card-sub">Within next 7 days</div></div>'
+    + '<div class="card blue"><div class="card-label">Due This Month</div><div class="card-value">' + monthlyDueCount + ' Bills</div><div class="card-sub">Within 30 day scope</div></div>'
+    + '<div class="card green"><div class="card-label">Paid This Month</div><div class="card-value pos">' + fmt(db.paidThisMonthAmount || 0) + '</div><div class="card-sub">' + (db.paidThisMonthCount || 0) + ' bills paid</div></div>'
+    + '<div class="card purple"><div class="card-label">Next Scheduled Due</div><div class="card-value" style="font-size:15px; font-weight:700; word-break: break-all;">' + nextUpcomingBillName + '</div><div class="card-sub">Closest active schedule</div></div>'
+    + '</div>';
+
+  var bodyContent = '<div class="tbl-wrap"><table><thead><tr><th>Priority</th><th>Bill Name</th><th>Account Charged</th><th>Amount Due</th><th>Next Due Date</th><th>Remaining cycles</th><th>Category</th><th>Status</th><th>Actions</th></tr></thead>'
+    + '<tbody id="rec-tbody"></tbody></table></div>';
+
+  c.innerHTML = paycheckHtml + searchSection + insightCards + bodyContent;
+  filterRecurring();
+}
+
+function buildRecurringTableRows(list) {
+  if (!list.length) return '<tr><td colspan="9"><div class="empty-state">No matching recurring bills configured.</div></td></tr>';
+  var html = '';
+  for (var i = 0; i < list.length; i++) {
+    var r = list[i];
+    
+    // Priority badge (Smart Bill Priority System)
+    var pBadge = '<span class="badge badge-gray">P' + r.priority + '</span>';
+    if (r.priority === 1) pBadge = '<span class="badge badge-red">P1 (Utility)</span>';
+    else if (r.priority === 2) pBadge = '<span class="badge badge-yellow">P2 (School/Obl)</span>';
+    else if (r.priority === 3) pBadge = '<span class="badge badge-blue">P3 (Credit)</span>';
+    else if (r.priority === 4) pBadge = '<span class="badge badge-purple">P4 (Savings)</span>';
+
+    // Status Display
+    var stCls = 'badge-blue';
+    if (r.status === 'Active') stCls = 'badge-green';
+    if (r.status === 'Paused') stCls = 'badge-gray';
+    if (r.status === 'Paid') stCls = 'badge-purple';
+    
+    var statusBadge = '<span class="badge ' + stCls + '" style="cursor:pointer" onclick="toggleRecurringStatus(\'' + r.id + '\')">' + r.status + '</span>';
+    
+    // Display Due date formatted to MM/DD/YYYY
+    var displayDue = '--';
+    if (r.startMonth && r.dueDay) {
+      displayDue = fmtDate(r.startMonth + '-' + String(r.dueDay).padStart(2, '0'));
+    }
+
+    var payActionBtn = r.status === 'Active' 
+      ? '<button class="action-btn pay" onclick="payRecurringBill(\'' + r.id + '\')" title="Mark as Paid"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></button>'
+      : '';
+
+    html += '<tr>'
+      + '<td>' + pBadge + '</td>'
+      + '<td style="font-weight:700">' + r.name + '</td>'
+      + '<td>' + acctName(r.account) + '</td>'
+      + '<td style="font-weight:800;color:var(--danger)">' + fmt(r.amount) + '</td>'
+      + '<td><span class="tag">' + displayDue + '</span></td>'
+      + '<td><span class="badge badge-blue">' + (typeof r.months === 'number' ? r.months + ' cycles' : r.months) + '</span></td>'
+      + '<td><span class="badge badge-gray">' + (r.category||'--') + '</span></td>'
+      + '<td>' + statusBadge + '</td>'
+      + '<td>'
+      + '<div style="display:flex;gap:4px">'
+      + payActionBtn
+      + '<button class="action-btn" onclick="showRecurringModal(\'' + r.id + '\')" title="Edit"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>'
+      + '<button class="action-btn del" onclick="deleteRecurring(\'' + r.id + '\')" title="Delete"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg></button>'
+      + '</div>'
+      + '</td></tr>';
+  }
+  return html;
+}
+
+function filterRecurring() {
+  var q = (document.getElementById('rec-search').value || '').toLowerCase();
+  var list = db.recurring.filter(function(r) {
+    return (r.name||'').toLowerCase().indexOf(q) >= 0 || acctName(r.account).toLowerCase().indexOf(q) >= 0 || (r.category||'').toLowerCase().indexOf(q) >= 0;
+  });
+  
+  // Sort by priority first (Smart Bill Priority System)
+  list.sort(function(a, b) {
+    return (a.priority || 4) - (b.priority || 4);
+  });
+  
+  document.getElementById('rec-tbody').innerHTML = buildRecurringTableRows(list);
+}
+
+// PAID TRIGGER CYCLE LOGIC (Requirement: Recurring Bill Status System)
+function payRecurringBill(id) {
+  var r = db.recurring.find(function(item){ return item.id === id; });
+  if (!r) return;
+
+  var a = getAccount(r.account);
+  if (!a) {
+    toast('No valid account linked to this bill.', 'error');
+    return;
+  }
+
+  // Account Balance Validation (Except Credit Card types / loans)
+  if (a.type !== 'credit' && a.type !== 'loan' && (a.balance - r.amount) < 0) {
+    toast('Payment Blocked: Insufficient funds in ' + a.name + '.', 'error');
+    return;
+  }
+
+  // Create In-Ledger Payment transaction
+  var dateStr = r.startMonth + '-' + String(r.dueDay).padStart(2, '0');
+  var generatedTx = {
+    id: genId(),
+    date: dateStr,
+    desc: 'Paid scheduled bill: ' + r.name,
+    amount: r.amount,
+    type: 'expense',
+    fromAccount: r.account,
+    category: r.category || 'Utilities',
+    notes: 'Auto-processed monthly installment cycle.'
+  };
+
+  db.transactions.push(generatedTx);
+
+  // Sync balances immediately (Smart Account Balance & Smart Credit Card rules)
+  if (a.type === 'credit' || a.type === 'loan') {
+    if (r.name.indexOf('Credit Card') >= 0 || r.name.indexOf('Credit Payment') >= 0 || r.category === 'Credit Card') {
+      var matchedCC = db.accounts.find(function(acc) {
+        return acc.type === 'credit' && (r.name.indexOf(acc.name) >= 0 || r.account === acc.id);
+      });
+      if (matchedCC) {
+        matchedCC.balance = Math.max(0, matchedCC.balance - r.amount); // Payment reduces Owed!
+      }
+    } else {
+      a.balance += r.amount; // Card charge increases debt balance
+    }
+  } else {
+    a.balance -= r.amount; // Cash decreases
+  }
+
+  // Increment Paid monthly statistics insights
+  db.paidThisMonthCount = (db.paidThisMonthCount || 0) + 1;
+  db.paidThisMonthAmount = (db.paidThisMonthAmount || 0) + r.amount;
+
+  // Handle Savings Goal specific contribution syncing
+  if ((r.type === 'Savings Goal' || r.category === 'Savings Goal') && db.savingsGoal) {
+    db.savingsGoal.current = Math.min(db.savingsGoal.target, db.savingsGoal.current + r.amount);
+  }
+
+  // Cycle date calculation: Move forward precisely 1 month
+  var currentYr = parseInt(r.startMonth.split('-')[0]);
+  var currentMo = parseInt(r.startMonth.split('-')[1]);
+  currentMo++;
+  if (currentMo > 12) {
+    currentMo = 1;
+    currentYr++;
+  }
+  var nextMonthStr = String(currentYr) + '-' + String(currentMo).padStart(2, '0');
+
+  r.startMonth = nextMonthStr;
+  
+  if (typeof r.months === 'number') {
+    r.months = Math.max(0, r.months - 1);
+    if (r.months <= 0) {
+      r.status = 'Paid'; // Deactivate completely
+    } else {
+      r.status = 'Active'; // Reset to active cycle
+    }
+  } else {
+    r.status = 'Active'; // Lifetime Utility always resets to Active
+  }
+
+  saveDB();
+  toast('✓ ' + r.name + ' paid! Next billing occurrence created successfully.', 'success');
+  nav(currentPage);
+}
+
+function toggleRecurringStatus(id) {
+  var r = db.recurring.find(function(item){ return item.id === id; });
+  if (r) {
+    if (r.status === 'Active') r.status = 'Paused';
+    else if (r.status === 'Paused') r.status = 'Active';
+    else if (r.status === 'Paid') r.status = 'Active';
+    saveDB();
+    filterRecurring();
+  }
+}
+
+// FUTURE BALANCE FORECAST
+function renderCashFlow(c) {
+  var cash = totalCash();
+  var activeRec = db.recurring.filter(function(r){return r.status === 'Active';});
+  var upcomingBillsTotal = activeRec.reduce(function(s,r){return s+r.amount;}, 0);
+
+  var monthlyPayInflow = db.payday && db.payday.status === 'Active' ? (db.payday.amount * 4) : 0;
+  
+  var sim30_income = monthlyPayInflow;
+  var sim30_bills = upcomingBillsTotal;
+  var bal30 = cash + sim30_income - sim30_bills;
+
+  var sim60_income = monthlyPayInflow * 2;
+  var sim60_bills = upcomingBillsTotal * 2;
+  var bal60 = cash + sim60_income - sim60_bills;
+
+  var sim90_income = monthlyPayInflow * 3;
+  var sim90_bills = upcomingBillsTotal * 3;
+  var bal90 = cash + sim90_income - sim90_bills;
+
+  var phases = [
+    {label:'30-Day Future Balance', note:'Expected paydays (+' + fmt(sim30_income) + ') minus active bills (-' + fmt(sim30_bills) + ')', val:bal30},
+    {label:'60-Day Future Balance', note:'Two-month projection (Income: +' + fmt(sim60_income) + ', Bills: -' + fmt(sim60_bills) + ')', val:bal60},
+    {label:'90-Day Future Balance', note:'Quarterly projection (Income: +' + fmt(sim90_income) + ', Bills: -' + fmt(sim90_bills) + ')', val:bal90}
+  ];
+
+  var phaseHtml = '';
+  for (var i = 0; i < phases.length; i++) {
+    var p = phases[i];
+    var border = i > 0 ? 'border-top:1px solid rgba(29, 51, 104, 0.4);' : '';
+    phaseHtml += '<div style="display:flex;align-items:center;gap:16px;padding:16px 0;' + border + '">'
+      + '<div style="width:36px;height:36px;border-radius:50%;background:var(--surface2);border:2px solid ' + (p.val < 0 ? 'var(--danger)' : 'var(--accent)') + ';display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:' + (p.val < 0 ? 'var(--danger)' : '#60a5fa') + ';flex-shrink:0">' + (i+1) + '</div>'
+      + '<div style="flex:1"><div style="font-weight:700;font-size:14px">' + p.label + '</div><div style="font-size:11px;color:var(--text3)">' + p.note + '</div></div>'
+      + '<div style="font-size:18px;font-weight:800;color:' + (p.val < 0 ? 'var(--danger)' : 'var(--success)') + '">' + fmt(p.val) + '</div>'
+      + '</div>';
+  }
+
+  c.innerHTML = '<div class="section-block" style="margin-bottom:16px">'
+    + '<div class="section-title" style="margin-bottom:16px"><span>Smart Future Balance Projection & Forecast</span></div>'
+    + '<div style="margin-bottom:16px; font-size:13px; color:var(--text2)">Starting Base Cash: <strong>' + fmt(cash) + '</strong></div>'
+    + phaseHtml + '</div>';
+}
+
+// MODAL CONTROLLERS (PORTABLE & COMPLETE PH SELECTION)
+function showAccountModal(id) {
+  var a = id ? getAccount(id) : null;
+  document.getElementById('modal-title').textContent = a ? 'Edit Philippine Wallet/Card' : 'Add Philippine Bank or E-Wallet';
+  
+  var typeOptions = '';
+  var types = ['savings','cash','ewallet','credit','loan','debit'];
+  for (var i = 0; i < types.length; i++) {
+    var t = types[i];
+    typeOptions += '<option value="' + t + '"' + (a && a.type===t ? ' selected' : '') + '>' + t.charAt(0).toUpperCase()+t.slice(1) + '</option>';
+  }
+  
+  var showLimit = a && a.type === 'credit';
+  var showDue = a && (a.type === 'credit' || a.type === 'loan');
+  var balLabel = a && a.type==='credit' ? 'Balance Owed (PHP)' : a && a.type==='loan' ? 'Outstanding Principal (PHP)' : 'Initial Balance (PHP)';
+
+  document.getElementById('modal-body').innerHTML = ''
+    + '<div class="form-group" style="position:relative;">'
+    + '<label>Search & Select Institution / Name</label>'
+    + '<input type="text" id="a-name" value="' + (a?a.name:'') + '" placeholder="e.g. GCash, UnionBank, BDO Credit Card..." oninput="handleInstitutionInput(this)" autocomplete="off">'
+    + '<div class="inst-suggestions" id="inst-suggestion-box"></div>'
+    + '</div>'
+    + '<div class="form-row">'
+    + '<div class="form-group"><label>Account Type</label><select id="a-type" onchange="updateAcctForm()">' + typeOptions + '</select></div>'
+    + '<div class="form-group"><label>Visual Accent Color</label><input type="color" id="a-color" value="' + (a?a.color:'#3b82f6') + '"></div>'
+    + '</div>'
+    + '<div class="form-group"><label id="a-bal-label">' + balLabel + '</label><input type="number" id="a-balance" min="0" step="0.01" value="' + (a?a.balance:'0') + '" placeholder="0.00"></div>'
+    + '<div class="form-group" id="a-limit-grp" style="' + (showLimit?'':'display:none') + '"><label>Credit Card Limit (PHP)</label><input type="number" id="a-limit" min="0" step="0.01" value="' + (a&&a.creditLimit?a.creditLimit:'') + '" placeholder="30000"></div>'
+    + '<div class="form-group" id="a-due-grp" style="' + (showDue?'':'display:none') + '"><label>Payment Due Date</label><input type="date" id="a-due" value="' + (a&&a.dueDate?a.dueDate:'') + '"></div>';
+
+  document.getElementById('modal-footer').innerHTML = '<button class="btn btn-ghost" onclick="closeModal()">Cancel</button>'
+    + '<button class="btn btn-primary" onclick="saveAccount(\'' + (id||'') + '\')">' + (a?'Save Changes':'Add Account') + '</button>';
+  
+  document.getElementById('modal').style.display = 'flex';
+}
+
+function handleInstitutionInput(el) {
+  var q = el.value.toLowerCase();
+  var box = document.getElementById('inst-suggestion-box');
+  if (!box) return;
+  if (!q) {
+    box.style.display = 'none';
+    return;
+  }
+
+  var matches = [];
+  var allGroups = Object.keys(PH_FIN_INSTITUTIONS);
+  for (var k = 0; k < allGroups.length; k++) {
+    var group = allGroups[k];
+    var items = PH_FIN_INSTITUTIONS[group];
+    for (var j = 0; j < items.length; j++) {
+      if (items[j].toLowerCase().indexOf(q) >= 0) {
+        matches.push({ name: items[j], group: group });
+      }
+    }
+  }
+
+  if (matches.length === 0) {
+    box.style.display = 'none';
+    return;
+  }
+
+  var html = '';
+  var displayCount = Math.min(6, matches.length);
+  for (var i = 0; i < displayCount; i++) {
+    html += '<div class="inst-suggestion-item" onclick="selectInstitutionSuggestion(\'' + matches[i].name.replace(/'/g, "\\'") + '\', \'' + matches[i].group + '\')">'
+      + matches[i].name + ' <span style="font-size:9px;color:var(--text3);margin-left:6px">(' + matches[i].group + ')</span>'
+      + '</div>';
+  }
+  box.innerHTML = html;
+  box.style.display = 'block';
+}
+
+function selectInstitutionSuggestion(name, group) {
+  document.getElementById('a-name').value = name;
+  document.getElementById('inst-suggestion-box').style.display = 'none';
+  
+  var typeSelect = document.getElementById('a-type');
+  if (group === 'Credit Cards') {
+    typeSelect.value = 'credit';
+  } else if (group === 'E-Wallets') {
+    typeSelect.value = 'ewallet';
+  } else {
+    typeSelect.value = 'savings';
+  }
+  updateAcctForm();
+}
+
+function updateAcctForm() {
+  var t = document.getElementById('a-type').value;
+  document.getElementById('a-limit-grp').style.display = t==='credit' ? '' : 'none';
+  document.getElementById('a-due-grp').style.display = (t==='credit'||t==='loan') ? '' : 'none';
+  var lbl = t==='credit' ? 'Balance Owed (PHP)' : t==='loan' ? 'Outstanding Principal (PHP)' : 'Current Balance (PHP)';
+  document.getElementById('a-bal-label').textContent = lbl;
+}
+
+function saveAccount(id) {
+  var name = document.getElementById('a-name').value.trim();
+  var type = document.getElementById('a-type').value;
+  var color = document.getElementById('a-color').value;
+  var balance = parseFloat(document.getElementById('a-balance').value) || 0;
+  var limit = parseFloat((document.getElementById('a-limit')||{}).value) || 0;
+  var due = (document.getElementById('a-due')||{}).value || null;
+
+  if (!name) { toast('Please input a name or bank brand.', 'error'); return; }
+  
+  var obj = {name:name, type:type, color:color, balance:balance};
+  if (type === 'credit') obj.creditLimit = limit;
+  if (type === 'credit' || type === 'loan') obj.dueDate = due;
+
+  if (id) {
+    var idx = db.accounts.findIndex(function(x){return x.id === id;});
+    if (idx >= 0) db.accounts[idx] = Object.assign({}, db.accounts[idx], obj);
+    toast('Account modified successfully.');
+  } else {
+    obj.id = genId();
+    db.accounts.push(obj);
+    toast('Account created successfully.');
+  }
+  saveDB(); 
+  closeModal(); 
+  nav('accounts');
+}
+
+function deleteAccount(id) {
+  if (!confirm('Are you sure you want to delete this account?')) return;
+  db.accounts = db.accounts.filter(function(a){return a.id!==id;});
+  saveDB(); 
+  toast('Account deleted.'); 
+  nav('accounts');
+}
+
+// DETAILED LEDGER TRANSACTION MODAL
+function showTxModal(id, forceType) {
+  var tx = id ? db.transactions.find(function(t){return t.id===id;}) : null;
+  document.getElementById('modal-title').textContent = tx ? 'Edit Ledger Record' : 'Record Ledger Flow';
+  var initialType = forceType || (tx ? tx.type : 'expense');
+  var showTo = initialType === 'transfer';
+  
+  document.getElementById('modal-body').innerHTML = ''
+    + '<div class="form-group"><label>Transaction Description</label><input type="text" id="tx-desc" value="' + (tx?tx.desc:'') + '" placeholder="e.g. Weekly paycheck, electricity, grocery..."></div>'
+    + '<div class="form-row">'
+    + '<div class="form-group"><label>Amount (PHP)</label><input type="number" id="tx-amount" min="0" step="0.01" value="' + (tx?tx.amount:'') + '" placeholder="0.00"></div>'
+    + '<div class="form-group"><label>Date</label><input type="date" id="tx-date" value="' + (tx?tx.date:today()) + '"></div>'
+    + '</div>'
+    + '<div class="form-row">'
+    + '<div class="form-group"><label>Flow Type</label><select id="tx-type" onchange="updateTxForm()"><option value="expense"' + (initialType==='expense'?' selected':'') + '>Expense Outflow</option><option value="income"' + (initialType==='income'?' selected':'') + '>Inflow Income</option><option value="transfer"' + (initialType==='transfer'?' selected':'') + '>Internal Transfer</option></select></div>'
+    + '<div class="form-group"><label>Category Selection</label><select id="tx-cat">' + catOptions(tx?tx.category:'Food') + '</select></div>'
+    + '</div>'
+    + '<div class="form-group"><label id="tx-from-lbl">Account Charged</label><select id="tx-from">' + acctOptions(tx?tx.fromAccount:'') + '</select></div>'
+    + '<div class="form-group" id="tx-to-grp" style="' + (showTo?'':'display:none') + '"><label>Destination Account</label><select id="tx-to">' + acctOptions(tx?tx.toAccount:'') + '</select></div>'
+    + '<div class="form-group"><label>Log Notes</label><textarea id="tx-notes" placeholder="Optional details...">' + (tx&&tx.notes?tx.notes:'') + '</textarea></div>';
+
+  document.getElementById('modal-footer').innerHTML = '<button class="btn btn-ghost" onclick="closeModal()">Cancel</button>'
+    + '<button class="btn btn-primary" onclick="saveTx(\'' + (id||'') + '\')">' + (tx?'Save Changes':'Add Record') + '</button>';
+  
+  document.getElementById('modal').style.display = 'flex';
+}
+
+function updateTxForm() {
+  var t = document.getElementById('tx-type').value;
+  document.getElementById('tx-to-grp').style.display = t==='transfer' ? '' : 'none';
+  document.getElementById('tx-from-lbl').textContent = t==='income' ? 'Recipient Inflow Account' : 'Account Charged';
+}
+
+function saveTx(id) {
+  var desc = document.getElementById('tx-desc').value.trim();
+  var amount = parseFloat(document.getElementById('tx-amount').value);
+  var date = document.getElementById('tx-date').value;
+  var type = document.getElementById('tx-type').value;
+  var cat = document.getElementById('tx-cat').value;
+  var from = document.getElementById('tx-from').value;
+  var to = document.getElementById('tx-to') ? document.getElementById('tx-to').value : '';
+  var notes = document.getElementById('tx-notes').value;
+
+  if (!desc || isNaN(amount) || amount<=0 || !date) { toast('Please complete all required fields correctly.', 'error'); return; }
+
+  // Overdraft Guard check
+  var fa = getAccount(from);
+  if (type === 'expense' || type === 'transfer') {
+    if (fa && fa.type !== 'credit' && fa.type !== 'loan' && (fa.balance - amount) < 0) {
+      toast('Overdraft Guard: Account ' + fa.name + ' does not have sufficient balance.', 'error');
+      return;
+    }
+  }
+
+  if (id) {
+    var oldTx = db.transactions.find(function(x){return x.id === id;});
+    if (oldTx) {
+      revertLedgerBalanceEffect(oldTx);
+    }
+  }
+
+  var obj = {desc:desc, amount:amount, date:date, type:type, category:cat, notes:notes, fromAccount:from||null, toAccount:to||null};
+  
+  if (id) {
+    var idx = db.transactions.findIndex(function(x){return x.id === id;});
+    if (idx >= 0) db.transactions[idx] = Object.assign({}, db.transactions[idx], obj);
+    applyLedgerBalanceEffect(obj);
+    toast('Transaction recorded & balances synchronized.');
+  } else {
+    obj.id = genId();
+    db.transactions.push(obj);
+    applyLedgerBalanceEffect(obj);
+    toast('Transaction registered.');
+  }
+
+  saveDB(); 
+  closeModal(); 
+  nav('transactions');
+}
+
+function applyLedgerBalanceEffect(tx) {
+  var fa = getAccount(tx.fromAccount);
+  var ta = getAccount(tx.toAccount);
+
+  if (tx.type === 'expense') {
+    if (fa) {
+      if (fa.type === 'credit' || fa.type === 'loan') fa.balance += tx.amount;
+      else fa.balance = Math.max(0, fa.balance - tx.amount);
+    }
+  } else if (tx.type === 'income') {
+    if (fa) {
+      if (fa.type === 'credit' || fa.type === 'loan') fa.balance = Math.max(0, fa.balance - tx.amount);
+      else fa.balance += tx.amount;
+    }
+  } else if (tx.type === 'transfer') {
+    if (fa) {
+      if (fa.type === 'credit' || fa.type === 'loan') fa.balance += tx.amount;
+      else fa.balance = Math.max(0, fa.balance - tx.amount);
+    }
+    if (ta) {
+      if (ta.type === 'credit' || ta.type === 'loan') ta.balance = Math.max(0, ta.balance - tx.amount);
+      else ta.balance += tx.amount;
+    }
+  }
+}
+
+function revertLedgerBalanceEffect(tx) {
+  var fa = getAccount(tx.fromAccount);
+  var ta = getAccount(tx.toAccount);
+
+  if (tx.type === 'expense') {
+    if (fa) {
+      if (fa.type === 'credit' || fa.type === 'loan') fa.balance = Math.max(0, fa.balance - tx.amount);
+      else fa.balance += tx.amount;
+    }
+  } else if (tx.type === 'income') {
+    if (fa) {
+      if (fa.type === 'credit' || fa.type === 'loan') fa.balance += tx.amount;
+      else fa.balance = Math.max(0, fa.balance - tx.amount);
+    }
+  } else if (tx.type === 'transfer') {
+    if (fa) {
+      if (fa.type === 'credit' || fa.type === 'loan') fa.balance = Math.max(0, fa.balance - tx.amount);
+      else fa.balance += tx.amount;
+    }
+    if (ta) {
+      if (ta.type === 'credit' || ta.type === 'loan') ta.balance += tx.amount;
+      else ta.balance = Math.max(0, ta.balance - tx.amount);
+    }
+  }
+}
+
+function deleteTx(id) {
+  if (!confirm('Are you sure you want to delete this ledger record?')) return;
+  var tx = db.transactions.find(function(t){return t.id===id;});
+  if (tx) {
+    revertLedgerBalanceEffect(tx);
+    db.transactions = db.transactions.filter(function(t){return t.id!==id;});
+    saveDB(); 
+    toast('Transaction log deleted.'); 
+    nav('transactions');
+  }
+}
+
+// TRANSFER MODAL
+function showTransferModal() {
+  document.getElementById('modal-title').textContent = 'Internal Transfer Funds';
+  document.getElementById('modal-body').innerHTML = ''
+    + '<div class="form-group"><label>Transfer Amount (PHP)</label><input type="number" id="tr-amount" min="0" placeholder="0.00"></div>'
+    + '<div class="form-group"><label>Date</label><input type="date" id="tr-date" value="' + today() + '"></div>'
+    + '<div class="form-group"><label>Source Wallet / Card</label><select id="tr-from">' + acctOptions('') + '</select></div>'
+    + '<div class="form-group"><label>Destination Wallet / Card</label><select id="tr-to">' + acctOptions('') + '</select></div>'
+    + '<div class="form-group"><label>Log Notes</label><input type="text" id="tr-notes" placeholder="e.g. Wallet cash out, CC payment"></div>';
+
+  document.getElementById('modal-footer').innerHTML = '<button class="btn btn-ghost" onclick="closeModal()">Cancel</button>'
+    + '<button class="btn btn-primary" onclick="executeTransfer()">Proceed Transfer</button>';
+  
+  document.getElementById('modal').style.display = 'flex';
+}
+
+function executeTransfer() {
+  var amount = parseFloat(document.getElementById('tr-amount').value);
+  var date = document.getElementById('tr-date').value;
+  var from = document.getElementById('tr-from').value;
+  var to = document.getElementById('tr-to').value;
+  var notes = document.getElementById('tr-notes').value || 'Internal wallet transfer';
+
+  if (isNaN(amount) || amount <= 0 || !from || !to) {
+    toast('Please fill in all details correctly.', 'error');
+    return;
+  }
+  if (from === to) {
+    toast('Source and destination accounts must be different.', 'error');
+    return;
+  }
+
+  var fa = getAccount(from);
+  if (fa && fa.type !== 'credit' && fa.type !== 'loan' && (fa.balance - amount) < 0) {
+    toast('Transfer Blocked: Insufficient funds in ' + fa.name, 'error');
+    return;
+  }
+
+  var tx = {
+    id: genId(),
+    date: date,
+    desc: 'Transfer from ' + acctName(from) + ' to ' + acctName(to),
+    amount: amount,
+    type: 'transfer',
+    fromAccount: from,
+    toAccount: to,
+    category: 'Transfer',
+    notes: notes
+  };
+
+  db.transactions.push(tx);
+  applyLedgerBalanceEffect(tx);
+  saveDB();
+  toast('Transfer executed & balances synchronized.', 'success');
+  closeModal();
+  nav(currentPage);
+}
+
+// DYNAMIC PAYCHECK SETTINGS MODAL
+function showPaycheckModal() {
+  document.getElementById('modal-title').textContent = 'Configure Weekly Payday Profile';
+  
+  var activeStatus = db.payday.status === 'Active';
+  
+  document.getElementById('modal-body').innerHTML = ''
+    + '<div class="form-group"><label>Paycheck Inflow Amount (₱)</label><input type="number" id="p-amount" value="' + db.payday.amount + '" step="0.01"></div>'
+    + '<div class="form-row">'
+    + '<div class="form-group"><label>Inflow Frequency</label><select id="p-freq"><option value="Weekly" selected>Weekly</option></select></div>'
+    + '<div class="form-group"><label>Preferred Payday Day</label><select id="p-day">'
+    + '<option value="Monday"' + (db.payday.day==='Monday'?' selected':'') + '>Monday</option>'
+    + '<option value="Tuesday"' + (db.payday.day==='Tuesday'?' selected':'') + '>Tuesday</option>'
+    + '<option value="Wednesday"' + (db.payday.day==='Wednesday'?' selected':'') + '>Wednesday</option>'
+    + '<option value="Thursday"' + (db.payday.day==='Thursday'?' selected':'') + '>Thursday</option>'
+    + '<option value="Friday"' + (db.payday.day==='Friday'?' selected':'') + '>Friday</option>'
+    + '</select></div>'
+    + '</div>'
+    + '<div class="form-row">'
+    + '<div class="form-group"><label>Tracking Start Date</label><input type="date" id="p-start" value="' + db.payday.startDate + '"></div>'
+    + '<div class="form-group"><label>Scheduler Status</label><select id="p-status"><option value="Active"' + (activeStatus?' selected':'') + '>Active</option><option value="Paused"' + (!activeStatus?' selected':'') + '>Paused</option></select></div>'
+    + '</div>';
+
+  document.getElementById('modal-footer').innerHTML = '<button class="btn btn-ghost" onclick="closeModal()">Cancel</button>'
+    + '<button class="btn btn-primary" onclick="savePaycheckSettings()">Save Configurations</button>';
+  
+  document.getElementById('modal').style.display = 'flex';
+}
+
+function savePaycheckSettings() {
+  var amount = parseFloat(document.getElementById('p-amount').value) || 0;
+  var freq = document.getElementById('p-freq').value;
+  var day = document.getElementById('p-day').value;
+  var start = document.getElementById('p-start').value;
+  var status = document.getElementById('p-status').value;
+
+  if (amount <= 0 || !start) {
+    toast('Please input valid paycheck metrics.', 'error');
+    return;
+  }
+
+  db.payday.amount = amount;
+  db.payday.frequency = freq;
+  db.payday.day = day;
+  db.payday.startDate = start;
+  db.payday.status = status;
+
+  saveDB();
+  autoProcessPaydays(); // Auto process with new rules
+  toast('Weekly Payday settings configured successfully.', 'success');
+  closeModal();
+  nav('recurring');
+}
+
+// MODAL - RECURRING PLANNER CRUD (Full attributes support)
+function showRecurringModal(id) {
+  var r = id ? db.recurring.find(function(item){return item.id===id;}) : null;
+  document.getElementById('modal-title').textContent = r ? 'Edit Recurring Bill Details' : 'Configure New Recurring Bill';
+  
+  var monthsVal = r ? r.months : 12;
+  var isLifetime = r && r.months === 'Lifetime';
+  var notesVal = r && r.notes ? r.notes : '';
+
+  document.getElementById('modal-body').innerHTML = ''
+    + '<div class="form-group"><label>Bill Target Name</label><input type="text" id="r-name" value="' + (r?r.name:'') + '" placeholder="e.g. VECO, PLDT LLC, Sinking Funds"></div>'
+    + '<div class="form-row">'
+    + '<div class="form-group"><label>Monthly Outflow (₱)</label><input type="number" id="r-amount" min="0" step="0.01" value="' + (r?r.amount:'') + '" placeholder="0.00"></div>'
+    + '<div class="form-group"><label>Scheduled Due Day of Month (1-31)</label><input type="number" id="r-day" min="1" max="31" value="' + (r?r.dueDay:15) + '" placeholder="15"></div>'
+    + '</div>'
+    + '<div class="form-row">'
+    + '<div class="form-group"><label>Pay Charge Account Source</label><select id="r-acct">' + acctOptions(r?r.account:'') + '</select></div>'
+    + '<div class="form-group"><label>Priority Bracket</label><select id="r-priority">'
+    + '<option value="1"' + (r&&r.priority===1?' selected':'') + '>Priority 1 (Utilities & Internet)</option>'
+    + '<option value="2"' + (r&&r.priority===2?' selected':'') + '>Priority 2 (School & Loans)</option>'
+    + '<option value="3"' + (r&&r.priority===3?' selected':'') + '>Priority 3 (Credit Card Payments)</option>'
+    + '<option value="4"' + (r&&r.priority===4?' selected':'') + '>Priority 4 (Savings Goals Contribution)</option>'
+    + '</select></div>'
+    + '</div>'
+    + '<div class="form-row">'
+    + '<div class="form-group"><label>Duration Profile</label><select id="r-duration-type" onchange="toggleDurationInput()">'
+    + '<option value="Lifetime"' + (isLifetime?' selected':'') + '>Lifetime Utility</option>'
+    + '<option value="Limited"' + (!isLifetime?' selected':'') + '>Limited cycles (Months)</option>'
+    + '</select></div>'
+    + '<div class="form-group" id="r-months-wrapper" style="' + (isLifetime?'display:none':'') + '"><label>Duration Limit (Months)</label><input type="number" id="r-months" min="1" max="360" value="' + (isLifetime?12:monthsVal) + '"></div>'
+    + '</div>'
+    + '<div class="form-row">'
+    + '<div class="form-group"><label>Current Billing Month (YYYY-MM)</label><input type="month" id="r-start" value="' + (r?r.startMonth:today().slice(0,7)) + '"></div>'
+    + '<div class="form-group"><label>Category Selection</label><select id="r-cat">' + catOptions(r?r.category:'Utilities') + '</select></div>'
+    + '</div>'
+    + '<div class="form-group"><label>Scheduled Bill Notes</label><textarea id="r-notes" placeholder="e.g. Split installment notes...">' + notesVal + '</textarea></div>';
+
+  document.getElementById('modal-footer').innerHTML = '<button class="btn btn-ghost" onclick="closeModal()">Cancel</button>'
+    + '<button class="btn btn-primary" onclick="saveRecurring(\'' + (id||'') + '\')">' + (r?'Save Changes':'Add Bill Schedule') + '</button>';
+  
+  document.getElementById('modal').style.display = 'flex';
+}
+
+function toggleDurationInput() {
+  var t = document.getElementById('r-duration-type').value;
+  document.getElementById('r-months-wrapper').style.display = t === 'Lifetime' ? 'none' : '';
+}
+
+function saveRecurring(id) {
+  var name = document.getElementById('r-name').value.trim();
+  var amount = parseFloat(document.getElementById('r-amount').value) || 0;
+  var dueDay = parseInt(document.getElementById('r-day').value) || 15;
+  var account = document.getElementById('r-acct').value;
+  var priority = parseInt(document.getElementById('r-priority').value) || 4;
+  var durType = document.getElementById('r-duration-type').value;
+  var months = durType === 'Lifetime' ? 'Lifetime' : parseInt(document.getElementById('r-months').value) || 12;
+  var startMonth = document.getElementById('r-start').value;
+  var category = document.getElementById('r-cat').value;
+  var notes = document.getElementById('r-notes').value || '';
+
+  if (!name || !account) { toast('Please complete all fields.', 'error'); return; }
+
+  var obj = {
+    name: name, 
+    amount: amount, 
+    dueDay: dueDay, 
+    account: account, 
+    priority: priority, 
+    months: months, 
+    startMonth: startMonth, 
+    category: category, 
+    status: 'Active',
+    notes: notes
+  };
+
+  if (id) {
+    var idx = db.recurring.findIndex(function(item){return item.id===id;});
+    if (idx >= 0) db.recurring[idx] = Object.assign({}, db.recurring[idx], obj);
+    toast('Recurring bill profile saved.');
+  } else {
+    obj.id = genId();
+    db.recurring.push(obj);
+    toast('Recurring bill configured.');
+  }
+  saveDB(); 
+  closeModal(); 
+  nav('recurring');
+}
+
+function deleteRecurring(id) {
+  if (!confirm('Remove this recurring bill setup?')) return;
+  db.recurring = db.recurring.filter(function(r){return r.id!==id;});
+  saveDB(); 
+  toast('Recurring bill schedule deleted.'); 
+  nav('recurring');
+}
+
+function closeModal() { 
+  document.getElementById('modal').style.display = 'none'; 
+}
+
+// PORTABILITY PACKS
+function exportData() {
+  var backup = JSON.stringify(db, null, 2);
+  var blob = new Blob([backup], {type: 'application/json'});
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'FlowTrack_Backup_06-13-2026.json';
+  a.click();
+  toast('Data exported successfully!');
+}
+
+function triggerImport() {
+  document.getElementById('import-file-input').click();
+}
+
+function handleImport(evt) {
+  var files = evt.target.files;
+  if (!files || files.length === 0) return;
+  
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      var importedJson = JSON.parse(e.target.result);
+      if (importedJson && Array.isArray(importedJson.accounts) && Array.isArray(importedJson.transactions)) {
+        if (confirm('Import verified backup? This will overwrite your current app state entirely.')) {
+          db = importedJson;
+          saveDB();
+          autoProcessPaydays();
+          toast('Backup restored successfully!', 'success');
+          nav(currentPage);
+        }
+      } else {
+        toast('Failed: Invalid backup JSON structure.', 'error');
+      }
+    } catch(err) {
+      toast('Failed to read backup file.', 'error');
+    }
+  };
+  reader.readAsText(files[0]);
+  evt.target.value = '';
+}
+
+function confirmResetData() {
+  document.getElementById('modal-title').textContent = '⚠️ DANGER: Full System Reset';
+  
+  document.getElementById('modal-body').innerHTML = ''
+    + '<p style="color:var(--danger);font-weight:700;margin-bottom:12px">WARNING: This process will destroy all balances, wallets, history logs, and schedules!</p>'
+    + '<p style="margin-bottom:16px;color:var(--text2)">To confirm, please type exactly "<strong style="color:var(--text)">DELETE</strong>" in the field below:</p>'
+    + '<input type="text" id="reset-verify-input" placeholder="DELETE" style="width:100%;background:var(--surface2);border:1px solid rgba(239, 68, 68, 0.5);border-radius:10px;padding:12px;color:#fff;font-weight:bold;text-align:center">';
+
+  document.getElementById('modal-footer').innerHTML = '<button class="btn btn-ghost" onclick="closeModal()">Abort</button>'
+    + '<button class="btn btn-danger" onclick="executeSystemReset()">Complete Hard Wipe</button>';
+  
+  document.getElementById('modal').style.display = 'flex';
+}
+
+function executeSystemReset() {
+  var verifyInput = document.getElementById('reset-verify-input');
+  if (verifyInput && verifyInput.value === 'DELETE') {
+    db = defaultDB();
+    saveDB();
+    toast('All data cleared. System reset successful.');
+    closeModal();
+    nav('dashboard');
+  } else {
+    toast('Incorrect verification keyword typed.', 'error');
+  }
+}
+
+function downloadApp() {
+  var html = document.documentElement.outerHTML;
+  var blob = new Blob([html], {type:'text/html'});
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'flowtrack-finance.html';
+  a.click();
+  toast('Offline Portable App File downloaded!');
+}
+
+// BOOTSTRAP INITIALIZATION
+autoProcessPaydays();
+updateBadges();
+nav('dashboard');
+</script>
+</body>
+</html>

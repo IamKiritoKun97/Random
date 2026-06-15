@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SecureVault - Personal Info Wallet</title>
+    <!-- Tailwind CSS for modern design -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        vault: {
+                            bg: '#0B0F19',
+                            card: '#161F30',
+                            cardHover: '#1E2B42',
+                            border: '#24344D',
+                            accent: '#3B82F6',
+                            accentHover: '#2563EB',
+                            success: '#10B981',
+                            textMuted: '#94A3B8'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['SF Pro Display', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom smooth transition settings and active tap states for mobile */
+        .tap-feedback {
+            transition: transform 0.1s ease, background-color 0.2s ease;
+        }
+        .tap-feedback:active {
+            transform: scale(0.97);
+        }
+        /* Custom scrollbar style */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0B0F19;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #24344D;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #3B82F6;
+        }
+    </style>
+</head>
+<body class="bg-vault-bg text-slate-100 min-h-full font-sans antialiased flex flex-col selection:bg-blue-600 selection:text-white">
+
+    <!-- TOP HEADER -->
+    <header class="sticky top-0 z-30 bg-vault-bg/95 backdrop-blur-md border-b border-vault-border px-4 py-4 md:px-8">
+        <div class="max-w-4xl mx-auto flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <!-- Shield Icon -->
+                <div class="p-2.5 bg-blue-600/10 rounded-xl border border-blue-500/20 text-blue-400">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-tight bg-gradient-to-r from-white via-slate-100 to-blue-400 bg-clip-text text-transparent">
+                        SecureVault
+                    </h1>
+                    <p class="text-xs text-vault-textMuted font-medium">Offline Personal Ledger</p>
+                </div>
+            </div>
+
+            <!-- Sync/Data actions -->
+            <div class="flex items-center gap-2">
+                <button onclick="openImportExportModal()" class="tap-feedback p-2 text-slate-400 hover:text-white bg-vault-card border border-vault-border rounded-lg hover:bg-vault-cardHover" title="Import/Export JSON">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
+                    </svg>
+                </button>
+                <button onclick="openAddModal()" class="tap-feedback flex items-center gap-2 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg text-sm shadow-lg shadow-blue-500/20">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path>
+                    </svg>
+                    <span class="hidden sm:inline">Add Entry</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN BODY -->
+    <main class="flex-grow max-w-4xl w-full mx-auto px-4 py-6 md:px-8">
+        
+        <!-- SEARCH & FILTERS -->
+        <div class="space-y-4 mb-6">
+            <!-- Search bar -->
+            <div class="relative">
+                <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-400">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                </span>
+                <input 
+                    type="search" 
+                    id="searchBar" 
+                    oninput="handleSearch()"
+                    placeholder="Search accounts, card numbers, labels..." 
+                    class="w-full pl-10 pr-10 py-3 bg-vault-card border border-vault-border rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 text-base"
+                >
+                <!-- Clear Button -->
+                <button 
+                    id="clearSearch"
+                    onclick="clearSearchInput()"
+                    class="hidden absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-white"
+                >
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Categories / Quick Filter Tags -->
+            <div class="flex gap-2 overflow-x-auto pb-1 -mx-4 px-4 scrollbar-thin" id="categoryContainer">
+                <!-- Dynamically generated tags will be placed here -->
+            </div>
+        </div>
+
+        <!-- LIST CONTAINER -->
+        <section class="space-y-4">
+            <div class="flex items-center justify-between px-1">
+                <span id="itemsCount" class="text-xs font-semibold uppercase tracking-wider text-vault-textMuted">Loading data...</span>
+                <button onclick="resetToPreloadedData()" class="text-xs text-blue-400 hover:text-blue-300 font-medium transition hover:underline">
+                    Reset to Default Data
+                </button>
+            </div>
+
+            <!-- The main cards list -->
+            <div id="vaultList" class="bg-vault-card/40 border border-vault-border/60 rounded-2xl overflow-hidden divide-y divide-vault-border/40 shadow-xl">
+                <!-- Dynamic List Items will render here -->
+            </div>
+
+            <!-- Empty State -->
+            <div id="emptyState" class="hidden flex-col items-center justify-center py-16 px-4 text-center bg-vault-card/20 border border-dashed border-vault-border rounded-2xl">
+                <div class="p-4 bg-slate-800/40 text-slate-400 rounded-full mb-4">
+                    <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-lg font-bold text-slate-200">No entries found</h3>
+                <p class="text-sm text-vault-textMuted max-w-xs mt-1">Try refining your search keyword, selecting a different filter, or adding a new record.</p>
+                <button onclick="openAddModal()" class="mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-lg transition">
+                    Create New Entry
+                </button>
+            </div>
+        </section>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="mt-auto py-6 border-t border-vault-border bg-vault-bg/50 text-center text-xs text-vault-textMuted">
+        <p>© 2026 SecureVault Ledger • Structured securely inside Sandbox</p>
+    </footer>
+
+    <!-- ADD/EDIT ENTRY MODAL -->
+    <div id="entryModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm hidden animate-fade-in">
+        <div class="bg-[#111827] border border-vault-border w-full max-w-md rounded-2xl shadow-2xl overflow-hidden transform scale-95 transition-transform duration-200" id="entryModalContent">
+            <!-- Modal Header -->
+            <div class="px-6 py-4 border-b border-vault-border flex items-center justify-between">
+                <h3 id="modalTitle" class="text-lg font-bold text-white">Add Entry</h3>
+                <button onclick="closeEntryModal()" class="text-slate-400 hover:text-white transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <!-- Modal Body -->
+            <form id="entryForm" onsubmit="saveEntry(event)" class="p-6 space-y-4">
+                <input type="hidden" id="editIndex" value="-1">
+                
+                <div>
+                    <label for="entryLabel" class="block text-xs font-semibold uppercase tracking-wider text-vault-textMuted mb-2">Label</label>
+                    <input 
+                        type="text" 
+                        id="entryLabel" 
+                        required 
+                        placeholder="e.g., UnionBank CC - Ramon"
+                        class="w-full px-4 py-2.5 bg-vault-bg border border-vault-border rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                    >
+                </div>
+
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <label for="entryValue" class="block text-xs font-semibold uppercase tracking-wider text-vault-textMuted">Value (Secret / Card Number)</label>
+                        <span class="text-[10px] text-blue-400 font-medium">Tap-to-copy target</span>
+                    </div>
+                    <input 
+                        type="text" 
+                        id="entryValue" 
+                        required 
+                        placeholder="e.g., 4157640069907745"
+                        class="w-full px-4 py-2.5 bg-vault-bg border border-vault-border rounded-xl text-white font-mono tracking-wider focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                    >
+                </div>
+
+                <!-- Footer Buttons -->
+                <div class="flex items-center gap-3 pt-4 border-t border-vault-border">
+                    <button type="button" onclick="closeEntryModal()" class="flex-1 py-3 bg-vault-card hover:bg-vault-cardHover text-slate-300 font-bold rounded-xl text-sm transition">
+                        Cancel
+                    </button>
+                    <button type="submit" class="flex-1 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-sm shadow-lg shadow-blue-500/20 transition">
+                        Save Entry
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- IMPORT/EXPORT DATA MODAL -->
+    <div id="dataModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm hidden animate-fade-in">
+        <div class="bg-[#111827] border border-vault-border w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden transform scale-95 transition-transform duration-200" id="dataModalContent">
+            <!-- Modal Header -->
+            <div class="px-6 py-4 border-b border-vault-border flex items-center justify-between">
+                <h3 class="text-lg font-bold text-white">Import / Export Backup</h3>
+                <button onclick="closeImportExportModal()" class="text-slate-400 hover:text-white transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="p-6 space-y-6">
+                <!-- EXPORT -->
+                <div>
+                    <h4 class="text-sm font-bold text-slate-200 mb-2">Export Data</h4>
+                    <p class="text-xs text-vault-textMuted mb-3">Download your entire secure vault list encrypted as a raw JSON backup file directly onto your device.</p>
+                    <button onclick="exportData()" class="tap-feedback flex items-center justify-center gap-2 w-full py-2.5 bg-blue-600/10 hover:bg-blue-600/20 text-blue-400 border border-blue-500/30 rounded-xl text-sm font-bold transition">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                        </svg>
+                        Download Backup (.json)
+                    </button>
+                </div>
+
+                <div class="border-t border-vault-border my-2"></div>
+
+                <!-- IMPORT -->
+                <div>
+                    <h4 class="text-sm font-bold text-slate-200 mb-2">Import Data</h4>
+                    <p class="text-xs text-vault-textMuted mb-3">Select a previously exported SecureVault JSON format backup. This action will add or merge entries.</p>
+                    
+                    <div class="space-y-3">
+                        <label class="block">
+                            <span class="sr-only">Choose backup file</span>
+                            <input type="file" id="importFileInput" accept=".json" class="block w-full text-xs text-slate-400
+                              file:mr-4 file:py-2 file:px-4
+                              file:rounded-xl file:border-0
+                              file:text-xs file:font-semibold
+                              file:bg-vault-card file:text-slate-300
+                              hover:file:bg-vault-cardHover cursor-pointer"
+                            >
+                        </label>
+
+                        <div class="flex items-center gap-2">
+                            <button onclick="importData(false)" class="flex-1 py-2 bg-emerald-600/10 hover:bg-emerald-600/20 text-emerald-400 border border-emerald-500/30 rounded-xl text-xs font-bold transition">
+                                Merge with Existing
+                            </button>
+                            <button onclick="importData(true)" class="flex-1 py-2 bg-rose-600/10 hover:bg-rose-600/20 text-rose-400 border border-rose-500/30 rounded-xl text-xs font-bold transition">
+                                Replace Entire Database
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RAW DATA AREA (Fallback Copy) -->
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <h4 class="text-xs font-bold text-slate-300 uppercase tracking-wider">Raw JSON Panel</h4>
+                        <button onclick="copyRawJson()" class="text-xs text-blue-400 hover:underline">Copy JSON Text</button>
+                    </div>
+                    <textarea id="rawJsonArea" readonly class="w-full h-24 p-2 bg-black/60 border border-vault-border rounded-lg text-[10px] font-mono text-slate-400 focus:outline-none focus:ring-0"></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST POPUP NOTIFICATION (Replacement for Browser Alert) -->
+    <div id="toastNotification" class="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50 flex items-center gap-2.5 px-5 py-3 bg-slate-900 border border-blue-500/30 text-white text-sm font-semibold rounded-full shadow-2xl transition duration-300 opacity-0 pointer-events-none translate-y-2">
+        <span class="p-1 bg-blue-500/10 text-blue-400 rounded-full" id="toastIcon">
+            <!-- Icon changed via JS -->
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path>
+            </svg>
+        </span>
+        <span id="toastMessage">Successfully Copied!</span>
+    </div>
+
+    <!-- MAIN CORE LOGIC -->
+    <script>
+        // Preloaded dataset provided by user structured correctly
+        const PRELOADED_DATA = [
+            // Maribank
+            { "label": "Maribank: Gladys", "value": "0000" },
+          
+            { "label": "PAGIBIG Loyalty Card: Ramon", "value": "0000" }
+        ];
+
+        // Global State
+        let vaultEntries = [];
+        let selectedCategory = 'All';
+
+        // Initialize App
+        window.addEventListener('DOMContentLoaded', () => {
+            initData();
+            renderCategoryFilters();
+            renderList();
+        });
+
+        // Initialize state from localstorage or preloaded
+        function initData() {
+            const saved = localStorage.getItem('secure_vault_data');
+            if (saved) {
+                try {
+                    vaultEntries = JSON.parse(saved);
+                } catch(e) {
+                    console.error("Corrupted localstorage. Loading default.", e);
+                    vaultEntries = [...PRELOADED_DATA];
+                }
+            } else {
+                vaultEntries = [...PRELOADED_DATA];
+                saveToLocalStorage();
+            }
+        }
+
+        // Save state to storage
+        function saveToLocalStorage() {
+            localStorage.setItem('secure_vault_data', JSON.stringify(vaultEntries));
+            // Update raw json visual text inside import/export
+            document.getElementById('rawJsonArea').value = JSON.stringify(vaultEntries, null, 2);
+        }
+
+        // Restore completely back to preloaded
+        function resetToPreloadedData() {
+            if (confirm("Are you sure you want to reset back to original default accounts/cards data? Your additions will be deleted unless backed up.")) {
+                vaultEntries = [...PRELOADED_DATA];
+                saveToLocalStorage();
+                selectedCategory = 'All';
+                renderCategoryFilters();
+                renderList();
+                showToast("Reset back to preloaded template accounts!", "success");
+            }
+        }
+
+        // Dynamically compute categorization from labels (e.g. text before ':')
+        function getCategories() {
+            const categories = new Set(['All']);
+            vaultEntries.forEach(entry => {
+                if (entry.label.includes(':')) {
+                    const cat = entry.label.split(':')[0].trim();
+                    if (cat) categories.add(cat);
+                } else if (entry.label.includes('-')) {
+                    const cat = entry.label.split('-')[0].trim();
+                    if (cat) categories.add(cat);
+                } else {
+                    categories.add('Others');
+                }
+            });
+            return Array.from(categories);
+        }
+
+        // Render categorization tabs dynamically
+        function renderCategoryFilters() {
+            const container = document.getElementById('categoryContainer');
+            const categories = getCategories();
+            
+            // Check if selectedCategory is still valid, else fall back to 'All'
+            if (!categories.includes(selectedCategory)) {
+                selectedCategory = 'All';
+            }
+
+            container.innerHTML = '';
+            categories.forEach(cat => {
+                const isSelected = selectedCategory === cat;
+                const button = document.createElement('button');
+                button.className = `tap-feedback shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold border transition ${
+                    isSelected 
+                    ? 'bg-blue-600 text-white border-blue-500 shadow-md shadow-blue-500/10' 
+                    : 'bg-vault-card text-slate-300 border-vault-border hover:bg-vault-cardHover'
+                }`;
+                button.textContent = cat;
+                button.onclick = () => {
+                    selectedCategory = cat;
+                    renderCategoryFilters();
+                    renderList();
+                };
+                container.appendChild(button);
+            });
+        }
+
+        // Perform instant search & filtering
+        function handleSearch() {
+            const searchBar = document.getElementById('searchBar');
+            const clearBtn = document.getElementById('clearSearch');
+            
+            if (searchBar.value.trim().length > 0) {
+                clearBtn.classList.remove('hidden');
+            } else {
+                clearBtn.classList.add('hidden');
+            }
+            renderList();
+        }
+
+        function clearSearchInput() {
+            const searchBar = document.getElementById('searchBar');
+            searchBar.value = '';
+            document.getElementById('clearSearch').classList.add('hidden');
+            searchBar.focus();
+            renderList();
+        }
+
+        // Render main list content dynamically
+        function renderList() {
+            const listContainer = document.getElementById('vaultList');
+            const emptyState = document.getElementById('emptyState');
+            const searchVal = document.getElementById('searchBar').value.toLowerCase().trim();
+
+            // Filter process
+            let filtered = vaultEntries.map((entry, index) => ({ ...entry, originalIndex: index }));
+
+            // 1. Category Filter
+            if (selectedCategory !== 'All') {
+                filtered = filtered.filter(item => {
+                    if (selectedCategory === 'Others') {
+                        return !item.label.includes(':') && !item.label.includes('-');
+                    }
+                    const cleanLabel = item.label.toLowerCase();
+                    const cleanCat = selectedCategory.toLowerCase();
+                    return cleanLabel.startsWith(cleanCat + ':') || cleanLabel.startsWith(cleanCat + ' -') || cleanLabel.startsWith(cleanCat + '-');
+                });
+            }
+
+            // 2. Search Text Filter
+            if (searchVal !== '') {
+                filtered = filtered.filter(item => 
+                    item.label.toLowerCase().includes(searchVal) || 
+                    item.value.toLowerCase().includes(searchVal)
+                );
+            }
+
+            // Clear visual container
+            listContainer.innerHTML = '';
+
+            if (filtered.length === 0) {
+                listContainer.classList.add('hidden');
+                emptyState.classList.remove('hidden');
+                document.getElementById('itemsCount').textContent = `0 entries found`;
+                return;
+            }
+
+            listContainer.classList.remove('hidden');
+            emptyState.classList.add('hidden');
+            document.getElementById('itemsCount').textContent = `${filtered.length} entries shown`;
+
+            // Draw lists
+            filtered.forEach(item => {
+                const row = document.createElement('div');
+                row.className = "flex items-center justify-between p-4 bg-vault-card/20 hover:bg-vault-card/60 transition duration-150 relative group";
+                
+                // Content wrap (Left/Right division layout)
+                row.innerHTML = `
+                    <!-- LEFT: Description / Label -->
+                    <div class="flex-1 min-w-0 pr-4">
+                        <div class="text-xs text-vault-textMuted uppercase font-bold tracking-wider mb-0.5 truncate flex items-center gap-1.5">
+                            ${extractCategoryLabel(item.label)}
+                        </div>
+                        <h4 class="text-sm md:text-base font-semibold text-slate-100 truncate">
+                            ${extractAccountName(item.label)}
+                        </h4>
+                    </div>
+
+                    <!-- RIGHT: Value Copy Zone -->
+                    <div class="flex items-center gap-2">
+                        <!-- Value Display (Tappable area) -->
+                        <button onclick="copyToClipboard('${item.value.replace(/'/g, "\\'")}')" 
+                                class="tap-feedback flex items-center gap-2 px-3.5 py-2 bg-vault-card hover:bg-vault-cardHover border border-vault-border rounded-xl text-left font-mono text-sm tracking-wider font-semibold text-blue-400 select-all max-w-[180px] sm:max-w-[280px] truncate"
+                                title="Click to copy value">
+                            <span class="truncate">${item.value}</span>
+                            <!-- Inline SVG Copy Icon -->
+                            <svg class="w-4 h-4 shrink-0 text-slate-400 hover:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path>
+                            </svg>
+                        </button>
+
+                        <!-- Actions (Edit/Delete) Dropdown/Mini-buttons -->
+                        <div class="flex items-center gap-1">
+                            <button onclick="openEditModal(${item.originalIndex})" class="tap-feedback p-2 text-slate-400 hover:text-slate-100 hover:bg-vault-cardHover rounded-lg" title="Edit row">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                                </svg>
+                            </button>
+                            <button onclick="deleteEntry(${item.originalIndex})" class="tap-feedback p-2 text-slate-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg" title="Delete row">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                listContainer.appendChild(row);
+            });
+        }
+
+        // Helper formatting: Break "Category: Item" into structured visual parts
+        function extractCategoryLabel(label) {
+            if (label.includes(':')) {
+                return label.split(':')[0].trim();
+            } else if (label.includes('-')) {
+                return label.split('-')[0].trim();
+            }
+            return 'General';
+        }
+
+        function extractAccountName(label) {
+            if (label.includes(':')) {
+                return label.split(':').slice(1).join(':').trim();
+            } else if (label.includes('-')) {
+                return label.split('-').slice(1).join('-').trim();
+            }
+            return label;
+        }
+
+        // Clipboard robust copier with fallbacks for sandboxed iframe
+        function copyToClipboard(text) {
+            let success = false;
+            
+            // Standard API
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text)
+                    .then(() => {
+                        showToast(`Copied: ${text}`);
+                    })
+                    .catch((err) => {
+                        // Fallback trigger
+                        fallbackCopy(text);
+                    });
+            } else {
+                fallbackCopy(text);
+            }
+        }
+
+        // Mandatory fallback script specifically optimized for iframe environments
+        function fallbackCopy(text) {
+            try {
+                const textArea = document.createElement("textarea");
+                textArea.value = text;
+                
+                // Prevent screen scroll jump on iOS
+                textArea.style.top = "0";
+                textArea.style.left = "0";
+                textArea.style.position = "fixed";
+                textArea.style.opacity = "0";
+                
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                
+                const successful = document.execCommand('copy');
+                document.body.removeChild(textArea);
+                
+                if (successful) {
+                    showToast(`Copied: ${text}`);
+                } else {
+                    showToast("Could not copy automatically. Select the text manually.", "error");
+                }
+            } catch (err) {
+                console.error('Fallback Copy Error: ', err);
+                showToast("Failed copying to clipboard.", "error");
+            }
+        }
+
+        // Display beautiful in-app toast notification instead of native popup
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toastNotification');
+            const msgSpan = document.getElementById('toastMessage');
+            const iconSpan = document.getElementById('toastIcon');
+
+            msgSpan.textContent = message;
+
+            if (type === 'success') {
+                iconSpan.className = "p-1 bg-emerald-500/10 text-emerald-400 rounded-full";
+                iconSpan.innerHTML = `
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                `;
+            } else {
+                iconSpan.className = "p-1 bg-rose-500/10 text-rose-400 rounded-full";
+                iconSpan.innerHTML = `
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                    </svg>
+                `;
+            }
+
+            // Animate In
+            toast.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-2');
+            toast.classList.add('opacity-100', 'translate-y-0');
+
+            // Hide after timeout
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'pointer-events-none', 'translate-y-2');
+                toast.classList.remove('opacity-100', 'translate-y-0');
+            }, 2500);
+        }
+
+        // Modal triggers
+        function openAddModal() {
+            document.getElementById('modalTitle').textContent = "Create Secure Entry";
+            document.getElementById('editIndex').value = "-1";
+            document.getElementById('entryForm').reset();
+            
+            const modal = document.getElementById('entryModal');
+            const content = document.getElementById('entryModalContent');
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                content.classList.remove('scale-95');
+                content.classList.add('scale-100');
+            }, 10);
+        }
+
+        function openEditModal(index) {
+            const entry = vaultEntries[index];
+            document.getElementById('modalTitle').textContent = "Modify Secure Entry";
+            document.getElementById('editIndex').value = index;
+            document.getElementById('entryLabel').value = entry.label;
+            document.getElementById('entryValue').value = entry.value;
+
+            const modal = document.getElementById('entryModal');
+            const content = document.getElementById('entryModalContent');
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                content.classList.remove('scale-95');
+                content.classList.add('scale-100');
+            }, 10);
+        }
+
+        function closeEntryModal() {
+            const modal = document.getElementById('entryModal');
+            const content = document.getElementById('entryModalContent');
+            content.classList.remove('scale-100');
+            content.classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 150);
+        }
+
+        // Save actions
+        function saveEntry(e) {
+            e.preventDefault();
+            const index = parseInt(document.getElementById('editIndex').value);
+            const label = document.getElementById('entryLabel').value.trim();
+            const value = document.getElementById('entryValue').value.trim();
+
+            if (!label || !value) {
+                showToast("Labels and values cannot be empty.", "error");
+                return;
+            }
+
+            const newEntry = { label, value };
+
+            if (index === -1) {
+                // Add new
+                vaultEntries.unshift(newEntry);
+                showToast("New entry stored safely!");
+            } else {
+                // Update existing
+                vaultEntries[index] = newEntry;
+                showToast("Vault record updated!");
+            }
+
+            saveToLocalStorage();
+            closeEntryModal();
+            renderCategoryFilters();
+            renderList();
+        }
+
+        // Delete Row
+        function deleteEntry(index) {
+            const entry = vaultEntries[index];
+            if (confirm(`Are you sure you want to permanently delete "${entry.label}"?`)) {
+                vaultEntries.splice(index, 1);
+                saveToLocalStorage();
+                renderCategoryFilters();
+                renderList();
+                showToast("Entry scrubbed from database.", "error");
+            }
+        }
+
+        // Import & Export Panel Management
+        function openImportExportModal() {
+            const modal = document.getElementById('dataModal');
+            const content = document.getElementById('dataModalContent');
+            
+            // Keep JSON area accurate
+            document.getElementById('rawJsonArea').value = JSON.stringify(vaultEntries, null, 2);
+
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                content.classList.remove('scale-95');
+                content.classList.add('scale-100');
+            }, 10);
+        }
+
+        function closeImportExportModal() {
+            const modal = document.getElementById('dataModal');
+            const content = document.getElementById('dataModalContent');
+            content.classList.remove('scale-100');
+            content.classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 150);
+        }
+
+        // Export data to JSON file
+        function exportData() {
+            const dataStr = JSON.stringify(vaultEntries, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            
+            const exportFileDefaultName = 'SecureVault_Backup_' + new Date().toISOString().slice(0,10) + '.json';
+            
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+            showToast("Backup exported successfully!");
+        }
+
+        // Import data process with validation
+        function importData(replaceExisting) {
+            const fileInput = document.getElementById('importFileInput');
+            if (fileInput.files.length === 0) {
+                showToast("Please choose a backup .json file first.", "error");
+                return;
+            }
+
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                try {
+                    const parsedData = JSON.parse(e.target.result);
+                    
+                    // Validation Checklist
+                    if (!Array.isArray(parsedData)) {
+                        throw new Error("Target file must be a standard array of objects.");
+                    }
+                    
+                    for (let i = 0; i < parsedData.length; i++) {
+                        const item = parsedData[i];
+                        if (typeof item !== 'object' || item === null) {
+                            throw new Error(`Record at position ${i} is not a valid JSON structure.`);
+                        }
+                        if (typeof item.label !== 'string' || typeof item.value !== 'string') {
+                            throw new Error(`Record at index ${i} is missing its 'label' or 'value' string properties.`);
+                        }
+                    }
+
+                    // Perform Merge/Overwrites
+                    if (replaceExisting) {
+                        vaultEntries = parsedData;
+                        showToast("Successfully replaced entire database.");
+                    } else {
+                        // Merge without duplicating exactly matched label+value entries
+                        let countAdded = 0;
+                        parsedData.forEach(importedItem => {
+                            const duplicate = vaultEntries.find(x => x.label.trim() === importedItem.label.trim() && x.value.trim() === importedItem.value.trim());
+                            if (!duplicate) {
+                                vaultEntries.push(importedItem);
+                                countAdded++;
+                            }
+                        });
+                        showToast(`Successfully merged. Added ${countAdded} unique items.`);
+                    }
+
+                    // Save state
+                    saveToLocalStorage();
+                    closeImportExportModal();
+                    selectedCategory = 'All';
+                    renderCategoryFilters();
+                    renderList();
+                    
+                    // Clear file input
+                    fileInput.value = '';
+
+                } catch (error) {
+                    console.error(error);
+                    showToast(`Import Error: ${error.message}`, "error");
+                }
+            };
+            
+            reader.readAsText(file);
+        }
+
+        // Copy raw JSON from textual viewport
+        function copyRawJson() {
+            const textarea = document.getElementById('rawJsonArea');
+            copyToClipboard(textarea.value);
+        }
+    </script>
+</body>
+</html>
+
+```

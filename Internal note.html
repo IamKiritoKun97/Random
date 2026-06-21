@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1547,8 +1548,8 @@
     statuses = activeSelections.map(sel => {
         let str = sel.template;
         if (str.includes('{OLD}') || str.includes('{ID1}')) {
-            const v1 = sel.v1.trim() || "[...]";
-            const v2 = sel.v2.trim() || "[...]";
+            const v1 = sel.v1.trim() || "[Empty]";
+            const v2 = sel.v2.trim() || "[Empty]";
             str = str.replace(/{OLD}|{ID1}/g, v1).replace(/{NEW}|{ID2}/g, v2);
         }
         return str;

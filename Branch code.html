@@ -1,0 +1,253 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">+
+  <!-- Tab Icon / Favicon -->
+  <link rel="icon" type="image/png" href="Easybet logo.png">
+  <link rel="shortcut icon" type="image/png" href="branchcode.png">
+    <title>Branch Codes</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-deep: #020617;
+            --accent: #38bdf8;
+            --accent-glow: rgba(56, 189, 248, 0.15);
+            --glass-bg: rgba(15, 23, 42, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.08);
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-deep);
+            background-image: 
+                radial-gradient(circle at 0% 0%, rgba(56, 189, 248, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 100% 100%, rgba(99, 102, 241, 0.08) 0%, transparent 40%);
+            color: #f8fafc;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .glass {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px) saturate(180%);
+            -webkit-backdrop-filter: blur(16px) saturate(180%);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        .bank-card {
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .bank-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.03), transparent);
+            transform: translateX(-100%);
+            transition: 0.6s;
+        }
+
+        .bank-card:hover::before {
+            transform: translateX(100%);
+        }
+
+        .bank-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(56, 189, 248, 0.4);
+            box-shadow: 0 12px 24px -10px var(--accent-glow);
+            background: rgba(30, 41, 59, 0.8);
+        }
+
+        .font-mono-premium {
+            font-family: 'JetBrains Mono', monospace;
+            letter-spacing: -0.05em;
+        }
+
+        .search-container:focus-within {
+            box-shadow: 0 0 0 2px var(--accent);
+        }
+
+        .toast-animate {
+            transform: translate(-50%, 100px);
+            opacity: 0;
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .toast-animate.show {
+            transform: translate(-50%, -40px);
+            opacity: 1;
+        }
+
+        @keyframes pulse-slow {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.6; }
+        }
+
+        .bg-glow {
+            animation: pulse-slow 8s infinite ease-in-out;
+        }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg-deep); }
+        ::-webkit-scrollbar-thumb { 
+            background: #1e293b; 
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="py-10 px-4 md:px-8">
+
+    <div class="max-w-[1600px] mx-auto relative">
+        <!-- Floating Glow Elements -->
+        <div class="fixed top-20 -left-20 w-96 h-96 bg-sky-500/10 rounded-full blur-[120px] pointer-events-none bg-glow"></div>
+        <div class="fixed bottom-20 -right-20 w-96 h-96 bg-indigo-500/10 rounded-full blur-[120px] pointer-events-none bg-glow" style="animation-delay: -4s"></div>
+
+        <!-- Header -->
+        <header class="mb-12 flex flex-col items-center text-center">
+            <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-sky-500/10 border border-sky-500/20 mb-4">
+                <span class="text-[10px] font-bold uppercase tracking-[0.2em] text-sky-400">SA Banking Directory</span>
+            </div>
+            
+            <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight mb-4 bg-clip-text text-transparent bg-gradient-to-b from-white to-slate-500">
+                Branch<span class="text-sky-400 italic">Codes</span>
+            </h1>
+            
+            <p class="text-slate-400 text-sm md:text-base max-w-xl font-light leading-relaxed">
+                <span class="text-slate-200">Tap any card</span> to copy the universal branch code.
+            </p>
+        </header>
+
+        <!-- Search Section -->
+        <div class="max-w-xl mx-auto mb-12">
+            <div class="glass search-container flex items-center px-5 py-0.5 rounded-2xl transition-all duration-300">
+                <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input type="text" id="searchInput" placeholder="Search institution..." 
+                    class="w-full bg-transparent border-none py-4 pl-3 text-white placeholder-slate-500 focus:ring-0 text-md outline-none">
+            </div>
+        </div>
+
+        <!-- Dynamic Grid - Updated to 5 columns on large screens -->
+        <div id="bankGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 relative z-10">
+            <!-- Cards Rendered via JS -->
+        </div>
+
+        <!-- Empty State -->
+        <div id="emptyState" class="hidden text-center py-20">
+            <h3 class="text-xl font-bold text-slate-300">No Matches Found</h3>
+        </div>
+
+        <!-- Footer -->
+        <footer class="mt-20 pt-6 border-t border-slate-800/50 flex justify-center items-center text-slate-500 text-xs">
+            <p>&copy; 2024 BranchCodes Intelligence.</p>
+        </footer>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="fixed bottom-0 left-1/2 z-50 toast-animate">
+        <div class="glass bg-sky-500/20 border-sky-500/30 text-sky-400 px-6 py-3 rounded-xl flex items-center space-x-3">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+            </svg>
+            <span class="font-bold text-sm tracking-tight">Copied</span>
+        </div>
+    </div>
+
+    <script>
+        const bankData = [
+            { name: "Absa Bank", code: "632005", category: "Commercial" },
+            { name: "African Bank", code: "430000", category: "Commercial" },
+            { name: "Access Bank", code: "410506", category: "Corporate" },
+            { name: "Capitec Bank", code: "470010", category: "Retail" },
+            { name: "Finbond Mutual", code: "589000", category: "Mutual" },
+            { name: "Discovery Bank", code: "679000", category: "Digital" },
+            { name: "FNB", code: "250655", category: "Universal" },
+            { name: "Grindrod Bank", code: "223626", category: "Investment" },
+            { name: "Investec Bank", code: "580105", category: "Private" },
+            { name: "Nedbank", code: "198765", category: "Commercial" },
+            { name: "Sasfin Bank", code: "683000", category: "Investment" },
+            { name: "Standard Bank", code: "051001", category: "Commercial" },
+            { name: "Tyme Bank", code: "678910", category: "Digital" },
+            { name: "Bidvest Bank", code: "470010", category: "Forex" },
+            { name: "Mercantile Bank", code: "450105", category: "Business" }
+        ].sort((a, b) => a.name.localeCompare(b.name));
+
+        const bankGrid = document.getElementById('bankGrid');
+        const searchInput = document.getElementById('searchInput');
+        const emptyState = document.getElementById('emptyState');
+        const toast = document.getElementById('toast');
+
+        function showToast() {
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2000);
+        }
+
+        function copyToClipboard(text) {
+            const el = document.createElement('textarea');
+            el.value = text;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+            showToast();
+        }
+
+        function renderBanks(filter = "") {
+            const query = filter.toLowerCase().trim();
+            const filtered = bankData.filter(bank => 
+                bank.name.toLowerCase().includes(query) || 
+                bank.code.includes(query)
+            );
+
+            bankGrid.innerHTML = '';
+            
+            if (filtered.length === 0) {
+                emptyState.classList.remove('hidden');
+            } else {
+                emptyState.classList.add('hidden');
+                filtered.forEach((bank, index) => {
+                    const card = document.createElement('div');
+                    card.className = "bank-card glass p-5 rounded-2xl flex flex-col justify-between cursor-pointer group active:scale-95 h-full";
+                    card.style.animation = `fadeIn 0.4s ease-out forwards ${index * 0.03}s`;
+                    card.onclick = () => copyToClipboard(bank.code);
+                    
+                    card.innerHTML = `
+                        <div class="mb-4">
+                            <span class="text-[9px] font-bold uppercase tracking-wider text-slate-500 group-hover:text-sky-400 mb-1 block">
+                                ${bank.category}
+                            </span>
+                            <h3 class="text-sm font-bold text-slate-100 group-hover:text-white leading-snug truncate">${bank.name}</h3>
+                        </div>
+                        <div class="flex items-center justify-between mt-auto pt-3 border-t border-white/5">
+                            <span class="text-lg font-mono-premium font-bold text-sky-400 group-hover:drop-shadow-[0_0_8px_rgba(56,189,248,0.4)] transition-all">
+                                ${bank.code}
+                            </span>
+                            <svg class="w-3.5 h-3.5 text-slate-600 group-hover:text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2" />
+                            </svg>
+                        </div>
+                    `;
+                    bankGrid.appendChild(card);
+                });
+            }
+        }
+
+        searchInput.addEventListener('input', (e) => renderBanks(e.target.value));
+        window.onload = () => renderBanks();
+    </script>
+
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</body>
+</html>

@@ -1,0 +1,1611 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>150% First Deposit Match, Slots, Sports and Lucky numbers Calculator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+<style>
+/* =========================================================
+   CSS CUSTOM PROPERTIES — THEME TOKENS
+   ========================================================= */
+:root {
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --transition: 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+  --shadow-sm: 0 1px 4px rgba(0,0,0,0.18);
+  --shadow-md: 0 4px 20px rgba(0,0,0,0.28);
+  --shadow-lg: 0 12px 48px rgba(0,0,0,0.40);
+  --green: #22c55e;
+  --green-dim: #166534;
+  --orange: #f97316;
+  --red: #ef4444;
+  --accent: #16a34a;
+  --accent-bright: #4ade80;
+}
+
+[data-theme="dark"] {
+  --bg-base: #0b0f14;
+  --bg-surface: #111822;
+  --bg-card: #161e2c;
+  --bg-card-hover: #1c2638;
+  --bg-input: #0d1420;
+  --border: rgba(255,255,255,0.07);
+  --border-focus: rgba(74, 222, 128, 0.5);
+  --text-primary: #f0f4ff;
+  --text-secondary: #8494b0;
+  --text-muted: #4a5568;
+  --glass-bg: rgba(22,30,44,0.72);
+  --glass-border: rgba(255,255,255,0.08);
+  --sidebar-bg: #0d1320;
+  --header-bg: rgba(11,15,20,0.92);
+  --badge-bg: rgba(74,222,128,0.12);
+  --badge-color: #4ade80;
+}
+
+[data-theme="light"] {
+  --bg-base: #f0f4f8;
+  --bg-surface: #ffffff;
+  --bg-card: #ffffff;
+  --bg-card-hover: #f8fafb;
+  --bg-input: #f3f6f9;
+  --border: rgba(0,0,0,0.09);
+  --border-focus: rgba(22,163,74,0.5);
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+  --glass-bg: rgba(255,255,255,0.82);
+  --glass-border: rgba(0,0,0,0.06);
+  --sidebar-bg: #0d1320;
+  --header-bg: rgba(240,244,248,0.92);
+  --badge-bg: rgba(22,163,74,0.1);
+  --badge-color: #15803d;
+}
+
+/* =========================================================
+   RESET & BASE
+   ========================================================= */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-sans);
+  background: var(--bg-base);
+  color: var(--text-primary);
+  min-height: 100vh;
+  font-size: 14px;
+  line-height: 1.6;
+  transition: background var(--transition), color var(--transition);
+}
+input, select, textarea, button { font-family: inherit; }
+button { cursor: pointer; border: none; outline: none; }
+a { color: inherit; text-decoration: none; }
+
+/* =========================================================
+   LAYOUT — SIDEBAR + MAIN
+   ========================================================= */
+.app-shell {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* SIDEBAR */
+.sidebar {
+  width: 220px;
+  flex-shrink: 0;
+  background: var(--sidebar-bg);
+  border-right: 1px solid rgba(255,255,255,0.05);
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  z-index: 100;
+  transition: width var(--transition);
+}
+.sidebar-logo {
+  padding: 24px 20px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.logo-icon {
+  width: 36px; height: 36px;
+  background: linear-gradient(135deg, #16a34a, #4ade80);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; font-weight: 800;
+  color: #0b0f14;
+  flex-shrink: 0;
+}
+.logo-text { font-size: 13px; font-weight: 700; color: #f0f4ff; line-height: 1.2; }
+.logo-sub { font-size: 10px; color: #8494b0; font-weight: 400; }
+
+.sidebar-nav { padding: 16px 10px; flex: 1; }
+.nav-section-label {
+  font-size: 10px; font-weight: 600; letter-spacing: 0.1em;
+  color: #4a5568; text-transform: uppercase;
+  padding: 0 10px; margin: 12px 0 6px;
+}
+.nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 10px; border-radius: var(--radius-sm);
+  color: #8494b0; font-size: 13px; font-weight: 500;
+  cursor: pointer; transition: all var(--transition);
+  margin-bottom: 2px;
+}
+.nav-item:hover, .nav-item.active {
+  background: rgba(74,222,128,0.08);
+  color: #4ade80;
+}
+.nav-item.active { color: #4ade80; font-weight: 600; }
+.nav-icon { width: 16px; text-align: center; font-size: 15px; }
+.nav-badge {
+  margin-left: auto; background: var(--accent); color: #fff;
+  font-size: 10px; font-weight: 700; border-radius: 10px;
+  padding: 1px 6px;
+}
+
+.sidebar-footer { padding: 12px 16px; border-top: 1px solid rgba(255,255,255,0.05); }
+.agent-card {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px; border-radius: var(--radius-sm);
+  background: rgba(255,255,255,0.04);
+}
+.agent-avatar {
+  width: 30px; height: 30px; border-radius: 50%;
+  background: linear-gradient(135deg, #16a34a, #4ade80);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700; color: #0b0f14;
+}
+.agent-info { flex: 1; overflow: hidden; }
+.agent-name { font-size: 12px; font-weight: 600; color: #f0f4ff; }
+.agent-role { font-size: 10px; color: #4a5568; }
+.status-dot {
+  width: 7px; height: 7px; border-radius: 50%; background: var(--green);
+  box-shadow: 0 0 0 2px rgba(34,197,94,0.25);
+}
+
+/* MAIN CONTENT */
+.main-content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* HEADER */
+.topbar {
+  position: sticky; top: 0; z-index: 90;
+  background: var(--header-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 28px;
+  height: 60px;
+  display: flex; align-items: center; gap: 16px;
+}
+.topbar-title { font-size: 15px; font-weight: 700; flex: 1; }
+.topbar-title span { color: var(--accent-bright); }
+.topbar-controls { display: flex; align-items: center; gap: 10px; }
+
+/* TOGGLE BUTTON */
+.toggle-btn {
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 14px; border-radius: 20px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  font-size: 12px; font-weight: 600;
+  transition: all var(--transition);
+}
+.toggle-btn:hover { border-color: var(--border-focus); color: var(--accent-bright); }
+.toggle-btn.active { background: var(--badge-bg); border-color: var(--border-focus); color: var(--badge-color); }
+
+/* Theme toggle */
+.theme-toggle {
+  width: 38px; height: 38px; border-radius: 50%;
+  background: var(--bg-card); border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; transition: all var(--transition);
+}
+.theme-toggle:hover { border-color: var(--border-focus); }
+
+/* MOBILE MENU */
+.mobile-menu-btn {
+  display: none; width: 38px; height: 38px; border-radius: var(--radius-sm);
+  background: var(--bg-card); border: 1px solid var(--border);
+  align-items: center; justify-content: center; font-size: 18px;
+  color: var(--text-secondary);
+}
+
+/* PAGE CONTENT */
+.page-content {
+  padding: 28px;
+  flex: 1;
+}
+
+/* SECTIONS (panels) */
+.section { display: none; }
+.section.active { display: block; }
+
+/* =========================================================
+   CARDS & GLASS
+   ========================================================= */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 22px;
+  transition: background var(--transition), border-color var(--transition);
+}
+.card:hover { background: var(--bg-card-hover); }
+.glass-card {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  padding: 22px;
+}
+.card-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 20px;
+}
+.card-title {
+  font-size: 14px; font-weight: 700; color: var(--text-primary);
+  display: flex; align-items: center; gap: 8px;
+}
+.card-icon { font-size: 16px; }
+
+/* =========================================================
+   STATS BAR (top of calculator)
+   ========================================================= */
+.stats-bar {
+  display: grid; grid-template-columns: repeat(5, 1fr);
+  gap: 14px; margin-bottom: 24px;
+}
+.stat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 16px 18px;
+  transition: all var(--transition);
+  position: relative; overflow: hidden;
+}
+.stat-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-bright));
+  opacity: 0;
+  transition: opacity var(--transition);
+}
+.stat-card:hover::before { opacity: 1; }
+.stat-label {
+  font-size: 10px; font-weight: 600; letter-spacing: 0.06em;
+  color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px;
+}
+.stat-value {
+  font-family: var(--font-mono);
+  font-size: 20px; font-weight: 700;
+  color: var(--text-primary); line-height: 1.2;
+}
+.stat-value.green { color: var(--green); }
+.stat-value.orange { color: var(--orange); }
+.stat-value.red { color: var(--red); }
+.stat-meta {
+  font-size: 11px; color: var(--text-muted); margin-top: 4px;
+}
+
+/* =========================================================
+   FORM GRID
+   ========================================================= */
+.form-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.form-group { display: flex; flex-direction: column; gap: 6px; }
+.form-group.full { grid-column: 1 / -1; }
+.form-label {
+  font-size: 11px; font-weight: 600; letter-spacing: 0.04em;
+  color: var(--text-secondary); text-transform: uppercase;
+}
+.input-wrap { position: relative; }
+.input-prefix {
+  position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+  font-size: 13px; font-weight: 600; color: var(--text-muted);
+  pointer-events: none;
+}
+.input-suffix {
+  position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+  font-size: 12px; color: var(--text-muted); pointer-events: none;
+}
+.form-input {
+  width: 100%; padding: 11px 14px;
+  background: var(--bg-input);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-size: 14px; font-weight: 500;
+  transition: all var(--transition);
+  appearance: none;
+}
+.form-input.has-prefix { padding-left: 30px; }
+.form-input.has-suffix { padding-right: 34px; }
+.form-input:focus {
+  outline: none;
+  border-color: var(--border-focus);
+  background: var(--bg-card);
+  box-shadow: 0 0 0 3px rgba(74,222,128,0.08);
+}
+.form-input::placeholder { color: var(--text-muted); }
+select.form-input { cursor: pointer; }
+select.form-input option { background: var(--bg-card); }
+
+/* =========================================================
+   PROGRESS BAR
+   ========================================================= */
+.progress-wrap { margin: 18px 0 10px; }
+.progress-labels {
+  display: flex; justify-content: space-between;
+  font-size: 11px; font-weight: 600; color: var(--text-muted);
+  margin-bottom: 6px;
+}
+.progress-pct { font-family: var(--font-mono); font-size: 16px; font-weight: 700; }
+.progress-track {
+  height: 10px; background: rgba(255,255,255,0.06);
+  border-radius: 99px; overflow: hidden;
+}
+.progress-bar {
+  height: 100%; border-radius: 99px;
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1), background 0.4s ease;
+  background: var(--red);
+  min-width: 2px;
+}
+.progress-bar.orange { background: var(--orange); }
+.progress-bar.green {
+  background: linear-gradient(90deg, var(--green), var(--accent-bright));
+  box-shadow: 0 0 10px rgba(74,222,128,0.3);
+}
+
+/* Completed banner */
+.completed-banner {
+  display: none;
+  align-items: center; gap: 12px;
+  padding: 14px 18px;
+  background: rgba(34,197,94,0.1);
+  border: 1px solid rgba(34,197,94,0.3);
+  border-radius: var(--radius-md);
+  color: var(--green);
+  font-weight: 700; font-size: 14px;
+  margin-top: 12px;
+}
+.completed-banner.show { display: flex; }
+.completed-banner .check { font-size: 20px; }
+
+/* =========================================================
+   ACTION BUTTONS
+   ========================================================= */
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 10px 18px; border-radius: var(--radius-sm);
+  font-size: 13px; font-weight: 600;
+  transition: all var(--transition); cursor: pointer;
+  white-space: nowrap;
+}
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(22,163,74,0.3);
+}
+.btn-primary:hover { background: #15803d; box-shadow: 0 4px 20px rgba(22,163,74,0.5); transform: translateY(-1px); }
+.btn-outline {
+  background: transparent;
+  border: 1.5px solid var(--border);
+  color: var(--text-secondary);
+}
+.btn-outline:hover { border-color: var(--border-focus); color: var(--accent-bright); background: rgba(74,222,128,0.05); }
+.btn-ghost {
+  background: var(--bg-input);
+  color: var(--text-secondary);
+}
+.btn-ghost:hover { background: var(--bg-card-hover); color: var(--text-primary); }
+.btn-danger {
+  background: rgba(239,68,68,0.12);
+  color: var(--red);
+  border: 1.5px solid rgba(239,68,68,0.2);
+}
+.btn-danger:hover { background: rgba(239,68,68,0.2); }
+
+.btn-row {
+  display: flex; flex-wrap: wrap; gap: 10px;
+  margin-top: 18px;
+}
+
+/* =========================================================
+   SPIEL SECTION
+   ========================================================= */
+.spiel-box {
+  background: var(--bg-input);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 18px 20px;
+  font-size: 13.5px; line-height: 1.8;
+  color: var(--text-primary);
+  white-space: pre-wrap;
+  font-family: var(--font-sans);
+  min-height: 260px;
+  tab-size: 2;
+}
+.spiel-box .highlight { color: var(--accent-bright); font-weight: 600; }
+
+/* Editable spiel template */
+#spielTemplate {
+  width: 100%;
+  background: var(--bg-input);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  color: var(--text-primary);
+  font-size: 13px; line-height: 1.8;
+  resize: vertical; min-height: 300px;
+  transition: border-color var(--transition);
+}
+#spielTemplate:focus { outline: none; border-color: var(--border-focus); }
+
+/* =========================================================
+   AGENT MODE PANEL
+   ========================================================= */
+.agent-panel {
+  background: rgba(74,222,128,0.04);
+  border: 1.5px dashed rgba(74,222,128,0.2);
+  border-radius: var(--radius-md);
+  padding: 18px;
+  margin-top: 16px;
+  display: none;
+}
+.agent-panel.show { display: block; }
+.agent-panel-title {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+  color: var(--accent-bright); text-transform: uppercase;
+  margin-bottom: 12px; display: flex; align-items: center; gap: 6px;
+}
+.formula-row {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.formula-row:last-child { border-bottom: none; }
+.formula-label { font-size: 12px; font-weight: 600; color: var(--text-secondary); min-width: 180px; }
+.formula-val { font-family: var(--font-mono); font-size: 12px; color: var(--accent-bright); }
+
+/* Notes textarea */
+.notes-area {
+  width: 100%;
+  background: var(--bg-input);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  color: var(--text-primary);
+  font-size: 13px; line-height: 1.6;
+  resize: vertical; min-height: 80px;
+  margin-top: 12px;
+  transition: border-color var(--transition);
+}
+.notes-area:focus { outline: none; border-color: var(--border-focus); }
+
+/* =========================================================
+   HISTORY PANEL
+   ========================================================= */
+.history-search {
+  position: relative; margin-bottom: 14px;
+}
+.history-search input {
+  width: 100%; padding: 9px 14px 9px 36px;
+  background: var(--bg-input); border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm); color: var(--text-primary);
+  font-size: 13px; transition: all var(--transition);
+}
+.history-search input:focus { outline: none; border-color: var(--border-focus); }
+.history-search-icon {
+  position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+  color: var(--text-muted); pointer-events: none;
+}
+.history-list { display: flex; flex-direction: column; gap: 8px; max-height: 400px; overflow-y: auto; }
+.history-item {
+  padding: 12px 14px; border-radius: var(--radius-sm);
+  background: var(--bg-input); border: 1px solid var(--border);
+  cursor: pointer; transition: all var(--transition);
+}
+.history-item:hover { border-color: var(--border-focus); background: var(--bg-card-hover); }
+.history-item-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 4px;
+}
+.history-item-name { font-size: 13px; font-weight: 600; color: var(--text-primary); }
+.history-item-time { font-size: 10px; color: var(--text-muted); }
+.history-item-meta { font-size: 11px; color: var(--text-secondary); }
+.history-empty { text-align: center; color: var(--text-muted); font-size: 13px; padding: 32px 0; }
+
+/* =========================================================
+   COPY TOAST
+   ========================================================= */
+.toast {
+  position: fixed; bottom: 28px; right: 28px;
+  background: var(--bg-card);
+  border: 1px solid rgba(74,222,128,0.3);
+  border-radius: var(--radius-md);
+  padding: 12px 18px;
+  display: flex; align-items: center; gap: 10px;
+  font-size: 13px; font-weight: 600; color: var(--green);
+  box-shadow: var(--shadow-lg);
+  z-index: 9999;
+  transform: translateY(100px); opacity: 0;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  pointer-events: none;
+}
+.toast.show { transform: translateY(0); opacity: 1; }
+
+/* =========================================================
+   SCROLLBAR
+   ========================================================= */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
+
+/* =========================================================
+   LAYOUT GRID (calculator + spiel side-by-side on wide)
+   ========================================================= */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+@media (max-width: 1100px) {
+  .stats-bar { grid-template-columns: repeat(3, 1fr); }
+  .two-col { grid-template-columns: 1fr; }
+}
+@media (max-width: 820px) {
+  .sidebar { position: fixed; left: -220px; top: 0; height: 100%; transition: left var(--transition); z-index: 200; }
+  .sidebar.open { left: 0; }
+  .mobile-menu-btn { display: flex; }
+  .stats-bar { grid-template-columns: repeat(2, 1fr); }
+  .form-grid { grid-template-columns: 1fr; }
+  .form-group.full { grid-column: 1; }
+  .page-content { padding: 16px; }
+  .two-col { grid-template-columns: 1fr; }
+  .three-col { grid-template-columns: 1fr; }
+}
+@media (max-width: 540px) {
+  .stats-bar { grid-template-columns: 1fr 1fr; }
+  .stat-value { font-size: 16px; }
+  .topbar { padding: 0 16px; }
+  .btn { padding: 9px 13px; font-size: 12px; }
+}
+
+/* =========================================================
+   UTILITY
+   ========================================================= */
+.text-muted { color: var(--text-muted); }
+.text-secondary { color: var(--text-secondary); }
+.text-green { color: var(--green); }
+.text-orange { color: var(--orange); }
+.text-red { color: var(--red); }
+.text-mono { font-family: var(--font-mono); }
+.mt-12 { margin-top: 12px; }
+.mt-16 { margin-top: 16px; }
+.mt-20 { margin-top: 20px; }
+.mb-14 { margin-bottom: 14px; }
+.divider { height: 1px; background: var(--border); margin: 16px 0; }
+.badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 2px 8px; border-radius: 99px;
+  font-size: 10px; font-weight: 700; letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.badge-green { background: var(--badge-bg); color: var(--badge-color); }
+.badge-orange { background: rgba(249,115,22,0.12); color: var(--orange); }
+.badge-red { background: rgba(239,68,68,0.12); color: var(--red); }
+
+/* overlay */
+.overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.6); z-index: 150;
+  backdrop-filter: blur(2px);
+}
+.overlay.show { display: block; }
+
+/* section heading */
+.section-heading {
+  font-size: 18px; font-weight: 800;
+  color: var(--text-primary); margin-bottom: 20px;
+  display: flex; align-items: center; gap: 10px;
+}
+.section-heading small {
+  font-size: 12px; font-weight: 400;
+  color: var(--text-muted);
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+  MOBILE OVERLAY
+  ============================================================ -->
+<div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+
+<!-- ============================================================
+  TOAST NOTIFICATION
+  ============================================================ -->
+<div class="toast" id="toast">
+  <span>✓</span>
+  <span id="toastMsg">Copied to clipboard!</span>
+</div>
+
+<!-- ============================================================
+  APP SHELL
+  ============================================================ -->
+<div class="app-shell">
+
+  <!-- ======================================================
+    SIDEBAR
+    ====================================================== -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon">E</div>
+      <div class="logo-text">
+        EasyBet
+        <div class="logo-sub">Agent Dashboard</div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Tools</div>
+      <div class="nav-item active" data-section="calculator" onclick="showSection('calculator', this)">
+        <span class="nav-icon">🧮</span> Calculator
+      </div>
+      <div class="nav-item" data-section="spiel" onclick="showSection('spiel', this)">
+        <span class="nav-icon">💬</span> Spiel Builder
+      </div>
+      <div class="nav-item" data-section="template" onclick="showSection('template', this)">
+        <span class="nav-icon">📝</span> Edit Template
+      </div>
+
+      <div class="nav-section-label">Records</div>
+      <div class="nav-item" data-section="history" onclick="showSection('history', this)">
+        <span class="nav-icon">🕐</span> History
+        <span class="nav-badge" id="historyBadge">0</span>
+      </div>
+      <div class="nav-item" data-section="notes" onclick="showSection('notes', this)">
+        <span class="nav-icon">📋</span> Agent Notes
+      </div>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="agent-card">
+        <div class="agent-avatar">A</div>
+        <div class="agent-info">
+          <div class="agent-name">Support Agent</div>
+          <div class="agent-role">EasyBet CS Team</div>
+        </div>
+        <div class="status-dot"></div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ======================================================
+    MAIN
+    ====================================================== -->
+  <div class="main-content">
+
+    <!-- TOPBAR -->
+    <header class="topbar">
+      <button class="mobile-menu-btn" onclick="toggleSidebar()">☰</button>
+      <div class="topbar-title">Bonus <span>Calculator</span></div>
+      <div class="topbar-controls">
+        <button class="toggle-btn" id="agentModeBtn" onclick="toggleAgentMode()">
+          🔐 Agent Mode
+        </button>
+        <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Toggle theme">🌙</button>
+        <button class="btn btn-outline" onclick="resetForm()" title="Reset all fields">↺ Reset</button>
+      </div>
+    </header>
+
+    <!-- PAGE CONTENT -->
+    <div class="page-content">
+
+      <!-- ====================================================
+        SECTION: CALCULATOR
+        ==================================================== -->
+      <section class="section active" id="sec-calculator">
+
+        <!-- STATS BAR -->
+        <div class="stats-bar" id="statsBar">
+          <div class="stat-card">
+            <div class="stat-label">Deposit Amount</div>
+            <div class="stat-value" id="st-deposit">R0.00</div>
+            <div class="stat-meta">Base deposit</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Bonus Amount</div>
+            <div class="stat-value green" id="st-bonus">R0.00</div>
+            <div class="stat-meta" id="st-bonus-meta">0% of deposit</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Total Required</div>
+            <div class="stat-value" id="st-total">R0.00</div>
+            <div class="stat-meta" id="st-total-meta">Wagering target</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Currently Wagered</div>
+            <div class="stat-value orange" id="st-wagered">R0.00</div>
+            <div class="stat-meta">So far</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Remaining</div>
+            <div class="stat-value red" id="st-remaining">R0.00</div>
+            <div class="stat-meta" id="st-rem-meta">Still required</div>
+          </div>
+        </div>
+
+        <div class="two-col">
+          <!-- INPUT CARD -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title"><span class="card-icon">📥</span> Inputs</div>
+              <span class="badge badge-green">Live</span>
+            </div>
+
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label">Deposit Amount</label>
+                <div class="input-wrap">
+                  <span class="input-prefix">R</span>
+                  <input class="form-input has-prefix" type="number" id="depositAmount" placeholder="250.00" min="0" step="0.01" oninput="calculate()" />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Current Wagered Amount</label>
+                <div class="input-wrap">
+                  <span class="input-prefix">R</span>
+                  <input class="form-input has-prefix" type="number" id="currentWagered" placeholder="0.00" min="0" step="0.01" oninput="calculate()" />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Bonus Percentage</label>
+                <div class="input-wrap">
+                  <input class="form-input has-suffix" type="number" id="bonusPercentage" value="150" min="0" step="1" oninput="calculate()" />
+                  <span class="input-suffix">%</span>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Rollover Multiplier</label>
+                <div class="input-wrap">
+                  <input class="form-input has-suffix" type="number" id="rolloverMultiplier" value="15" min="1" step="1" oninput="calculate()" />
+                  <span class="input-suffix">×</span>
+                </div>
+              </div>
+
+              <div class="form-group full">
+                <label class="form-label">Promotion Type</label>
+                <select class="form-input" id="promotionType" onchange="handlePromotionChange()">
+                  <option value="slots">150% First Deposit Match on Slots</option>
+                  <option value="sportsLuckyNumbers">150% First Deposit Match on Sports and Lucky Numbers</option>
+                </select>
+              </div>
+
+              <div class="form-group full">
+                <label class="form-label">Customer Name (Optional)</label>
+                <input class="form-input" type="text" id="customerName" placeholder="e.g. John" oninput="calculate()" />
+              </div>
+            </div>
+
+            <!-- VALIDATION ERRORS -->
+            <div id="validationMsg" class="mt-12" style="display:none;">
+              <div class="badge badge-red" id="validationText"></div>
+            </div>
+
+            <!-- PROGRESS -->
+            <div class="progress-wrap">
+              <div class="progress-labels">
+                <span>Rollover Progress</span>
+                <span class="progress-pct" id="progressPct">0%</span>
+              </div>
+              <div class="progress-track">
+                <div class="progress-bar" id="progressBar" style="width:0%"></div>
+              </div>
+            </div>
+
+            <div class="completed-banner" id="completedBanner">
+              <span class="check">✅</span>
+              <div>
+                <div>Rollover Requirement Completed!</div>
+                <div style="font-weight:400;font-size:12px;margin-top:2px;color:var(--text-secondary)">Customer has fully met the wagering requirement.</div>
+              </div>
+            </div>
+
+            <!-- AGENT MODE PANEL -->
+            <div class="agent-panel" id="agentPanel">
+              <div class="agent-panel-title">🔐 Agent Mode — Calculation Breakdown</div>
+              <div id="formulaBreakdown"></div>
+              <div class="divider"></div>
+              <div style="font-size:11px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">Internal Notes</div>
+              <textarea class="notes-area" id="agentInternalNotes" placeholder="Add internal agent notes for this calculation…"></textarea>
+            </div>
+
+            <div class="btn-row">
+              <button class="btn btn-primary" onclick="saveToHistory()">💾 Save to History</button>
+              <button class="btn btn-outline" onclick="showSection('spiel', document.querySelector('[data-section=spiel]'))">💬 View Spiel</button>
+              <button class="btn btn-ghost" onclick="copyCalcSummary()">📋 Copy Calc</button>
+            </div>
+          </div>
+
+          <!-- RESULTS CARD -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title"><span class="card-icon">📊</span> Results Summary</div>
+            </div>
+
+            <div id="resultsDisplay">
+              <div style="text-align:center;padding:48px 0;color:var(--text-muted);">
+                <div style="font-size:36px;margin-bottom:12px;">🎲</div>
+                <div style="font-size:14px;">Enter values on the left to see live results.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ====================================================
+        SECTION: SPIEL BUILDER
+        ==================================================== -->
+      <section class="section" id="sec-spiel">
+        <div class="section-heading">💬 Customer Spiel <small>Auto-generated response</small></div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Generated Response</div>
+            <div class="btn-row" style="margin-top:0;">
+              <button class="btn btn-primary" onclick="copySpiel()">📋 Copy Spiel</button>
+              <button class="btn btn-outline" onclick="exportSpiel()">⬇️ Export TXT</button>
+            </div>
+          </div>
+          <div class="spiel-box" id="spielDisplay">Fill in the Calculator fields to generate a spiel.</div>
+        </div>
+      </section>
+
+      <!-- ====================================================
+        SECTION: EDIT TEMPLATE
+        ==================================================== -->
+      <section class="section" id="sec-template">
+        <div class="section-heading">📝 Edit Spiel Template <small>Customise the response template</small></div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title" style="display: flex; align-items: center; gap: 10px;">
+              Template Editor
+              <span id="templateStateBadge" class="badge badge-orange" style="font-size: 10px;">Not Qualified</span>
+            </div>
+            <div style="font-size:11px;color:var(--text-muted);line-height:1.4;">
+              Use placeholders: {customerName}, {depositAmount}, {bonusPercentage}, {rolloverMultiplier}, {totalRequiredWagering}, {currentWagered}, {remainingWagering}, {completionPercentage}, {bonusAmount}, {promotionLabel}, {gameType}, {url}
+            </div>
+          </div>
+          <textarea id="spielTemplate" oninput="handleTemplateInput()"></textarea>
+          <div class="btn-row">
+            <button class="btn btn-primary" onclick="saveTemplate()">💾 Save Template</button>
+            <button class="btn btn-danger" onclick="resetTemplate()">↺ Reset to Default</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================
+        SECTION: HISTORY
+        ==================================================== -->
+      <section class="section" id="sec-history">
+        <div class="section-heading">🕐 Calculation History <small>Last 20 entries</small></div>
+
+        <div class="card">
+          <div class="history-search">
+            <span class="history-search-icon">🔍</span>
+            <input type="text" id="historySearch" placeholder="Search by name, amount…" oninput="renderHistory()" />
+          </div>
+          <div class="history-list" id="historyList">
+            <div class="history-empty">No saved calculations yet.</div>
+          </div>
+          <div class="btn-row mt-16">
+            <button class="btn btn-danger" onclick="clearHistory()">🗑️ Clear History</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================
+        SECTION: AGENT NOTES
+        ==================================================== -->
+      <section class="section" id="sec-notes">
+        <div class="section-heading">📋 Agent Notes <small>Persistent across sessions</small></div>
+
+        <div class="card">
+          <div class="card-title mb-14">Your Notes</div>
+          <textarea class="notes-area" id="agentNotes" style="min-height:300px;" placeholder="Add your shift notes, customer escalations, or anything else here…" oninput="saveNotes()"></textarea>
+          <div class="btn-row mt-12">
+            <button class="btn btn-primary" onclick="saveNotes()">💾 Save Notes</button>
+            <button class="btn btn-ghost" onclick="copyNotes()">📋 Copy Notes</button>
+          </div>
+        </div>
+      </section>
+
+    </div><!-- /page-content -->
+  </div><!-- /main-content -->
+</div><!-- /app-shell -->
+
+<!-- ============================================================
+  JAVASCRIPT
+  ============================================================ -->
+<script>
+/* ============================================================
+   SINGLE SOURCE CONFIGURATION
+   ============================================================ */
+const PROMOTIONS = {
+  slots: {
+    label: "150% First Deposit Match on Slots",
+    bonusPercentage: 150,
+    rolloverMultiplier: 15,
+    url: "https://easybet.co.za/page/deposit-match",
+    gameType: "eligible EasySpins Slots games",
+    notQualifiedTemplate: `Thank you for patiently waiting, and I truly appreciate your patience.
+
+Upon checking your account, I can confirm that you have deposited R{depositAmount}, and to be eligible for the {bonusPercentage}% First Deposit Match bonus on Slots, you are required to complete a {rolloverMultiplier}x rollover of your first real-money deposit on {gameType}.
+
+This means your total required wagering amount is:
+R{depositAmount} × {rolloverMultiplier} = R{totalRequiredWagering}
+
+At the moment, you have not yet met the full rollover requirement needed for the promotion. However, you're already making good progress with your current wagering of R{currentWagered} ({completionPercentage}% completed), and there is still time to complete the remaining requirement.
+
+Once the remaining R{remainingWagering} has been wagered on {gameType}, you will become eligible for the promotion benefits.
+
+Please note the following important rules for the Slots Bonus:
+• Only bets placed on eligible EasySpins Slots games will count toward the rollover
+• Free Spins will be credited on Wolf Gold, Lucky Lightning, Wild Wild Riches, and Chests of Cai Shen
+• Maximum of 100 Free Spins can be awarded
+• Free Spins must be fully played before any winnings can be considered
+• Free Spins cannot be withdrawn directly
+• Maximum payout per spin is R1000
+• Free Spins expire 7 days after being credited to your account
+
+For full promotion details, please refer to:
+{url}
+
+If you need any further assistance, I'm always here to help.`,
+    qualifiedTemplate: `Thank you for patiently waiting, and I truly appreciate your patience.
+
+Upon reviewing your account, I can confirm that you have successfully completed the rollover requirement for the promotion. Based on the wagering completed, you now meet the qualification requirements for the bonus.
+
+Please note the following important rules for the Slots Bonus:
+• Free Spins will be credited on Wolf Gold, Lucky Lightning, Wild Wild Riches, and Chests of Cai Shen
+• Maximum of 100 Free Spins can be awarded
+• Free Spins must be fully played before any winnings can be considered
+• Free Spins cannot be withdrawn directly
+• Maximum payout per spin is R1000
+• Free Spins expire 7 days after being credited to your account
+
+For full promotion details, please refer to:
+{url}
+
+If you need any further assistance, I'm always here to help.`
+  },
+  sportsLuckyNumbers: {
+    label: "150% First Deposit Match on Sports and Lucky Numbers",
+    bonusPercentage: 150,
+    rolloverMultiplier: 4,
+    url: "https://easybet.co.za/page/deposit-match",
+    gameType: "eligible Sports and Lucky Numbers markets",
+    notQualifiedTemplate: `Thank you for patiently waiting, and I truly appreciate your patience.
+
+Upon checking your account, I can confirm that you deposited R{depositAmount} under Sports & Lucky Numbers. To be eligible for the {bonusPercentage}% First Deposit Match on Sports and Lucky Numbers, you are required to complete a {rolloverMultiplier}x rollover of your first real-money deposit at odds of 2.0 or higher.
+
+This means your total required wagering amount is:
+R{depositAmount} × {rolloverMultiplier} = R{totalRequiredWagering}
+
+At the moment, you have not yet met the full rollover requirement needed for the promotion. However, you're already making good progress with your current wagering of R{currentWagered} ({completionPercentage}% completed), and there is still time to complete the remaining requirement.
+
+Once the remaining R{remainingWagering} has been wagered on eligible markets, you will become eligible for the promotion benefits.
+
+Please note that only settled bets placed on Pre-match, In-play Sports, and Lucky Numbers will count. Bets that are cancelled, cashed out, or placed below odds of 2.0 will not be included.
+
+For full details, you may also refer to:
+{url}
+
+If you need any further assistance, I'm always here to help.`,
+    qualifiedTemplate: `Thank you for patiently waiting, and I truly appreciate your patience.
+
+Upon reviewing your account, I can confirm that you have successfully completed the rollover requirement for the promotion. Based on the wagering completed, you now meet the qualification requirements for the bonus.
+
+Please note that only settled bets placed on Pre-match, In-play Sports, and Lucky Numbers will count. Bets that are cancelled, cashed out, or placed below odds of 2.0 will not be included.
+
+For full details, you may also refer to:
+{url}
+
+If you need any further assistance, I'm always here to help.`
+  }
+};
+
+/* ============================================================
+   STATE
+   ============================================================ */
+let agentMode = false;
+let theme = localStorage.getItem('eb_theme') || 'dark';
+let history = JSON.parse(localStorage.getItem('eb_history') || '[]');
+
+// To preserve custom templates per-promo across sessions
+let promoTemplates = JSON.parse(localStorage.getItem('eb_promo_templates') || '{}');
+
+/* ============================================================
+   INIT
+   ============================================================ */
+document.addEventListener('DOMContentLoaded', () => {
+  applyTheme();
+  loadSavedValues();
+  loadNotes();
+  renderHistory();
+  updateHistoryBadge();
+
+  // Enforce correct dynamic properties on startup
+  syncInputsToPromotion();
+  calculate();
+});
+
+/* ============================================================
+   THEME
+   ============================================================ */
+function applyTheme() {
+  document.documentElement.setAttribute('data-theme', theme);
+  document.getElementById('themeToggle').textContent = theme === 'dark' ? '☀️' : '🌙';
+}
+
+function toggleTheme() {
+  theme = theme === 'dark' ? 'light' : 'dark';
+  localStorage.setItem('eb_theme', theme);
+  applyTheme();
+}
+
+/* ============================================================
+   SIDEBAR
+   ============================================================ */
+function toggleSidebar() {
+  const sb = document.getElementById('sidebar');
+  const ov = document.getElementById('overlay');
+  sb.classList.toggle('open');
+  ov.classList.toggle('show');
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('overlay').classList.remove('show');
+}
+
+/* ============================================================
+   NAVIGATION
+   ============================================================ */
+function showSection(name, el) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('sec-' + name).classList.add('active');
+  if (el) el.classList.add('active');
+  else document.querySelector('[data-section="' + name + '"]')?.classList.add('active');
+  closeSidebar();
+  if (name === 'spiel') renderSpiel();
+  if (name === 'history') renderHistory();
+  if (name === 'template') syncTemplateEditor();
+}
+
+/* ============================================================
+   AGENT MODE
+   ============================================================ */
+function toggleAgentMode() {
+  agentMode = !agentMode;
+  const btn = document.getElementById('agentModeBtn');
+  const panel = document.getElementById('agentPanel');
+  btn.classList.toggle('active', agentMode);
+  panel.classList.toggle('show', agentMode);
+  btn.textContent = agentMode ? '🔐 Agent Mode ON' : '🔐 Agent Mode';
+  calculate();
+}
+
+/* ============================================================
+   FORMAT HELPERS
+   ============================================================ */
+function fmtR(n) {
+  if (isNaN(n)) return 'R0.00';
+  return 'R' + Number(n).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+function fmtNum(n, decimals = 2) {
+  return Number(n).toLocaleString('en-US', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+}
+function fmtPct(n) {
+  return fmtNum(Math.min(n, 100), 2) + '%';
+}
+
+/* ============================================================
+   PROMOTION CONFIGURATION SYNC & DROPDOWN HANDLING
+   ============================================================ */
+function syncInputsToPromotion() {
+  const type = document.getElementById('promotionType').value;
+  const promo = PROMOTIONS[type] || PROMOTIONS.slots;
+
+  document.getElementById('bonusPercentage').value = promo.bonusPercentage;
+  document.getElementById('rolloverMultiplier').value = promo.rolloverMultiplier;
+  
+  syncTemplateEditor();
+}
+
+function handlePromotionChange() {
+  syncInputsToPromotion();
+  calculate();
+}
+
+function syncTemplateEditor() {
+  const type = document.getElementById('promotionType').value;
+  const deposit = parseFloat(document.getElementById('depositAmount').value) || 0;
+  const wagered = parseFloat(document.getElementById('currentWagered').value) || 0;
+  const rollover = parseFloat(document.getElementById('rolloverMultiplier').value) || 1;
+  const totalRequired = deposit * rollover;
+  
+  const completed = (totalRequired > 0 && wagered >= totalRequired);
+  const state = completed ? 'qualified' : 'notQualified';
+  const templateKey = type + '_' + state;
+  
+  const activeTemplate = promoTemplates[templateKey] || PROMOTIONS[type][state + 'Template'];
+  document.getElementById('spielTemplate').value = activeTemplate;
+
+  const badge = document.getElementById('templateStateBadge');
+  if (badge) {
+    badge.textContent = completed ? 'Qualified State' : 'Not Qualified State';
+    badge.className = completed ? 'badge badge-green' : 'badge badge-orange';
+  }
+}
+
+function handleTemplateInput() {
+  // Update draft instantly when user manually alters text in the editor
+  const type = document.getElementById('promotionType').value;
+  const deposit = parseFloat(document.getElementById('depositAmount').value) || 0;
+  const wagered = parseFloat(document.getElementById('currentWagered').value) || 0;
+  const rollover = parseFloat(document.getElementById('rolloverMultiplier').value) || 1;
+  const totalRequired = deposit * rollover;
+  
+  const completed = (totalRequired > 0 && wagered >= totalRequired);
+  const state = completed ? 'qualified' : 'notQualified';
+  const templateKey = type + '_' + state;
+
+  promoTemplates[templateKey] = document.getElementById('spielTemplate').value;
+  localStorage.setItem('eb_promo_templates', JSON.stringify(promoTemplates));
+  calculate();
+}
+
+function resetTemplate() {
+  const type = document.getElementById('promotionType').value;
+  const deposit = parseFloat(document.getElementById('depositAmount').value) || 0;
+  const wagered = parseFloat(document.getElementById('currentWagered').value) || 0;
+  const rollover = parseFloat(document.getElementById('rolloverMultiplier').value) || 1;
+  const totalRequired = deposit * rollover;
+  
+  const completed = (totalRequired > 0 && wagered >= totalRequired);
+  const state = completed ? 'qualified' : 'notQualified';
+  const templateKey = type + '_' + state;
+
+  delete promoTemplates[templateKey];
+  localStorage.setItem('eb_promo_templates', JSON.stringify(promoTemplates));
+  syncTemplateEditor();
+  calculate();
+  showToast('Template reset to default!');
+}
+
+/* ============================================================
+   CORE CALCULATE
+   ============================================================ */
+function calculate() {
+  const deposit = parseFloat(document.getElementById('depositAmount').value) || 0;
+  const wagered = parseFloat(document.getElementById('currentWagered').value) || 0;
+  const bonusPct = parseFloat(document.getElementById('bonusPercentage').value) || 0;
+  const rollover = parseFloat(document.getElementById('rolloverMultiplier').value) || 1;
+
+  // Validate
+  let validErr = '';
+  if (deposit < 0) validErr = '⚠️ Deposit Amount cannot be negative.';
+  if (wagered < 0) validErr = '⚠️ Current Wagered Amount cannot be negative.';
+  showValidation(validErr);
+  if (validErr) return;
+
+  // Calculations
+  const bonusAmount = deposit * bonusPct / 100;
+  const totalRequired = deposit * rollover;
+  const completed = (totalRequired > 0 && wagered >= totalRequired);
+  const remaining = completed ? 0 : Math.max(0, totalRequired - wagered);
+  const pct = totalRequired > 0 ? Math.min((wagered / totalRequired) * 100, 100) : 0;
+
+  // Update stats bar
+  document.getElementById('st-deposit').textContent = fmtR(deposit);
+  document.getElementById('st-bonus').textContent = fmtR(bonusAmount);
+  document.getElementById('st-bonus-meta').textContent = bonusPct + '% of deposit';
+  document.getElementById('st-total').textContent = fmtR(totalRequired);
+  document.getElementById('st-total-meta').textContent = rollover + '× multiplier';
+  document.getElementById('st-wagered').textContent = fmtR(wagered);
+  document.getElementById('st-remaining').textContent = completed ? 'R0.00' : fmtR(remaining);
+  document.getElementById('st-rem-meta').textContent = completed ? '✅ Completed' : 'Still required';
+
+  // Progress
+  const pBar = document.getElementById('progressBar');
+  const pPct = document.getElementById('progressPct');
+  pPct.textContent = fmtPct(pct);
+  pBar.style.width = pct + '%';
+  pBar.className = 'progress-bar';
+  if (pct <= 30) pBar.classList.add('red');
+  else if (pct <= 70) pBar.classList.add('orange');
+  else pBar.classList.add('green');
+
+  // Completed banner
+  document.getElementById('completedBanner').classList.toggle('show', completed);
+
+  // Results display
+  updateResultsDisplay(deposit, bonusAmount, totalRequired, wagered, remaining, pct, rollover, bonusPct, completed);
+
+  // Agent panel
+  if (agentMode) {
+    document.getElementById('formulaBreakdown').innerHTML = buildFormulaHTML(deposit, wagered, bonusPct, rollover, bonusAmount, totalRequired, remaining, pct);
+  }
+
+  // Auto-sync editor state if switching thresholds
+  const templateSec = document.getElementById('sec-template');
+  if (templateSec.classList.contains('active')) syncTemplateEditor();
+
+  // Save values to localStorage
+  saveFormValues();
+
+  // Auto-update spiel if open
+  const spielSec = document.getElementById('sec-spiel');
+  if (spielSec.classList.contains('active')) renderSpiel();
+}
+
+/* ============================================================
+   RESULTS DISPLAY
+   ============================================================ */
+function updateResultsDisplay(deposit, bonus, total, wagered, remaining, pct, rollover, bonusPct, completed) {
+  const currentPromoType = document.getElementById('promotionType').value;
+  const promoMeta = PROMOTIONS[currentPromoType] || PROMOTIONS.slots;
+
+  if (deposit === 0) {
+    document.getElementById('resultsDisplay').innerHTML = `
+      <div style="text-align:center;padding:48px 0;color:var(--text-muted);">
+        <div style="font-size:36px;margin-bottom:12px;">🎲</div>
+        <div style="font-size:14px;font-weight:600;color:var(--text-secondary);margin-bottom:6px;">${promoMeta.label}</div>
+        <div style="font-size:12px;">Enter values on the left to see live results.</div>
+      </div>`;
+    return;
+  }
+  const pClass = pct <= 30 ? 'red' : pct <= 70 ? 'orange' : 'green';
+  const rows = [
+    { label: 'Active Promotion', val: `<span style="font-size: 11px; font-weight: 800;">${promoMeta.label}</span>`, icon: '🏷️', color: 'var(--accent-bright)' },
+    { label: 'Deposit Amount', val: fmtR(deposit), icon: '💰', color: 'var(--text-primary)' },
+    { label: 'Bonus Amount (' + bonusPct + '%)', val: fmtR(bonus), icon: '🎁', color: 'var(--green)' },
+    { label: 'Total Required Wagering', val: fmtR(total), icon: '🎯', color: 'var(--text-primary)' },
+    { label: 'Currently Wagered', val: fmtR(wagered), icon: '🎲', color: 'var(--orange)' },
+    { label: 'Remaining Wagering', val: completed ? '<span class="text-green">R0.00 ✅</span>' : fmtR(remaining), icon: '⏳', color: 'var(--red)' },
+    { label: 'Completion %', val: '<span class="text-' + pClass + '">' + fmtPct(pct) + '</span>', icon: '📈', color: '' },
+  ];
+
+  let html = '<div style="display:flex;flex-direction:column;gap:8px;">';
+  rows.forEach(r => {
+    html += `
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:var(--bg-input);border-radius:var(--radius-sm);border:1px solid var(--border);">
+        <div style="display:flex;align-items:center;gap:8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+          <span style="font-size:15px;flex-shrink:0;">${r.icon}</span>
+          <span style="font-size:12px;color:var(--text-secondary);font-weight:500;">${r.label}</span>
+        </div>
+        <span style="font-family:var(--font-mono);font-size:13px;font-weight:700;color:${r.color || 'var(--text-primary)'};text-align:right;">${r.val}</span>
+      </div>`;
+  });
+  html += '</div>';
+
+  // Formula breakdown for agent mode
+  if (agentMode) {
+    html += `
+      <div style="margin-top:12px;padding:12px 14px;background:rgba(74,222,128,0.04);border:1.5px dashed rgba(74,222,128,0.2);border-radius:var(--radius-sm);font-size:11px;color:var(--text-muted);font-family:var(--font-mono);">
+        <div style="color:var(--accent-bright);font-weight:700;margin-bottom:6px;">Formulas</div>
+        Bonus = R${fmtNum(deposit)} × ${bonusPct}% = ${fmtR(bonus)}<br>
+        Total = R${fmtNum(deposit)} × ${rollover} = ${fmtR(total)}<br>
+        Remaining = R${fmtNum(total)} − R${fmtNum(wagered)} = ${fmtR(remaining)}<br>
+        Progress = (${fmtNum(wagered)} ÷ ${fmtNum(total)}) × 100 = ${fmtPct(pct)}
+      </div>`;
+  }
+
+  document.getElementById('resultsDisplay').innerHTML = html;
+}
+
+/* ============================================================
+   FORMULA BREAKDOWN (agent panel)
+   ============================================================ */
+function buildFormulaHTML(deposit, wagered, bonusPct, rollover, bonus, total, remaining, pct) {
+  const rows = [
+    ['Formula: Bonus Amount', `R${fmtNum(deposit)} × ${bonusPct}% / 100 = ${fmtR(bonus)}`],
+    ['Formula: Total Required', `R${fmtNum(deposit)} × ${rollover} = ${fmtR(total)}`],
+    ['Formula: Remaining', `R${fmtNum(total)} − R${fmtNum(wagered)} = ${fmtR(remaining)}`],
+    ['Formula: Completion %', `(${fmtNum(wagered)} ÷ ${fmtNum(total)}) × 100 = ${fmtPct(pct)}`],
+  ];
+  return rows.map(([lbl, val]) => `
+    <div class="formula-row">
+      <div class="formula-label">${lbl}</div>
+      <div class="formula-val">${val}</div>
+    </div>`).join('');
+}
+
+/* ============================================================
+   SPIEL RENDER
+   ============================================================ */
+function renderSpiel() {
+  const deposit = parseFloat(document.getElementById('depositAmount').value) || 0;
+  const wagered = parseFloat(document.getElementById('currentWagered').value) || 0;
+  const bonusPct = parseFloat(document.getElementById('bonusPercentage').value) || 0;
+  const rollover = parseFloat(document.getElementById('rolloverMultiplier').value) || 1;
+  const customerName = document.getElementById('customerName').value.trim();
+
+  const bonusAmount = deposit * bonusPct / 100;
+  const totalRequired = deposit * rollover;
+  const completed = (totalRequired > 0 && wagered >= totalRequired);
+  const remaining = completed ? 0 : Math.max(0, totalRequired - wagered);
+  const pct = totalRequired > 0 ? Math.min((wagered / totalRequired) * 100, 100) : 0;
+
+  const promoType = document.getElementById('promotionType').value;
+  const promoMeta = PROMOTIONS[promoType] || PROMOTIONS.slots;
+
+  const state = completed ? 'qualified' : 'notQualified';
+  const templateKey = promoType + '_' + state;
+  let template = promoTemplates[templateKey] || promoMeta[state + 'Template'];
+
+  let spiel = template
+    .replace(/{customerName}/g, customerName ? customerName : 'valued customer')
+    .replace(/{depositAmount}/g, fmtNum(deposit))
+    .replace(/{bonusPercentage}/g, bonusPct)
+    .replace(/{rolloverMultiplier}/g, rollover)
+    .replace(/{totalRequiredWagering}/g, fmtNum(totalRequired))
+    .replace(/{currentWagered}/g, fmtNum(wagered))
+    .replace(/{remainingWagering}/g, fmtNum(remaining))
+    .replace(/{completionPercentage}/g, fmtNum(pct))
+    .replace(/{bonusAmount}/g, fmtNum(bonusAmount))
+    .replace(/{promotionLabel}/g, promoMeta.label)
+    .replace(/{gameType}/g, promoMeta.gameType)
+    .replace(/{url}/g, promoMeta.url);
+
+  document.getElementById('spielDisplay').textContent = spiel;
+}
+
+/* ============================================================
+   COPY / EXPORT / HISTORY (Kept as before per instructions)
+   ============================================================ */
+function copySpiel() {
+  renderSpiel();
+  const text = document.getElementById('spielDisplay').textContent;
+  copyToClipboard(text, 'Spiel copied to clipboard!');
+}
+
+function copyCalcSummary() {
+  const deposit = parseFloat(document.getElementById('depositAmount').value) || 0;
+  const wagered = parseFloat(document.getElementById('currentWagered').value) || 0;
+  const bonusPct = parseFloat(document.getElementById('bonusPercentage').value) || 0;
+  const rollover = parseFloat(document.getElementById('rolloverMultiplier').value) || 1;
+  const bonusAmount = deposit * bonusPct / 100;
+  const total = deposit * rollover;
+  const completed = (total > 0 && wagered >= total);
+  const remaining = completed ? 0 : Math.max(0, total - wagered);
+  const pct = total > 0 ? Math.min((wagered / total) * 100, 100) : 0;
+  const currentPromoType = document.getElementById('promotionType').value;
+  const promoMeta = PROMOTIONS[currentPromoType] || PROMOTIONS.slots;
+
+  const summary = `EasyBet Bonus Calculation Summary
+-----------------------------------
+Promotion:             ${promoMeta.label}
+Deposit Amount:        ${fmtR(deposit)}
+Bonus Amount (${bonusPct}%): ${fmtR(bonusAmount)}
+Total Required Wager:  ${fmtR(total)}
+Currently Wagered:     ${fmtR(wagered)}
+Remaining Wager:       ${completed ? 'R0.00 (COMPLETED)' : fmtR(remaining)}
+Completion:            ${fmtPct(pct)}
+-----------------------------------`;
+  copyToClipboard(summary, 'Calculation summary copied!');
+}
+
+function exportSpiel() {
+  renderSpiel();
+  const text = document.getElementById('spielDisplay').textContent;
+  const name = document.getElementById('customerName').value.trim() || 'customer';
+  const fname = 'EasyBet_Spiel_' + name.replace(/\s+/g, '_') + '_' + Date.now() + '.txt';
+  const blob = new Blob([text], { type: 'text/plain' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = fname;
+  a.click();
+  showToast('Exported as ' + fname);
+}
+
+function copyToClipboard(text, msg) {
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text).then(() => showToast(msg)).catch(() => fallbackCopy(text, msg));
+  } else { fallbackCopy(text, msg); }
+}
+
+function fallbackCopy(text, msg) {
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.cssText = 'position:fixed;opacity:0;top:0;left:0;';
+  document.body.appendChild(ta);
+  ta.select();
+  document.execCommand('copy');
+  document.body.removeChild(ta);
+  showToast(msg);
+}
+
+function copyNotes() {
+  const notes = document.getElementById('agentNotes').value;
+  copyToClipboard(notes, 'Notes copied!');
+}
+
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  document.getElementById('toastMsg').textContent = msg || 'Copied!';
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2500);
+}
+
+/* ============================================================
+   VALIDATION
+   ============================================================ */
+function showValidation(msg) {
+  const el = document.getElementById('validationMsg');
+  const txt = document.getElementById('validationText');
+  if (msg) { el.style.display = 'block'; txt.textContent = msg; }
+  else { el.style.display = 'none'; }
+}
+
+/* ============================================================
+   RESET AND LOCAL STORAGE HELPERS
+   ============================================================ */
+function resetForm() {
+  document.getElementById('depositAmount').value = '';
+  document.getElementById('currentWagered').value = '';
+  document.getElementById('customerName').value = '';
+  document.getElementById('promotionType').value = 'slots';
+  syncInputsToPromotion();
+  calculate();
+  showToast('Form reset!');
+}
+
+function saveFormValues() {
+  const vals = {
+    dep: document.getElementById('depositAmount').value,
+    wag: document.getElementById('currentWagered').value,
+    pct: document.getElementById('bonusPercentage').value,
+    roll: document.getElementById('rolloverMultiplier').value,
+    promo: document.getElementById('promotionType').value,
+    name: document.getElementById('customerName').value
+  };
+  localStorage.setItem('eb_current_calc', JSON.stringify(vals));
+}
+
+function loadSavedValues() {
+  try {
+    const v = JSON.parse(localStorage.getItem('eb_current_calc'));
+    if (v) {
+      if (v.dep) document.getElementById('depositAmount').value = v.dep;
+      if (v.wag) document.getElementById('currentWagered').value = v.wag;
+      if (v.pct) document.getElementById('bonusPercentage').value = v.pct;
+      if (v.roll) document.getElementById('rolloverMultiplier').value = v.roll;
+      if (v.promo) document.getElementById('promotionType').value = v.promo;
+      if (v.name) document.getElementById('customerName').value = v.name;
+    }
+  } catch (e) {}
+}
+
+function saveNotes() {
+  const n = document.getElementById('agentNotes').value;
+  localStorage.setItem('eb_agent_notes', n);
+}
+function loadNotes() {
+  const n = localStorage.getItem('eb_agent_notes') || '';
+  document.getElementById('agentNotes').value = n;
+}
+
+function saveToHistory() {
+  const deposit = parseFloat(document.getElementById('depositAmount').value) || 0;
+  if (deposit === 0) return showToast('Cannot save empty calculation');
+  const wagered = parseFloat(document.getElementById('currentWagered').value) || 0;
+  const name = document.getElementById('customerName').value.trim() || 'Guest';
+  const type = document.getElementById('promotionType').options[document.getElementById('promotionType').selectedIndex].text;
+
+  const entry = {
+    id: Date.now(),
+    name,
+    type,
+    deposit,
+    wagered,
+    time: new Date().toLocaleString()
+  };
+  history.unshift(entry);
+  if (history.length > 20) history.pop();
+  localStorage.setItem('eb_history', JSON.stringify(history));
+  renderHistory();
+  updateHistoryBadge();
+  showToast('Saved to history!');
+}
+
+function clearHistory() {
+  if (!confirm('Are you sure you want to clear calculation history?')) return;
+  history = [];
+  localStorage.setItem('eb_history', '[]');
+  renderHistory();
+  updateHistoryBadge();
+}
+
+function renderHistory() {
+  const list = document.getElementById('historyList');
+  const q = document.getElementById('historySearch').value.toLowerCase();
+  
+  if (history.length === 0) {
+    list.innerHTML = '<div class="history-empty">No saved calculations yet.</div>';
+    return;
+  }
+
+  const filtered = history.filter(h => h.name.toLowerCase().includes(q) || String(h.deposit).includes(q));
+  if (filtered.length === 0) {
+    list.innerHTML = '<div class="history-empty">No results found.</div>';
+    return;
+  }
+
+  list.innerHTML = filtered.map(h => `
+    <div class="history-item" onclick="loadHistoryItem(${h.id})">
+      <div class="history-item-header">
+        <span class="history-item-name">${h.name}</span>
+        <span class="history-item-time">${h.time}</span>
+      </div>
+      <div class="history-item-meta">${h.type} • Dep: ${fmtR(h.deposit)} • Wag: ${fmtR(h.wagered)}</div>
+    </div>
+  `).join('');
+}
+
+function loadHistoryItem(id) {
+  const entry = history.find(h => h.id === id);
+  if (!entry) return;
+  document.getElementById('depositAmount').value = entry.deposit;
+  document.getElementById('currentWagered').value = entry.wagered;
+  document.getElementById('customerName').value = entry.name === 'Guest' ? '' : entry.name;
+  
+  // Find promotion type match
+  const opts = document.getElementById('promotionType').options;
+  for (let i=0; i<opts.length; i++) {
+    if (opts[i].text === entry.type) {
+      document.getElementById('promotionType').value = opts[i].value;
+      break;
+    }
+  }
+  
+  syncInputsToPromotion();
+  calculate();
+  showSection('calculator');
+  showToast('Loaded calculation for ' + entry.name);
+}
+
+function updateHistoryBadge() {
+  document.getElementById('historyBadge').textContent = history.length;
+}
+</script>
+</body>
+</html>

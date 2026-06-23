@@ -1,0 +1,661 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Easybet Support Workspace</title>
+    <style>
+        /* --- SLEEK GLASSMORPHISM DESIGN SYSTEM --- */
+        :root {
+            /* Typography */
+            --font-stack: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            
+            /* Transparent Black 20% Theme */
+            --bg-panel: rgba(0, 0, 0, 0.20);
+            --bg-panel-hover: rgba(0, 0, 0, 0.35);
+            --border-color: rgba(255, 255, 255, 0.12);
+            --border-active: rgba(255, 255, 255, 0.3);
+            --glass-blur: blur(24px);
+            
+            /* Text Colors */
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.7);
+            --text-muted: rgba(255, 255, 255, 0.4);
+            
+            /* Accents */
+            --accent-color: #3b82f6;
+            --success-color: #10b981;
+            --badge-bg: rgba(255, 255, 255, 0.15);
+            --badge-text: #ffffff;
+            
+            /* Sizing & Effects */
+            --radius-lg: 24px;
+            --radius-md: 12px;
+            --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            --shadow-subtle: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-stack);
+            color: var(--text-primary);
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #0a0a0a;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            transition: background-image 0.8s ease-in-out;
+        }
+
+        /* Overlay to ensure text readability over any wallpaper */
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.3);
+            z-index: -1;
+        }
+
+        /* --- LAYOUT --- */
+        .workspace {
+            width: 100%;
+            max-width: 1400px;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            padding-bottom: 0.5rem;
+        }
+
+        .title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            letter-spacing: -0.01em;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            min-height: 75vh;
+        }
+
+        /* --- PANELS --- */
+        .panel {
+            background: var(--bg-panel);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow-subtle);
+        }
+
+        /* --- INPUT AREA --- */
+        .input-panel:focus-within {
+            border-color: var(--border-active);
+            background: var(--bg-panel-hover);
+        }
+
+        .panel-header {
+            padding: 1.2rem 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .panel-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-weight: 700;
+            color: var(--text-secondary);
+        }
+
+        .badges {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .badge {
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 0.25rem 0.6rem;
+            border-radius: 12px;
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            transition: var(--transition);
+        }
+
+        .badge.active {
+            background: var(--badge-bg);
+            border-color: transparent;
+            color: var(--badge-text);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .textarea-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .smart-input {
+            flex: 1;
+            width: 100%;
+            background: transparent;
+            border: none;
+            padding: 1.5rem;
+            color: var(--text-primary);
+            font-family: var(--font-stack);
+            font-size: 1rem;
+            line-height: 1.6;
+            resize: none;
+            outline: none;
+        }
+
+        .smart-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .smart-input.dragover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .panel-footer {
+            padding: 0.8rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        /* --- OUTPUT BUBBLES (TAP TO COPY) --- */
+        .outputs-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            height: 100%;
+        }
+
+        .output-card {
+            flex: 1;
+            background: var(--bg-panel);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            display: flex;
+            flex-direction: column;
+            opacity: 0.6;
+            transition: var(--transition);
+            cursor: default;
+            position: relative;
+        }
+
+        /* Active/Interactive State */
+        .output-card.active-output {
+            opacity: 1;
+            cursor: pointer;
+            box-shadow: var(--shadow-subtle);
+        }
+
+        .output-card.active-output:hover {
+            background: var(--bg-panel-hover);
+            border-color: var(--border-active);
+            transform: translateY(-2px);
+        }
+
+        .output-card.active-output:active {
+            transform: translateY(0);
+        }
+
+        .output-card.active-output:focus-visible {
+            outline: none;
+            border-color: #ffffff;
+            box-shadow: 0 0 0 2px rgba(255,255,255,0.2);
+        }
+
+        .copy-hint {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            opacity: 0;
+            transition: opacity 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .output-card.active-output:hover .copy-hint {
+            opacity: 1;
+            color: #ffffff;
+        }
+
+        .output-content {
+            padding: 1.5rem;
+            font-size: 1rem;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-break: break-word;
+            flex: 1;
+            overflow-y: auto;
+            pointer-events: none;
+        }
+
+        /* --- BUTTONS --- */
+        .btn-clear {
+            background: var(--bg-panel);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-clear:hover {
+            background: var(--bg-panel-hover);
+            border-color: var(--border-active);
+        }
+
+        /* --- TOAST NOTIFICATIONS --- */
+        .toast-container {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            z-index: 1000;
+            pointer-events: none;
+        }
+
+        .toast {
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            color: #ffffff;
+            padding: 0.8rem 1.5rem;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255,255,255,0.1);
+            transform: translateY(20px);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast-icon {
+            color: var(--success-color);
+        }
+
+        /* --- CUSTOM SCROLLBARS --- */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.4); }
+
+        /* --- RESPONSIVE DESIGN --- */
+        @media (max-width: 992px) {
+            .grid-container { grid-template-columns: 1fr; }
+            .panel { min-height: 350px; }
+            body { padding: 1rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <main class="workspace">
+        <header class="header">
+            <h1 class="title">Easybet Support</h1>
+            <button class="btn-clear" id="clearBtn" aria-label="Clear all inputs">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg>
+                Clear
+            </button>
+        </header>
+
+        <section class="grid-container">
+            
+            <div class="panel input-panel">
+                <div class="panel-header">
+                    <span class="panel-title">Data Input</span>
+                    <div class="badges">
+                        <span class="badge" id="badgeCustomer">Customer Info</span>
+                        <span class="badge" id="badgeOTP">Sign-Up OTP</span>
+                    </div>
+                </div>
+                
+                <div class="textarea-container">
+                    <textarea 
+                        id="smartInput" 
+                        class="smart-input" 
+                        placeholder="Paste Customer Information or OTP raw message here...&#10;&#10;The system will automatically detect the workflow and build your responses."
+                        aria-label="Smart Paste Area"
+                    ></textarea>
+                </div>
+
+                <div class="panel-footer">
+                    <span id="charCount">0 characters</span>
+                    <span>Cmd/Ctrl + Enter to auto-copy active</span>
+                </div>
+            </div>
+
+            <div class="outputs-container">
+                
+                <div class="output-card" id="cardCustomer" tabindex="0" role="button" aria-label="Customer Info Output. Click to copy.">
+                    <div class="panel-header">
+                        <span class="panel-title">Customer OTP Issue</span>
+                        <span class="copy-hint">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            Click to copy
+                        </span>
+                    </div>
+                    <div class="output-content" id="outCustomer">Awaiting customer data...</div>
+                </div>
+
+                <div class="output-card" id="cardOTP" tabindex="0" role="button" aria-label="Sign-Up OTP Output. Click to copy.">
+                    <div class="panel-header">
+                        <span class="panel-title">Sign-Up OTP</span>
+                        <span class="copy-hint">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            Click to copy
+                        </span>
+                    </div>
+                    <div class="output-content" id="outOTP">Awaiting OTP message...</div>
+                </div>
+
+            </div>
+        </section>
+    </main>
+
+    <div class="toast-container" id="toastContainer" aria-live="assertive"></div>
+
+    <script>
+        // --- Wallpaper Loading Engine ---
+        const REMOTE_WALLPAPER_URL = "https://images.unsplash.com/photo-1779485070200-a33a369afe5a?q=80&w=1171&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";     
+        const LOCAL_WALLPAPER_URL = "wallpaper.jpg";    
+        let currentWallpaperBlobUrl = null;
+        
+        async function processAndLoadWallpaper(url) {        
+            const controller = new AbortController();        
+            const timeoutId = setTimeout(() => controller.abort(), 8000);        
+            const response = await fetch(url, { mode: 'cors', signal: controller.signal });        
+            clearTimeout(timeoutId);        
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);        
+            const blob = await response.blob();        
+            let imageSource;        
+            
+            if ('createImageBitmap' in window) {            
+                imageSource = await createImageBitmap(blob);        
+            } else {            
+                imageSource = await new Promise((resolve, reject) => {                
+                    const img = new Image();                
+                    const tempUrl = URL.createObjectURL(blob);                
+                    img.onload = () => { URL.revokeObjectURL(tempUrl); resolve(img); };                
+                    img.onerror = () => { URL.revokeObjectURL(tempUrl); reject(new Error('Image decode failed')); };                
+                    img.src = tempUrl;            
+                });        
+            }
+
+            // Apply the loaded blob to the background
+            if (currentWallpaperBlobUrl) {
+                URL.revokeObjectURL(currentWallpaperBlobUrl);
+            }
+            currentWallpaperBlobUrl = URL.createObjectURL(blob);
+            document.body.style.backgroundImage = `url(${currentWallpaperBlobUrl})`;
+        }
+
+        // Initialize Wallpaper
+        async function initWallpaper() {
+            try {
+                await processAndLoadWallpaper(REMOTE_WALLPAPER_URL);
+            } catch (err) {
+                console.warn("Failed to load remote wallpaper, attempting local fallback.", err);
+                try {
+                    await processAndLoadWallpaper(LOCAL_WALLPAPER_URL);
+                } catch (fallbackErr) {
+                    console.error("Local wallpaper fallback failed as well.", fallbackErr);
+                }
+            }
+        }
+
+        // --- DOM Elements ---
+        const smartInput = document.getElementById('smartInput');
+        const charCount = document.getElementById('charCount');
+        const clearBtn = document.getElementById('clearBtn');
+        const toastContainer = document.getElementById('toastContainer');
+
+        const cardCustomer = document.getElementById('cardCustomer');
+        const cardOTP = document.getElementById('cardOTP');
+        const outCustomer = document.getElementById('outCustomer');
+        const outOTP = document.getElementById('outOTP');
+
+        const badgeCustomer = document.getElementById('badgeCustomer');
+        const badgeOTP = document.getElementById('badgeOTP');
+
+        // --- State ---
+        let activeWorkflows = { customer: false, otp: false };
+
+        // --- Parsers ---
+        function parseCustomerInfo(text) {
+            let name = "N/A", id = "N/A", email = "N/A", phone = "N/A";
+            let detected = false;
+
+            const emailMatch = text.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
+            if (emailMatch) { email = emailMatch[0]; detected = true; }
+
+            const phoneMatch = text.match(/\+?\d{10,15}/);
+            if (phoneMatch) { phone = phoneMatch[0]; detected = true; }
+
+            const pipeMatch = text.match(/^([a-zA-Z\s]+)\|\s*(\d+)\s*\|?/m);
+            if (pipeMatch) {
+                name = pipeMatch[1].trim();
+                id = pipeMatch[2].trim();
+                detected = true;
+            } else {
+                const nameFallback = text.match(/Name:\s*([^\n]+)/i);
+                if (nameFallback) { name = nameFallback[1].trim(); detected = true; }
+                const idFallback = text.match(/ID:\s*(\d+)/i);
+                if (idFallback) { id = idFallback[1].trim(); detected = true; }
+            }
+
+            return { detected, name, id, email, phone };
+        }
+
+        function parseOTPInfo(text) {
+            let code = "N/A", link = "N/A";
+            let detected = false;
+
+            const urlMatch = text.match(/(https?:\/\/[^\s]+)/i);
+            if (urlMatch) { link = urlMatch[0]; detected = true; }
+
+            const codeMatch = text.match(/(?:code:\s*|use\s+code:\s*)?(\b\d{5,6}\b)/i);
+            if (codeMatch) { code = codeMatch[1]; detected = true; }
+
+            return { detected, code, link };
+        }
+
+        // --- Engine & Formatting ---
+        function processInput() {
+            const rawText = smartInput.value;
+            charCount.textContent = `${rawText.length} characters`;
+            localStorage.setItem('easybet_smart_input_v2', rawText);
+
+            if (!rawText.trim()) {
+                resetUI();
+                return;
+            }
+
+            const customerData = parseCustomerInfo(rawText);
+            const otpData = parseOTPInfo(rawText);
+
+            activeWorkflows.customer = customerData.detected;
+            activeWorkflows.otp = otpData.detected;
+
+            updateCards(customerData, otpData);
+            updateBadges();
+        }
+
+        function updateCards(customerData, otpData) {
+            if (customerData.detected) {
+                outCustomer.textContent = `Hello Team, the customer is unable to receive the registration OTP despite confirming that the phone number is correct and completing basic troubleshooting steps. Kindly advise on the next steps. Thank you!\n\nName: ${customerData.name}\nID: ${customerData.id}\nEmail: ${customerData.email}\nPhone: ${customerData.phone}`;
+                cardCustomer.classList.add('active-output');
+            } else {
+                outCustomer.textContent = "Awaiting customer data...";
+                cardCustomer.classList.remove('active-output');
+            }
+
+            if (otpData.detected) {
+                outOTP.textContent = `Thank you for patiently waiting. Here's the Sign-Up OTP Link:\n${otpData.link}\n\nOTP Code:\n${otpData.code}\n\nI'm happy to assist you with this, and I wish you all the best as you begin your journey with Easybet.`;
+                cardOTP.classList.add('active-output');
+            } else {
+                outOTP.textContent = "Awaiting OTP message...";
+                cardOTP.classList.remove('active-output');
+            }
+        }
+
+        function updateBadges() {
+            badgeCustomer.classList.toggle('active', activeWorkflows.customer);
+            badgeOTP.classList.toggle('active', activeWorkflows.otp);
+        }
+
+        function resetUI() {
+            outCustomer.textContent = "Awaiting customer data...";
+            outOTP.textContent = "Awaiting OTP message...";
+            cardCustomer.classList.remove('active-output');
+            cardOTP.classList.remove('active-output');
+            badgeCustomer.classList.remove('active');
+            badgeOTP.classList.remove('active');
+            activeWorkflows = { customer: false, otp: false };
+        }
+
+        // --- Interactivity (Tap to Copy) ---
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.innerHTML = `<span class="toast-icon">✓</span> ${message}`;
+            toastContainer.appendChild(toast);
+            
+            requestAnimationFrame(() => toast.classList.add('show'));
+
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 2000);
+        }
+
+        async function copyContent(elementId, label) {
+            const el = document.getElementById(elementId);
+            if (el.textContent.includes('Awaiting')) return;
+            
+            try {
+                await navigator.clipboard.writeText(el.textContent);
+                showToast(`${label} Copied`);
+            } catch (err) {
+                console.error('Copy failed:', err);
+            }
+        }
+
+        cardCustomer.addEventListener('click', () => {
+            if (activeWorkflows.customer) copyContent('outCustomer', 'Customer Info');
+        });
+        cardOTP.addEventListener('click', () => {
+            if (activeWorkflows.otp) copyContent('outOTP', 'Sign-Up OTP');
+        });
+
+        [cardCustomer, cardOTP].forEach(card => {
+            card.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    card.click();
+                }
+            });
+        });
+
+        // --- Other Listeners ---
+        smartInput.addEventListener('input', processInput);
+
+        clearBtn.addEventListener('click', () => {
+            smartInput.value = '';
+            processInput();
+            smartInput.focus();
+        });
+
+        smartInput.addEventListener('keydown', (e) => {
+            if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+                e.preventDefault();
+                if (activeWorkflows.otp) {
+                    copyContent('outOTP', 'Sign-Up OTP');
+                } else if (activeWorkflows.customer) {
+                    copyContent('outCustomer', 'Customer Info');
+                }
+            }
+        });
+
+        smartInput.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            smartInput.classList.add('dragover');
+        });
+        smartInput.addEventListener('dragleave', () => smartInput.classList.remove('dragover'));
+        smartInput.addEventListener('drop', () => {
+            smartInput.classList.remove('dragover');
+            setTimeout(processInput, 50);
+        });
+
+        // Init
+        window.addEventListener('DOMContentLoaded', () => {
+            initWallpaper(); // Trigger Wallpaper Fetch
+            
+            const savedInput = localStorage.getItem('easybet_smart_input_v2');
+            if (savedInput) {
+                smartInput.value = savedInput;
+                processInput();
+            }
+        });
+    </script>
+</body>
+</html>

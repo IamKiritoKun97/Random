@@ -1,0 +1,341 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Post sa Slack 3</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --accent: #ffffff;
+            --bg-dark: #0a0a0a;
+        }
+
+        body {
+            background-color: #080808;
+            color: #e5e5e5;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .glass-panel {
+            background: var(--glass);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+        }
+
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
+
+        /* Inputs & Selects Styling */
+        select, textarea, input {
+            background: transparent;
+            border: none;
+            outline: none !important;
+            appearance: none;
+        }
+
+        /* Fix for Dropdown Options Visibility */
+        option {
+            background-color: #121212 !important; /* Forces dark background for the menu list */
+            color: #ffffff !important;
+            padding: 10px;
+        }
+
+        .input-container {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .input-container:focus-within {
+            border-bottom: 1px solid var(--accent);
+            transform: translateY(-1px);
+        }
+
+        /* Toast Animation */
+        #toast {
+            visibility: hidden;
+            opacity: 0;
+            transform: translate(-50%, 20px);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        #toast.show {
+            visibility: visible;
+            opacity: 1;
+            transform: translate(-50%, 0);
+        }
+
+        /* Typewriter Cursor */
+        .typing-segment::after {
+            content: '';
+            display: inline-block;
+            width: 2px;
+            height: 1.1em;
+            background: #fff;
+            margin-left: 2px;
+            vertical-align: middle;
+            animation: blink 0.8s infinite;
+        }
+        @keyframes blink { 50% { opacity: 0; } }
+
+        .tab-transition { transition: all 0.3s ease; }
+    </style>
+</head>
+<body class="antialiased overflow-hidden">
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-10 left-1/2 z-50 bg-white text-black px-6 py-3 rounded-full font-mono text-xs font-bold shadow-2xl flex items-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        COPIED TO CLIPBOARD
+    </div>
+
+    <main class="flex flex-col md:flex-row h-screen w-full">
+        <!-- Left Pane: Inputs -->
+        <section class="w-full md:w-1/2 h-full overflow-y-auto px-6 py-12 md:p-16 border-r border-white/5 bg-[#0a0a0a]">
+            <div class="max-w-md mx-auto">
+                <header class="mb-12">
+                    <div class="inline-block px-3 py-1 border border-white/10 rounded-full mb-4">
+                        <span class="text-[9px] font-bold tracking-[0.3em] uppercase text-white/40">Production Asset v3.1</span>
+                    </div>
+                    <h1 class="text-2xl font-bold tracking-tight text-white">Easybet Internal</h1>
+                    <p class="text-white/40 text-sm mt-1 font-medium">Generate Slack updates for support teams.</p>
+                </header>
+
+                <!-- Tabs -->
+                <nav class="flex gap-8 mb-12 border-b border-white/5">
+                    <button onclick="setMode('update')" id="tab-update" class="pb-4 text-xs font-bold uppercase tracking-widest tab-transition outline-none border-b-2 border-white text-white">
+                        Update Request
+                    </button>
+                    <button onclick="setMode('disabled')" id="tab-disabled" class="pb-4 text-xs font-bold uppercase tracking-widest tab-transition outline-none border-b-2 border-transparent text-white/30 hover:text-white/60">
+                        Disabled Account
+                    </button>
+                </nav>
+
+                <div id="form-content" class="space-y-10">
+                    <!-- Dynamic Update Fields -->
+                    <div id="group-update" class="space-y-10">
+                        <div class="input-container group">
+                            <label class="block text-[10px] font-bold tracking-widest uppercase text-white/30 mb-2 group-focus-within:text-white/60 transition-colors">Select Pronoun</label>
+                            <select id="pronoun" class="w-full py-2 text-base font-medium text-white cursor-pointer bg-[#0a0a0a]">
+                                <option value="she/her">she/her</option>
+                                <option value="he/his">he/his</option>
+                                <option value="they/their">they/their</option>
+                            </select>
+                        </div>
+
+                        <div class="input-container group">
+                            <label class="block text-[10px] font-bold tracking-widest uppercase text-white/30 mb-2 group-focus-within:text-white/60 transition-colors">Information Category</label>
+                            <select id="updateItem" class="w-full py-2 text-base font-medium text-white cursor-pointer bg-[#0a0a0a]">
+                                <option value="mobile number">Mobile Number</option>
+                                <option value="bank account details">Bank Account Details</option>
+                                <option value="email address">Email Address</option>
+                                <option value="residential address">Residential Address</option>
+                                <option value="legal name">Legal Name Change</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Dynamic Disabled Fields -->
+                    <div id="group-disabled" class="hidden space-y-10">
+                        <div class="input-container group">
+                            <label class="block text-[10px] font-bold tracking-widest uppercase text-white/30 mb-2 group-focus-within:text-white/60 transition-colors">Reason for Disabling</label>
+                            <select id="disableReason" class="w-full py-2 text-base font-medium text-white cursor-pointer bg-[#0a0a0a]">
+                                <option value="duplicate name and date of birth">Duplicate Name & DOB</option>
+                                <option value="duplicate bank account number">Duplicate Bank Account</option>
+                                <option value="duplicate ID code">Duplicate ID Code</option>
+                                <option value="lack of FICA documentation">No FICA Documents</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Shared Fields -->
+                    <div class="space-y-10">
+                        <div class="input-container group">
+                            <label class="block text-[10px] font-bold tracking-widest uppercase text-white/30 mb-2 group-focus-within:text-white/60 transition-colors">Customer Narrative</label>
+                            <textarea id="cxReason" rows="1" class="w-full py-2 text-base font-medium text-white placeholder-white/20" placeholder="e.g., Customer lost their device..."></textarea>
+                        </div>
+
+                        <div class="input-container group border-none!">
+                            <label class="block text-[10px] font-bold tracking-widest uppercase text-white/30 mb-4 group-focus-within:text-white/60 transition-colors">Account Details</label>
+                            <div class="glass-panel rounded-xl p-4 border-white/10">
+                                <textarea id="cxInfo" rows="4" class="w-full text-sm font-mono text-white/80 leading-relaxed" spellcheck="false">Full Name: 
+ID Number: 
+Email: 
+Phone: </textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Right Pane: Live Preview -->
+        <section class="w-full md:w-1/2 h-full bg-[#050505] flex flex-col items-center justify-center p-8 relative">
+            <div class="absolute top-1/4 left-1/4 w-64 h-64 bg-white/5 blur-[100px] rounded-full pointer-events-none"></div>
+            
+            <div class="w-full max-w-lg z-10">
+                <div class="flex items-center justify-between mb-6 px-2">
+                    <div class="flex items-center gap-2">
+                        <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+                        <span class="text-[10px] font-bold tracking-widest text-white/30 uppercase">Slack Format Preview</span>
+                    </div>
+                    <span class="text-[9px] font-medium text-white/20 uppercase">Interaction: Click content to copy</span>
+                </div>
+
+                <div id="output" class="glass-panel rounded-2xl p-8 md:p-12 cursor-pointer transition-all duration-500 hover:border-white/20 hover:bg-white/[0.05] group active:scale-[0.99]">
+                    <div id="out-content" class="font-mono text-[14px] leading-[1.8] text-white/90">
+                        <span id="out-header" class="block mb-6"></span>
+                        <span id="out-reason" class="block mb-6 text-white italic"></span>
+                        <div id="out-info" class="text-white/40 text-[13px] whitespace-pre-wrap pt-6 border-t border-white/5"></div>
+                    </div>
+                    
+                    <div class="mt-8 flex items-center gap-2 text-white/20 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                        <span class="text-[10px] font-bold tracking-widest uppercase">Click anywhere to copy</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="absolute bottom-12 text-white/10 text-[10px] font-bold tracking-[0.5em] uppercase">
+                Easybet Customer Experience
+            </div>
+        </section>
+    </main>
+
+    <script>
+        let currentMode = 'update';
+        let typeTimeout;
+
+        const el = {
+            cxReason: document.getElementById('cxReason'),
+            cxInfo: document.getElementById('cxInfo'),
+            toast: document.getElementById('toast'),
+            outHeader: document.getElementById('out-header'),
+            outReason: document.getElementById('out-reason'),
+            outInfo: document.getElementById('out-info'),
+            tabUpdate: document.getElementById('tab-update'),
+            tabDisabled: document.getElementById('tab-disabled'),
+            groupUpdate: document.getElementById('group-update'),
+            groupDisabled: document.getElementById('group-disabled')
+        };
+
+        function showToast() {
+            el.toast.classList.add("show");
+            setTimeout(() => { el.toast.classList.remove("show"); }, 2000);
+        }
+
+        function setMode(mode) {
+            currentMode = mode;
+            el.groupUpdate.classList.toggle('hidden', mode !== 'update');
+            el.groupDisabled.classList.toggle('hidden', mode !== 'disabled');
+            
+            const activeClass = 'border-white text-white';
+            const inactiveClass = 'border-transparent text-white/30 hover:text-white/60';
+            
+            el.tabUpdate.className = `pb-4 text-xs font-bold uppercase tracking-widest tab-transition outline-none border-b-2 ${mode === 'update' ? activeClass : inactiveClass}`;
+            el.tabDisabled.className = `pb-4 text-xs font-bold uppercase tracking-widest tab-transition outline-none border-b-2 ${mode === 'disabled' ? activeClass : inactiveClass}`;
+            
+            updateTemplate(true);
+        }
+
+        function autoResizeTextarea() {
+            el.cxReason.style.height = 'auto';
+            el.cxReason.style.height = (el.cxReason.scrollHeight) + 'px';
+        }
+
+        function updateTemplate(doTypewriter = false) {
+            const getVal = (id) => document.getElementById(id).value;
+            
+            let headerText = "";
+            const mentions = "Hi Team, T @Milky brrs @Jaykee and @Rei,";
+            
+            if (currentMode === 'update') {
+                const pronounParts = getVal('pronoun').split('/');
+                const subject = pronounParts[0];
+                const possessive = pronounParts[1];
+                const item = getVal('updateItem');
+                headerText = `${mentions} a customer has reached out because ${subject} would like to update ${possessive} ${item}.`;
+            } else {
+                const reason = getVal('disableReason');
+                headerText = `${mentions} a customer has reached out regarding their account being disabled due to a ${reason}. Please advise. Thank you!`;
+            }
+            el.outHeader.textContent = headerText;
+
+            let reasonRaw = el.cxReason.value.trim();
+            let targetReason = "";
+            if (!reasonRaw) {
+                targetReason = 'Cx: [Awaiting customer narrative...]';
+            } else {
+                targetReason = reasonRaw.toLowerCase().startsWith('cx:') 
+                    ? `Cx: ${reasonRaw.substring(3).trim()}` 
+                    : `Cx: ${reasonRaw}`;
+            }
+
+            if (doTypewriter) {
+                clearTimeout(typeTimeout);
+                typeOut(el.outReason, targetReason, 0);
+            } else {
+                el.outReason.textContent = targetReason;
+            }
+
+            el.outInfo.textContent = el.cxInfo.value.trim();
+        }
+
+        function typeOut(element, text, i) {
+            if (i === 0) {
+                element.textContent = "";
+                element.classList.add('typing-segment');
+            }
+            if (i < text.length) {
+                element.textContent += text.charAt(i);
+                typeTimeout = setTimeout(() => typeOut(element, text, i + 1), 12);
+            } else {
+                element.classList.remove('typing-segment');
+            }
+        }
+
+        el.cxReason.addEventListener('input', () => {
+            autoResizeTextarea();
+            updateTemplate(true); 
+        });
+
+        ['pronoun', 'updateItem', 'cxInfo', 'disableReason'].forEach(id => {
+            const field = document.getElementById(id);
+            if (field) {
+                field.addEventListener('input', () => updateTemplate(false));
+                field.addEventListener('change', () => updateTemplate(false));
+            }
+        });
+
+        document.getElementById('output').addEventListener('click', function() {
+            const text = document.getElementById('out-content').innerText;
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy');
+                showToast();
+            } catch (err) {
+                console.error('Failed to copy', err);
+            }
+            document.body.removeChild(textarea);
+        });
+
+        window.onload = () => {
+            updateTemplate(false);
+            autoResizeTextarea();
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,322 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Post sa Slack 4</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-deep: #050505;
+            --glass-bg: rgba(255, 255, 255, 0.02);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --accent-white: #ffffff;
+            --text-muted: #888888;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-deep);
+            background-image: 
+                radial-gradient(circle at 0% 0%, rgba(255, 255, 255, 0.03) 0%, transparent 40%),
+                radial-gradient(circle at 100% 100%, rgba(255, 255, 255, 0.02) 0%, transparent 40%);
+            color: #eeeeee;
+        }
+
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .glass-input {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            color: white;
+            transition: all 0.2s ease;
+        }
+
+        .glass-input:focus {
+            border-color: rgba(255, 255, 255, 0.3);
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .preview-pane {
+            background-image: radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 32px 32px;
+        }
+
+        .status-chip {
+            transition: all 0.2s ease;
+            cursor: pointer;
+            user-select: none;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: var(--text-muted);
+            text-transform: none; /* Ensure text displays exactly as written in HTML */
+        }
+
+        .status-chip:hover {
+            border-color: rgba(255, 255, 255, 0.2);
+            color: white;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .status-chip.active {
+            background-color: #ffffff;
+            color: #000000;
+            border-color: #ffffff;
+            font-weight: 600;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-primary {
+            background-color: #ffffff;
+            color: #000000;
+            font-weight: 600;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .btn-primary:hover {
+            background-color: #e5e5e5;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 20px rgba(255, 255, 255, 0.15);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.2); }
+
+        .copy-animation {
+            animation: copy-pulse 0.6s ease-out;
+        }
+
+        @keyframes copy-pulse {
+            0% { border-color: rgba(255, 255, 255, 0.1); }
+            50% { border-color: rgba(255, 255, 255, 0.8); }
+            100% { border-color: rgba(255, 255, 255, 0.1); }
+        }
+
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+    </style>
+</head>
+<body class="min-h-screen antialiased">
+
+    <!-- Navbar -->
+    <nav class="bg-black/40 backdrop-blur-xl border-b border-white/5 py-4 px-8 flex justify-between items-center sticky top-0 z-50">
+        <div class="flex items-center space-x-4">
+            <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center font-bold text-black text-xl shadow-lg">E</div>
+            <div>
+                <h1 class="text-lg font-bold tracking-tight text-white leading-tight">EASYBET</h1>
+                <p class="text-[9px] text-white/40 font-bold tracking-[0.25em] uppercase">Customer Formatter Pro</p>
+            </div>
+        </div>
+        
+        <div id="copy-toast" class="hidden animate-in fade-in slide-in-from-top-4 duration-300 bg-white text-black px-6 py-2 rounded-full text-[11px] font-bold tracking-widest shadow-xl">
+            COPIED TO CLIPBOARD
+        </div>
+    </nav>
+
+    <main class="max-w-[1600px] mx-auto p-6 lg:p-10 grid grid-cols-1 lg:grid-cols-2 gap-10 h-[calc(100vh-80px)]">
+        
+        <!-- Left Section: Data Input -->
+        <section class="flex flex-col space-y-6 overflow-hidden">
+            <div class="flex justify-between items-end">
+                <div>
+                    <h2 class="text-[10px] font-bold text-white/40 uppercase tracking-[0.2em] mb-1">Customer Entry</h2>
+                    <p class="text-sm text-white/70 font-medium">Input details and tag account statuses</p>
+                </div>
+                <button onclick="addTextarea()" class="btn-primary text-[11px] px-6 py-3 rounded-xl flex items-center space-x-2 tracking-wide uppercase">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                    </svg>
+                    <span>Add Profile</span>
+                </button>
+            </div>
+
+            <div id="inputs-container" class="space-y-6 overflow-y-auto pr-3 pb-20">
+                <!-- Template for Customer Entry -->
+                <div class="customer-entry space-y-4 p-6 glass-card rounded-2xl relative group">
+                    <button onclick="removeEntry(this)" class="absolute top-5 right-5 text-white/10 hover:text-white/60 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                    
+                    <textarea 
+                        oninput="updatePreview()" 
+                        placeholder="Paste account raw details here..."
+                        class="w-full h-32 p-4 rounded-xl glass-input outline-none text-sm leading-relaxed placeholder:text-white/10 font-mono"
+                    >Brandon Daniels | 5114955 |
+Email: danielsbrandon012@gmail.com
+Phone: +27769930582
+Registered At: 20/04/25 10:07:55
+Last Login: 16/05/25 15:26:29</textarea>
+                    
+                    <div class="flex flex-wrap gap-2">
+<span onclick="toggleStatus(this)" class="status-chip px-3 py-2 rounded-lg text-[10px] font-bold tracking-wider">Customer used this account to contact us</span>
+<span onclick="toggleStatus(this)" class="status-chip px-3 py-2 rounded-lg text-[10px] font-bold tracking-wider">Original account</span>
+ <span onclick="toggleStatus(this)" class="status-chip px-3 py-2 rounded-lg text-[10px] font-bold tracking-wider">No real money deposit</span>
+ <span onclick="toggleStatus(this)" class="status-chip px-3 py-2 rounded-lg text-[10px] font-bold tracking-wider">With real money deposit</span>
+<span onclick="toggleStatus(this)" class="status-chip px-3 py-2 rounded-lg text-[10px] font-bold tracking-wider">With balance</span>
+                        <span onclick="toggleStatus(this)" class="status-chip px-3 py-2 rounded-lg text-[10px] font-bold tracking-wider">Not FICA</span>
+                        <span onclick="toggleStatus(this)" class="status-chip px-3 py-2 rounded-lg text-[10px] font-bold tracking-wider">FICA verified</span>
+<span onclick="toggleStatus(this)" class="status-chip px-3 py-2 rounded-lg text-[10px] font-bold tracking-wider">Not FICA Verified</span>
+<span onclick="toggleStatus(this)" class="status-chip px-3 py-2 rounded-lg text-[10px] font-bold tracking-wider">FICA Verified</span>
+<span onclick="toggleStatus(this)" class="status-chip px-3 py-2 rounded-lg text-[10px] font-bold tracking-wider">R50 Bonus Fully Used</span>
+<span onclick="toggleStatus(this)" class="status-chip px-3 py-2 rounded-lg text-[10px] font-bold tracking-wider">R50 Bonus Partially Used</span>
+<span onclick="toggleStatus(this)" class="status-chip px-3 py-2 rounded-lg text-[10px] font-bold tracking-wider">R50 Bonus Not Used</span>
+<span onclick="toggleStatus(this)" class="status-chip px-3 py-2 rounded-lg text-[10px] font-bold tracking-wider">R50 Bonus Not Issued</span>
+<span onclick="toggleStatus(this)" class="status-chip px-3 py-2 rounded-lg text-[10px] font-bold tracking-wider">Manually disabled</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Right Section: Live Preview -->
+        <section class="flex flex-col space-y-6 overflow-hidden">
+            <div class="flex justify-between items-end">
+                <div>
+                    <h2 class="text-[10px] font-bold text-white/40 uppercase tracking-[0.2em] mb-1">Live Output</h2>
+                    <p class="text-sm text-white/70 font-medium">Click the panel below to copy formatted text</p>
+                </div>
+                <div class="flex items-center space-x-3 bg-white/5 px-3 py-1.5 rounded-full border border-white/5">
+                    <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.6)]"></span>
+                    <span class="text-[9px] text-white/50 font-bold uppercase tracking-widest">Active Sync</span>
+                </div>
+            </div>
+
+            <div id="preview-area" class="preview-pane flex-1 glass-card rounded-3xl overflow-y-auto p-10 cursor-pointer hover:bg-white/[0.04] transition-all group relative border-white/5" onclick="copyToClipboard()">
+                <div id="preview-content" class="text-white/90 whitespace-pre-wrap leading-relaxed text-sm font-mono selection:bg-white selection:text-black"></div>
+                
+                <!-- Floating Copy Indicator -->
+                <div class="absolute top-8 right-8 opacity-20 group-hover:opacity-100 transition-opacity bg-white/10 p-2.5 rounded-xl text-white border border-white/10">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                    </svg>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        function updatePreview() {
+            const container = document.getElementById('inputs-container');
+            const entries = container.querySelectorAll('.customer-entry');
+            let combinedText = '';
+
+            entries.forEach((entry, index) => {
+                const text = entry.querySelector('textarea').value.trim();
+                const tags = entry.querySelectorAll('.status-chip.active');
+                
+                if (text) {
+                    let customerOutput = text;
+                    tags.forEach(tag => {
+                        customerOutput += `\n${tag.innerText}`;
+                    });
+                    
+                    combinedText += customerOutput + (index === entries.length - 1 ? '' : '\n\n');
+                }
+            });
+
+            document.getElementById('preview-content').innerText = combinedText || "The formatted output will appear here...";
+        }
+
+        function toggleStatus(element) {
+            element.classList.toggle('active');
+            updatePreview();
+        }
+
+        function addTextarea() {
+            const container = document.getElementById('inputs-container');
+            const div = document.createElement('div');
+            div.className = 'customer-entry space-y-4 p-6 glass-card rounded-2xl relative group animate-in fade-in slide-in-from-bottom-4 duration-300';
+            div.innerHTML = `
+                <button onclick="removeEntry(this)" class="absolute top-5 right-5 text-white/10 hover:text-white/60 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+                <textarea 
+                    oninput="updatePreview()" 
+                    placeholder="Paste account raw details here..."
+                    class="w-full h-32 p-4 rounded-xl glass-input outline-none text-sm leading-relaxed placeholder:text-white/10 font-mono"
+                ></textarea>
+                <div class="flex flex-wrap gap-2">
+                      <div class="flex flex-wrap gap-2">
+<span onclick="toggleStatus(this)" class="status-chip px-3 py-2 rounded-lg text-[10px] font-bold tracking-wider">Customer used this account to contact us</span>
+<span onclick="toggleStatus(this)" class="status-chip px-3 py-2 rounded-lg text-[10px] font-bold tracking-wider">Original account</span>
+ <span onclick="toggleStatus(this)" class="status-chip px-3 py-2 rounded-lg text-[10px] font-bold tracking-wider">No real money deposit</span>
+ <span onclick="toggleStatus(this)" class="status-chip px-3 py-2 rounded-lg text-[10px] font-bold tracking-wider">With real money deposit</span>
+<span onclick="toggleStatus(this)" class="status-chip px-3 py-2 rounded-lg text-[10px] font-bold tracking-wider">With balance</span>
+                        <span onclick="toggleStatus(this)" class="status-chip px-3 py-2 rounded-lg text-[10px] font-bold tracking-wider">Not FICA</span>
+                        <span onclick="toggleStatus(this)" class="status-chip px-3 py-2 rounded-lg text-[10px] font-bold tracking-wider">FICA verified</span>
+<span onclick="toggleStatus(this)" class="status-chip px-3 py-2 rounded-lg text-[10px] font-bold tracking-wider">Not FICA Verified</span>
+<span onclick="toggleStatus(this)" class="status-chip px-3 py-2 rounded-lg text-[10px] font-bold tracking-wider">FICA Verified</span>
+<span onclick="toggleStatus(this)" class="status-chip px-3 py-2 rounded-lg text-[10px] font-bold tracking-wider">R50 Bonus Fully Used</span>
+<span onclick="toggleStatus(this)" class="status-chip px-3 py-2 rounded-lg text-[10px] font-bold tracking-wider">R50 Bonus Partially Used</span>
+<span onclick="toggleStatus(this)" class="status-chip px-3 py-2 rounded-lg text-[10px] font-bold tracking-wider">R50 Bonus Not Used</span>
+<span onclick="toggleStatus(this)" class="status-chip px-3 py-2 rounded-lg text-[10px] font-bold tracking-wider">R50 Bonus Not Issued</span>
+<span onclick="toggleStatus(this)" class="status-chip px-3 py-2 rounded-lg text-[10px] font-bold tracking-wider">Manually disabled</span>
+
+                </div>
+            `;
+            container.appendChild(div);
+            div.querySelector('textarea').focus();
+            updatePreview();
+        }
+
+        function removeEntry(btn) {
+            const entry = btn.closest('.customer-entry');
+            entry.classList.add('fade-out');
+            setTimeout(() => {
+                entry.remove();
+                updatePreview();
+            }, 200);
+        }
+
+        function copyToClipboard() {
+            const content = document.getElementById('preview-content').innerText;
+            if (!content || content.includes("formatted output will appear")) return;
+
+            const textArea = document.createElement("textarea");
+            textArea.value = content;
+            document.body.appendChild(textArea);
+            textArea.select();
+            
+            try {
+                document.execCommand('copy');
+                showToast();
+                const area = document.getElementById('preview-area');
+                area.classList.add('copy-animation');
+                setTimeout(() => area.classList.remove('copy-animation'), 600);
+            } catch (err) {
+                console.error('Copy process failed', err);
+            }
+            
+            document.body.removeChild(textArea);
+        }
+
+        function showToast() {
+            const toast = document.getElementById('copy-toast');
+            toast.classList.remove('hidden');
+            
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 2500);
+        }
+
+        window.onload = updatePreview;
+    </script>
+</body>
+</html>

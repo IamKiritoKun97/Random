@@ -1,0 +1,821 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Time Converter 12/24</title>
+<meta name="description" content="Instantly convert time between 24-hour and 12-hour formats.">
+
+<!-- Custom SVG favicon: clock face with amber hands, embedded as data URI -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%230B1120' stroke='%23F5A623' stroke-width='3'/%3E%3Ccircle cx='32' cy='32' r='2.5' fill='%23F5A623'/%3E%3Cline x1='32' y1='32' x2='32' y2='14' stroke='%23F5A623' stroke-width='3' stroke-linecap='round'/%3E%3Cline x1='32' y1='32' x2='44' y2='38' stroke='%232DD4BF' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E">
+
+<style>
+  /* ============ Design tokens ============ */
+  :root {
+    --bg-grad-1: #0B1120;
+    --bg-grad-2: #131B2E;
+    --panel-bg: rgba(255, 255, 255, 0.055);
+    --panel-border: rgba(255, 255, 255, 0.10);
+    --panel-shadow: rgba(0, 0, 0, 0.45);
+    --text-primary: #E7ECF5;
+    --text-secondary: #9AA7BD;
+    --text-muted: #6B7790;
+    --accent: #F5A623;
+    --accent-soft: rgba(245, 166, 35, 0.16);
+    --accent-strong: #FFB845;
+    --teal: #2DD4BF;
+    --teal-soft: rgba(45, 212, 191, 0.14);
+    --danger: #F2685C;
+    --danger-soft: rgba(242, 104, 92, 0.14);
+    --field-bg: rgba(255, 255, 255, 0.04);
+    --field-border: rgba(255, 255, 255, 0.12);
+    --field-border-focus: var(--accent);
+    --radius-lg: 22px;
+    --radius-md: 14px;
+    --radius-sm: 9px;
+    --font-display: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Consolas, monospace;
+    --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, Helvetica, Arial, sans-serif;
+    --transition-fast: 150ms ease;
+    --transition-med: 260ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  [data-theme="light"] {
+    --bg-grad-1: #EEF2F9;
+    --bg-grad-2: #E1E8F4;
+    --panel-bg: rgba(255, 255, 255, 0.62);
+    --panel-border: rgba(20, 30, 60, 0.08);
+    --panel-shadow: rgba(40, 60, 110, 0.16);
+    --text-primary: #1B2333;
+    --text-secondary: #4E5A72;
+    --text-muted: #828FA6;
+    --accent: #C97A0E;
+    --accent-soft: rgba(201, 122, 14, 0.12);
+    --accent-strong: #B36A0A;
+    --teal: #0E9488;
+    --teal-soft: rgba(14, 148, 136, 0.12);
+    --danger: #D6473B;
+    --danger-soft: rgba(214, 71, 59, 0.10);
+    --field-bg: rgba(255, 255, 255, 0.7);
+    --field-border: rgba(20, 30, 60, 0.14);
+    --field-border-focus: var(--accent);
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+  }
+
+  body {
+    font-family: var(--font-body);
+    color: var(--text-primary);
+    background:
+      radial-gradient(circle at 18% 12%, rgba(245, 166, 35, 0.07), transparent 38%),
+      radial-gradient(circle at 85% 88%, rgba(45, 212, 191, 0.06), transparent 42%),
+      linear-gradient(160deg, var(--bg-grad-1), var(--bg-grad-2));
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 18px;
+    transition: background var(--transition-med), color var(--transition-med);
+  }
+
+  /* Respect reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; animation: none !important; }
+  }
+
+  .app-shell {
+    width: 100%;
+    max-width: 520px;
+  }
+
+  /* ============ Header ============ */
+  .app-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 22px;
+  }
+
+  .heading-group { display: flex; gap: 14px; align-items: center; }
+
+  .dial-mark {
+    flex-shrink: 0;
+    width: 46px;
+    height: 46px;
+  }
+
+  .app-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin: 0;
+    line-height: 1.15;
+  }
+
+  .app-subtitle {
+    margin: 4px 0 0;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    font-weight: 450;
+  }
+
+  .theme-toggle {
+    flex-shrink: 0;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    border: 1px solid var(--panel-border);
+    background: var(--panel-bg);
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    backdrop-filter: blur(14px);
+    transition: transform var(--transition-fast), border-color var(--transition-fast), background var(--transition-fast);
+  }
+  .theme-toggle:hover { transform: translateY(-1px); border-color: var(--accent); }
+  .theme-toggle:active { transform: translateY(0); }
+  .theme-toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .theme-toggle svg { width: 20px; height: 20px; }
+  .theme-toggle .icon-moon { display: none; }
+  [data-theme="light"] .theme-toggle .icon-sun { display: none; }
+  [data-theme="light"] .theme-toggle .icon-moon { display: block; }
+
+  /* ============ Card ============ */
+  .card {
+    background: var(--panel-bg);
+    border: 1px solid var(--panel-border);
+    border-radius: var(--radius-lg);
+    backdrop-filter: blur(22px);
+    -webkit-backdrop-filter: blur(22px);
+    box-shadow: 0 24px 60px -20px var(--panel-shadow), inset 0 1px 0 rgba(255,255,255,0.04);
+    padding: 28px;
+    transition: background var(--transition-med), border-color var(--transition-med);
+  }
+
+  .field-group { margin-bottom: 18px; }
+
+  .field-label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+  }
+
+  .format-badge {
+    font-family: var(--font-display);
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    text-transform: none;
+    padding: 3px 9px;
+    border-radius: 999px;
+    background: var(--accent-soft);
+    color: var(--accent);
+    border: 1px solid transparent;
+    transition: background var(--transition-fast), color var(--transition-fast), opacity var(--transition-fast);
+    opacity: 0;
+  }
+  .format-badge.visible { opacity: 1; }
+  .format-badge.is-24 { background: var(--teal-soft); color: var(--teal); }
+
+  .input-wrap { position: relative; }
+
+  .time-input {
+    width: 100%;
+    font-family: var(--font-display);
+    font-size: 1.45rem;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.03em;
+    padding: 16px 18px;
+    border-radius: var(--radius-md);
+    border: 1.5px solid var(--field-border);
+    background: var(--field-bg);
+    color: var(--text-primary);
+    outline: none;
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  }
+
+  .time-input::placeholder {
+    color: var(--text-muted);
+    font-size: 1.05rem;
+    letter-spacing: 0;
+  }
+
+  .time-input:focus-visible,
+  .time-input:focus {
+    border-color: var(--field-border-focus);
+    box-shadow: 0 0 0 4px var(--accent-soft);
+  }
+
+  .time-input.invalid {
+    border-color: var(--danger);
+    box-shadow: 0 0 0 4px var(--danger-soft);
+  }
+
+  .helper-text {
+    margin: 9px 2px 0;
+    font-size: 0.76rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+  .helper-text code {
+    font-family: var(--font-display);
+    background: rgba(127, 137, 161, 0.13);
+    padding: 1px 5px;
+    border-radius: 4px;
+    font-size: 0.72rem;
+  }
+
+  /* status / validation message */
+  .status-msg {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin-top: 10px;
+    font-size: 0.82rem;
+    font-weight: 500;
+    min-height: 0;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: max-height var(--transition-med), opacity var(--transition-med), margin var(--transition-med);
+  }
+  .status-msg.show {
+    max-height: 40px;
+    opacity: 1;
+    margin-top: 10px;
+  }
+  .status-msg.error { color: var(--danger); }
+  .status-msg.info { color: var(--text-muted); }
+  .status-msg svg { width: 15px; height: 15px; flex-shrink: 0; }
+
+  /* ============ Actions row ============ */
+  .actions-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 22px;
+  }
+
+  .btn {
+    flex: 1;
+    font-family: var(--font-body);
+    font-size: 0.88rem;
+    font-weight: 600;
+    padding: 11px 16px;
+    border-radius: var(--radius-sm);
+    border: 1.5px solid transparent;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    transition: transform var(--transition-fast), filter var(--transition-fast), background var(--transition-fast), border-color var(--transition-fast);
+  }
+  .btn svg { width: 15px; height: 15px; }
+  .btn:active { transform: translateY(1px) scale(0.98); }
+  .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+    color: #1A1304;
+  }
+  .btn-primary:hover { filter: brightness(1.08); }
+
+  .btn-secondary {
+    background: transparent;
+    border-color: var(--field-border);
+    color: var(--text-secondary);
+  }
+  .btn-secondary:hover { border-color: var(--text-secondary); color: var(--text-primary); }
+
+  /* ============ Output ============ */
+  .output-display {
+    width: 100%;
+    font-family: var(--font-display);
+    font-size: 1.8rem;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.02em;
+    padding: 20px 18px;
+    border-radius: var(--radius-md);
+    border: 1.5px dashed var(--field-border);
+    background: var(--field-bg);
+    color: var(--text-muted);
+    min-height: 68px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    transition: color var(--transition-fast), border-color var(--transition-fast), background var(--transition-fast);
+    word-break: break-word;
+  }
+  .output-display.has-value {
+    color: var(--accent);
+    border-style: solid;
+    border-color: var(--accent-soft);
+    background: var(--accent-soft);
+  }
+
+  .copy-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 12px;
+  }
+
+  .btn-copy {
+    flex: 1;
+    background: transparent;
+    border-color: var(--field-border);
+    color: var(--text-secondary);
+  }
+  .btn-copy:hover:not(:disabled) { border-color: var(--teal); color: var(--teal); }
+  .btn-copy:disabled { opacity: 0.45; cursor: not-allowed; }
+
+  .copied-toast {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--teal);
+    opacity: 0;
+    transform: translateY(-3px);
+    transition: opacity var(--transition-fast), transform var(--transition-fast);
+    white-space: nowrap;
+  }
+  .copied-toast.show { opacity: 1; transform: translateY(0); }
+
+  .app-footer {
+    text-align: center;
+    margin-top: 18px;
+    font-size: 0.74rem;
+    color: var(--text-muted);
+  }
+
+  @media (max-width: 420px) {
+    .card { padding: 20px; }
+    .app-title { font-size: 1.3rem; }
+    .output-display { font-size: 1.4rem; }
+    .time-input { font-size: 1.2rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app-shell">
+
+  <header class="app-header">
+    <div class="heading-group">
+      <!-- Signature dial: split ring, left half ticked for 24, right half ticked for 12 -->
+      <svg class="dial-mark" viewBox="0 0 46 46" aria-hidden="true" focusable="false">
+        <circle cx="23" cy="23" r="20" fill="none" stroke="var(--field-border)" stroke-width="1.5"/>
+        <g stroke="var(--teal)" stroke-width="1.6" stroke-linecap="round">
+          <line x1="23" y1="4" x2="23" y2="7.5"/>
+          <line x1="9.9" y1="9.9" x2="12.3" y2="12.3"/>
+          <line x1="4" y1="23" x2="7.5" y2="23"/>
+          <line x1="9.9" y1="36.1" x2="12.3" y2="33.7"/>
+        </g>
+        <g stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round">
+          <line x1="23" y1="42" x2="23" y2="38.5"/>
+          <line x1="36.1" y1="36.1" x2="33.7" y2="33.7"/>
+          <line x1="42" y1="23" x2="38.5" y2="23"/>
+          <line x1="36.1" y1="9.9" x2="33.7" y2="12.3"/>
+        </g>
+        <circle cx="23" cy="23" r="2.4" fill="var(--accent)"/>
+        <line x1="23" y1="23" x2="23" y2="11" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"/>
+        <line x1="23" y1="23" x2="31" y2="27" stroke="var(--teal)" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      <div>
+        <h1 class="app-title">TimeShift</h1>
+        <p class="app-subtitle">Instant 24‑hour ⇄ 12‑hour time conversion</p>
+      </div>
+    </div>
+
+    <button type="button" class="theme-toggle" id="themeToggle" aria-label="Toggle dark or light mode" aria-pressed="false">
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+        <circle cx="12" cy="12" r="4.5"/>
+        <line x1="12" y1="2" x2="12" y2="4.5"/>
+        <line x1="12" y1="19.5" x2="12" y2="22"/>
+        <line x1="2" y1="12" x2="4.5" y2="12"/>
+        <line x1="19.5" y1="12" x2="22" y2="12"/>
+        <line x1="4.9" y1="4.9" x2="6.6" y2="6.6"/>
+        <line x1="17.4" y1="17.4" x2="19.1" y2="19.1"/>
+        <line x1="4.9" y1="19.1" x2="6.6" y2="17.4"/>
+        <line x1="17.4" y1="6.6" x2="19.1" y2="4.9"/>
+      </svg>
+      <svg class="icon-moon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79z"/>
+      </svg>
+    </button>
+  </header>
+
+  <main class="card">
+
+    <form id="converterForm" novalidate>
+
+      <div class="field-group">
+        <div class="field-label">
+          <label for="timeInput">Enter a time</label>
+          <span class="format-badge" id="formatBadge">—</span>
+        </div>
+        <div class="input-wrap">
+          <input
+            type="text"
+            id="timeInput"
+            class="time-input"
+            placeholder="e.g. 18:49:55 or 6:49 PM"
+            autocomplete="off"
+            autocapitalize="off"
+            spellcheck="false"
+            inputmode="text"
+            aria-describedby="helperText statusMsg"
+          />
+        </div>
+        <p class="helper-text" id="helperText">
+          Accepted formats: <code>HH:MM</code>, <code>HH:MM:SS</code>, <code>HH:MM AM/PM</code>, <code>HH:MM:SS AM/PM</code>
+        </p>
+        <div class="status-msg" id="statusMsg" role="status" aria-live="polite"></div>
+      </div>
+
+      <div class="actions-row">
+        <button type="submit" class="btn btn-primary" id="convertBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/>
+            <polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/>
+          </svg>
+          Convert
+        </button>
+        <button type="button" class="btn btn-secondary" id="clearBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+          Clear
+        </button>
+      </div>
+
+      <div class="field-group" style="margin-bottom:0;">
+        <div class="field-label">
+          <label for="resultOutput">Converted result</label>
+        </div>
+        <div class="output-display" id="resultOutput" role="status" aria-live="polite">Your converted time will appear here</div>
+
+        <div class="copy-row">
+          <button type="button" class="btn btn-copy" id="copyBtn" disabled>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="9" y="9" width="13" height="13" rx="2"/>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+            </svg>
+            Copy result
+          </button>
+          <span class="copied-toast" id="copiedToast">Copied!</span>
+        </div>
+      </div>
+
+    </form>
+  </main>
+
+  <p class="app-footer">Runs entirely in your browser. No data leaves your device.</p>
+
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ============================================================
+     ELEMENT REFERENCES
+  ============================================================ */
+  var form         = document.getElementById('converterForm');
+  var timeInput     = document.getElementById('timeInput');
+  var resultOutput  = document.getElementById('resultOutput');
+  var statusMsg     = document.getElementById('statusMsg');
+  var formatBadge   = document.getElementById('formatBadge');
+  var clearBtn      = document.getElementById('clearBtn');
+  var copyBtn       = document.getElementById('copyBtn');
+  var copiedToast   = document.getElementById('copiedToast');
+  var themeToggle   = document.getElementById('themeToggle');
+
+  var lastConvertedValue = ''; // holds only the converted time, for the Copy button
+  var copyToastTimer = null;
+
+  /* ============================================================
+     REGEX PATTERNS
+     - 24-hour: HH:MM or HH:MM:SS, no AM/PM suffix
+     - 12-hour: HH:MM or HH:MM:SS, with required AM/PM suffix
+  ============================================================ */
+  var PATTERN_24 = /^([0-9]{1,2}):([0-9]{2})(?::([0-9]{2}))?$/;
+  var PATTERN_12 = /^([0-9]{1,2}):([0-9]{2})(?::([0-9]{2}))?\s*(AM|PM)$/;
+
+  /* ============================================================
+     AUTO-FORMATTING
+     Trims whitespace, collapses double spaces, uppercases am/pm.
+  ============================================================ */
+  function normalizeInput(raw) {
+    return raw
+      .trim()
+      .replace(/\s+/g, ' ')      // collapse repeated spaces
+      .replace(/am$/i, 'AM')     // uppercase trailing am/pm regardless of case
+      .replace(/pm$/i, 'PM');
+  }
+
+  /* ============================================================
+     ZERO-PAD a number to 2 digits
+  ============================================================ */
+  function pad2(n) {
+    return n < 10 ? '0' + n : '' + n;
+  }
+
+  /* ============================================================
+     PARSE the normalized input into a structured time object,
+     or return null if it does not match a supported format.
+     Returns: { hour, minute, second, hasSeconds, sourceFormat }
+  ============================================================ */
+  function parseTime(value) {
+    var match;
+
+    // Try 12-hour format first (it's more specific, since it requires AM/PM)
+    match = PATTERN_12.exec(value);
+    if (match) {
+      var h12 = parseInt(match[1], 10);
+      var m12 = parseInt(match[2], 10);
+      var s12 = match[3] !== undefined ? parseInt(match[3], 10) : null;
+      var period = match[4];
+
+      if (h12 < 1 || h12 > 12) return null;
+      if (m12 < 0 || m12 > 59) return null;
+      if (s12 !== null && (s12 < 0 || s12 > 59)) return null;
+
+      return {
+        hour: h12,
+        minute: m12,
+        second: s12,
+        hasSeconds: s12 !== null,
+        period: period,
+        sourceFormat: '12'
+      };
+    }
+
+    // Try 24-hour format (no AM/PM suffix)
+    match = PATTERN_24.exec(value);
+    if (match) {
+      var h24 = parseInt(match[1], 10);
+      var m24 = parseInt(match[2], 10);
+      var s24 = match[3] !== undefined ? parseInt(match[3], 10) : null;
+
+      if (h24 < 0 || h24 > 23) return null;
+      if (m24 < 0 || m24 > 59) return null;
+      if (s24 !== null && (s24 < 0 || s24 > 59)) return null;
+
+      return {
+        hour: h24,
+        minute: m24,
+        second: s24,
+        hasSeconds: s24 !== null,
+        sourceFormat: '24'
+      };
+    }
+
+    return null;
+  }
+
+  /* ============================================================
+     CONVERT a parsed 24-hour time object to a 12-hour string
+  ============================================================ */
+  function to12HourString(t) {
+    var period = t.hour >= 12 ? 'PM' : 'AM';
+    var hour12 = t.hour % 12;
+    if (hour12 === 0) hour12 = 12;
+
+    var str = hour12 + ':' + pad2(t.minute);
+    if (t.hasSeconds) str += ':' + pad2(t.second);
+    str += ' ' + period;
+    return str;
+  }
+
+  /* ============================================================
+     CONVERT a parsed 12-hour time object to a 24-hour string
+  ============================================================ */
+  function to24HourString(t) {
+    var hour24 = t.hour % 12;
+    if (t.period === 'PM') hour24 += 12;
+
+    var str = pad2(hour24) + ':' + pad2(t.minute);
+    if (t.hasSeconds) str += ':' + pad2(t.second);
+    return str;
+  }
+
+  /* ============================================================
+     UI HELPERS
+  ============================================================ */
+  function showStatus(message, type) {
+    statusMsg.textContent = message;
+    statusMsg.className = 'status-msg show ' + type;
+  }
+
+  function hideStatus() {
+    statusMsg.className = 'status-msg';
+    statusMsg.textContent = '';
+  }
+
+  function showFormatBadge(format) {
+    if (!format) {
+      formatBadge.classList.remove('visible', 'is-24');
+      formatBadge.textContent = '—';
+      return;
+    }
+    formatBadge.classList.add('visible');
+    if (format === '24') {
+      formatBadge.textContent = '24-HOUR DETECTED';
+      formatBadge.classList.add('is-24');
+    } else {
+      formatBadge.textContent = '12-HOUR DETECTED';
+      formatBadge.classList.remove('is-24');
+    }
+  }
+
+  function setOutput(text, hasValue) {
+    resultOutput.textContent = text;
+    if (hasValue) {
+      resultOutput.classList.add('has-value');
+    } else {
+      resultOutput.classList.remove('has-value');
+    }
+  }
+
+  function resetOutput() {
+    setOutput('Your converted time will appear here', false);
+    lastConvertedValue = '';
+    copyBtn.disabled = true;
+  }
+
+  /* ============================================================
+     CORE CONVERSION ROUTINE
+     Reads the input field, validates, converts, and updates UI.
+     Runs on every keystroke / paste / drop / autofill via the
+     'input' event, so no Convert click is required.
+  ============================================================ */
+  function runConversion() {
+    var raw = timeInput.value;
+
+    if (raw.trim() === '') {
+      timeInput.classList.remove('invalid');
+      hideStatus();
+      showFormatBadge(null);
+      resetOutput();
+      return;
+    }
+
+    var normalized = normalizeInput(raw);
+    var parsed = parseTime(normalized);
+
+    if (!parsed) {
+      timeInput.classList.add('invalid');
+      showFormatBadge(null);
+      resetOutput();
+      showStatus('That doesn\u2019t look like a valid time. Try formats like 18:49:55 or 6:49 PM.', 'error');
+      return;
+    }
+
+    // Valid input: clear any error state
+    timeInput.classList.remove('invalid');
+    hideStatus();
+    showFormatBadge(parsed.sourceFormat);
+
+    var converted = parsed.sourceFormat === '24' ? to12HourString(parsed) : to24HourString(parsed);
+    setOutput(converted, true);
+    lastConvertedValue = converted;
+    copyBtn.disabled = false;
+  }
+
+  /* ============================================================
+     EVENT WIRING
+  ============================================================ */
+
+  // Live conversion: typing, paste, drag-and-drop text, autofill,
+  // and mobile keyboard input all fire the native 'input' event.
+  timeInput.addEventListener('input', runConversion);
+
+  // Explicit paste handling as a safety net (covers some older
+  // mobile browsers where paste doesn't reliably trigger 'input').
+  timeInput.addEventListener('paste', function () {
+    setTimeout(runConversion, 0);
+  });
+
+  // Drag-and-drop text into the field.
+  timeInput.addEventListener('drop', function () {
+    setTimeout(runConversion, 0);
+  });
+
+  // Form submit (Enter key, or clicking the Convert button).
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    runConversion();
+    if (!timeInput.classList.contains('invalid') && timeInput.value.trim() !== '') {
+      timeInput.blur();
+    }
+  });
+
+  // Clear button: reset everything back to the empty state.
+  clearBtn.addEventListener('click', function () {
+    timeInput.value = '';
+    timeInput.classList.remove('invalid');
+    hideStatus();
+    showFormatBadge(null);
+    resetOutput();
+    timeInput.focus();
+  });
+
+  // Copy button: copy only the converted time string.
+  copyBtn.addEventListener('click', function () {
+    if (!lastConvertedValue) return;
+
+    function showCopiedToast() {
+      copiedToast.classList.add('show');
+      clearTimeout(copyToastTimer);
+      copyToastTimer = setTimeout(function () {
+        copiedToast.classList.remove('show');
+      }, 1600);
+    }
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(lastConvertedValue).then(showCopiedToast).catch(function () {
+        fallbackCopy(lastConvertedValue);
+        showCopiedToast();
+      });
+    } else {
+      fallbackCopy(lastConvertedValue);
+      showCopiedToast();
+    }
+  });
+
+  // Fallback copy method for browsers without the Clipboard API.
+  function fallbackCopy(text) {
+    var temp = document.createElement('textarea');
+    temp.value = text;
+    temp.style.position = 'fixed';
+    temp.style.opacity = '0';
+    document.body.appendChild(temp);
+    temp.focus();
+    temp.select();
+    try { document.execCommand('copy'); } catch (err) { /* no-op */ }
+    document.body.removeChild(temp);
+  }
+
+  /* ============================================================
+     THEME HANDLING (persisted via localStorage)
+  ============================================================ */
+  var THEME_KEY = 'timeshift-theme';
+
+  function applyTheme(theme) {
+    if (theme === 'light') {
+      document.documentElement.setAttribute('data-theme', 'light');
+      themeToggle.setAttribute('aria-pressed', 'true');
+    } else {
+      document.documentElement.removeAttribute('data-theme');
+      themeToggle.setAttribute('aria-pressed', 'false');
+    }
+  }
+
+  function loadTheme() {
+    var stored = null;
+    try { stored = localStorage.getItem(THEME_KEY); } catch (err) { /* storage unavailable */ }
+
+    if (stored === 'light' || stored === 'dark') {
+      applyTheme(stored);
+      return;
+    }
+
+    // No stored preference: fall back to system preference.
+    var prefersLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
+    applyTheme(prefersLight ? 'light' : 'dark');
+  }
+
+  themeToggle.addEventListener('click', function () {
+    var isLight = document.documentElement.getAttribute('data-theme') === 'light';
+    var next = isLight ? 'dark' : 'light';
+    applyTheme(next);
+    try { localStorage.setItem(THEME_KEY, next); } catch (err) { /* storage unavailable */ }
+  });
+
+  loadTheme();
+
+  // Initialize output state on load.
+  resetOutput();
+  timeInput.focus();
+
+})();
+</script>
+
+</body>
+</html>

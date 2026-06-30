@@ -1,0 +1,729 @@
+
+
+
+ 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CLOSING SPIELS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-deep: #0a0a0a;
+            --bg-card: #141414;
+            --gold-primary: #d4af37;
+            --gold-light: #f1d592;
+            --gold-dark: #aa8a2e;
+            --text-main: #ffffff;
+            --text-dim: #a0a0a0;
+            --glass-border: rgba(212, 175, 55, 0.2);
+            --highlight-bg: rgba(212, 175, 55, 0.3);
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+        body {
+            background-color: var(--bg-deep);
+            background-image: 
+                radial-gradient(circle at 0% 0%, rgba(212, 175, 55, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 100% 100%, rgba(212, 175, 55, 0.05) 0%, transparent 40%);
+            background-attachment: fixed;
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 60px 20px;
+        }
+        .container {
+            width: 100%;
+            max-width: 1200px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        .header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5rem;
+            background: linear-gradient(to bottom, var(--gold-light), var(--gold-primary), var(--gold-dark));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+        }
+        .header p {
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        .search-container {
+            margin-bottom: 50px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .search-input {
+            width: 100%;
+            background: #1a1a1a;
+            border: 1px solid var(--glass-border);
+            border-radius: 4px;
+            padding: 20px 25px;
+            color: white;
+            font-size: 1.1rem;
+            outline: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+        }
+        .search-input:focus {
+            border-color: var(--gold-primary);
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
+        }
+        .scripts-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+        }
+        @media (max-width: 1000px) { .scripts-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 650px) { .scripts-grid { grid-template-columns: 1fr; } }
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--glass-border);
+            border-radius: 4px;
+            padding: 40px 25px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            min-height: 160px;
+            overflow: hidden;
+        }
+        .card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--gold-primary), transparent);
+            transform: translateX(-100%);
+            transition: 0.5s;
+        }
+        .card:hover::before {
+            transform: translateX(100%);
+        }
+        .card.hidden { display: none; }
+        .card:hover {
+            background: #1c1c1c;
+            transform: translateY(-5px);
+            border-color: var(--gold-primary);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+        }
+        .tag {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--gold-light);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            pointer-events: none;
+            transition: color 0.3s ease;
+        }
+        .card:hover .tag {
+            color: #fff;
+        }
+        .content {
+              display: none;
+              white-space: pre-wrap;
+        }
+        mark {
+            background: var(--gold-primary);
+            color: #000;
+            padding: 0 2px;
+        }
+        #toast {
+            visibility: hidden;
+            background: var(--gold-primary);
+            color: #000;
+            text-align: center;
+            padding: 15px 40px;
+            position: fixed;
+            z-index: 1000;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-weight: 800;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        #toast.show {
+            visibility: visible;
+            animation: fadeInOut 2.5s ease-in-out;
+        }
+        @keyframes fadeInOut {
+            0% { opacity: 0; bottom: 20px; }
+            15% { opacity: 1; bottom: 40px; }
+            85% { opacity: 1; bottom: 40px; }
+            100% { opacity: 0; bottom: 60px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>EASYBET PRESTIGE</h1>
+            <p>Support Closure Scripts</p>
+        </div>
+
+        <div class="search-container">
+            <input type="text" id="searchBox" class="search-input" placeholder="Search premium spiels..." oninput="filterScripts()">
+        </div>
+
+        <div class="scripts-grid" id="scriptsGrid">
+            
+            <!-- 10% Aviator Cashback (Qualified) -->
+            <div class="card" onclick="copyText(this)">
+                <span class="tag">10% Aviator Cashback (Qualified)</span>
+                <div class="content">I’m really happy that I was able to assist you with your inquiry regarding the 10% Aviator Cashback Bonus.
+
+I helped you identify your gross loss for the qualifying period and explained how eligibility is confirmed based on your net loss, including the deduction of any Bonus Flights received during the week.
+
+I also guided you on when to expect the final outcome and SMS notification from the Bonus Team, and what to do if you don’t receive it by the expected time.
+
+Have a wonderful day ahead and stay safe!
+
+If you need any further help, please don’t hesitate to reach out our support team is always here to assist you.
+
+After this chat ends, you may receive a short survey about your experience. Your feedback is greatly appreciated and helps us improve our support services.
+
+You can contact us anytime via:
+Live Chat
+Email: help@easybet.co.za
+
+Thank you for choosing Easybet. Have a great day ahead.</div>
+            </div>
+
+            <!-- 10% Aviator Cashback (Not Qualified) -->
+            <div class="card" onclick="copyText(this)">
+                <span class="tag">10% Aviator Cashback (Not Qualified)</span>
+                <div class="content">I’m glad I was able to assist you with your inquiry regarding the 10% Aviator Cashback Bonus.
+
+After reviewing your activity for the qualifying period, I confirmed that you did not meet the net loss requirement for this week, which is why you are not eligible for the cashback at this time.
+
+Please don’t worry, this promotion runs every week, so you’ll have another opportunity to qualify in the next qualifying period. If you’d like, you can reach out again next week and I’ll be happy to check your status for you.
+
+Have a wonderful day ahead and stay safe!
+
+If you need any further help, please don’t hesitate to reach out our support team is always here to assist you.
+
+After this chat ends, you may receive a short survey about your experience. Your feedback is greatly appreciated and helps us improve our support services.
+
+You can contact us anytime via:
+Live Chat
+Email: help@easybet.co.za
+
+Thank you for choosing Easybet. Have a great day ahead.</div>
+            </div>
+
+            <!-- 10% Cashback Not Qualified -->
+            <div class="card" onclick="copyText(this)">
+                <span class="tag">10% Cashback (Not Qualified)</span>
+                <div class="content">I’m glad I could assist you with your inquiry about the 10% Cashback Slots Bonus.
+
+At the moment, you do not qualify for this week’s promotion, but please don’t worry, this promotion runs every week, so you will still have a chance to qualify next time.
+
+Have a wonderful day ahead and stay safe!
+
+If you need any further assistance, please don’t hesitate to reach out our support team is always here to help you.
+
+After this chat ends, you may receive a short survey about your experience. Your feedback is greatly appreciated and helps us improve our support services.
+
+You can contact us anytime via:
+Live Chat
+Email: help@easybet.co.za
+
+Thank you for choosing Easybet. Have a great day ahead.</div>
+            </div>
+
+            <!-- 10% Cashback Slots Bonus -->
+            <div class="card" onclick="copyText(this)">
+                <span class="tag">10% Cashback Slots</span>
+                <div class="content">I’m really happy that I was able to assist you with your inquiry regarding the 10% Cashback Slots Bonus. 
+
+I helped you identify your gross loss, provided the link to the eligible games, explained which games you can use your bonus on, and clarified how many free spins you have.
+
+Have a wonderful day ahead and stay safe!
+
+If you need any further assistance, please don’t hesitate to reach out our support team is always here to help you.
+
+After this chat ends, you may receive a short survey about your experience. Your feedback is greatly appreciated and helps us improve our support services.
+
+You can contact us anytime via:
+Live Chat
+Email: help@easybet.co.za
+
+Thank you for choosing Easybet. Have a great day ahead.</div>
+            </div>
+
+            <!-- Bank Change -->
+            <div class="card" onclick="copyText(this)">
+                <span class="tag">Bank Change</span>
+                <div class="content">It was a pleasure assisting you with updating your bank account details, and I’m glad everything has been successfully resolved for you, please be assured your account is now fully in order moving forward.
+
+Have a wonderful day ahead and stay safe!
+
+If you need any further assistance, please don’t hesitate to reach out. Our support team is always here and ready to help you.
+
+After this chat ends, you may receive a short survey about your experience. Your feedback is greatly appreciated and helps us improve our support services.
+
+You can contact us anytime via:
+Live Chat
+Email: help@easybet.co.za
+
+Thank you for choosing Easybet. Have a great day ahead.</div>
+            </div>
+
+            <!-- Birthday Bonus -->
+            <div class="card" onclick="copyText(this)">
+                <span class="tag">Birthday Bonus</span>
+                <div class="content">It was a pleasure assisting you, and I’m glad I could confirm that your Birthday Bonus has already been credited and guide you on how to use it, please be assured everything is now in place for you to enjoy it.
+
+Have a wonderful day ahead and stay safe!
+
+If you need any further assistance, please don’t hesitate to reach out. Our support team is always here and ready to help.
+
+Enjoy your bonus and have a wonderful birthday celebration!
+
+After this chat ends, you may receive a short survey about your experience. Your feedback is greatly appreciated and helps us improve our support services.
+
+You can contact us anytime via:
+Live Chat
+Email: help@easybet.co.za
+
+Thank you for choosing Easybet. Have a great day ahead.</div>
+            </div>
+
+            <!-- Deleted Account -->
+            <div class="card" onclick="copyText(this)">
+                <span class="tag">Deleted Account</span>
+                <div class="content">I understand that this situation may be upsetting, and I truly appreciate your patience throughout our conversation, please be assured that I have provided you with the correct information regarding your deleted account and while I’m glad I could assist, I must confirm that this action is permanent and cannot be reversed, and I sincerely apologize for any inconvenience caused.
+
+Have a wonderful day ahead and stay safe!
+
+If you need any further assistance or have other concerns in the future, please don’t hesitate to reach out. Our support team is always here and ready to assist you.
+
+After this chat ends, you may receive a short survey about your experience. Your feedback is greatly appreciated and helps us improve our support services.
+
+You can contact us anytime via:
+Live Chat
+Email: help@easybet.co.za
+
+Thank you for choosing Easybet. Have a great day ahead.</div>
+            </div>
+
+ <!-- Account Deletion -->
+            <div class="card" onclick="copyText(this)">
+                <span class="tag">Account Deletion</span>
+                <div class="content">I understand that this situation may be upsetting, and I truly appreciate your patience throughout our conversation, please be assured that I have provided you with the correct information regarding your deleted account and while I’m glad I could assist, I must confirm that this action is permanent and cannot be reversed, and I sincerely apologize for any inconvenience caused.
+
+Have a wonderful day ahead and stay safe!
+
+If you need any further assistance or have other concerns in the future, please don’t hesitate to reach out. Our support team is always here and ready to assist you.
+
+After this chat ends, you may receive a short survey about your experience. Your feedback is greatly appreciated and helps us improve our support services.
+
+You can contact us anytime via:
+Live Chat
+Email: help@easybet.co.za
+
+Thank you for choosing Easybet. Have a great day ahead.</div>
+            </div>
+
+
+            <!-- FICA VERIFICATION -->
+            <div class="card" onclick="copyText(this)">
+                <span class="tag">FICA Verification</span>
+                <div class="content">It was a pleasure assisting you with verifying your documents and completing your FICA verification, please be assured everything is now successfully in place.
+
+Have a wonderful day ahead and stay safe!
+
+If you need any further help, please don’t hesitate to reach out our support team is always ready to assist you.
+
+After this chat ends, you may receive a short survey about your experience. Your feedback is greatly appreciated and helps us improve our support services.
+
+You can contact us anytime via:
+Live Chat
+Email: help@easybet.co.za
+
+Thank you for choosing Easybet. Have a great day ahead.</div>
+            </div>
+
+            <!-- Mobile Change -->
+            <div class="card" onclick="copyText(this)">
+                <span class="tag">Mobile Change</span>
+                <div class="content">It was a pleasure assisting you with updating your mobile number, and I’m glad everything has been successfully sorted out for you, please be assured your account details are now fully up to date.
+
+Have a wonderful day ahead and stay safe!
+
+If you need any further assistance, please don’t hesitate to reach out. Our support team is always here and ready to help you.
+
+After this chat ends, you may receive a short survey about your experience. Your feedback is greatly appreciated and helps us improve our support services.
+
+You can contact us anytime via:
+Live Chat
+Email: help@easybet.co.za
+
+Thank you for choosing Easybet. Have a great day ahead.</div>
+            </div>
+
+            <!-- Registration -->
+            <div class="card" onclick="copyText(this)">
+                <span class="tag">New Registration</span>
+                <div class="content">I'm glad I was able to assist you with creating your new account.
+
+To recap, we identified that the mobile number entered during your initial registration was incorrect, which prevented you from receiving the Sign Up OTP. I have updated the details on your previous account, and I've asked you to create a new account using the correct information.
+
+Please rest assured that your new account will not be flagged as a duplicate, as I have already updated your previous account in our system.
+
+If you need any further assistance, please don't hesitate to reach out. Our support team is always here to help.
+
+Have a wonderful day ahead and stay safe!
+
+After this chat ends, you may receive a short survey about your experience. Your feedback is greatly appreciated and helps us improve our support services.
+
+You can contact us anytime via:
+Live Chat
+Email: help@easybet.co.za
+
+Thank you for choosing Easybet. Have a great day ahead.</div>
+            </div>
+
+            <!-- R50 Bonus -->
+            <div class="card" onclick="copyText(this)">
+                <span class="tag">R50 Bonus</span>
+                <div class="content">I’m really glad I was able to assist you today and confirm that your Sign-Up Bonus has been successfully credited to your Easybet account, along with guiding you on how to use your R50 Sign-Up Bonus and 25 Free Spins.
+
+If there’s anything else you need help with, please don’t hesitate to reach out. Our support team is always here and ready to assist you.
+
+Enjoy your bonus and best of luck with your games!
+
+After this chat ends, you may receive a short survey about your experience. Your feedback is greatly appreciated and helps us improve our support services.
+
+You can contact us anytime via:
+Live Chat
+Email: help@easybet.co.za
+
+Thank you for choosing Easybet. Have a great day ahead.</div>
+            </div>
+
+<!-- R50 Bonus Not credited -->
+<div class="card" onclick="copyText(this)">
+    <span class="tag">R50 Bonus Not Credited</span>
+    <div class="content">I'm glad I was able to assist you with your inquiry regarding the R50 Sign Up Bonus.
+
+To recap, I confirmed that your account is newly created. I understand that you're waiting for your bonus to be credited, and I'd like to assure you that it should reflect soon. Kindly try logging in again after about an hour.
+
+If the bonus is still not credited after that, please send us a message again, and we'll be happy to investigate it further for you.
+
+If you need any further assistance, please don't hesitate to reach out. Our support team is always here to help.
+
+After this chat ends, you may receive a short survey about your experience. Your feedback is greatly appreciated and helps us improve our support services.
+
+You can contact us anytime via:
+Live Chat
+Email: help@easybet.co.za
+
+Thank you for choosing Easybet. Have a great day ahead.</div>
+</div>
+
+<!-- Mystery Bonus Qualified -->
+<div class="card" onclick="copyText(this)">
+    <span class="tag">Mystery Bonus Qualified</span>
+    <div class="content">I'm glad I was able to assist you with your inquiry regarding your Mystery Bonus.
+
+To recap, I confirmed that you received the promotional SMS or email and made a qualifying deposit of R50 or more immediately after receiving it, which means you qualified for the Free Spins. I also provided you with the list of eligible games and the promotion link for your reference.
+
+Have a wonderful day and stay safe! 
+
+If you need any further assistance, please don't hesitate to reach out. Our support team is always here to help.
+
+After this chat ends, you may receive a short survey about your experience. Your feedback is greatly appreciated and helps us improve our support services.
+
+You can contact us anytime via:
+Live Chat
+Email: help@easybet.co.za
+
+Thank you for choosing Easybet. Have a great day ahead.</div>
+</div>
+
+<!-- Mystery Bonus Not Qualified -->
+<div class="card" onclick="copyText(this)">
+    <span class="tag">Mystery Bonus Not Qualified</span>
+    <div class="content">I understand this isn't the outcome you were hoping for, and I appreciate you taking the time to reach out so we could review your Mystery Bonus eligibility.
+
+To recap, I carefully reviewed your account and confirmed that, unfortunately, you did not meet the qualifying requirements for the promotion. To qualify, you must receive the promotional SMS or email and make your first approved deposit of at least R50 after receiving it and before midnight on the same day. As a result, the Free Spins could not be awarded.
+
+For your reference, you can review the full promotion terms and conditions using the promotion link I provided.
+
+Have a wonderful day and stay safe! 
+
+If you need any further assistance, please don't hesitate to reach out. Our support team is always here to help.
+
+After this chat ends, you may receive a short survey about your experience. Your feedback is greatly appreciated and helps us improve our support services.
+
+You can contact us anytime via:
+Live Chat
+Email: help@easybet.co.za
+
+Thank you for choosing Easybet. Have a great day ahead.</div>
+</div>
+
+            <!-- Reactivation -->
+            <div class="card" onclick="copyText(this)">
+                <span class="tag">Reactivated</span>
+                <div class="content">I'm really glad I was able to assist you with reactivating your account.
+
+To recap, I successfully verified your documents and reactivated your account. You should now be able to log in and enjoy all of Easybet's features.
+
+If you need any further assistance, please don’t hesitate to reach out. Our support team is always here and ready to help you.
+
+Have a great day and enjoy your gaming experience!
+
+After this chat ends, you may receive a short survey about your experience. Your feedback is greatly appreciated and helps us improve our support services.
+
+You can contact us anytime via:
+Live Chat
+Email: help@easybet.co.za
+
+Thank you for choosing Easybet. Have a great day ahead.</div>
+            </div>
+
+            <!-- Refer a Friend -->
+            <div class="card" onclick="copyText(this)">
+                <span class="tag">Refer a friend</span>
+                <div class="content">I’m really happy that I was able to assist you with your inquiry about the Refer a Friend bonus. 
+
+I helped you confirm that your friend met all the required criteria, which means you are qualified to receive the bonus. Please note that the bonus will be credited to your account on Monday at 11:30 AM. 
+
+If you need any further help, please don’t hesitate to reach out our support team is always here to assist you.
+
+After this chat ends, you may receive a short survey about your experience. Your feedback is greatly appreciated and helps us improve our support services.
+
+You can contact us anytime via:
+Live Chat
+Email: help@easybet.co.za
+
+Thank you for choosing Easybet. Have a great day ahead.</div>
+            </div>
+
+            <!-- Registration OTP -->
+            <div class="card" onclick="copyText(this)">
+                <span class="tag">Sign-up OTP</span>
+                <div class="content">It was a pleasure assisting you with your registration OTP today. I’m glad we could get everything sorted so you can move forward. Please rest assured that your account is now fully set up, and you can continue smoothly.
+
+Have a wonderful day ahead and stay safe!
+
+If you need any further assistance, please don’t hesitate to reach out. Our support team is always here and ready to help you.
+
+After this chat ends, you may receive a short survey about your experience. Your feedback is greatly appreciated and helps us improve our support services.
+
+You can contact us anytime via:
+Live Chat
+Email: help@easybet.co.za
+
+Thank you for choosing Easybet. Have a great day ahead.</div>
+            </div>
+
+          
+
+            <!-- Temporary Password -->
+            <div class="card" onclick="copyText(this)">
+                <span class="tag">Temporary Password</span>
+                <div class="content">It was a pleasure assisting you with your inquiry, and I’m glad I could help you regain access to your account using the temporary password, please be assured everything is now in place for you to continue smoothly.
+
+Have a wonderful day ahead and stay safe!
+
+If you need any further assistance, please don’t hesitate to reach out our support team is always here to help you.
+
+After this chat ends, you may receive a short survey about your experience. Your feedback is greatly appreciated and helps us improve our support services.
+
+You can contact us anytime via:
+Live Chat
+Email: help@easybet.co.za
+
+Thank you for choosing Easybet. Have a great day ahead.</div>
+            </div>
+
+            <!-- Withdrawal -->
+            <div class="card" onclick="copyText(this)">
+                <span class="tag">Withdrawal Pending</span>
+                <div class="content">It was a pleasure assisting you with your inquiry, and I have personally ensured that your withdrawal request has been flagged for priority handling and expedited processing, please be assured it is being closely attended to.
+
+Have a wonderful day ahead and stay safe!
+
+If you need any further assistance, please don’t hesitate to reach out. Our support team is always here and ready to help you.
+
+After this chat ends, you may receive a short survey about your experience. Your feedback is greatly appreciated and helps us improve our support services.
+
+You can contact us anytime via:
+Live Chat
+Email: help@easybet.co.za
+
+Thank you for choosing Easybet. Have a great day ahead.</div>
+            </div>
+
+<div class="card" onclick="copyText(this)">
+    <span class="tag">1Voucher Withdrawal</span>
+    <div class="content">I'm glad I was able to assist you with your inquiry regarding your 1Voucher withdrawal today.
+
+Just to provide a quick recap, 1Voucher withdrawals are currently experiencing a temporary processing delay and may take at least 24 hours to complete. Please rest assured that your withdrawal remains securely in the queue and is actively being processed. Thank you so much for your patience and understanding. 
+
+Have a wonderful day and stay safe! 
+
+If you have any other questions or need further assistance, please don't hesitate to reach out. Our support team is always here and happy to help.
+
+After this chat ends, you may receive a short survey about your experience. Your feedback is greatly appreciated and helps us improve our support services.
+
+You can contact us anytime via:
+Live Chat
+Email: help@easybet.co.za
+
+Thank you for choosing Easybet. Have a wonderful day ahead and stay safe!</div>
+</div>
+
+<div class="card" onclick="copyText(this)">
+    <span class="tag">Withdrawal Approved</span>
+    <div class="content">It was a pleasure assisting you with your inquiry today. I personally ensured that your withdrawal request was flagged for priority handling and expedited review, and I am pleased to let you know that our withdrawals team has now successfully approved your request.
+
+Thank you for your patience and cooperation throughout this process. If there is anything else I can assist you with, please don’t hesitate to reach out. 
+
+After this chat ends, you may receive a short survey about your experience. Your feedback is greatly appreciated and helps us improve our support services.
+
+You can contact us anytime via:
+Live Chat
+Email: help@easybet.co.za
+
+Thank you for choosing Easybet. Have a wonderful day ahead and stay safe!</div>
+</div>
+
+            <!-- Sport betting -->
+            <div class="card" onclick="copyText(this)">
+                <span class="tag">Sport betting - Unsettled to Settled</span>
+                <div class="content">I’m glad I was able to assist you with your inquiry regarding your unsettled bets and that it has now been resolved. I understand how important it is to have this sorted, and I appreciate your patience.
+
+Have a wonderful day and stay safe!
+
+If you need any further assistance, please do not hesitate to reach out. Our support team is always here to help you.
+
+After this chat ends, you may receive a short survey about your experience. Your feedback is greatly appreciated and helps us improve our support services.
+
+You can contact us anytime via:
+Live Chat
+Email: help@easybet.co.za
+
+Thank you for choosing Easybet. Have a great day ahead.</div>
+            </div>
+
+<div class="card" onclick="copyText(this)">
+    <span class="tag">Locked Account</span>
+    <div class="content">I'm glad I could assist you with your temporarily locked account concern today. It was my pleasure to help clarify the situation and provide guidance regarding your account status. 
+
+I completely understand how important it is to have access to your account, and I truly appreciate your patience and understanding throughout our conversation. Please remember that once the temporary lock period has expired, you will be able to access your account again smoothly.
+
+If you need any further assistance or have any other questions in the future, please don't hesitate to reach out. Our support team is always here and happy to help.
+
+After this chat ends, you may receive a short survey about your experience. Your feedback is greatly appreciated and helps us improve our support services.
+
+You can contact us anytime via:
+Live Chat
+Email: help@easybet.co.za
+
+Thank you for choosing Easybet. Have a wonderful day ahead and stay safe!</div>
+</div>
+
+
+
+        </div>
+    </div>
+
+    <div id="toast">GOLDEN SPIEL COPIED</div>
+
+    <script>
+        let originalData = [];
+        function initData() {
+            const grid = document.getElementById('scriptsGrid');
+            const cards = Array.from(grid.querySelectorAll('.card'));
+            
+            cards.sort((a, b) => {
+                const tagA = a.querySelector('.tag').innerText.toUpperCase();
+                const tagB = b.querySelector('.tag').innerText.toUpperCase();
+                return tagA.localeCompare(tagB, undefined, { numeric: true, sensitivity: 'base' });
+            });
+
+            grid.innerHTML = '';
+            cards.forEach(card => grid.appendChild(card));
+
+            originalData = cards.map(card => {
+                return {
+                    element: card,
+                    title: card.querySelector('.tag').innerText,
+                    content: card.querySelector('.content').innerText
+                };
+            });
+        }
+
+        function filterScripts() {
+            const searchTerm = document.getElementById('searchBox').value.toLowerCase();
+            originalData.forEach(item => {
+                const titleText = item.title.toLowerCase();
+                const contentText = item.content.toLowerCase();
+                const tagSpan = item.element.querySelector('.tag');
+
+                if (titleText.includes(searchTerm) || contentText.includes(searchTerm)) {
+                    item.element.classList.remove('hidden');
+                    if (searchTerm !== "") {
+                        const regex = new RegExp(`(${searchTerm})`, 'gi');
+                        tagSpan.innerHTML = item.title.replace(regex, '<mark>$1</mark>');
+                    } else {
+                        tagSpan.innerText = item.title;
+                    }
+                } else {
+                    item.element.classList.add('hidden');
+                }
+            });
+        }
+
+        function copyText(cardElement) {
+            const text = cardElement.querySelector('.content').innerText;
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            document.body.appendChild(textArea);
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                const toast = document.getElementById("toast");
+                toast.classList.remove("show");
+                void toast.offsetWidth; 
+                toast.classList.add("show");
+            } catch (err) {
+                console.error('Copy failed', err);
+            }
+            document.body.removeChild(textArea);
+        }
+
+        window.onload = initData;
+    </script>
+</body>
+</html>

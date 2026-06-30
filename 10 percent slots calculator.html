@@ -1,0 +1,791 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>10% Cashback Slots Calculator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-base: #050507;
+            --glass-bg: rgba(22, 24, 28, 0.65);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --gold-primary: #d4af37;
+            --gold-hover: #f3c93f;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --success: #00ff66;
+            --success-bg: rgba(0, 255, 102, 0.1);
+            --danger: #ff3366;
+            --danger-bg: rgba(255, 51, 102, 0.1);
+            --input-bg: rgba(0, 0, 0, 0.4);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(212, 175, 55, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 85% 30%, rgba(255, 255, 255, 0.02) 0%, transparent 50%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* Glassmorphism Classes */
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        header {
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--glass-border);
+            background: rgba(5, 5, 7, 0.8);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo-icon {
+            font-size: 2rem;
+            color: var(--gold-primary);
+            text-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
+        }
+
+        .header-text h1 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--text-primary);
+        }
+
+        .header-text p {
+            font-size: 0.85rem;
+            color: var(--gold-primary);
+            font-weight: 500;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+            display: grid;
+            grid-template-columns: 1fr 1.3fr;
+            gap: 2rem;
+            flex: 1;
+            align-items: start;
+        }
+
+        /* Input Section */
+        .input-section {
+            padding: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .section-title i {
+            color: var(--gold-primary);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.25rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-group.full-width {
+            grid-column: span 2;
+        }
+
+        label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        input, select, textarea {
+            background: var(--input-bg);
+            border: 1px solid var(--glass-border);
+            padding: 0.875rem 1rem;
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: var(--transition);
+            outline: none;
+        }
+
+        select {
+            cursor: pointer;
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2394a3b8' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            padding-right: 2.5rem;
+        }
+
+        select option {
+            background: #16181c;
+            color: var(--text-primary);
+        }
+
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--gold-primary);
+            box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.1);
+        }
+
+        input::placeholder, textarea::placeholder {
+            color: rgba(148, 163, 184, 0.3);
+        }
+
+        input[readonly] {
+            background: rgba(0, 0, 0, 0.2);
+            color: rgba(248, 250, 252, 0.7);
+            cursor: not-allowed;
+            border-color: rgba(255, 255, 255, 0.05);
+        }
+        
+        input[readonly]:focus {
+            border-color: rgba(255, 255, 255, 0.05);
+            box-shadow: none;
+        }
+
+        /* Divider */
+        .section-divider {
+            grid-column: span 2;
+            border: none;
+            border-top: 1px solid var(--glass-border);
+            margin: 0.5rem 0;
+        }
+
+        .sub-section-label {
+            grid-column: span 2;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            font-size: 0.82rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--gold-primary);
+            margin-top: 0.25rem;
+        }
+
+        /* Free Spins Provider Section */
+        .fs-section {
+            grid-column: span 2;
+            background: rgba(212, 175, 55, 0.04);
+            border: 1px solid rgba(212, 175, 55, 0.12);
+            border-radius: 12px;
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.1rem;
+        }
+
+        .fs-section-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: var(--gold-primary);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+
+        .fs-inner-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        /* Game List */
+        .game-list-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+        }
+
+        #gameList {
+            resize: vertical;
+            min-height: 140px;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        /* Buttons */
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            grid-column: span 2;
+        }
+
+        button {
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+            border: 1px solid var(--glass-border);
+            flex: 1;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Results Section */
+        .results-section {
+            padding: 2rem;
+            position: sticky;
+            top: 6rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            transition: var(--transition);
+        }
+
+        .status-badge {
+            padding: 1rem;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            font-weight: 600;
+            font-size: 1.1rem;
+            letter-spacing: 0.5px;
+            border: 1px solid transparent;
+            transition: var(--transition);
+        }
+
+        .status-qualified {
+            background: var(--success-bg);
+            border-color: rgba(0, 255, 102, 0.2);
+            color: var(--success);
+            box-shadow: 0 0 20px rgba(0, 255, 102, 0.05);
+        }
+
+        .status-not-qualified {
+            background: var(--danger-bg);
+            border-color: rgba(255, 51, 102, 0.2);
+            color: var(--danger);
+            box-shadow: 0 0 20px rgba(255, 51, 102, 0.05);
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .metric-card {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--glass-border);
+            padding: 1.25rem;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .metric-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .metric-value.highlight {
+            color: var(--gold-primary);
+        }
+
+        .spiel-container {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            flex-grow: 1;
+        }
+
+        .spiel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .spiel-container textarea {
+            width: 100%;
+            height: 380px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 1.25rem;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            resize: vertical;
+            outline: none;
+            transition: var(--transition);
+        }
+
+        .spiel-container textarea:focus {
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-copy {
+            background: var(--gold-primary);
+            color: #000;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            width: 100%;
+            justify-content: center;
+            margin-top: 0.5rem;
+        }
+
+        .btn-copy:hover {
+            background: var(--gold-hover);
+            transform: translateY(-2px);
+        }
+
+        .btn-copy.copied {
+            background: var(--success);
+            color: #000;
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+            .results-section {
+                position: static;
+            }
+        }
+        @media (max-width: 600px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            .form-group.full-width {
+                grid-column: span 1;
+            }
+            .btn-group {
+                flex-direction: column;
+                grid-column: span 1;
+            }
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+            .fs-section {
+                grid-column: span 1;
+            }
+            .fs-inner-grid {
+                grid-template-columns: 1fr;
+            }
+            .section-divider {
+                grid-column: span 1;
+            }
+            .sub-section-label {
+                grid-column: span 1;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <i class="fa-solid fa-bolt logo-icon"></i>
+        <div class="header-text">
+            <h1>Easybet Operations</h1>
+            <p>10% Cashback Slots Eligibility Calculator</p>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="glass-panel input-section">
+            <h2 class="section-title"><i class="fa-solid fa-sliders"></i> Calculation Inputs</h2>
+            
+            <div class="form-grid">
+                
+                <div class="form-group full-width">
+                    <label for="qualifyOverride">Customer Qualified</label>
+                    <select id="qualifyOverride">
+                        <option value="auto">Auto-Calculate (Net Loss ≥ R99)</option>
+                        <option value="yes">Yes (Force Qualified)</option>
+                        <option value="no">No (Force Not Qualified)</option>
+                    </select>
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="customerName">Customer Name (Optional)</label>
+                    <input type="text" id="customerName" placeholder="e.g. John Doe">
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="dateRange">Date Range (Auto-Calculated)</label>
+                    <input type="text" id="dateRange" readonly>
+                </div>
+
+                <div class="form-group">
+                    <label for="totalLosses">Total Losses / Paid in Sum (R) *</label>
+                    <input type="number" id="totalLosses" step="0.01" placeholder="0.00">
+                </div>
+
+                <div class="form-group">
+                    <label for="totalWinnings">Total Winnings / Paid out Sum (R) *</label>
+                    <input type="number" id="totalWinnings" step="0.01" placeholder="0.00">
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="freeSpins">Free Spins Issued (R) *</label>
+                    <input type="number" id="freeSpins" step="0.01" value="0.00">
+                </div>
+
+                <hr class="section-divider">
+                <div class="sub-section-label">
+                    <i class="fa-solid fa-star"></i> Free Spins Reward Details
+                    <span style="font-size:0.7rem; color: var(--text-secondary); text-transform:none; letter-spacing:0; font-weight:400; margin-left:0.25rem;">(only used when customer qualifies)</span>
+                </div>
+
+                <div class="fs-section">
+                    <div class="fs-section-header">
+                        <i class="fa-solid fa-dice"></i> Provider & Spiel Configuration
+                    </div>
+
+                    <div class="fs-inner-grid">
+                        <div class="form-group">
+                            <label for="fsProvider">Provider</label>
+                            <select id="fsProvider">
+                                <option value="" disabled selected>Select Provider</option>
+                                <option value="PRAGMATIC">PRAGMATIC</option>
+                                <option value="EVOLUTION">EVOLUTION - SLOTS</option>
+                                <option value="AMATIC">AMATIC</option>
+                                <option value="AGT">AGT</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="fsSpinCount">Number of Free Spins</label>
+                            <input type="number" id="fsSpinCount" min="1" step="1" placeholder="e.g. 40">
+                        </div>
+                    </div>
+
+                    <div class="game-list-wrapper">
+                        <label class="game-list-label" for="gameList">Game List <span style="color:rgba(148,163,184,0.5); font-size:0.8rem;">(paste games here)</span></label>
+                        <textarea id="gameList" placeholder="Paste games here, one per line..."></textarea>
+                    </div>
+                </div>
+
+                <div class="btn-group full-width">
+                    <button class="btn-secondary" onclick="loadSampleData()" title="Load Sample Data">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> Auto Fill
+                    </button>
+                    <button class="btn-secondary" onclick="resetForm()">
+                        <i class="fa-solid fa-rotate-right"></i> Reset
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="glass-panel results-section" id="resultsSection">
+            <div id="statusBadge" class="status-badge">
+                <i class="fa-solid fa-circle-info"></i> Awaiting Calculation
+            </div>
+
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-label">Total Net Loss</div>
+                    <div class="metric-value" id="dispNetLoss">R 0.00</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Cashback (Free Spins)</div>
+                    <div class="metric-value highlight" id="dispCashback">R 0.00</div>
+                </div>
+            </div>
+
+            <div class="spiel-container">
+                <div class="spiel-header">
+                    <label>Live Generated Customer Spiel</label>
+                </div>
+                <textarea id="spielOutput" spellcheck="false" placeholder="Spiel will appear here in real-time..."></textarea>
+                <button class="btn-copy" id="copyBtn" onclick="copySpiel()">
+                    <i class="fa-regular fa-copy"></i> Tap to Copy Spiel
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const PROVIDER_LINKS = {
+            AGT:       'https://easybet.co.za/casino/slots/2001/game/821',
+            AMATIC:    'https://easybet.co.za/page/amatic-dm-lheb-issuance-exclusive-ibex',
+            EVOLUTION: 'https://easybet.co.za/page/evolution-dm-fagb-issuance-exclusive-ibex',
+            PRAGMATIC: 'https://easybet.co.za/page/pragmatic-dm-jdau-issuance-exclusive-ibex'
+        };
+
+        const PROVIDER_DISPLAY = {
+            AGT:       'AGT',
+            AMATIC:    'Amatic',
+            EVOLUTION: 'Evolution Slots',
+            PRAGMATIC: 'Pragmatic'
+        };
+
+        const formatNumber = (num) => {
+            return Number(num).toLocaleString('en-US', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        };
+
+        const formatNumberNoDecimalsIfZero = (num) => {
+            const n = Number(num);
+            if (n % 1 === 0) {
+                return n.toLocaleString('en-US');
+            }
+            return formatNumber(n);
+        };
+
+        function calculateMondayRange() {
+            const today = new Date();
+            let currentMonday = new Date(today);
+            const day = today.getDay();
+            const diffToMonday = day === 0 ? -6 : 1 - day;
+            currentMonday.setDate(today.getDate() + diffToMonday);
+
+            let lastMonday = new Date(currentMonday);
+            lastMonday.setDate(currentMonday.getDate() - 7);
+
+            const options = { month: 'long', day: 'numeric' };
+            const startStr = lastMonday.toLocaleDateString('en-US', options);
+            const endStr = currentMonday.toLocaleDateString('en-US', options);
+
+            return `${startStr} to ${endStr}`;
+        }
+
+        function updatePreview() {
+            const losses = parseFloat(document.getElementById('totalLosses').value) || 0;
+            const winnings = parseFloat(document.getElementById('totalWinnings').value) || 0;
+            const freeSpins = parseFloat(document.getElementById('freeSpins').value) || 0;
+            const override = document.getElementById('qualifyOverride').value;
+
+            const netLoss = losses - winnings - freeSpins;
+            
+            let isQualified = false;
+            if (override === 'yes') isQualified = true;
+            else if (override === 'no') isQualified = false;
+            else isQualified = netLoss >= 99;
+
+            const cashback = isQualified ? (netLoss * 0.10) : 0;
+
+            document.getElementById('dispNetLoss').innerText = `R ${formatNumber(netLoss)}`;
+            document.getElementById('dispCashback').innerText = `R ${formatNumber(cashback)}`;
+
+            const badge = document.getElementById('statusBadge');
+            if (isQualified) {
+                badge.className = 'status-badge status-qualified';
+                badge.innerHTML = '<i class="fa-solid fa-circle-check"></i> Customer Qualified';
+            } else if (losses > 0 || winnings > 0) {
+                badge.className = 'status-badge status-not-qualified';
+                badge.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Customer Not Qualified';
+            } else {
+                badge.className = 'status-badge';
+                badge.innerHTML = '<i class="fa-solid fa-circle-info"></i> Awaiting Calculation';
+            }
+
+            generateSpiel(losses, winnings, freeSpins, netLoss, cashback, isQualified);
+        }
+
+        function generateSpiel(losses, winnings, freeSpins, netLoss, cashback, isQualified) {
+            const customerName = document.getElementById('customerName').value.trim();
+            const dateRange = document.getElementById('dateRange').value.trim();
+            
+            const greeting = customerName ? `, ${customerName}` : '';
+            const fLosses = formatNumber(losses);
+            const fWinnings = formatNumber(winnings);
+            const fFreeSpins = formatNumberNoDecimalsIfZero(freeSpins);
+            const fNetLoss = formatNumber(netLoss);
+            const fCashback = formatNumber(cashback);
+
+            let spiel = '';
+
+            // If no data inputted, just clear the spiel
+            if (losses === 0 && winnings === 0 && document.getElementById('qualifyOverride').value === 'auto') {
+                document.getElementById('spielOutput').value = '';
+                return;
+            }
+
+            if (isQualified) {
+                spiel = `Hi${greeting}! Thanks for patiently waiting. We've reviewed your recent activity, and I'm happy to inform you that you have qualified for the 10% Cash Back on Slots promotion for that week!
+
+Based on your gameplay, a cashback amount of R${fCashback} in Free Spins has been successfully calculated for your account.
+
+Here's a breakdown of your gameplay from ${dateRange}:
+
+Net Loss = Total Amount Lost - Total Winnings - Any Free Spins Issued
+${fLosses} - ${fWinnings} - ${fFreeSpins} = ${fNetLoss}
+Cashback Earned (10% of Net Loss) = R${fCashback}
+
+Please note:
+Only settled bets made with real money are considered for this promotion. We also take into account Free Spins issued during the promotional period.
+
+If you'd like to learn more or review the full terms, please visit the official promotion page here:
+https://easybet.co.za/page/10-cash-back-slots`;
+
+                const providerKey = document.getElementById('fsProvider').value;
+                const spinCount = document.getElementById('fsSpinCount').value || '{FREE_SPINS}';
+                const games = document.getElementById('gameList').value.trim() || '{GAME LIST}';
+                
+                const providerDisplay = providerKey ? PROVIDER_DISPLAY[providerKey] : '{PROVIDER}';
+                const providerLink = providerKey ? PROVIDER_LINKS[providerKey] : '{DYNAMIC LINK}';
+
+                spiel += `\n\nGood news! We are pleased to inform you that, as a qualified customer, you have been granted ${spinCount} free spins on ${providerDisplay} and the eligible games are as follows:\n\n${games}\n\nHere’s the link for you to access the games:\n${providerLink}\n\nPlease note that the validity of these free spins is 48 hours only. If you need any further assistance, please feel free to reach out. I am here to help.`;
+
+                if (providerKey === 'AGT' || providerKey === 'AMATIC') {
+                    spiel += `\n\nKindly note that once you enter the game using your free spins, please ensure that you complete them in one continuous session. Exiting the game for any reason, including connection issues or app interruptions, will result in any remaining free spins being automatically removed by the system.\n\nIf you need any further assistance, please feel free to reach out. I am here to help.`;
+                }
+
+            } else {
+                spiel = `Thanks for patiently waiting${greeting}, we've reviewed your recent activity and wanted to let you know that, unfortunately, you haven't yet qualified for the 10% Cash Back on Slots promotion for that week.
+
+Your total net loss for that week was below the minimum requirement of R99 needed to be eligible for the cashback.
+
+Here's a breakdown of your gameplay from ${dateRange}:
+
+Net Loss = Total Amount Lost - Total Winnings - Any Free Spins Issued
+${fLosses} - ${fWinnings} - ${fFreeSpins} = ${fNetLoss}
+
+Please note:
+Net Loss = Total Amount Lost - Total Winnings - Any Free Spins Issued
+
+Only settled bets made with real money are considered for this promotion. We also take into account Free Spins issued during the promotional period.
+
+If you'd like to learn more or review the full terms, please visit the official promotion page here:
+https://easybet.co.za/page/10-cash-back-slots`;
+            }
+
+            document.getElementById('spielOutput').value = spiel;
+        }
+
+        function loadSampleData() {
+            document.getElementById('qualifyOverride').value = 'auto';
+            document.getElementById('customerName').value = '';
+            document.getElementById('totalLosses').value = '15591.30';
+            document.getElementById('totalWinnings').value = '15423.91';
+            document.getElementById('freeSpins').value = '25.00';
+            
+            document.getElementById('fsProvider').value = 'PRAGMATIC';
+            document.getElementById('fsSpinCount').value = '40';
+
+            const sampleGames = "Big Bass Boxing Bonus Round\n8 Golden Dragon Challenge\nMagician's Secrets\nGates of Valhalla\nFish Eye\nStarlight Princess Pachi\nKingdom of the Dead\nJane Hunter and the Mask of Montezuma";
+            document.getElementById('gameList').value = sampleGames;
+            
+            updatePreview();
+        }
+
+        function resetForm() {
+            // Clear inputs and textarea, except readonly elements like dateRange
+            document.querySelectorAll('.input-section input:not([readonly]), .input-section textarea').forEach(input => input.value = '');
+            
+            // Restore defaults
+            document.getElementById('freeSpins').value = '0.00';
+            document.getElementById('qualifyOverride').value = 'auto';
+            document.getElementById('fsProvider').value = '';
+            
+            updatePreview();
+        }
+
+        function copySpiel() {
+            const textarea = document.getElementById('spielOutput');
+            if (!textarea.value) return;
+
+            textarea.select();
+            textarea.setSelectionRange(0, 99999);
+
+            navigator.clipboard.writeText(textarea.value).then(() => {
+                const btn = document.getElementById('copyBtn');
+                const originalHTML = btn.innerHTML;
+                btn.classList.add('copied');
+                btn.innerHTML = '<i class="fa-solid fa-check-double"></i> Copied!';
+                setTimeout(() => {
+                    btn.classList.remove('copied');
+                    btn.innerHTML = originalHTML;
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy text:', err);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('dateRange').value = calculateMondayRange();
+
+            document.querySelectorAll('.input-section input, .input-section select, .input-section textarea').forEach(el => {
+                el.addEventListener('input', updatePreview);
+                el.addEventListener('change', updatePreview);
+                el.addEventListener('keyup', updatePreview);
+            });
+
+            updatePreview();
+        });
+    </script>
+</body>
+</html>

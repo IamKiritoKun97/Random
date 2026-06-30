@@ -1,0 +1,414 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>10% Aviator Cashback Bonus Spiels</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-body: #050505;
+            --bg-card: #0f0f0f;
+            --bg-card-hover: #161616;
+            --accent-gold: #d4af37;
+            --accent-gold-glow: rgba(212, 175, 55, 0.15);
+            --text-primary: #ffffff;
+            --text-secondary: #999999;
+            --border-color: rgba(255, 255, 255, 0.06);
+            --success: #10b981;
+            --error: #ef4444;
+            --font-main: 'Inter', sans-serif;
+            --font-heading: 'Outfit', sans-serif;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background-color: var(--bg-body);
+            background-image: 
+                radial-gradient(circle at 50% 0%, #1a1a1a 0%, transparent 50%),
+                url("https://www.transparenttextures.com/patterns/asfalt-dark.png");
+            color: var(--text-primary);
+            font-family: var(--font-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 60px 20px;
+            line-height: 1.6;
+        }
+
+        .header-wrapper {
+            text-align: center;
+            margin-bottom: 50px;
+            width: 100%;
+            max-width: 800px;
+        }
+
+        .header-wrapper h1 {
+            font-family: var(--font-heading);
+            font-weight: 800;
+            font-size: 2.2rem;
+            letter-spacing: -0.02em;
+            background: linear-gradient(135deg, #fff 30%, var(--accent-gold) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 25px;
+        }
+
+        .search-container {
+            position: relative;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        #searchInput {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-color);
+            padding: 14px 24px;
+            border-radius: 12px;
+            color: white;
+            font-size: 1rem;
+            outline: none;
+            transition: 0.3s;
+            text-align: center;
+        }
+
+        #searchInput:focus {
+            border-color: var(--accent-gold);
+            box-shadow: 0 0 25px var(--accent-gold-glow);
+        }
+
+        .main-content {
+            width: 100%;
+            max-width: 850px;
+        }
+
+        .section-tag {
+            font-family: var(--font-heading);
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--accent-gold);
+            text-transform: uppercase;
+            letter-spacing: 0.3em;
+            margin: 50px 0 20px 0;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .section-tag::after {
+            content: "";
+            height: 1px;
+            flex: 1;
+            background: linear-gradient(to right, var(--border-color), transparent);
+        }
+
+        .spiel-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 28px;
+            margin-bottom: 18px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .spiel-card:hover {
+            background: var(--bg-card-hover);
+            border-color: rgba(212, 175, 55, 0.4);
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+        }
+
+        .card-meta {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .badge {
+            font-size: 0.6rem;
+            font-weight: 800;
+            padding: 4px 10px;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.03);
+            color: var(--text-secondary);
+            text-transform: uppercase;
+        }
+
+        .copy-hint {
+            font-size: 0.65rem;
+            color: var(--accent-gold);
+            font-weight: 600;
+            text-transform: uppercase;
+            opacity: 0.5;
+        }
+
+        .spiel-body {
+            font-size: 1.05rem;
+            color: #e0e0e0;
+            white-space: pre-wrap;
+        }
+
+        .date-hl {
+            color: #fff;
+            font-weight: 700;
+            border-bottom: 1px solid var(--accent-gold);
+        }
+
+        #toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #fff;
+            color: #000;
+            padding: 14px 30px;
+            border-radius: 50px;
+            font-weight: 700;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            opacity: 0;
+            z-index: 9999;
+        }
+
+        #toast.visible {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-thumb { background: #222; border-radius: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="header-wrapper">
+    <h1>Aviator 10% Cashback</h1>
+    <div class="search-container">
+        <input type="text" id="searchInput" placeholder="Search spiels..." onkeyup="filterSpiels()">
+    </div>
+</div>
+
+<div class="main-content">
+    
+    <!-- PHASE 1 -->
+    <div class="section-tag">Phase 1: Opening</div>
+    
+    <div class="spiel-card" onclick="copyText(this)">
+        <div class="card-meta">
+            <span class="badge">Discovery</span>
+            <span class="copy-hint">Click to Copy</span>
+        </div>
+        <div class="spiel-body">Thank you for confirming your account details, I'd like to know if you are inquiring about 10% Aviator Cashback Bonus. Is that correct?</div>
+    </div>
+
+    <div class="spiel-card" onclick="copyText(this)">
+        <div class="card-meta">
+            <span class="badge">Explanation</span>
+            <span class="copy-hint">Click to Copy</span>
+        </div>
+        <div class="spiel-body">Thank you for confirming! The Aviator cashback is credited every Tuesday at 12 noon, as long as all promotion terms and conditions are met. I can help by checking whether you had any gross losses from last week.
+
+The cashback is calculated as your gross loss minus the value of any Bonus Flights issued during the same week, and the Bonus Team is the one who finalizes the exact amount.
+
+I'll now review your activity on my side. This may take approximately 3-5 minutes. Please stay connected, and I'll return with an update as soon as possible.
+</div>
+    </div>
+
+    <!-- PHASE 2 -->
+    <div class="section-tag">Phase 2: Investigation</div>
+
+    <div class="spiel-card" onclick="copyText(this)">
+        <div class="card-meta">
+            <span class="badge">Review Hold</span>
+            <span class="copy-hint">Click to Copy</span>
+        </div>
+        <div class="spiel-body">Thank you for letting me know! I’ll go ahead and review your Aviator gross loss from <span class="dynamic-start date-hl">Date</span> to <span class="dynamic-end date-hl">Date</span>.
+
+It should take about 3–5 minutes, so please stay connected while I check your account. I’ll be right back with the details.</div>
+    </div>
+
+    <div class="spiel-card" onclick="copyText(this)">
+        <div class="card-meta">
+            <span class="badge">Tentative Result</span>
+            <span class="copy-hint">Click to Copy</span>
+        </div>
+        <div class="spiel-body">Thank you so much for patiently waiting! After reviewing your account, we found a gross loss of RXXXXXX from <span class="dynamic-start date-hl">Date</span> to <span class="dynamic-end date-hl">Date</span>. 
+
+Based on this, there’s a possibility that you may qualify for the Aviator cashback this Tuesday. Please keep in mind that this does not yet confirm your eligibility, as any Bonus Flights received during this period will be deducted from your gross loss to determine your net loss, and the week has not yet ended.
+
+If you do qualify, you’ll receive an SMS notification from the Bonus Team this Tuesday at 12 noon. If you haven’t received it by then, just reach out to us and we’ll be happy to check for you.
+
+For more details, you can visit: https://easybet.co.za/page/aviator-10cashback</div>
+    </div>
+
+    <!-- PHASE 3 -->
+    <div class="section-tag">Phase 3: Outcomes</div>
+
+    <div class="spiel-card" onclick="copyText(this)">
+        <div class="card-meta">
+            <span class="badge" style="color: var(--success);">QUALIFIED CONFIRMATION</span>
+            <span class="copy-hint">Click to Copy</span>
+        </div>
+        <div class="spiel-body">Thank you so much for patiently waiting! After reviewing your account, we found a gross loss of RXXXXXX from <span class="dynamic-start date-hl">Date</span> to <span class="dynamic-end date-hl">Date</span>. 
+
+Based on this, you are qualified for the bonus. This means you will receive your 5% Cashback in Bonus Flights, as per the promotion terms. Congratulations! 
+
+For more details about this promotion, you can visit: https://easybet.co.za/page/aviator-10cashback
+
+You’ll receive an SMS notification from the Bonus Team this Today at 12 noon. If you haven’t received it by then, just reach out to us and we’ll be happy to check for you.
+
+For more details, you can visit: https://easybet.co.za/page/aviator-10cashback</div>
+    </div>
+
+    <div class="spiel-card" onclick="copyText(this)">
+        <div class="card-meta">
+            <span class="badge" style="color: var(--error);">DISQUALIFIED NOTICE</span>
+            <span class="copy-hint">Click to Copy</span>
+        </div>
+        <div class="spiel-body">Thank you so much for patiently waiting! After reviewing your account, we found a gross loss of RXXXXXX from <span class="dynamic-start date-hl">Date</span> to <span class="dynamic-end date-hl">Date</span>. 
+
+Based on this, you do not qualify for this bonus at the moment, as the eligibility requirement is net losses of R99 to R499 from Monday to Sunday. Qualified players receive 5% Cashback in Bonus Flights.
+
+I completely understand that this may be disappointing, but don’t worry there will be another opportunity next week to participate in this promotion. Keep playing, and you’ll still have a chance to qualify and enjoy the bonus.
+
+For more details, you can visit: https://easybet.co.za/page/aviator-10cashback
+
+If you have any questions or need further assistance, I’m here to help.</div>
+    </div>
+
+    <!-- PHASE 4 -->
+    <div class="section-tag">Phase 4: Closing</div>
+
+    <div class="spiel-card" onclick="copyText(this)">
+        <div class="card-meta">
+            <span class="badge" style="color: var(--success);">QUALIFIED CLOSING</span>
+            <span class="copy-hint">Click to Copy</span>
+        </div>
+        <div class="spiel-body">I’m really happy to inform you that you are qualified for this bonus! Your cashback or free spins will be credited according to the promotion terms.
+
+If you have any questions on how to use your bonus or need further assistance, please don’t hesitate to reach out. We’re always here to help, and we wish you happy winnings and an enjoyable gaming experience!
+
+After this chat ends, you may receive a short survey about your experience. Your feedback is greatly appreciated and helps us improve our support services.
+
+You can contact us anytime via:
+Live Chat
+Email: help@easybet.co.za
+
+Thank you for choosing Easybet. Have a great day ahead.</div>
+    </div>
+
+    <div class="spiel-card" onclick="copyText(this)">
+        <div class="card-meta">
+            <span class="badge" style="color: var(--error);">DISQUALIFIED CLOSING</span>
+            <span class="copy-hint">Click to Copy</span>
+        </div>
+        <div class="spiel-body">I understand this may be disappointing, and I really appreciate your patience. At the moment, you do not qualify for this bonus.
+
+Don’t worry there will be another opportunity next week, and you’ll still have a chance to participate. If you need guidance on how to track your eligibility or have any questions about the promotion, I’m here to assist you. We’re always happy to help, and we wish you the best of luck in your future games!
+
+After this chat ends, you may receive a short survey about your experience. Your feedback is greatly appreciated and helps us improve our support services.
+
+You can contact us anytime via:
+Live Chat
+Email: help@easybet.co.za
+
+Thank you for choosing Easybet. Have a great day ahead.</div>
+    </div>
+
+    <div class="spiel-card" onclick="copyText(this)">
+        <div class="card-meta">
+            <span class="badge">Standard Close</span>
+            <span class="copy-hint">Click to Copy</span>
+        </div>
+        <div class="spiel-body">You’re very welcome! It was my pleasure to assist you today with your Aviator cashback query, and I look forward to helping you again in the future. If you need any further help, please don’t hesitate to reach out our support team is always here to assist you.
+
+After this chat ends, you will receive a short survey about your experience. Your feedback is greatly appreciated and helps us improve our support services.
+
+You can contact us anytime via:
+Live Chat
+Email: help@easybet.co.za
+
+Thank you for choosing Easybet. Have a great day ahead.</div>
+    </div>
+
+    <div class="spiel-card" onclick="copyText(this)">
+        <div class="card-meta">
+            <span class="badge" style="color: #ef4444;">Inactivity Close</span>
+            <span class="copy-hint">Click to Copy</span>
+        </div>
+        <div class="spiel-body">As we’ve been inactive for a short while, I’ll be closing this chat due to inactivity.
+
+It was my pleasure to assist you today with your Aviator cashback query, and I look forward to helping you again in the future. If you need any further help, please don’t hesitate to reach out our support team is always here to assist you.
+
+After this chat ends, you will receive a short survey about your experience. Your feedback is greatly appreciated and helps us improve our support services.
+
+You can contact us anytime via:
+Live Chat
+Email: help@easybet.co.za
+
+Thank you for choosing Easybet. Have a great day ahead.</div>
+    </div>
+
+</div>
+
+<div id="toast">Copied to Clipboard</div>
+
+<script>
+    function updateDates() {
+        const now = new Date();
+        const currentDay = now.getDay(); 
+        const diffToMonday = (currentDay === 0) ? -6 : (1 - currentDay);
+        
+        const latestMonday = new Date(now);
+        latestMonday.setDate(now.getDate() + diffToMonday);
+        latestMonday.setHours(0,0,0,0);
+
+        const startMonday = new Date(latestMonday);
+        startMonday.setDate(latestMonday.getDate() - 7);
+        const endMonday = new Date(latestMonday);
+
+        const options = { month: 'long', day: 'numeric', year: 'numeric' };
+        const startStr = startMonday.toLocaleDateString('en-US', options);
+        const endStr = endMonday.toLocaleDateString('en-US', options);
+
+        document.querySelectorAll('.dynamic-start').forEach(el => el.innerText = startStr);
+        document.querySelectorAll('.dynamic-end').forEach(el => el.innerText = endStr);
+    }
+
+    function copyText(card) {
+        const text = card.querySelector('.spiel-body').innerText;
+        navigator.clipboard.writeText(text).then(() => {
+            const toast = document.getElementById("toast");
+            toast.className = "visible";
+            setTimeout(() => toast.className = "", 2000);
+        });
+    }
+
+    function filterSpiels() {
+        const q = document.getElementById('searchInput').value.toLowerCase();
+        document.querySelectorAll('.spiel-card').forEach(card => {
+            card.style.display = card.innerText.toLowerCase().includes(q) ? "block" : "none";
+        });
+        
+        document.querySelectorAll('.section-tag').forEach(tag => {
+            let next = tag.nextElementSibling;
+            let showTag = false;
+            while(next && !next.classList.contains('section-tag')) {
+                if(next.style.display !== 'none') showTag = true;
+                next = next.nextElementSibling;
+            }
+            tag.style.display = showTag ? "flex" : "none";
+        });
+    }
+
+    window.onload = updateDates;
+</script>
+
+</body>
+</html>

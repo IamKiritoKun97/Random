@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional Spiel Manager</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+    <style>
+        :root {
+            --primary: #ff6b00; /* Easybet Orange */
+            --primary-hover: #e66000;
+            --bg-gradient: radial-gradient(circle at top left, #1a1a2e, #16213e);
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text-main: #ffffff;
+            --text-muted: #a0a0ba;
+            --card-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            background-attachment: fixed;
+            color: var(--text-main);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+        }
+
+        .glass {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+        }
+
+        /* Sidebar */
+        #sidebar {
+            width: 320px;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid var(--glass-border);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 100;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .sidebar-header {
+            padding: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--primary);
+            letter-spacing: -0.5px;
+        }
+
+        /* Sidebar Search */
+        .sidebar-search-container {
+            padding: 0 16px 12px;
+        }
+        
+        .sidebar-search {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            padding: 8px 12px 8px 34px;
+            color: white;
+            font-size: 0.85rem;
+            outline: none;
+        }
+
+        .sidebar-scroll {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0 12px 24px 12px;
+        }
+
+        .sidebar-section-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin: 20px 12px 10px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .category-item {
+            padding: 10px 14px;
+            margin-bottom: 4px;
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+        }
+
+        .category-item:hover {
+            background: rgba(255, 107, 0, 0.1);
+            border-color: rgba(255, 107, 0, 0.2);
+            color: var(--primary);
+        }
+
+        .category-item.active {
+            background: rgba(255, 107, 0, 0.15);
+            border-color: rgba(255, 107, 0, 0.3);
+            color: var(--primary);
+        }
+
+        .category-content {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            overflow: hidden;
+            flex: 1;
+        }
+
+        .category-name {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-size: 0.9rem; /* Consistent font size ensured here */
+            font-weight: 500;
+        }
+
+        .category-count {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            min-width: 28px;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .category-item:hover .category-count {
+            background: rgba(255, 107, 0, 0.2);
+            color: var(--primary);
+        }
+
+        .category-actions {
+            display: flex;
+            gap: 2px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .category-item:hover .category-actions {
+            opacity: 1;
+        }
+
+        .action-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+
+        .action-btn:hover {
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Main Content */
+        #main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .top-bar {
+            padding: 20px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .search-container {
+            position: relative;
+            flex: 1;
+            max-width: 400px;
+        }
+
+        .search-input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 10px 16px 10px 44px;
+            color: white;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .search-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(255, 107, 0, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+
+        .controls {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .toggle-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 40px;
+            height: 22px;
+        }
+
+        .switch input { opacity: 0; width: 0; height: 0; }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(255, 255, 255, 0.1);
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px; width: 16px;
+            left: 3px; bottom: 3px;
+            background-color: white;
+            transition: .4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            border-radius: 50%;
+        }
+
+        input:checked + .slider { background-color: var(--primary); }
+        input:checked + .slider:before { transform: translateX(18px); }
+
+        .content-body {
+            flex: 1;
+            padding: 32px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .spiel-card {
+            padding: 24px;
+            position: relative;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid var(--glass-border);
+            cursor: pointer;
+            user-select: none; 
+        }
+
+        .spiel-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 107, 0, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .spiel-card:active {
+            transform: translateY(0) scale(0.99);
+            background: rgba(255, 107, 0, 0.1);
+        }
+
+        .spiel-text {
+            line-height: 1.6;
+            color: #e0e0e0;
+            white-space: pre-wrap;
+            pointer-events: none; 
+        }
+
+        .card-hint {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 16px;
+            font-weight: 500;
+            opacity: 0.6;
+        }
+
+        .spiel-card:hover .card-hint {
+            color: var(--primary);
+            opacity: 1;
+        }
+
+        .spiel-actions-overlay {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            display: flex;
+            gap: 8px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .spiel-card:hover .spiel-actions-overlay {
+            opacity: 1;
+        }
+
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-glass { 
+            background: rgba(255, 255, 255, 0.1); 
+            color: white; 
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(4px);
+        }
+        .btn-glass:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal { 
+            width: 90%; 
+            max-width: 800px;
+            padding: 32px; 
+            box-shadow: var(--card-shadow);
+        }
+
+        .modal h2 {
+            margin-bottom: 24px;
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+
+        .modal textarea, .modal input {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 16px;
+            color: white;
+            margin-bottom: 24px;
+            outline: none;
+            font-size: 1rem;
+            line-height: 1.5;
+            transition: border-color 0.2s;
+        }
+
+        .modal textarea {
+            min-height: 350px;
+            resize: vertical;
+        }
+
+        .modal textarea:focus, .modal input:focus {
+            border-color: var(--primary);
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        #toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--primary);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 2000;
+            box-shadow: 0 10px 25px rgba(255, 107, 0, 0.3);
+        }
+
+        #toast.show { transform: translateX(-50%) translateY(0); }
+
+        .floating-add {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 56px;
+            height: 56px;
+            border-radius: 28px;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(255, 107, 0, 0.4);
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s;
+        }
+
+        .hidden { display: none !important; }
+
+        .sort-active {
+            color: var(--primary) !important;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+
+    <aside id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">Easybet</div>
+            <div style="display: flex; gap: 4px;">
+                <button class="action-btn" title="Sort by Count (High to Low)" id="sortSidebarBtn"><i data-lucide="arrow-down-narrow-wide"></i></button>
+                <button class="action-btn" title="Export JSON" id="exportBtn"><i data-lucide="download"></i></button>
+                <button class="action-btn" title="Import JSON" id="importBtn"><i data-lucide="upload"></i></button>
+                <input type="file" id="fileInput" class="hidden" accept=".json">
+            </div>
+        </div>
+
+        <div class="sidebar-search-container">
+            <div style="position: relative;">
+                <i data-lucide="search" size="14" style="position:absolute; left:10px; top:10px; color:var(--text-muted)"></i>
+                <input type="text" id="sidebarSearch" class="sidebar-search" placeholder="Find category...">
+            </div>
+        </div>
+
+        <div class="sidebar-scroll">
+            <div class="sidebar-section-label">
+                <span>Pinned</span>
+                <i data-lucide="pin" size="12"></i>
+            </div>
+            <div id="pinnedList"></div>
+
+            <div class="sidebar-section-label">
+                <span>Categories</span>
+                <button class="action-btn" onclick="openCategoryModal()"><i data-lucide="plus" size="12"></i></button>
+            </div>
+            <div id="categoryList"></div>
+        </div>
+    </aside>
+
+    <main id="main">
+        <div class="top-bar">
+            <div style="display: flex; align-items: center; gap: 16px;">
+                <button class="mobile-menu-toggle hidden" id="menuToggle"><i data-lucide="menu"></i></button>
+                <div class="search-container">
+                    <i data-lucide="search" class="search-icon" size="18"></i>
+                    <input type="text" class="search-input" id="searchInput" placeholder="Search spiels...">
+                </div>
+            </div>
+
+            <div class="controls">
+                <div class="toggle-wrapper" title="Enable editing mode">
+                    <span style="font-size: 0.85rem; font-weight: 500;">Edit Mode</span>
+                    <label class="switch">
+                        <input type="checkbox" id="editToggle">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div id="spielContent" class="content-body"></div>
+
+        <button id="addSpielBtn" class="floating-add hidden" onclick="openSpielModal()">
+            <i data-lucide="plus"></i>
+        </button>
+    </main>
+
+    <!-- Modals -->
+    <div id="categoryModal" class="modal-overlay">
+        <div class="modal glass">
+            <h2 id="catModalTitle">New Category</h2>
+            <input type="text" id="catInput" placeholder="Category Name">
+            <div class="modal-footer">
+                <button class="btn btn-glass" onclick="closeModals()">Cancel</button>
+                <button class="btn btn-primary" id="saveCatBtn">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="spielModal" class="modal-overlay">
+        <div class="modal glass">
+            <h2 id="spielModalTitle">New Spiel</h2>
+            <textarea id="spielInput" placeholder="Type your spiel here..."></textarea>
+            <div class="modal-footer">
+                <button class="btn btn-glass" onclick="closeModals()">Cancel</button>
+                <button class="btn btn-primary" id="saveSpielBtn">Save Spiel</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast">Copied to clipboard!</div>
+
+    <script>
+        let appData = { spiels: {}, pinned: [] };
+        const LOCAL_STORAGE_KEY = 'easybet_spiels_v1';
+        let currentCategory = null;
+        let isEditMode = false;
+        let isSortActive = false;
+        let sidebarFilter = '';
+
+        async function init() {
+            const savedData = localStorage.getItem(LOCAL_STORAGE_KEY);
+            appData = savedData ? JSON.parse(savedData) : { spiels: { "General": [] }, pinned: [] };
+            
+            renderSidebar();
+            setupEventListeners();
+            setupSortable();
+            lucide.createIcons();
+        }
+
+        function saveData() {
+            localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(appData));
+            renderSidebar();
+        }
+
+        function renderSidebar() {
+            const catList = document.getElementById('categoryList');
+            const pinList = document.getElementById('pinnedList');
+            catList.innerHTML = '';
+            pinList.innerHTML = '';
+
+            let categories = Object.keys(appData.spiels);
+            
+            if (sidebarFilter) {
+                categories = categories.filter(c => c.toLowerCase().includes(sidebarFilter.toLowerCase()));
+            }
+
+            if (isSortActive) {
+                categories.sort((a, b) => appData.spiels[b].length - appData.spiels[a].length);
+            }
+
+            categories.forEach(cat => {
+                const isPinned = appData.pinned.includes(cat);
+                const count = appData.spiels[cat].length;
+                const item = createCategoryItem(cat, count, isPinned);
+                
+                if (isPinned) pinList.appendChild(item);
+                else catList.appendChild(item);
+            });
+
+            if (currentCategory && appData.spiels[currentCategory]) {
+                renderSpiels();
+            } else if (categories.length > 0) {
+                selectCategory(categories[0]);
+            }
+            
+            lucide.createIcons();
+        }
+
+        function createCategoryItem(name, count, isPinned) {
+            const div = document.createElement('div');
+            div.className = `category-item ${currentCategory === name ? 'active' : ''}`;
+            div.dataset.id = name;
+            div.onclick = () => selectCategory(name);
+
+            div.innerHTML = `
+                <div class="category-content">
+                    <i data-lucide="${isPinned ? 'pin' : 'hash'}" size="14"></i>
+                    <span class="category-name">${name}</span>
+                    <span class="category-count">${count}</span>
+                </div>
+                <div class="category-actions">
+                    <button class="action-btn" onclick="togglePin('${name}', event)" title="Toggle Pin">
+                        <i data-lucide="${isPinned ? 'pin-off' : 'pin'}" size="14"></i>
+                    </button>
+                    ${isEditMode ? `
+                        <button class="action-btn" onclick="editCategory('${name}', event)"><i data-lucide="edit-3" size="14"></i></button>
+                        <button class="action-btn" onclick="deleteCategory('${name}', event)"><i data-lucide="trash-2" size="14"></i></button>
+                    ` : ''}
+                </div>
+            `;
+            return div;
+        }
+
+        function selectCategory(name) {
+            currentCategory = name;
+            document.querySelectorAll('.category-item').forEach(el => {
+                el.classList.toggle('active', el.dataset.id === name);
+            });
+            renderSpiels();
+        }
+
+        function renderSpiels(filter = '') {
+            const container = document.getElementById('spielContent');
+            container.innerHTML = '';
+            if (!currentCategory) return;
+
+            const spiels = appData.spiels[currentCategory];
+            const filtered = spiels.filter(s => s.toLowerCase().includes(filter.toLowerCase()));
+
+            if (filtered.length === 0) {
+                container.innerHTML = `<div class="empty-state"><p>No spiels found in this category.</p></div>`;
+            } else {
+                filtered.forEach((text, index) => {
+                    const card = document.createElement('div');
+                    card.className = 'spiel-card glass';
+                    card.dataset.index = index;
+                    
+                    card.onclick = (e) => {
+                        if (e.target.closest('.spiel-actions-overlay')) return;
+                        copySpiel(index);
+                    };
+
+                    card.innerHTML = `
+                        <div class="spiel-text">${highlightText(text, filter)}</div>
+                        <div class="card-hint">
+                            <i data-lucide="copy" size="12"></i>
+                            <span>Tap to copy</span>
+                        </div>
+                        ${isEditMode ? `
+                        <div class="spiel-actions-overlay">
+                            <button class="btn btn-glass" onclick="openSpielModal(${index})"><i data-lucide="edit-3" size="14"></i></button>
+                            <button class="btn btn-glass" onclick="deleteSpiel(${index})"><i data-lucide="trash-2" size="14"></i></button>
+                        </div>
+                        ` : ''}
+                    `;
+                    container.appendChild(card);
+                });
+            }
+            lucide.createIcons();
+        }
+
+        function highlightText(text, query) {
+            if (!query) return text;
+            const re = new RegExp(`(${query})`, 'gi');
+            return text.replace(re, '<mark style="background:var(--primary);color:white;border-radius:2px;">$1</mark>');
+        }
+
+        function togglePin(name, e) {
+            e.stopPropagation();
+            if (appData.pinned.includes(name)) {
+                appData.pinned = appData.pinned.filter(p => p !== name);
+            } else {
+                appData.pinned.push(name);
+            }
+            saveData();
+        }
+
+        function openCategoryModal(oldName = null) {
+            const modal = document.getElementById('categoryModal');
+            const input = document.getElementById('catInput');
+            const btn = document.getElementById('saveCatBtn');
+            const title = document.getElementById('catModalTitle');
+            
+            title.textContent = oldName ? 'Edit Category' : 'New Category';
+            input.value = oldName || '';
+            modal.style.display = 'flex';
+            input.focus();
+
+            btn.onclick = () => {
+                const newName = input.value.trim();
+                if (!newName) return;
+                if (oldName) {
+                    appData.spiels[newName] = appData.spiels[oldName];
+                    delete appData.spiels[oldName];
+                    appData.pinned = appData.pinned.map(p => p === oldName ? newName : p);
+                    if (currentCategory === oldName) currentCategory = newName;
+                } else if (!appData.spiels[newName]) {
+                    appData.spiels[newName] = [];
+                }
+                saveData();
+                closeModals();
+            };
+        }
+
+        function deleteCategory(name, e) {
+            e.stopPropagation();
+            if (confirm(`Are you sure you want to delete "${name}"? all spiels inside will be lost.`)) {
+                delete appData.spiels[name];
+                appData.pinned = appData.pinned.filter(p => p !== name);
+                if (currentCategory === name) currentCategory = Object.keys(appData.spiels)[0] || null;
+                saveData();
+            }
+        }
+
+        function editCategory(name, e) {
+            e.stopPropagation();
+            openCategoryModal(name);
+        }
+
+        function openSpielModal(index = null) {
+            const modal = document.getElementById('spielModal');
+            const input = document.getElementById('spielInput');
+            const btn = document.getElementById('saveSpielBtn');
+            const title = document.getElementById('spielModalTitle');
+            
+            title.textContent = index !== null ? 'Edit Spiel' : 'New Spiel';
+            input.value = index !== null ? appData.spiels[currentCategory][index] : '';
+            modal.style.display = 'flex';
+            input.focus();
+
+            btn.onclick = () => {
+                const text = input.value.trim();
+                if (!text) return;
+                if (index !== null) appData.spiels[currentCategory][index] = text;
+                else appData.spiels[currentCategory].unshift(text);
+                saveData();
+                closeModals();
+                renderSpiels();
+            };
+        }
+
+        function deleteSpiel(index) {
+            if (confirm('Delete this spiel?')) {
+                appData.spiels[currentCategory].splice(index, 1);
+                saveData();
+                renderSpiels();
+            }
+        }
+
+        function copySpiel(index) {
+            const text = appData.spiels[currentCategory][index];
+            const el = document.createElement('textarea');
+            el.value = text;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+            
+            const toast = document.getElementById('toast');
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2000);
+        }
+
+        function closeModals() {
+            document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none');
+        }
+
+        function setupSortable() {
+            new Sortable(document.getElementById('categoryList'), {
+                animation: 150,
+                onEnd: () => { if(!isSortActive) updateCategoryOrder(); }
+            });
+            new Sortable(document.getElementById('pinnedList'), {
+                animation: 150,
+                onEnd: updatePinnedOrder
+            });
+        }
+
+        function updateCategoryOrder() {
+            const items = Array.from(document.getElementById('categoryList').children);
+            const newSpiels = {};
+            appData.pinned.forEach(p => newSpiels[p] = appData.spiels[p]);
+            items.forEach(item => { const n = item.dataset.id; newSpiels[n] = appData.spiels[n]; });
+            appData.spiels = newSpiels;
+            saveData();
+        }
+
+        function updatePinnedOrder() {
+            const items = Array.from(document.getElementById('pinnedList').children);
+            appData.pinned = items.map(item => item.dataset.id);
+            saveData();
+        }
+
+        function setupEventListeners() {
+            document.getElementById('editToggle').addEventListener('change', (e) => {
+                isEditMode = e.target.checked;
+                document.getElementById('addSpielBtn').classList.toggle('hidden', !isEditMode);
+                renderSidebar();
+            });
+
+            document.getElementById('searchInput').addEventListener('input', (e) => {
+                renderSpiels(e.target.value);
+            });
+
+            document.getElementById('sidebarSearch').addEventListener('input', (e) => {
+                sidebarFilter = e.target.value;
+                renderSidebar();
+            });
+
+            document.getElementById('sortSidebarBtn').addEventListener('click', (e) => {
+                isSortActive = !isSortActive;
+                e.currentTarget.classList.toggle('sort-active', isSortActive);
+                renderSidebar();
+            });
+
+            document.getElementById('exportBtn').addEventListener('click', () => {
+                const now = new Date();
+                const pad = (n) => n.toString().padStart(2, '0');
+                const datePart = `${pad(now.getMonth() + 1)}-${pad(now.getDate())}-${now.getFullYear()}`;
+                const timePart = `${pad(now.getHours())}-${pad(now.getMinutes())}`;
+                const fileName = `Easybet_${datePart}_${timePart}.json`;
+
+                const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appData, null, 2));
+                const a = document.createElement('a');
+                a.href = dataStr; 
+                a.download = fileName;
+                a.click();
+            });
+
+            document.getElementById('importBtn').addEventListener('click', () => document.getElementById('fileInput').click());
+
+            document.getElementById('fileInput').addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                const r = new FileReader();
+                r.onload = (e) => {
+                    try {
+                        const json = JSON.parse(e.target.result);
+                        if (json.spiels) { appData = json; saveData(); location.reload(); }
+                    } catch(err) { alert("Invalid JSON file."); }
+                };
+                r.readAsText(file);
+            });
+            
+            window.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') closeModals();
+            });
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>

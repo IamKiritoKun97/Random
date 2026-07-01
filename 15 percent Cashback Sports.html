@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -153,6 +154,67 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 25px;
+        }
+
+        /* --- Gross Loss Input --- */
+        .gross-loss-container {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto 25px auto;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+        }
+
+        .gross-loss-label {
+            font-family: var(--font-heading);
+            color: var(--accent-gold);
+            font-weight: 700;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            white-space: nowrap;
+        }
+
+        .input-group {
+            display: flex;
+            align-items: center;
+            flex: 1;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+            transition: 0.3s;
+        }
+
+        .input-group:focus-within {
+            border-color: var(--accent-gold);
+            box-shadow: 0 0 15px var(--accent-gold-glow);
+        }
+
+        .currency-prefix {
+            padding: 10px 15px;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-secondary);
+            font-weight: 700;
+            border-right: 1px solid var(--border-color);
+            user-select: none;
+        }
+
+        #grossLossInput {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: white;
+            padding: 10px 15px;
+            font-size: 1rem;
+            outline: none;
+            font-family: var(--font-main);
         }
 
         #searchInput {
@@ -323,6 +385,15 @@
 <main class="main-container">
     <div class="header-wrapper">
         <h1>15% Cashback for Sports</h1>
+        
+        <div class="gross-loss-container">
+            <div class="gross-loss-label">Gross Loss</div>
+            <div class="input-group">
+                <span class="currency-prefix">R</span>
+                <input type="text" id="grossLossInput" placeholder="Enter amount..." oninput="updateGrossLoss(this)">
+            </div>
+        </div>
+
         <input type="text" id="searchInput" placeholder="Quick search spiels..." onkeyup="filterSpiels()">
     </div>
 
@@ -330,7 +401,7 @@
         
         <div class="section-tag">Initial Phase</div>
         
-        <div class="spiel-card" onclick="copyText(this)">
+        <div class="spiel-card" onclick="copyText(this)" data-category="always">
             <div class="card-meta">
                 <span class="badge">Discovery</span>
                 <span class="copy-hint">Click to Copy</span>
@@ -338,7 +409,7 @@
             <div class="spiel-body">Thank you for confirming your account details. I'd like to know if you are inquiring about the 15% Cashback for Sports promotion. Is that correct?</div>
         </div>
 
-        <div class="spiel-card" onclick="copyText(this)">
+        <div class="spiel-card" onclick="copyText(this)" data-category="always">
             <div class="card-meta">
                 <span class="badge" style="color: #28a745; font-weight: bold;">NO DELAY, SYSTEM IS GOOD</span>
                 <span class="copy-hint">CLICK TO COPY</span>
@@ -355,7 +426,7 @@ I'll now review your activity on my side. This may take approximately 3-5 minute
 
         <div class="section-tag">Resolution Scripts</div>
 
-        <div class="spiel-card" onclick="copyText(this)">
+        <div class="spiel-card" onclick="copyText(this)" data-category="qualified">
             <div class="card-meta">
                 <span class="badge" style="color: var(--warning);">Normal Resolution (Pre-Crediting)</span>
                 <span class="copy-hint">Click to Copy</span>
@@ -374,7 +445,7 @@ For full promotion details, please visit:
 https://easybet.co.za/page/cash-back</div>
         </div>
         
-        <div class="spiel-card" onclick="copyText(this)">
+        <div class="spiel-card" onclick="copyText(this)" data-category="qualified">
             <div class="card-meta">
                 <span class="badge" style="color: var(--success);">Qualified - 15% Tier (R500+ Loss)</span>
                 <span class="copy-hint">Click to Copy</span>
@@ -391,7 +462,7 @@ For more information and terms, please visit:
 https://easybet.co.za/page/cash-back</div>
         </div>
 
-        <div class="spiel-card" onclick="copyText(this)">
+        <div class="spiel-card" onclick="copyText(this)" data-category="qualified">
             <div class="card-meta">
                 <span class="badge" style="color: var(--success);">Qualified - 10% Tier (R99-R499 Loss)</span>
                 <span class="copy-hint">Click to Copy</span>
@@ -408,7 +479,7 @@ For more information and terms, please visit:
 https://easybet.co.za/page/cash-back</div>
         </div>
 
-        <div class="spiel-card" onclick="copyText(this)">
+        <div class="spiel-card" onclick="copyText(this)" data-category="not-qualified">
             <div class="card-meta">
                 <span class="badge" style="color: var(--error);">Not Qualified (< R99 Loss)</span>
                 <span class="copy-hint">Click to Copy</span>
@@ -425,7 +496,7 @@ If you’d like to review the full promotion details, you can find them here:
 https://easybet.co.za/page/cash-back</div>
         </div>
 
-        <div class="spiel-card" onclick="copyText(this)">
+        <div class="spiel-card" onclick="copyText(this)" data-category="not-qualified">
             <div class="card-meta">
                 <span class="badge" style="color: var(--error);">Not Qualified (Winnings > Losses)</span>
                 <span class="copy-hint">Click to Copy</span>
@@ -442,7 +513,7 @@ https://easybet.co.za/page/cash-back</div>
 
         <div class="section-tag">Closing Scripts</div>
 
-        <div class="spiel-card" onclick="copyText(this)">
+        <div class="spiel-card" onclick="copyText(this)" data-category="not-qualified">
             <div class="card-meta">
                 <span class="badge" style="color: var(--error);">Not Qualified Closing</span>
                 <span class="copy-hint">Click to Copy</span>
@@ -464,7 +535,7 @@ Email: help@easybet.co.za
 Thank you for choosing Easybet. Have a great day ahead.</div>
         </div>
 
-        <div class="spiel-card" onclick="copyText(this)">
+        <div class="spiel-card" onclick="copyText(this)" data-category="qualified">
             <div class="card-meta">
                 <span class="badge" style="color: var(--success);">Qualified Closing</span>
                 <span class="copy-hint">Click to Copy</span>
@@ -530,7 +601,9 @@ Thank you for choosing Easybet. Have a great day ahead.</div>
     function filterSpiels() {
         const q = document.getElementById('searchInput').value.toLowerCase();
         document.querySelectorAll('.spiel-card').forEach(card => {
-            card.style.display = card.innerText.toLowerCase().includes(q) ? "block" : "none";
+            const matchesSearch = card.innerText.toLowerCase().includes(q);
+            const isEligible = card.dataset.eligible !== "false"; // Respect the Gross Loss logic
+            card.style.display = (matchesSearch && isEligible) ? "block" : "none";
         });
         
         // Hide section headers if all cards under them are hidden
@@ -545,7 +618,77 @@ Thank you for choosing Easybet. Have a great day ahead.</div>
         });
     }
 
-    window.onload = calculateDates;
+    // --- New Gross Loss Functions ---
+    
+    function initializeGrossLossData() {
+        // Save original HTML after dynamic dates are injected
+        document.querySelectorAll('.spiel-card').forEach(card => {
+            const body = card.querySelector('.spiel-body');
+            if(body) {
+                card.dataset.originalHtml = body.innerHTML;
+            }
+            // Set initial eligibility state to true for all
+            card.dataset.eligible = "true";
+        });
+    }
+
+    function updateGrossLoss(inputElement) {
+        // Remove non-numeric characters (except period) and prevent double periods
+        let val = inputElement.value.replace(/[^0-9.]/g, '');
+        val = val.replace(/(\..*)\./g, '$1');
+        inputElement.value = val;
+
+        updateQualificationVisibility(val);
+        replaceGrossLossText(val);
+        filterSpiels(); // Re-trigger visual filter
+    }
+
+    function updateQualificationVisibility(val) {
+        const cards = document.querySelectorAll('.spiel-card');
+        
+        if (val === '') {
+            // Revert to all visible if field is empty
+            cards.forEach(card => card.dataset.eligible = "true");
+            return;
+        }
+
+        const numVal = parseFloat(val);
+        const isQualified = numVal >= 99;
+
+        cards.forEach(card => {
+            const cat = card.dataset.category;
+            if (cat === 'always') {
+                card.dataset.eligible = "true";
+            } else if (cat === 'qualified') {
+                card.dataset.eligible = isQualified ? "true" : "false";
+            } else if (cat === 'not-qualified') {
+                card.dataset.eligible = !isQualified ? "true" : "false";
+            }
+        });
+    }
+
+    function replaceGrossLossText(val) {
+        document.querySelectorAll('.spiel-card').forEach(card => {
+            const body = card.querySelector('.spiel-body');
+            if (!body || !card.dataset.originalHtml) return;
+
+            if (val === '') {
+                // Restore original placeholders and dates
+                body.innerHTML = card.dataset.originalHtml;
+            } else {
+                // Perform dynamic replacement for all exact RXXXX combinations
+                let newHtml = card.dataset.originalHtml
+                    .replace(/RXXXXXX/g, val)
+                    .replace(/RXXXX/g, val);
+                body.innerHTML = newHtml;
+            }
+        });
+    }
+
+    window.onload = function() {
+        calculateDates();
+        initializeGrossLossData();
+    };
 </script>
 
 </body>

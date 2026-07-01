@@ -1,0 +1,403 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>10% Cashback Evolution Game Shows Spiels</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-body: #050505;
+            --bg-card: #0f0f0f;
+            --bg-card-hover: #161616;
+            --accent-gold: #d4af37;
+            --accent-gold-glow: rgba(212, 175, 55, 0.15);
+            --text-primary: #ffffff;
+            --text-secondary: #999999;
+            --border-color: rgba(255, 255, 255, 0.06);
+            --success: #10b981;
+            --error: #ef4444;
+            --font-main: 'Inter', sans-serif;
+            --font-heading: 'Outfit', sans-serif;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background-color: var(--bg-body);
+            background-image: 
+                radial-gradient(circle at 50% 0%, #1a1a1a 0%, transparent 50%),
+                url("https://www.transparenttextures.com/patterns/carbon-fibre.png");
+            color: var(--text-primary);
+            font-family: var(--font-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 60px 20px;
+            line-height: 1.6;
+        }
+
+        /* --- Header & Search --- */
+        .header-wrapper {
+            text-align: center;
+            margin-bottom: 50px;
+            width: 100%;
+            max-width: 800px;
+        }
+
+        .header-wrapper h1 {
+            font-family: var(--font-heading);
+            font-weight: 800;
+            font-size: 2.2rem;
+            letter-spacing: -0.02em;
+            background: linear-gradient(135deg, #fff 30%, var(--accent-gold) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 25px;
+        }
+
+        #searchInput {
+            width: 100%;
+            max-width: 500px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-color);
+            padding: 14px 24px;
+            border-radius: 12px;
+            color: white;
+            font-size: 1rem;
+            outline: none;
+            transition: 0.3s;
+            text-align: center;
+        }
+
+        #searchInput:focus {
+            border-color: var(--accent-gold);
+            box-shadow: 0 0 25px var(--accent-gold-glow);
+        }
+
+        .main-content {
+            width: 100%;
+            max-width: 850px;
+        }
+
+        .section-tag {
+            font-family: var(--font-heading);
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--accent-gold);
+            text-transform: uppercase;
+            letter-spacing: 0.3em;
+            margin: 45px 0 20px 0;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .section-tag::after {
+            content: "";
+            height: 1px;
+            flex: 1;
+            background: linear-gradient(to right, var(--border-color), transparent);
+        }
+
+        /* --- Cards --- */
+        .spiel-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 28px;
+            margin-bottom: 18px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .spiel-card:hover {
+            background: var(--bg-card-hover);
+            border-color: rgba(212, 175, 55, 0.4);
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+        }
+
+        .card-meta {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .badge {
+            font-size: 0.6rem;
+            font-weight: 800;
+            padding: 4px 10px;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.03);
+            color: var(--text-secondary);
+            text-transform: uppercase;
+        }
+
+        .copy-hint {
+            font-size: 0.65rem;
+            color: var(--accent-gold);
+            font-weight: 600;
+            text-transform: uppercase;
+            opacity: 0.5;
+        }
+
+        .spiel-body {
+            font-size: 1.05rem;
+            color: #e0e0e0;
+            white-space: pre-wrap;
+        }
+
+        .date-hl {
+            color: #fff;
+            font-weight: 700;
+            border-bottom: 1px solid var(--accent-gold);
+        }
+
+        /* --- Notification --- */
+        #toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #fff;
+            color: #000;
+            padding: 14px 30px;
+            border-radius: 50px;
+            font-weight: 700;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            opacity: 0;
+            z-index: 9999;
+        }
+
+        #toast.visible { transform: translateX(-50%) translateY(0); opacity: 1; }
+    </style>
+</head>
+<body>
+
+<div class="header-wrapper">
+    <h1>10% Cashback Evolution Game Shows</h1>
+    <input type="text" id="searchInput" placeholder="Quick search spiels..." onkeyup="filterSpiels()">
+</div>
+
+<div class="main-content">
+    
+    <div class="section-tag">Initial Phase</div>
+    
+    <div class="spiel-card" onclick="copyText(this)">
+        <div class="card-meta">
+            <span class="badge">Discovery</span>
+            <span class="copy-hint">Click to Copy</span>
+        </div>
+        <div class="spiel-body">Thank you for confirming your account details, I'd like to know if you are inquiring about the 10% Cashback Evolution Game Shows Bonus. Is that correct?</div>
+    </div>
+
+
+
+
+ <div class="spiel-card" onclick="copyText(this)">
+    <div class="card-meta">
+        <span class="badge" style="color: #28a745; font-weight: bold;">NO DELAY, SYSTEM IS GOOD</span>
+        <span class="copy-hint">CLICK TO COPY</span>
+    </div>
+    <div class="spiel-body" style="white-space: pre-line; line-height: 1.6;">
+        Thank you for confirming. I completely understand how exciting it is to receive your bonus as soon as possible, and I’m happy to help check your Evolution Game Shows cashback for you.
+
+        What I can do on my end is check whether you had any gross losses from last week.
+
+        For clarity, your net loss is calculated as follows:
+        Net Loss = Total Losses - Total Winnings - Free Bets issued during the period.
+        Any Free Bets issued during the week are deducted when calculating your gross and net loss.
+
+        I'll now review your activity on my side. This may take approximately 3-5 minutes. Please stay connected, and I'll return with an update as soon as possible.
+    </div>
+</div>
+
+
+    <div class="section-tag">Investigation</div>
+
+    <div class="spiel-card" onclick="copyText(this)">
+        <div class="card-meta">
+            <span class="badge">Hold Script</span>
+            <span class="copy-hint">Click to Copy</span>
+        </div>
+        <div class="spiel-body">Thank you for confirming. Rest assured, I’m here to check your gross loss on Evolution Game Shows for your real money bets placed from <span class="dynamic-start date-hl">Date</span> to <span class="dynamic-end date-hl">Date</span>. 
+
+The review will take approximately 3–5 minutes. Kindly stay connected, and I’ll be back as soon as I have an update for you.</div>
+    </div>
+
+   
+
+    <div class="section-tag">Resolution Scripts</div>
+
+    <div class="spiel-card" onclick="copyText(this)">
+        <div class="card-meta">
+            <span class="badge" style="color: var(--success);">Normal Resolution</span>
+            <span class="copy-hint">Click to Copy</span>
+        </div>
+        <div class="spiel-body">Thank you for waiting. I’ve checked your account and reviewed all real money bets placed on Evolution Game Shows between <span class="dynamic-start date-hl">Date</span> and <span class="dynamic-end date-hl">Date</span>. Your gross loss for this period is RXXXXXX, which indicates that you may be eligible for the Evolution Game Shows cashback.
+
+Please note that any Free Bets issued during the same week will be deducted from your gross loss when calculating your final net loss. For this reason, I’m unable to confirm your final eligibility at this stage, as the Bonus Team is responsible for completing and approving the final calculation.
+
+For full details of the promotion, you can visit:
+https://easybet.co.za/page/10-cash-back-game-show</div>
+    </div>
+
+    
+
+    <div class="spiel-card" onclick="copyText(this)">
+        <div class="card-meta">
+            <span class="badge" style="color: var(--error);">Not Qualified</span>
+            <span class="copy-hint">Click to Copy</span>
+        </div>
+        <div class="spiel-body">Thank you so much for your patience while I checked this for you. I understand how disappointing it can be to miss out on a bonus, and I’m really sorry this wasn’t the outcome you were hoping for.
+
+After reviewing your account, I can confirm that you did not qualify for the Evolution Game Shows Cashback this time. Your net loss on Evolution Game Shows for the period <span class="dynamic-start date-hl">Date</span> and <span class="dynamic-end date-hl">Date</span> was RXXXX. As per the promotion’s terms and conditions, a minimum net loss of R99 in real money during the promotional week is required to qualify.
+
+Please don’t be discouraged though. This is a weekly promotion, so you’ll have another opportunity to qualify in the next cycle. As long as your net loss exceeds R99 in the upcoming week, you’ll be eligible to receive the cashback bonus.
+
+If you’d like to review the full promotion details, you can find them here:
+https://easybet.co.za/page/10-cash-back-game-show</div>
+    </div>
+
+ <div class="spiel-card" onclick="copyText(this)">
+        <div class="card-meta">
+            <span class="badge" style="color: var(--error);">Not Qualified</span>
+            <span class="copy-hint">Click to Copy</span>
+        </div>
+        <div class="spiel-body">Thank you for waiting. I understand how disappointing this can be, and I’m really sorry that you weren’t able to qualify for the bonus.
+
+Based on your Evolution Game Shows activity from <span class="dynamic-start date-hl">Date</span> to <span class="dynamic-end date-hl">Date</span>, your winnings were higher than your losses, which is why you unfortunately don’t qualify for the bonus. On the bright side, this means you actually came out ahead during the review period.
+
+Since the result reflects an overall win and not a net loss, the Evolution Game Shows Cashback does not apply for this period.
+
+For more information about the Evolution Game Shows Cashback promotion, you can view the full details here:
+https://easybet.co.za/page/10-cash-back-game-show</div>
+    </div>
+
+
+
+<div class="spiel-card" onclick="copyText(this)">
+        <div class="card-meta">
+            <span class="badge" style="color: var(--success);">Assurance</span>
+            <span class="copy-hint">Click to Copy</span>
+        </div>
+        <div class="spiel-body">You are very welcome. I truly appreciate your patience and understanding. Please rest assured that as soon as we receive an update from the promotions team, we will make sure you are fully informed.
+
+You will receive an SMS notification with all the details, including the Free Bets awarded, the eligible games, and the direct link to access them.
+
+Thank you for your patience and understanding. We’ll be in touch as soon as we have an update.</div>
+    </div>
+
+
+    <div class="section-tag">Closings</div>
+
+    <div class="spiel-card" onclick="copyText(this)">
+        <div class="card-meta">
+            <span class="badge">Standard Close</span>
+            <span class="copy-hint">Click to Copy</span>
+        </div>
+        <div class="spiel-body">I’m really glad I could assist you today with your Evolution Game Shows cashback eligibility, and I look forward in assisting you again in the future.
+
+Should you need any further help or have additional questions, you’re always welcome to contact us via live chat or email at help@easybet.co.za, our team is ready to assist.
+
+Once this chat ends, a brief star-rating survey may appear. Your feedback is highly valued and helps us improve the service we provide.
+
+Thank you for choosing Easybet, and please remember to play responsibly.</div>
+    </div>
+
+
+    <div class="spiel-card" onclick="copyText(this)">
+        <div class="card-meta">
+            <span class="badge">Inactive Closing</span>
+            <span class="copy-hint">Click to Copy</span>
+        </div>
+        <div class="spiel-body">As we’ve been inactive for a short while, I’ll be closing this chat due to inactivity.
+
+I’m really glad I could assist you today with your Evolution Game Shows cashback eligibility, and I look forward in assisting you again in the future.
+
+Should you need any further help or have additional questions, you’re always welcome to contact us via live chat or email at help@easybet.co.za, our team is ready to assist.
+
+Once this chat ends, a brief star-rating survey may appear. Your feedback is highly valued and helps us improve the service we provide.
+
+Thank you for choosing Easybet, and please remember to play responsibly.</div>
+    </div>
+
+
+    <div class="spiel-card" onclick="copyText(this)">
+        <div class="card-meta">
+            <span class="badge" style="color: var(--success);">Email Follow-up Close</span>
+            <span class="copy-hint">Click to Copy</span>
+        </div>
+        <div class="spiel-body">Alright. Please rest assured that I’ll keep you updated via email.
+
+I’m really glad I could assist you today with your Evolution Game Shows cashback eligibility, and I look forward to assisting you again in the future.
+
+Should you need any further help or have additional questions, you’re always welcome to reach out to us via Live Chat or email at help@easybet.co.za. Our support team is always ready to assist you.
+
+Once this chat ends, a brief star-rating survey may appear. Your feedback is highly valued and helps us improve the service we provide.
+
+Thank you for choosing Easybet, and please remember to play responsibly.</div>
+    </div>
+</div>
+
+<div id="toast">Copied to Clipboard</div>
+
+<script>
+    function calculateDates() {
+        const now = new Date();
+        const currentDay = now.getDay(); 
+        const diffToMonday = (currentDay === 0) ? -6 : (1 - currentDay);
+        
+        const latestMonday = new Date(now);
+        latestMonday.setDate(now.getDate() + diffToMonday);
+        latestMonday.setHours(0,0,0,0);
+
+        const startMonday = new Date(latestMonday);
+        startMonday.setDate(latestMonday.getDate() - 7);
+        const endMonday = new Date(latestMonday);
+
+        const options = { month: 'long', day: 'numeric', year: 'numeric' };
+        // Use simplified options to match "February 2 to February 8" style if preferred, 
+        // but keeping it full for professional look.
+        const startStr = startMonday.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
+        const endStr = endMonday.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+
+        document.querySelectorAll('.dynamic-start').forEach(el => el.innerText = startStr);
+        document.querySelectorAll('.dynamic-end').forEach(el => el.innerText = endStr);
+    }
+
+    function copyText(card) {
+        const text = card.querySelector('.spiel-body').innerText;
+        navigator.clipboard.writeText(text).then(() => {
+            const toast = document.getElementById("toast");
+            toast.className = "visible";
+            setTimeout(() => toast.className = "", 2000);
+        });
+    }
+
+    function filterSpiels() {
+        const q = document.getElementById('searchInput').value.toLowerCase();
+        document.querySelectorAll('.spiel-card').forEach(card => {
+            card.style.display = card.innerText.toLowerCase().includes(q) ? "block" : "none";
+        });
+        document.querySelectorAll('.section-tag').forEach(tag => {
+            let next = tag.nextElementSibling;
+            let show = false;
+            while(next && !next.classList.contains('section-tag')) {
+                if(next.style.display !== 'none') show = true;
+                next = next.nextElementSibling;
+            }
+            tag.style.display = show ? "flex" : "none";
+        });
+    }
+
+    window.onload = calculateDates;
+</script>
+
+</body>
+</html>

@@ -35,34 +35,66 @@
     
     .spiel-item {
       padding: 10px 12px;
-      margin-bottom: 8px; /* stronger separation */
-      border-bottom: 1px solid #333333; /* CLEAR separator */
-      border-top: 1px solid #111111;
+      margin-bottom: 8px;
+      border-radius: 8px; /* Modern curved edges for lit surfaces */
       position: relative;
       background-color: transparent;
       display: flex;
       flex-direction: column;
-      transition: all 0.15s ease;
       
-      /* Pre-allocate border size to prevent layout shift on hover */
-      border-left: 3px solid transparent;
-      border-right: 3px solid transparent;
-    }
-
-    .spiel-item + .spiel-item {
-      border-top: none;
+      /* Base transparent border to prevent layout shift on hover, with a soft bottom separator */
+      border: 1px solid transparent;
+      border-bottom-color: rgba(255, 255, 255, 0.05);
+      
+      transition: all 0.2s ease;
     }
 
     .spiel-item:hover {
-      background-color: #050505;
       cursor: pointer;
-      border-left: 3px solid #FFD700;   /* GOLD edge */
-      border-right: 3px solid #FFD700;
-      box-shadow: 0 0 0 1px #FFD700 inset;
+      
+      /* Slight lift */
+      transform: translateY(-1px);
+
+      /* Subtle background lift */
+      background: linear-gradient(
+        180deg,
+        rgba(255, 210, 120, 0.04),
+        rgba(255, 210, 120, 0.01)
+      );
+
+      /* Premium outer glow */
+      box-shadow:
+        0 0 8px rgba(255, 210, 120, 0.12),
+        0 0 20px rgba(255, 210, 120, 0.06);
+
+      /* Soft inner glow border */
+      border: 1px solid rgba(255, 210, 120, 0.18);
     }
 
     .spiel-item:active {
-      background-color: #080808;
+      transform: translateY(0);
+      background: rgba(255, 210, 120, 0.05);
+      border-color: rgba(255, 210, 120, 0.25);
+    }
+
+    /* Optional: Inner light layer (High-end touch) */
+    .spiel-item::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: radial-gradient(
+        circle at left center,
+        rgba(255, 210, 120, 0.15),
+        transparent 60%
+      );
+      opacity: 0;
+      transition: opacity 0.2s ease;
+      pointer-events: none; /* Ensures the glow doesn't block interactions with inner text/buttons */
+    }
+
+    .spiel-item:hover::after {
+      opacity: 1;
     }
 
     .spiel-title {
@@ -79,6 +111,8 @@
       color: #E0E0E0;
       line-height: 1.4;
       white-space: pre-wrap; /* critical for maintaining spacing */
+      position: relative;
+      z-index: 10; /* Ensures text stays above the inner glow */
     }
 
     .spiel-text p {
@@ -915,7 +949,6 @@
       const isSelected = selectedSpiels.has(spiel.id);
       const card = document.createElement('div');
       
-      // Applying updated refined block style
       card.className = "spiel-item group";
 
       if (editMode) {
@@ -930,9 +963,8 @@
         copyToClipboard(spiel.text);
       });
 
-      // Strict styling hierarchy and clear separation markup
       card.innerHTML = `
-        <div class="flex items-start justify-between mb-1 no-click-copy">
+        <div class="flex items-start justify-between mb-1 no-click-copy z-10 relative">
           <div class="flex items-center space-x-2 min-w-0 pr-4">
             ${editMode ? `<input type="checkbox" ${isSelected ? 'checked' : ''} onchange="toggleSelectSpiel('${spiel.id}')" class="h-3.5 w-3.5 cursor-pointer shrink-0 accent-white">` : ''}
             ${editMode ? `<div class="cursor-grab p-0.5 shrink-0 text-[#999999] hover:text-[#FFFFFF]">⋮⋮</div>` : ''}

@@ -1,4 +1,6 @@
 
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -42,38 +44,6 @@
             flex-direction: row;
             line-height: 1.6;
             overflow-x: hidden;
-        }
-
-        /* Qualifying Games list: stacked, full-width buttons */
-        .game-list {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            padding: 0;
-            margin: 10px 0 0 0;
-            list-style: none;
-        }
-
-        .game-list li {
-            display: block;
-            width: 100%;
-            box-sizing: border-box;
-            text-align: left;
-            background: rgba(255, 255, 255, 0.04);
-            padding: 5px 10px;
-            border-radius: 6px;
-            font-size: 0.75rem;
-            cursor: pointer;
-            transition: 0.2s;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            color: #d1d5db;
-            user-select: none;
-        }
-
-        .game-list li:hover {
-            background: rgba(212, 175, 55, 0.2);
-            border-color: var(--accent-gold);
-            color: #fff;
         }
 
         /* --- Sidebar --- */
@@ -148,6 +118,33 @@
             background: rgba(212, 175, 55, 0.1);
             padding: 2px 6px;
             border-radius: 4px;
+        }
+
+        .game-list {
+            list-style: none;
+            padding: 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 10px;
+        }
+
+        .game-list li {
+            background: rgba(255, 255, 255, 0.04);
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: 0.2s;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: #d1d5db;
+            user-select: none;
+        }
+
+        .game-list li:hover {
+            background: rgba(212, 175, 55, 0.2);
+            border-color: var(--accent-gold);
+            color: #fff;
         }
 
         .btn-link {
@@ -401,32 +398,31 @@
             <li><strong>Bonus Name:</strong> <br><span class="highlight-text">15% Weekly Casino Cashback</span></li>
             <li style="margin-top: 8px;"><strong>Crediting Schedule:</strong> <br><span class="highlight-text">Monday by 12:00 PM</span></li>
             <li style="margin-top: 8px;"><strong>Qualifying Period:</strong> <br><span class="highlight-text">Monday - Sunday</span></li>
-            <li style="margin-top: 8px;"><strong>Min / Max Cash Back:</strong> <br><span class="highlight-text">R10 min &middot; R5,000 max per week</span></li>
         </ul>
     </div>
 
-   <div class="sidebar-box">
-    <div class="sidebar-title">Qualifying Games</div>
-    <div style="font-size: 0.75rem; color: #aaa; margin-bottom: 5px;">Filters on ADV</div>
-    <ul class="game-list">
-        <li onclick="copyGame(this)">AGT Instant Games</li>
-        <li onclick="copyGame(this)">Amatic Instant Games</li>
-        <li onclick="copyGame(this)">Betgames Iframe</li>
-        <li onclick="copyGame(this)">GamesHub</li>
-        <li onclick="copyGame(this)">Skypilot is under Gameshub</li>
-        <li onclick="copyGame(this)">Tom Horn</li>
-        <li onclick="copyGame(this)">CT-Interactive - Start here</li>
-        <li onclick="copyGame(this)">Aviatrix</li>
-        <li onclick="copyGame(this)">Evolution</li>
-        <li onclick="copyGame(this)">Fbastards</li>
-        <li onclick="copyGame(this)">Pragmatic</li>
-        <li onclick="copyGame(this)">Spribe games</li>
-        <li onclick="copyGame(this)">Slots Lobby</li>
-        <li onclick="copyGame(this)">Spinoro</li>
-        <li onclick="copyGame(this)">Synot Games</li>
-        <li onclick="copyGame(this)">Mascot - Ends here</li>
-    </ul>
-</div>
+    <div class="sidebar-box">
+        <div class="sidebar-title">Qualifying Games</div>
+        <div style="font-size: 0.75rem; color: #aaa; margin-bottom: 5px;">Filters on ADV</div>
+        <ul class="game-list">
+<li onclick="copyGame(this)">AGT Instant Games</li>
+<li onclick="copyGame(this)">Amatic Instant Games</li>
+<li onclick="copyGame(this)">Betgames Iframe</li>
+<li onclick="copyGame(this)">GamesHub</li>
+<li onclick="copyGame(this)">Skypilot</li>
+<li onclick="copyGame(this)">Tom Horn</li>
+<li onclick="copyGame(this)">CT-Interactive</li>
+<li onclick="copyGame(this)">Aviatrix</li>
+<li onclick="copyGame(this)">Evolution</li>
+<li onclick="copyGame(this)">Fbastards</li>
+<li onclick="copyGame(this)">Pragmatic</li>
+<li onclick="copyGame(this)">Spribe games</li>
+<li onclick="copyGame(this)">Slots Lobby</li>
+<li onclick="copyGame(this)">Spinoro</li>
+<li onclick="copyGame(this)">Synot Games</li>
+<li onclick="copyGame(this)">Mascot</li>
+        </ul>
+    </div>
 
     <div class="sidebar-box">
         <div class="sidebar-title">Helpful Links</div>
@@ -476,8 +472,6 @@ Net Losses = Total Bets - Total Winnings on qualifying Casino Games.
 I'll now review your activity on my side. This may take approximately 3-5 minutes. Please stay connected, and I'll return with an update as soon as possible.</div>
         </div>
 
-       
-
         <div class="section-tag">Resolution Scripts (Tiered)</div>
 
         <div class="spiel-card" onclick="copySpiel(this)" data-category="always">
@@ -491,7 +485,7 @@ I have reviewed all your qualifying Casino Games bets placed between <span class
 
 Based on my review, your net loss for this period is <strong>RXXXX</strong>.
 
-The final calculation and cashback assessment are automatically completed by our Bonus Team every Monday by 12:00 PM. If your net loss remains R200 or more by the end of the week, you will receive up to 15% of your net losses back in your Casino Bonus Wallet (minimum Cash Back is R10, maximum is R5 000 per week).
+The final calculation and cashback assessment are automatically completed by our Bonus Team every Monday by 12:00 PM. If your net loss remains R200 or more by the end of the week, you will receive up to 15% of your net losses back in your Casino Bonus Wallet.
 
 For full promotion details, please visit:
 https://easybet.co.za/page/15-weekly-casino-cashback</div>
@@ -506,11 +500,9 @@ https://easybet.co.za/page/15-weekly-casino-cashback</div>
 
 Upon checking your account, I can confirm that you qualified for the 15% Weekly Casino Cashback! 
 
-Your net loss on Casino Games from <span class="dynamic-start date-hl">Monday</span> to <span class="dynamic-end date-hl">Sunday</span> was <strong>RXXXX</strong>. Because your net losses fell into the R5,000+ bracket, you are eligible for <strong>15% Cash Back</strong> (up to R25,000 max withdrawal) credited straight to your Casino Bonus Wallet.
+Your net loss on Casino Games from <span class="dynamic-start date-hl">Monday</span> to <span class="dynamic-end date-hl">Sunday</span> was <strong>RXXXX</strong>. Because your net losses fell into the R5,000+ bracket, you are eligible for <strong>15% Cash Back</strong> (up to R20,000 max withdrawal) credited straight to your Casino Bonus Wallet.
 
 Cash Back is paid into your Casino Bonus Wallet every Monday by 12:00 PM. Please remember that you must wager your bonus 4x on qualifying games before you can withdraw your winnings. (Note: For Crash Games, only bets with a cashout of 1.50x or higher count toward wagering).
-
-Important: your Cash Back must be wagered before Sunday 23:59 of the week it is issued. Any remaining bonus funds and winnings will expire at that time. Withdrawing from your Real Wallet does not affect your Casino Bonus Wallet, and wagering continues as normal.
 
 For more information and terms, please visit:
 https://easybet.co.za/page/15-weekly-casino-cashback</div>
@@ -529,8 +521,6 @@ Your net loss on Casino Games from <span class="dynamic-start date-hl">Monday</s
 
 Cash Back is paid into your Casino Bonus Wallet every Monday by 12:00 PM. Please remember that you must wager your bonus 4x on qualifying games before you can withdraw your winnings. (Note: For Crash Games, only bets with a cashout of 1.50x or higher count toward wagering).
 
-Important: your Cash Back must be wagered before Sunday 23:59 of the week it is issued. Any remaining bonus funds and winnings will expire at that time. Withdrawing from your Real Wallet does not affect your Casino Bonus Wallet, and wagering continues as normal.
-
 For more information and terms, please visit:
 https://easybet.co.za/page/15-weekly-casino-cashback</div>
         </div>
@@ -548,8 +538,6 @@ Your net loss on Casino Games from <span class="dynamic-start date-hl">Monday</s
 
 Cash Back is paid into your Casino Bonus Wallet every Monday by 12:00 PM. Please remember that you must wager your bonus 4x on qualifying games before you can withdraw your winnings. (Note: For Crash Games, only bets with a cashout of 1.50x or higher count toward wagering).
 
-Important: your Cash Back must be wagered before Sunday 23:59 of the week it is issued. Any remaining bonus funds and winnings will expire at that time. Withdrawing from your Real Wallet does not affect your Casino Bonus Wallet, and wagering continues as normal.
-
 For more information and terms, please visit:
 https://easybet.co.za/page/15-weekly-casino-cashback</div>
         </div>
@@ -563,39 +551,11 @@ https://easybet.co.za/page/15-weekly-casino-cashback</div>
 
 Upon checking your account, I can confirm that you qualified for the Weekly Casino Cashback! 
 
-Your net loss on Casino Games from <span class="dynamic-start date-hl">Monday</span> to <span class="dynamic-end date-hl">Sunday</span> was <strong>RXXXX</strong>. Because your net losses were between R200 and R499, you are eligible for <strong>5% Cash Back</strong> (minimum R10, up to R1,000 max withdrawal) credited straight to your Casino Bonus Wallet.
+Your net loss on Casino Games from <span class="dynamic-start date-hl">Monday</span> to <span class="dynamic-end date-hl">Sunday</span> was <strong>RXXXX</strong>. Because your net losses were between R200 and R499, you are eligible for <strong>5% Cash Back</strong> (up to R1,000 max withdrawal) credited straight to your Casino Bonus Wallet.
 
 Cash Back is paid into your Casino Bonus Wallet every Monday by 12:00 PM. Please remember that you must wager your bonus 4x on qualifying games before you can withdraw your winnings. (Note: For Crash Games, only bets with a cashout of 1.50x or higher count toward wagering).
 
-Important: your Cash Back must be wagered before Sunday 23:59 of the week it is issued. Any remaining bonus funds and winnings will expire at that time. Withdrawing from your Real Wallet does not affect your Casino Bonus Wallet, and wagering continues as normal.
-
 For more information and terms, please visit:
-https://easybet.co.za/page/15-weekly-casino-cashback</div>
-        </div>
-
- <div class="section-tag">Cash Back Issued</div>
-
-        <div class="spiel-card" onclick="copySpiel(this)" data-category="always">
-            <div class="card-meta">
-                <span class="badge" style="color: #10b981; border-color: #10b981; background: rgba(16, 185, 129, 0.1);">The cashback bonus has been credited already</span>
-                <span class="copy-hint">Click to Copy</span>
-            </div>
-            <div class="spiel-body">Great news! Your Cash Back has been successfully credited to your Casino Bonus Wallet.
-
-Here's how to make the most of it:
-1. Log in to your account and open any qualifying Casino Game.
-2. Once the game loads, use the drop-down next to "Back to List" and select Free Bonus to play using your Cash Back instead of your own cash.
-3. You can track your wagering progress at any time in the Bonus section of your account.
-
-Before any winnings can be withdrawn, your Cash Back must be wagered 4x across qualifying games (Note: for Crash Games, only bets with a cashout of 1.50x or higher count toward wagering).
-
-Please remember: your Cash Back must be wagered before Sunday 23:59 of the week it was issued. Any remaining bonus funds and winnings will expire at that time, so be sure to use it before then.
-
-Maximum withdrawable winnings depend on your qualifying tier: R25 000 (Tier A), R5 000 (Tier B), or R1 000 (Tiers C & D). Minimum Cash Back issued is R10; maximum is R5 000 per week.
-
-Withdrawing from your Real Wallet does not affect your Casino Bonus Wallet, and your wagering continues as normal.
-
-For the full Terms and Conditions, please visit:
 https://easybet.co.za/page/15-weekly-casino-cashback</div>
         </div>
 
@@ -608,7 +568,7 @@ https://easybet.co.za/page/15-weekly-casino-cashback</div>
 
 After reviewing your account, I can confirm that you did not qualify for the Weekly Casino Cashback this time. Your net loss on Casino Games for the period <span class="dynamic-start date-hl">Monday</span> to <span class="dynamic-end date-hl">Sunday</span> was <strong>RXXXX</strong>. 
 
-As per the promotion’s terms and conditions, a minimum net loss of R200 during the promotional week (Monday - Sunday) is required to qualify for the first tier of cashback (minimum Cash Back payout is R10).
+As per the promotion’s terms and conditions, a minimum net loss of R200 during the promotional week (Monday - Sunday) is required to qualify for the first tier of cashback.
 
 Please don’t be discouraged though. This is an ongoing weekly promotion, so you’ll have another opportunity to qualify next time.
 
@@ -694,7 +654,7 @@ Thank you for choosing Easybet. Have a great day ahead.</div>
             </div>
             <div class="spiel-body">I’m really happy that I was able to assist you with your inquiry regarding the 15% Weekly Casino Cashback.
 
-I helped you identify your net loss, clarified your qualifying status, and explained the 4x wagering requirements for your Casino Bonus Wallet, including the Sunday 23:59 wagering deadline.
+I helped you identify your net loss, clarified your qualifying status, and explained the 4x wagering requirements for your Casino Bonus Wallet.
 
 Have a wonderful day ahead and stay safe!
 

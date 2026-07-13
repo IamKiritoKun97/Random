@@ -1,5 +1,7 @@
 
 
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -44,6 +46,24 @@
             line-height: 1.6;
             overflow-x: hidden;
         }
+
+/* Ensure the list stacks its children vertically */
+.game-list {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px !important;               /* Controls the vertical spacing between buttons */
+    padding: 0 !important;
+    margin: 10px 0 0 0 !important;
+    list-style: none !important;
+}
+
+/* Force each button to align straight from top to bottom */
+.game-list li {
+    display: block !important;         /* Changes it from inline to block */
+    width: 100% !important;            /* Makes all buttons the exact same full width */
+    box-sizing: border-box !important; /* Prevents padding from breaking the width */
+    text-align: left !important;       /* Aligns text inside the button to the left */
+}
 
         /* --- Sidebar --- */
         .sidebar {
@@ -400,28 +420,28 @@
         </ul>
     </div>
 
-    <div class="sidebar-box">
-        <div class="sidebar-title">Qualifying Games</div>
-        <div style="font-size: 0.75rem; color: #aaa; margin-bottom: 5px;">Filters on ADV</div>
-        <ul class="game-list">
-<li onclick="copyGame(this)">AGT Instant Games</li>
-<li onclick="copyGame(this)">Amatic Instant Games</li>
-<li onclick="copyGame(this)">Betgames Iframe</li>
-<li onclick="copyGame(this)">GamesHub</li>
-<li onclick="copyGame(this)">Skypilot</li>
-<li onclick="copyGame(this)">Tom Horn</li>
-<li onclick="copyGame(this)">CT-Interactive</li>
-<li onclick="copyGame(this)">Aviatrix</li>
-<li onclick="copyGame(this)">Evolution</li>
-<li onclick="copyGame(this)">Fbastards</li>
-<li onclick="copyGame(this)">Pragmatic</li>
-<li onclick="copyGame(this)">Spribe games</li>
-<li onclick="copyGame(this)">Slots Lobby</li>
-<li onclick="copyGame(this)">Spinoro</li>
-<li onclick="copyGame(this)">Synot Games</li>
-<li onclick="copyGame(this)">Mascot</li>
-        </ul>
-    </div>
+   <div class="sidebar-box">
+    <div class="sidebar-title">Qualifying Games</div>
+    <div style="font-size: 0.75rem; color: #aaa; margin-bottom: 5px;">Filters on ADV</div>
+    <ul class="game-list">
+        <li onclick="copyGame(this)">AGT Instant Games</li>
+        <li onclick="copyGame(this)">Amatic Instant Games</li>
+        <li onclick="copyGame(this)">Betgames Iframe</li>
+        <li onclick="copyGame(this)">GamesHub</li>
+        <li onclick="copyGame(this)">Skypilot is under Gameshub</li>
+        <li onclick="copyGame(this)">Tom Horn</li>
+        <li onclick="copyGame(this)">CT-Interactive - Start here</li>
+        <li onclick="copyGame(this)">Aviatrix</li>
+        <li onclick="copyGame(this)">Evolution</li>
+        <li onclick="copyGame(this)">Fbastards</li>
+        <li onclick="copyGame(this)">Pragmatic</li>
+        <li onclick="copyGame(this)">Spribe games</li>
+        <li onclick="copyGame(this)">Slots Lobby</li>
+        <li onclick="copyGame(this)">Spinoro</li>
+        <li onclick="copyGame(this)">Synot Games</li>
+        <li onclick="copyGame(this)">Mascot - Ends here</li>
+    </ul>
+</div>
 
     <div class="sidebar-box">
         <div class="sidebar-title">Helpful Links</div>

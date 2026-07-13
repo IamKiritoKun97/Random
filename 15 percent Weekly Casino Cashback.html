@@ -1,0 +1,843 @@
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Tab Icon / Favicon -->
+    <link rel="icon" type="image/png" href="Easybet logo.png">
+    <link rel="shortcut icon" type="image/png" href="15percent.png">
+    <title>15% Weekly Casino Cashback Spiels</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-body: #050505;
+            --bg-card: #0f0f0f;
+            --bg-sidebar: #0a0a0a;
+            --bg-card-hover: #161616;
+            --accent-gold: #d4af37;
+            --accent-gold-glow: rgba(212, 175, 55, 0.15);
+            --text-primary: #ffffff;
+            --text-secondary: #999999;
+            --border-color: rgba(255, 255, 255, 0.06);
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --font-main: 'Inter', sans-serif;
+            --font-heading: 'Outfit', sans-serif;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background-color: var(--bg-body);
+            background-image: 
+                radial-gradient(circle at 50% 0%, #1a1a1a 0%, transparent 50%),
+                url("https://www.transparenttextures.com/patterns/carbon-fibre.png");
+            color: var(--text-primary);
+            font-family: var(--font-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: row;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+/* Ensure the list stacks its children vertically */
+.game-list {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px !important;               /* Controls the vertical spacing between buttons */
+    padding: 0 !important;
+    margin: 10px 0 0 0 !important;
+    list-style: none !important;
+}
+
+/* Force each button to align straight from top to bottom */
+.game-list li {
+    display: block !important;         /* Changes it from inline to block */
+    width: 100% !important;            /* Makes all buttons the exact same full width */
+    box-sizing: border-box !important; /* Prevents padding from breaking the width */
+    text-align: left !important;       /* Aligns text inside the button to the left */
+}
+
+        /* --- Sidebar --- */
+        .sidebar {
+            width: 340px;
+            background: var(--bg-sidebar);
+            border-right: 1px solid var(--border-color);
+            padding: 30px 20px;
+            height: 100vh;
+            position: sticky;
+            top: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            overflow-y: auto;
+            flex-shrink: 0;
+        }
+
+        /* Scrollbar for sidebar */
+        .sidebar::-webkit-scrollbar { width: 6px; }
+        .sidebar::-webkit-scrollbar-track { background: transparent; }
+        .sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+        .sidebar::-webkit-scrollbar-thumb:hover { background: rgba(212,175,55,0.5); }
+
+        .sidebar-box {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .sidebar-title {
+            font-family: var(--font-heading);
+            color: var(--accent-gold);
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 8px;
+        }
+
+        .sidebar-list {
+            list-style: none;
+            font-size: 0.9rem;
+            color: #d1d5db;
+        }
+
+        .sidebar-list li {
+            margin-bottom: 8px;
+            position: relative;
+            padding-left: 18px;
+        }
+
+        .sidebar-list li::before {
+            content: '›';
+            position: absolute;
+            left: 0;
+            color: var(--accent-gold);
+            font-weight: bold;
+            font-size: 1.2rem;
+            line-height: 1;
+        }
+
+        .sidebar-list.no-bullets li { padding-left: 0; }
+        .sidebar-list.no-bullets li::before { display: none; }
+
+        .highlight-text {
+            color: #fff;
+            font-weight: 600;
+            background: rgba(212, 175, 55, 0.1);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .game-list {
+            list-style: none;
+            padding: 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 10px;
+        }
+
+        .game-list li {
+            background: rgba(255, 255, 255, 0.04);
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: 0.2s;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: #d1d5db;
+            user-select: none;
+        }
+
+        .game-list li:hover {
+            background: rgba(212, 175, 55, 0.2);
+            border-color: var(--accent-gold);
+            color: #fff;
+        }
+
+        .btn-link {
+            display: inline-block;
+            width: 100%;
+            text-align: center;
+            background: rgba(212, 175, 55, 0.1);
+            color: var(--accent-gold);
+            text-decoration: none;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            transition: 0.3s;
+            margin-bottom: 8px;
+        }
+
+        .btn-link:hover {
+            background: var(--accent-gold);
+            color: #000;
+        }
+
+        .main-container {
+            flex: 1;
+            padding: 50px 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .header-wrapper {
+            text-align: center;
+            margin-bottom: 40px;
+            width: 100%;
+        }
+
+        .header-wrapper h1 {
+            font-family: var(--font-heading);
+            font-weight: 800;
+            font-size: 2.2rem;
+            letter-spacing: -0.02em;
+            background: linear-gradient(135deg, #fff 30%, var(--accent-gold) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 25px;
+        }
+
+        .gross-loss-container {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto 25px auto;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+        }
+
+        .gross-loss-label {
+            font-family: var(--font-heading);
+            color: var(--accent-gold);
+            font-weight: 700;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            white-space: nowrap;
+        }
+
+        .input-group {
+            display: flex;
+            align-items: center;
+            flex: 1;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+            transition: 0.3s;
+        }
+
+        .input-group:focus-within {
+            border-color: var(--accent-gold);
+            box-shadow: 0 0 15px var(--accent-gold-glow);
+        }
+
+        .currency-prefix {
+            padding: 10px 15px;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-secondary);
+            font-weight: 700;
+            border-right: 1px solid var(--border-color);
+            user-select: none;
+        }
+
+        #grossLossInput {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: white;
+            padding: 10px 15px;
+            font-size: 1rem;
+            outline: none;
+            font-family: var(--font-main);
+        }
+
+        #searchInput {
+            width: 100%;
+            max-width: 600px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-color);
+            padding: 14px 24px;
+            border-radius: 12px;
+            color: white;
+            font-size: 1rem;
+            outline: none;
+            transition: 0.3s;
+            text-align: center;
+        }
+
+        #searchInput:focus {
+            border-color: var(--accent-gold);
+            box-shadow: 0 0 25px var(--accent-gold-glow);
+        }
+
+        .content-width { width: 100%; }
+
+        .section-tag {
+            font-family: var(--font-heading);
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--accent-gold);
+            text-transform: uppercase;
+            letter-spacing: 0.3em;
+            margin: 45px 0 20px 0;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .section-tag::after {
+            content: "";
+            height: 1px;
+            flex: 1;
+            background: linear-gradient(to right, var(--border-color), transparent);
+        }
+
+        .spiel-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 28px;
+            margin-bottom: 18px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .spiel-card:hover {
+            background: var(--bg-card-hover);
+            border-color: rgba(212, 175, 55, 0.4);
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+        }
+
+        .card-meta {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .badge {
+            font-size: 0.65rem;
+            font-weight: 800;
+            padding: 5px 12px;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .copy-hint {
+            font-size: 0.65rem;
+            color: var(--accent-gold);
+            font-weight: 600;
+            text-transform: uppercase;
+            opacity: 0.5;
+            transition: opacity 0.2s;
+        }
+
+        .spiel-card:hover .copy-hint { opacity: 1; }
+
+        .spiel-body {
+            font-size: 1.05rem;
+            color: #e0e0e0;
+            white-space: pre-wrap;
+        }
+
+        .date-hl {
+            color: #fff;
+            font-weight: 700;
+            border-bottom: 1px solid var(--accent-gold);
+        }
+
+        /* --- Notification --- */
+        #toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #fff;
+            color: #000;
+            padding: 14px 30px;
+            border-radius: 50px;
+            font-weight: 700;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            opacity: 0;
+            z-index: 9999;
+        }
+
+        #toast.visible { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+        /* --- Responsive --- */
+        @media (max-width: 900px) {
+            body { flex-direction: column; }
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                border-right: none;
+                border-bottom: 1px solid var(--border-color);
+                padding: 20px;
+            }
+            .main-container { padding: 30px 20px; }
+        }
+    </style>
+</head>
+<body>
+
+<aside class="sidebar">
+    <div class="sidebar-box">
+        <div class="sidebar-title">Promo Details</div>
+        <ul class="sidebar-list no-bullets">
+            <li><strong>Bonus Name:</strong> <br><span class="highlight-text">15% Weekly Casino Cashback</span></li>
+            <li style="margin-top: 8px;"><strong>Crediting Schedule:</strong> <br><span class="highlight-text">Monday by 12:00 PM</span></li>
+            <li style="margin-top: 8px;"><strong>Qualifying Period:</strong> <br><span class="highlight-text">Monday - Sunday</span></li>
+        </ul>
+    </div>
+
+   <div class="sidebar-box">
+    <div class="sidebar-title">Qualifying Games</div>
+    <div style="font-size: 0.75rem; color: #aaa; margin-bottom: 5px;">Filters on ADV</div>
+    <ul class="game-list">
+        <li onclick="copyGame(this)">AGT Instant Games</li>
+        <li onclick="copyGame(this)">Amatic Instant Games</li>
+        <li onclick="copyGame(this)">Betgames Iframe</li>
+        <li onclick="copyGame(this)">GamesHub</li>
+        <li onclick="copyGame(this)">Skypilot is under Gameshub</li>
+        <li onclick="copyGame(this)">Tom Horn</li>
+        <li onclick="copyGame(this)">CT-Interactive - Start here</li>
+        <li onclick="copyGame(this)">Aviatrix</li>
+        <li onclick="copyGame(this)">Evolution</li>
+        <li onclick="copyGame(this)">Fbastards</li>
+        <li onclick="copyGame(this)">Pragmatic</li>
+        <li onclick="copyGame(this)">Spribe games</li>
+        <li onclick="copyGame(this)">Slots Lobby</li>
+        <li onclick="copyGame(this)">Spinoro</li>
+        <li onclick="copyGame(this)">Synot Games</li>
+        <li onclick="copyGame(this)">Mascot - Ends here</li>
+    </ul>
+</div>
+
+    <div class="sidebar-box">
+        <div class="sidebar-title">Helpful Links</div>
+        <a href="https://easybet.co.za/page/15-weekly-casino-cashback" target="_blank" class="btn-link">View Full T&Cs</a>
+    </div>
+</aside>
+
+<main class="main-container">
+    <div class="header-wrapper">
+        <h1>15% Weekly Casino Cashback</h1>
+        
+        <div class="gross-loss-container">
+            <div class="gross-loss-label">Net Loss</div>
+            <div class="input-group">
+                <span class="currency-prefix">R</span>
+                <input type="text" id="grossLossInput" placeholder="Enter amount..." oninput="updateGrossLoss(this)">
+            </div>
+        </div>
+
+        <input type="text" id="searchInput" placeholder="Quick search spiels..." onkeyup="filterSpiels()">
+    </div>
+
+    <div class="content-width">
+        
+        <div class="section-tag">Initial Phase</div>
+        
+        <div class="spiel-card" onclick="copySpiel(this)" data-category="always">
+            <div class="card-meta">
+                <span class="badge">Discovery</span>
+                <span class="copy-hint">Click to Copy</span>
+            </div>
+            <div class="spiel-body">Thank you for confirming your account details. I'd like to know if you are inquiring about the 15% Weekly Casino Cashback promotion. Is that correct?</div>
+        </div>
+
+        <div class="spiel-card" onclick="copySpiel(this)" data-category="always">
+            <div class="card-meta">
+                <span class="badge" style="color: #28a745; font-weight: bold; border-color: #28a745; background: rgba(40,167,69,0.1);">NO DELAY, SYSTEM IS GOOD</span>
+                <span class="copy-hint">CLICK TO COPY</span>
+            </div>
+            <div class="spiel-body">Thank you for confirming. I completely understand how exciting it is to receive your cashback bonus, and I'll be happy to look into this for you.
+
+To determine whether you qualify for the 15% Weekly Casino Cashback, I need to review your Casino Games betting activity from Monday to Sunday of the qualifying week.
+
+Please note that your net loss is calculated as:
+Net Losses = Total Bets - Total Winnings on qualifying Casino Games.
+
+I'll now review your activity on my side. This may take approximately 3-5 minutes. Please stay connected, and I'll return with an update as soon as possible.</div>
+        </div>
+
+        <div class="section-tag">Resolution Scripts (Tiered)</div>
+
+        <div class="spiel-card" onclick="copySpiel(this)" data-category="always">
+            <div class="card-meta">
+                <span class="badge" style="color: var(--warning); border-color: var(--warning); background: rgba(245, 158, 11, 0.1);">Cx reached out before the crediting date</span>
+                <span class="copy-hint">Click to Copy</span>
+            </div>
+            <div class="spiel-body">Thank you for patiently waiting.
+
+I have reviewed all your qualifying Casino Games bets placed between <span class="dynamic-start date-hl">Monday</span> and <span class="dynamic-end date-hl">Sunday</span>.
+
+Based on my review, your net loss for this period is <strong>RXXXX</strong>.
+
+The final calculation and cashback assessment are automatically completed by our Bonus Team every Monday by 12:00 PM. If your net loss remains R200 or more by the end of the week, you will receive up to 15% of your net losses back in your Casino Bonus Wallet.
+
+For full promotion details, please visit:
+https://easybet.co.za/page/15-weekly-casino-cashback</div>
+        </div>
+        
+        <div class="spiel-card" onclick="copySpiel(this)" data-tier="15">
+            <div class="card-meta">
+                <span class="badge" style="color: #10b981; border-color: #10b981; background: rgba(16, 185, 129, 0.1);">Qualified 15% Tier (R5,000+ Loss)</span>
+                <span class="copy-hint">Click to Copy</span>
+            </div>
+            <div class="spiel-body">Thanks for patiently waiting.
+
+Upon checking your account, I can confirm that you qualified for the 15% Weekly Casino Cashback! 
+
+Your net loss on Casino Games from <span class="dynamic-start date-hl">Monday</span> to <span class="dynamic-end date-hl">Sunday</span> was <strong>RXXXX</strong>. Because your net losses fell into the R5,000+ bracket, you are eligible for <strong>15% Cash Back</strong> (up to R20,000 max withdrawal) credited straight to your Casino Bonus Wallet.
+
+Cash Back is paid into your Casino Bonus Wallet every Monday by 12:00 PM. Please remember that you must wager your bonus 4x on qualifying games before you can withdraw your winnings. (Note: For Crash Games, only bets with a cashout of 1.50x or higher count toward wagering).
+
+For more information and terms, please visit:
+https://easybet.co.za/page/15-weekly-casino-cashback</div>
+        </div>
+
+        <div class="spiel-card" onclick="copySpiel(this)" data-tier="10">
+            <div class="card-meta">
+                <span class="badge" style="color: #10b981; border-color: #10b981; background: rgba(16, 185, 129, 0.1);">Qualified 10% Tier (R1,500 - R4,999)</span>
+                <span class="copy-hint">Click to Copy</span>
+            </div>
+            <div class="spiel-body">Thanks for patiently waiting.
+
+Upon checking your account, I can confirm that you qualified for the Weekly Casino Cashback! 
+
+Your net loss on Casino Games from <span class="dynamic-start date-hl">Monday</span> to <span class="dynamic-end date-hl">Sunday</span> was <strong>RXXXX</strong>. Because your net losses were between R1,500 and R4,999, you are eligible for <strong>10% Cash Back</strong> (up to R5,000 max withdrawal) credited straight to your Casino Bonus Wallet.
+
+Cash Back is paid into your Casino Bonus Wallet every Monday by 12:00 PM. Please remember that you must wager your bonus 4x on qualifying games before you can withdraw your winnings. (Note: For Crash Games, only bets with a cashout of 1.50x or higher count toward wagering).
+
+For more information and terms, please visit:
+https://easybet.co.za/page/15-weekly-casino-cashback</div>
+        </div>
+
+        <div class="spiel-card" onclick="copySpiel(this)" data-tier="7">
+            <div class="card-meta">
+                <span class="badge" style="color: #3b82f6; border-color: #3b82f6; background: rgba(59, 130, 246, 0.1);">Qualified 7% Tier (R500 - R1,499)</span>
+                <span class="copy-hint">Click to Copy</span>
+            </div>
+            <div class="spiel-body">Thanks for patiently waiting.
+
+Upon checking your account, I can confirm that you qualified for the Weekly Casino Cashback! 
+
+Your net loss on Casino Games from <span class="dynamic-start date-hl">Monday</span> to <span class="dynamic-end date-hl">Sunday</span> was <strong>RXXXX</strong>. Because your net losses were between R500 and R1,499, you are eligible for <strong>7% Cash Back</strong> (up to R1,000 max withdrawal) credited straight to your Casino Bonus Wallet.
+
+Cash Back is paid into your Casino Bonus Wallet every Monday by 12:00 PM. Please remember that you must wager your bonus 4x on qualifying games before you can withdraw your winnings. (Note: For Crash Games, only bets with a cashout of 1.50x or higher count toward wagering).
+
+For more information and terms, please visit:
+https://easybet.co.za/page/15-weekly-casino-cashback</div>
+        </div>
+
+        <div class="spiel-card" onclick="copySpiel(this)" data-tier="5">
+            <div class="card-meta">
+                <span class="badge" style="color: #8b5cf6; border-color: #8b5cf6; background: rgba(139, 92, 246, 0.1);">Qualified 5% Tier (R200 - R499)</span>
+                <span class="copy-hint">Click to Copy</span>
+            </div>
+            <div class="spiel-body">Thanks for patiently waiting.
+
+Upon checking your account, I can confirm that you qualified for the Weekly Casino Cashback! 
+
+Your net loss on Casino Games from <span class="dynamic-start date-hl">Monday</span> to <span class="dynamic-end date-hl">Sunday</span> was <strong>RXXXX</strong>. Because your net losses were between R200 and R499, you are eligible for <strong>5% Cash Back</strong> (up to R1,000 max withdrawal) credited straight to your Casino Bonus Wallet.
+
+Cash Back is paid into your Casino Bonus Wallet every Monday by 12:00 PM. Please remember that you must wager your bonus 4x on qualifying games before you can withdraw your winnings. (Note: For Crash Games, only bets with a cashout of 1.50x or higher count toward wagering).
+
+For more information and terms, please visit:
+https://easybet.co.za/page/15-weekly-casino-cashback</div>
+        </div>
+
+        <div class="spiel-card" onclick="copySpiel(this)" data-tier="none">
+            <div class="card-meta">
+                <span class="badge" style="color: var(--error); border-color: var(--error); background: rgba(239, 68, 68, 0.1);">Not Qualified (< R200 Loss)</span>
+                <span class="copy-hint">Click to Copy</span>
+            </div>
+            <div class="spiel-body">Thank you so much for your patience while I checked this for you. I understand how disappointing it can be to miss out on a bonus, and I’m really sorry this wasn’t the outcome you were hoping for.
+
+After reviewing your account, I can confirm that you did not qualify for the Weekly Casino Cashback this time. Your net loss on Casino Games for the period <span class="dynamic-start date-hl">Monday</span> to <span class="dynamic-end date-hl">Sunday</span> was <strong>RXXXX</strong>. 
+
+As per the promotion’s terms and conditions, a minimum net loss of R200 during the promotional week (Monday - Sunday) is required to qualify for the first tier of cashback.
+
+Please don’t be discouraged though. This is an ongoing weekly promotion, so you’ll have another opportunity to qualify next time.
+
+If you’d like to review the full promotion details, you can find them here:
+https://easybet.co.za/page/15-weekly-casino-cashback</div>
+        </div>
+
+        <div class="spiel-card" onclick="copySpiel(this)" data-category="not-qualified">
+            <div class="card-meta">
+                <span class="badge" style="color: var(--error); border-color: var(--error); background: rgba(239, 68, 68, 0.1);">Not Qualified (Winnings > Losses)</span>
+                <span class="copy-hint">Click to Copy</span>
+            </div>
+            <div class="spiel-body">Thank you for waiting. I understand how disappointing missing a bonus can be, and I’m sorry you didn't qualify this time.
+
+Based on your Casino Games betting activity from <span class="dynamic-start date-hl">Monday</span> to <span class="dynamic-end date-hl">Sunday</span>, your total winnings actually exceeded your losses. On the bright side, this means you came out ahead during the review period!
+
+Because the calculation reflects an overall profit and not a net loss, the Cashback does not apply for this period. 
+
+For more information about the promotion, you can view the full details here:
+https://easybet.co.za/page/15-weekly-casino-cashback</div>
+        </div>
+
+        <div class="section-tag">Lucky Numbers Rules</div>
+
+        <div class="spiel-card" onclick="copySpiel(this)" data-category="lucky-numbers">
+            <div class="card-meta">
+                <span class="badge" style="color: #6366f1; border-color: #6366f1; background: rgba(99, 102, 241, 0.1);">Lucky Numbers: Basic Winning Rule</span>
+                <span class="copy-hint">Click to Copy</span>
+            </div>
+            <div class="spiel-body">Thank you for your inquiry regarding your Lucky Numbers ticket.
+
+Please note that for Lucky Numbers, a ticket is considered a winner ONLY if all of the numbers you selected match the winning result. Even one missing or unmatched number means the ticket is not a winning ticket. 
+
+For example, if you selected 2 numbers, both must appear in the draw. If you selected 5 numbers, all 5 must appear. 
+
+Please let me know if you need me to check a specific ticket ID for you!</div>
+        </div>
+
+        <div class="spiel-card" onclick="copySpiel(this)" data-category="lucky-numbers">
+            <div class="card-meta">
+                <span class="badge" style="color: #6366f1; border-color: #6366f1; background: rgba(99, 102, 241, 0.1);">Lucky Numbers: Detailed Rule Explanation</span>
+                <span class="copy-hint">Click to Copy</span>
+            </div>
+            <div class="spiel-body">I completely understand your frustration, but I would like to clarify our Lucky Numbers winning rules for you.
+
+The most important rule is that a ticket is considered a winner ONLY if all of the numbers you selected match the winning result. Even one missing or unmatched number means the ticket is not a winning ticket.
+
+For example:
+✅ If you select 2 numbers, and both appear in the results, you win!
+❌ If you select 6 numbers, but only 4 of them appear in the results, the ticket is a loss because not ALL 6 numbers matched.
+
+If a player wants to win based on just 2 matching numbers, they should only select 2 numbers on their ticket. Since your ticket had unmatched numbers, it is correctly settled as a loss. I hope this clears up the misunderstanding!</div>
+        </div>
+
+        <div class="section-tag">Closing Scripts</div>
+
+        <div class="spiel-card" onclick="copySpiel(this)" data-category="not-qualified">
+            <div class="card-meta">
+                <span class="badge" style="color: var(--error); border-color: var(--error); background: rgba(239, 68, 68, 0.1);">Not Qualified Closing</span>
+                <span class="copy-hint">Click to Copy</span>
+            </div>
+            <div class="spiel-body">I’m glad I could assist you with your inquiry about the 15% Weekly Casino Cashback.
+
+At the moment, you do not qualify for this week's promotion. However, please don't worry, as this promotion runs regularly, giving you another opportunity to qualify in the next cycle.
+
+Have a wonderful day ahead and stay safe!
+
+If you need any further assistance, please don't hesitate to reach out. Our support team is always here to help you.
+
+After this chat ends, you may receive a short survey about your experience. Your feedback is greatly appreciated and helps us improve our support services.
+
+You can contact us anytime via:
+Live Chat
+Email: help@easybet.co.za
+
+Thank you for choosing Easybet. Have a great day ahead.</div>
+        </div>
+
+        <div class="spiel-card" onclick="copySpiel(this)" data-category="qualified">
+            <div class="card-meta">
+                <span class="badge" style="color: #10b981; border-color: #10b981; background: rgba(16, 185, 129, 0.1);">Qualified Closing</span>
+                <span class="copy-hint">Click to Copy</span>
+            </div>
+            <div class="spiel-body">I’m really happy that I was able to assist you with your inquiry regarding the 15% Weekly Casino Cashback.
+
+I helped you identify your net loss, clarified your qualifying status, and explained the 4x wagering requirements for your Casino Bonus Wallet.
+
+Have a wonderful day ahead and stay safe!
+
+If you need any further assistance, please don't hesitate to reach out. Our support team is always here to help you.
+
+After this chat ends, you may receive a short survey about your experience. Your feedback is greatly appreciated and helps us improve our support services.
+
+You can contact us anytime via:
+Live Chat
+Email: help@easybet.co.za
+
+Thank you for choosing Easybet. Have a great day ahead.</div>
+        </div>
+
+    </div>
+</main>
+
+<div id="toast">Copied to Clipboard</div>
+
+<script>
+    function calculateDates() {
+        const now = new Date();
+        const currentDay = now.getDay(); 
+        
+        // Target the PREVIOUS week's Monday to Sunday
+        // getDay() is 0 for Sunday, 1 for Monday.
+        const daysToLastSunday = (currentDay === 0) ? -7 : -currentDay;
+        
+        const lastSunday = new Date(now);
+        lastSunday.setDate(now.getDate() + daysToLastSunday);
+        
+        const lastMonday = new Date(lastSunday);
+        lastMonday.setDate(lastSunday.getDate() - 6);
+
+        const startStr = lastMonday.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+        const endStr = lastSunday.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+
+        document.querySelectorAll('.dynamic-start').forEach(el => el.innerText = startStr);
+        document.querySelectorAll('.dynamic-end').forEach(el => el.innerText = endStr);
+    }
+
+    function copySpiel(card) {
+        const text = card.querySelector('.spiel-body').innerText;
+        triggerCopy(text, "Copied Spiel to Clipboard");
+    }
+
+    function copyGame(element) {
+        const text = element.innerText.trim();
+        triggerCopy(text, "Copied Provider: " + text);
+    }
+
+    function triggerCopy(text, toastMessage) {
+        navigator.clipboard.writeText(text).then(() => {
+            const toast = document.getElementById("toast");
+            toast.innerText = toastMessage;
+            toast.className = "visible";
+            setTimeout(() => toast.className = "", 2000);
+        });
+    }
+
+    function filterSpiels() {
+        const q = document.getElementById('searchInput').value.toLowerCase();
+        document.querySelectorAll('.spiel-card').forEach(card => {
+            const matchesSearch = card.innerText.toLowerCase().includes(q);
+            const isEligible = card.dataset.eligible !== "false"; 
+            card.style.display = (matchesSearch && isEligible) ? "block" : "none";
+        });
+        
+        // Hide section headers if all cards under them are hidden
+        document.querySelectorAll('.section-tag').forEach(tag => {
+            let next = tag.nextElementSibling;
+            let show = false;
+            while(next && !next.classList.contains('section-tag')) {
+                if(next.style.display !== 'none') show = true;
+                next = next.nextElementSibling;
+            }
+            tag.style.display = show ? "flex" : "none";
+        });
+    }
+
+    // --- Net Loss Functions ---
+    
+    function initializeGrossLossData() {
+        // Save original HTML after dynamic dates are injected
+        document.querySelectorAll('.spiel-card').forEach(card => {
+            const body = card.querySelector('.spiel-body');
+            if(body) {
+                card.dataset.originalHtml = body.innerHTML;
+            }
+            // Set initial eligibility state to true for all
+            card.dataset.eligible = "true";
+        });
+    }
+
+    function updateGrossLoss(inputElement) {
+        // Remove non-numeric characters (except period) and prevent double periods
+        let val = inputElement.value.replace(/[^0-9.]/g, '');
+        val = val.replace(/(\..*)\./g, '$1');
+        inputElement.value = val;
+
+        updateQualificationVisibility(val);
+        replaceGrossLossText(val);
+        filterSpiels(); // Re-trigger visual filter
+    }
+
+    function updateQualificationVisibility(val) {
+        const cards = document.querySelectorAll('.spiel-card');
+        
+        if (val === '') {
+            // Revert to all visible if field is empty
+            cards.forEach(card => card.dataset.eligible = "true");
+            return;
+        }
+
+        const numVal = parseFloat(val);
+
+        cards.forEach(card => {
+            const cat = card.dataset.category;
+            const tier = card.dataset.tier;
+
+            if (cat === 'always') {
+                card.dataset.eligible = "true";
+            } else if (cat === 'lucky-numbers') {
+                // Hide Lucky Numbers spiels if actively calculating casino net loss
+                card.dataset.eligible = "false";
+            } else if (tier) {
+                // Tier logic applied based on 15% cashback rules
+                if (tier === '15' && numVal >= 5000) card.dataset.eligible = "true";
+                else if (tier === '10' && numVal >= 1500 && numVal < 5000) card.dataset.eligible = "true";
+                else if (tier === '7' && numVal >= 500 && numVal < 1500) card.dataset.eligible = "true";
+                else if (tier === '5' && numVal >= 200 && numVal < 500) card.dataset.eligible = "true";
+                else if (tier === 'none' && numVal < 200) card.dataset.eligible = "true";
+                else card.dataset.eligible = "false";
+            } else if (cat === 'qualified') {
+                card.dataset.eligible = (numVal >= 200) ? "true" : "false";
+            } else if (cat === 'not-qualified') {
+                card.dataset.eligible = (numVal < 200) ? "true" : "false";
+            }
+        });
+    }
+
+    function replaceGrossLossText(val) {
+        document.querySelectorAll('.spiel-card').forEach(card => {
+            const body = card.querySelector('.spiel-body');
+            if (!body || !card.dataset.originalHtml) return;
+
+            if (val === '') {
+                // Restore original placeholders and dates
+                body.innerHTML = card.dataset.originalHtml;
+            } else {
+                // Perform dynamic replacement for all exact RXXXX combinations
+                let newHtml = card.dataset.originalHtml
+                    .replace(/RXXXXXX/g, val)
+                    .replace(/RXXXX/g, val);
+                body.innerHTML = newHtml;
+            }
+        });
+    }
+
+    window.onload = function() {
+        calculateDates();
+        initializeGrossLossData();
+    };
+</script>
+
+</body>
+</html>

@@ -1,0 +1,658 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Promotion Titles</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #05070a;
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --accent-color: #00d4ff;
+            --danger-color: #ef4444;
+            --warning-color: #eab308;
+            --text-main: #ffffff;
+            --text-dim: #a0a0a0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(circle at 20% 35%, rgba(0, 212, 255, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 80% 65%, rgba(147, 51, 234, 0.05) 0%, transparent 40%);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+            background: linear-gradient(to right, #fff, #888);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header p {
+            color: var(--text-dim);
+            font-size: 0.9rem;
+            margin-top: 8px;
+        }
+
+        .toolbar {
+            width: 100%;
+            max-width: 1000px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 14px 20px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            color: var(--text-main);
+            border-radius: 50px;
+            outline: none;
+            font-size: 1rem;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .search-box:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 10px rgba(0, 212, 255, 0.2);
+        }
+
+        .control-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            color: var(--text-main);
+            padding: 10px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+            backdrop-filter: blur(8px);
+        }
+
+        .btn:hover {
+            background: rgba(0, 212, 255, 0.1);
+            border-color: var(--accent-color);
+            transform: translateY(-1px);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 16px;
+            width: 100%;
+            max-width: 1000px;
+        }
+
+        .card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            background: rgba(255, 255, 255, 0.07);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .card:active {
+            transform: scale(0.98);
+        }
+
+        .info-content {
+            flex: 1;
+            padding-right: 12px;
+        }
+
+        .info-title {
+            font-size: 1rem;
+            font-weight: 400;
+            color: var(--text-main);
+            word-break: break-word;
+        }
+
+        .actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-icon {
+            width: 34px;
+            height: 34px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s, transform 0.1s;
+        }
+
+        .action-icon svg {
+            width: 16px;
+            height: 16px;
+            fill: none;
+            stroke: #fff;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .action-icon.copy:hover { background: var(--accent-color); }
+        .action-icon.edit:hover { background: var(--warning-color); }
+        .action-icon.delete:hover { background: var(--danger-color); }
+        
+        .action-icon:active { transform: scale(0.9); }
+
+        .no-results {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 40px;
+            color: var(--text-dim);
+            font-size: 1.1rem;
+            background: var(--glass-bg);
+            border-radius: 16px;
+            border: 1px dashed var(--glass-border);
+        }
+
+        #toast {
+            visibility: hidden;
+            min-width: 200px;
+            background-color: #fff;
+            color: #000;
+            text-align: center;
+            border-radius: 50px;
+            padding: 12px 24px;
+            position: fixed;
+            z-index: 100;
+            bottom: 30px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            opacity: 0;
+            transition: opacity 0.3s, bottom 0.3s, visibility 0.3s;
+        }
+
+        #toast.show {
+            visibility: visible;
+            opacity: 1;
+            bottom: 40px;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 200;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-content {
+            background: var(--bg-color);
+            border: 1px solid var(--glass-border);
+            padding: 24px;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            transform: scale(0.95);
+            transition: transform 0.3s ease;
+        }
+        
+        .modal-overlay.show .modal-content {
+            transform: scale(1);
+        }
+
+        .modal-content h3 {
+            margin-bottom: 12px;
+            font-size: 1.2rem;
+        }
+        
+        .modal-content p {
+            color: var(--text-dim);
+            font-size: 0.9rem;
+            margin-bottom: 16px;
+            line-height: 1.5;
+        }
+
+        .modal-input {
+            width: 100%;
+            padding: 12px 16px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            color: var(--text-main);
+            border-radius: 8px;
+            margin-bottom: 20px;
+            outline: none;
+            font-size: 1rem;
+        }
+
+        .modal-input:focus {
+            border-color: var(--accent-color);
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .btn-primary { background: var(--accent-color); color: #000; border: none; font-weight: 600;}
+        .btn-primary:hover { background: #00b3d8; transform: translateY(-1px); }
+        .btn-danger { background: var(--danger-color); color: #fff; border: none; font-weight: 600;}
+        .btn-danger:hover { background: #dc2626; transform: translateY(-1px); }
+
+        @media (max-width: 600px) {
+            .grid { grid-template-columns: 1fr; }
+            .control-buttons { flex-direction: column; width: 100%; }
+            .btn { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>Promo Manager</h1>
+        <p>Tap any card to copy to clipboard</p>
+    </div>
+
+    <div class="toolbar">
+        <input type="text" id="searchInput" class="search-box" placeholder="Search promos...">
+        <div class="control-buttons">
+            <button class="btn" onclick="handleAdd()">+ Add Promo</button>
+            <button class="btn" onclick="document.getElementById('fileInput').click()">↓ Import JSON</button>
+            <button class="btn" onclick="handleExport()">↑ Export JSON</button>
+            <input type="file" id="fileInput" hidden accept=".json">
+        </div>
+    </div>
+
+    <div class="grid" id="promoGrid">
+        <!-- Items will be injected here -->
+    </div>
+
+    <div id="toast">Copied to Clipboard!</div>
+
+    <!-- Custom Universal Modal -->
+    <div id="customModal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 id="modalTitle">Title</h3>
+            <p id="modalMessage">Message goes here</p>
+            <input type="text" id="modalInput" class="modal-input" autocomplete="off">
+            <div class="modal-actions">
+                <button id="modalBtnCancel" class="btn">Cancel</button>
+                <button id="modalBtnConfirm" class="btn btn-primary">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const STORAGE_KEY = "promoManagerData";
+        let promos = [];
+        let modalConfirmCallback = null;
+
+        // Default Data
+        const defaultRawPromos = [
+            "Losing Leg Refund",
+            "150% First Deposit Match on Sports and Lucky Numbers",
+            "150% First Deposit Match on Slots",
+            "Lucky Streak Bonus",
+            "Refer a Friend Bonus",
+            "10% Cashback Slots Bonus",
+            "10% Aviator Cashback Bonus",
+            "50% Win Boost ( Aviator )",
+            "Fica Verified Promo",
+            "15% Cashback on Sports and Lucky numbers",
+            "R500 First Bet Match",
+            "Birthday Bonus",
+            "R50 Sign up bonus",
+            "15% Cashback for Sports",
+            "15% Cashback for Luck Numbers"
+        ];
+
+        function loadData() {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) {
+                try {
+                    promos = JSON.parse(saved);
+                } catch (e) {
+                    console.error("Error parsing local storage", e);
+                    initializeDefaults();
+                }
+            } else {
+                initializeDefaults();
+            }
+        }
+
+        function initializeDefaults() {
+            promos = defaultRawPromos.map((name, index) => ({
+                id: Date.now() + index,
+                name: name
+            }));
+            saveData();
+        }
+
+        function saveData() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(promos));
+        }
+
+        function renderPromos(dataToRender) {
+            const grid = document.getElementById('promoGrid');
+            grid.innerHTML = '';
+
+            if (dataToRender.length === 0) {
+                grid.innerHTML = `<div class="no-results">No results found</div>`;
+                return;
+            }
+
+            dataToRender.forEach(promo => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                // Attach copy event to the entire card
+                card.onclick = () => copyText(promo.name);
+
+                card.innerHTML = `
+                    <div class="info-content">
+                        <div class="info-title">${escapeHTML(promo.name)}</div>
+                    </div>
+                    <div class="actions">
+                        <div class="action-icon edit" onclick="handleEdit(event, ${promo.id})" title="Edit">
+                            <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                        </div>
+                        <div class="action-icon delete" onclick="handleDelete(event, ${promo.id})" title="Delete">
+                            <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                        </div>
+                        <div class="action-icon copy" title="Copy">
+                            <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        const modalOverlay = document.getElementById('customModal');
+        const modalInput = document.getElementById('modalInput');
+        const modalBtnConfirm = document.getElementById('modalBtnConfirm');
+        const modalBtnCancel = document.getElementById('modalBtnCancel');
+
+        function showModal({ title, message, type = 'alert', value = '', placeholder = '', confirmText = 'Confirm', onConfirm, isDanger = false }) {
+            document.getElementById('modalTitle').innerText = title;
+            const msgEl = document.getElementById('modalMessage');
+            
+            if (message) {
+                msgEl.innerText = message;
+                msgEl.style.display = 'block';
+            } else {
+                msgEl.style.display = 'none';
+            }
+
+            if (type === 'prompt') {
+                modalInput.style.display = 'block';
+                modalInput.value = value;
+                modalInput.placeholder = placeholder;
+            } else {
+                modalInput.style.display = 'none';
+            }
+
+            modalBtnCancel.style.display = type === 'alert' ? 'none' : 'inline-block';
+            modalBtnConfirm.innerText = confirmText;
+            
+            // Adjust styling for danger actions
+            if (isDanger) {
+                modalBtnConfirm.className = 'btn btn-danger';
+            } else {
+                modalBtnConfirm.className = 'btn btn-primary';
+            }
+
+            modalConfirmCallback = onConfirm;
+            modalOverlay.classList.add('show');
+            
+            if (type === 'prompt') setTimeout(() => modalInput.focus(), 100);
+        }
+
+        function closeModal() {
+            modalOverlay.classList.remove('show');
+            modalConfirmCallback = null;
+        }
+
+        modalBtnCancel.onclick = closeModal;
+        modalBtnConfirm.onclick = () => {
+            if (modalConfirmCallback) {
+                if (modalInput.style.display !== 'none') {
+                    const val = modalInput.value.trim();
+                    if (!val) {
+                        modalInput.style.borderColor = 'var(--danger-color)';
+                        return; // Prevent empty submission
+                    }
+                    modalInput.style.borderColor = 'var(--glass-border)';
+                    modalConfirmCallback(val);
+                } else {
+                    modalConfirmCallback();
+                }
+            }
+            closeModal();
+        };
+
+        // Close on outside click
+        modalOverlay.onclick = (e) => {
+            if (e.target === modalOverlay) closeModal();
+        };
+
+        function copyText(text) {
+            // Using document.execCommand as requested for maximum compatibility within restricted iFrames
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            textArea.style.position = "fixed";
+            textArea.style.left = "-9999px";
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            
+            try {
+                document.execCommand('copy');
+                showToast();
+            } catch (err) {
+                console.error('Fallback copy failed', err);
+            }
+            
+            document.body.removeChild(textArea);
+        }
+
+        function showToast() {
+            const toast = document.getElementById('toast');
+            toast.classList.add("show");
+            setTimeout(() => toast.classList.remove("show"), 2500);
+        }
+
+        function handleAdd() {
+            showModal({
+                title: 'Add New Promo',
+                type: 'prompt',
+                placeholder: 'Enter promo name...',
+                confirmText: 'Save',
+                onConfirm: (val) => {
+                    promos.unshift({ id: Date.now(), name: val });
+                    saveData();
+                    triggerSearch(); // Re-render respecting search
+                }
+            });
+        }
+
+        function handleEdit(e, id) {
+            e.stopPropagation(); // Prevent card copy
+            const promo = promos.find(p => p.id === id);
+            if (!promo) return;
+
+            showModal({
+                title: 'Edit Promo',
+                type: 'prompt',
+                value: promo.name,
+                confirmText: 'Update',
+                onConfirm: (val) => {
+                    promo.name = val;
+                    saveData();
+                    triggerSearch();
+                }
+            });
+        }
+
+        function handleDelete(e, id) {
+            e.stopPropagation(); // Prevent card copy
+            const promo = promos.find(p => p.id === id);
+            
+            showModal({
+                title: 'Delete Promo',
+                message: `Are you sure you want to delete "${promo.name}"?`,
+                type: 'confirm',
+                confirmText: 'Delete',
+                isDanger: true,
+                onConfirm: () => {
+                    promos = promos.filter(p => p.id !== id);
+                    saveData();
+                    triggerSearch();
+                }
+            });
+        }
+
+        const searchInput = document.getElementById('searchInput');
+        searchInput.addEventListener('input', triggerSearch);
+
+        function triggerSearch() {
+            const query = searchInput.value.toLowerCase().trim();
+            if (!query) {
+                renderPromos(promos);
+                return;
+            }
+            const filtered = promos.filter(p => p.name.toLowerCase().includes(query));
+            renderPromos(filtered);
+        }
+
+        function handleExport() {
+            if (promos.length === 0) {
+                showModal({ title: 'Export Failed', message: 'No data to export.', type: 'alert' });
+                return;
+            }
+            const dataStr = JSON.stringify(promos, null, 2);
+            const blob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'promos_backup.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        const fileInput = document.getElementById('fileInput');
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                try {
+                    const parsedData = JSON.parse(event.target.result);
+                    
+                    // Validate Structure
+                    if (Array.isArray(parsedData) && parsedData.every(item => item.hasOwnProperty('name'))) {
+                        // Map to ensure IDs exist without overriding valid old ones
+                        promos = parsedData.map((item, index) => ({
+                            id: item.id || Date.now() + index,
+                            name: item.name
+                        }));
+                        saveData();
+                        searchInput.value = ''; // clear search on import
+                        renderPromos(promos);
+                        showModal({ title: 'Success', message: 'Promos imported successfully!', type: 'alert' });
+                    } else {
+                        throw new Error('Invalid Format');
+                    }
+                } catch (err) {
+                    showModal({ 
+                        title: 'Import Failed', 
+                        message: 'Invalid JSON file. It must be an array of objects containing a "name" property.', 
+                        type: 'alert' 
+                    });
+                }
+                fileInput.value = ''; // Reset input so same file can be uploaded again if needed
+            };
+            reader.readAsText(file);
+        });
+
+        // Utility to prevent XSS in rendering
+        function escapeHTML(str) {
+            return str.replace(/[&<>'"]/g, 
+                tag => ({
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    "'": '&#39;',
+                    '"': '&quot;'
+                }[tag] || tag)
+            );
+        }
+
+        // Initialize App
+        loadData();
+        renderPromos(promos);
+    </script>
+</body>
+</html>

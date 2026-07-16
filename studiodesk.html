@@ -1,0 +1,1886 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Easybet StudioDesk</title>
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23586C77'%3E%3Cpath d='M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z'/%3E%3C/svg%3E">
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <style>
+    :root {
+      --bg-primary: #0C1E22;
+      --bg-secondary: rgba(45, 74, 82, 0.5);
+      --bg-deep: #0C1E22;
+      --bg-mid: rgba(88, 108, 119, 0.35);
+
+      --accent: #586C77;
+      --accent-soft: #A0A3A8;
+
+      --text-main: #E6EEF2;
+      --text-muted: rgba(230, 238, 242, 0.65);
+
+      --border-soft: rgba(255, 255, 255, 0.12);
+      --border-subtle: rgba(160, 163, 168, 0.15);
+      --glass-bg: rgba(45, 74, 82, 0.5);
+      --glass-bg-light: rgba(160, 163, 168, 0.15);
+      --glass-overlay: rgba(12, 30, 34, 0.6);
+
+      --hover-glow: rgba(160, 163, 168, 0.4);
+    }
+
+    body {
+      font-family: Arial, Helvetica, Roboto, sans-serif;
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      transition: background-image 0.5s ease, background-color 0.3s ease;
+      background: linear-gradient(135deg, #0C1E22, #2D4A52);
+      color: var(--text-main);
+    }
+    
+    /* Compact List Styling for Spiels */
+    .spiel-list {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      background-color: transparent;
+    }
+    
+    .spiel-item {
+      padding: 10px 12px;
+      margin-bottom: 8px;
+      border-radius: 8px; /* Modern curved edges for lit surfaces */
+      position: relative;
+      background-color: transparent;
+      display: flex;
+      flex-direction: column;
+      
+      /* Base transparent border to prevent layout shift on hover, with a soft bottom separator */
+      border: 1px solid transparent;
+      border-bottom-color: var(--border-soft);
+      
+      transition: all 0.2s ease;
+    }
+
+    .spiel-item:hover {
+      cursor: pointer;
+      
+      /* Slight lift */
+      transform: translateY(-1px);
+
+      /* Subtle background lift */
+      background: linear-gradient(
+        180deg,
+        rgba(160,163,168,0.08),
+        rgba(160,163,168,0.02)
+      );
+
+      /* Premium outer glow */
+      box-shadow: 0 0 12px var(--hover-glow);
+
+      /* Soft inner glow border */
+      border: 1px solid var(--border-soft);
+    }
+
+    .spiel-item:active {
+      transform: translateY(0);
+      background: rgba(160, 163, 168, 0.05);
+      border-color: rgba(160, 163, 168, 0.4);
+    }
+
+    /* Optional: Inner light layer (High-end touch) */
+    .spiel-item::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: radial-gradient(
+        circle at left center,
+        rgba(160, 163, 168, 0.15),
+        transparent 60%
+      );
+      opacity: 0;
+      transition: opacity 0.2s ease;
+      pointer-events: none; /* Ensures the glow doesn't block interactions with inner text/buttons */
+    }
+
+    .spiel-item:hover::after {
+      opacity: 1;
+    }
+
+    .spiel-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 4px;
+      display: block;
+    }
+
+    .spiel-text {
+      font-size: 13px;
+      font-weight: 400;
+      color: var(--text-muted);
+      line-height: 1.4;
+      white-space: pre-wrap; /* critical for maintaining spacing */
+      position: relative;
+      z-index: 10; /* Ensures text stays above the inner glow */
+    }
+
+    .spiel-text p {
+      margin-bottom: 4px;
+    }
+
+    .spiel-text br {
+      line-height: 1.6;
+    }
+
+    .starred {
+      color: #FFD700 !important;
+    }
+    
+    /* Bonus: Copy icon on hover */
+    .copy-icon {
+      opacity: 0;
+      transition: opacity 0.2s ease;
+      color: var(--text-muted);
+    }
+
+    .spiel-item:hover .copy-icon {
+      opacity: 1;
+    }
+    
+    /* Elegant Custom Scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(160,163,168,0.3); border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(160,163,168,0.5); }
+    
+    /* Backdrop glass blur variations */
+    .glass-panel {
+      background: var(--glass-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--border-soft);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+    }
+
+    .glass-panel:hover {
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+    }
+
+    /* ==================================================================
+       PREMIUM GLASSMORPHISM SYSTEM — teal/green palette, ~50% transparency
+       ================================================================== */
+
+    /* Glass surfaces: sidebar, modal panels, header (anything using bg-secondary) */
+    [class*="bg-[var(--bg-secondary)]"] {
+      background: var(--glass-bg) !important;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-color: var(--border-soft);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+      transition: backdrop-filter 0.25s ease;
+    }
+    [class*="bg-[var(--bg-secondary)]"]:hover {
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+    }
+
+    /* Dark scrim overlays behind modals */
+    [class*="bg-[var(--bg-primary)]/80"] {
+      background: var(--glass-overlay) !important;
+    }
+
+    /* Primary glass buttons (Save, Apply, sort toggles, icon chip, etc.) */
+    [class*="bg-[var(--accent)]"] {
+      background: rgba(88, 108, 119, 0.25) !important;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: all 0.25s ease;
+    }
+    [class*="bg-[var(--accent)]"]:hover {
+      background: rgba(88, 108, 119, 0.4) !important;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+    }
+    [class*="bg-[var(--accent)]"]:active {
+      transform: scale(0.97);
+    }
+
+    /* Secondary / hover-only ghost buttons (bg-mid on hover) */
+    [class*="hover:bg-[var(--bg-mid)]"] {
+      transition: all 0.25s ease;
+    }
+    [class*="hover:bg-[var(--bg-mid)]"]:hover {
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      transform: translateY(-1px);
+    }
+    [class*="hover:bg-[var(--bg-mid)]"]:active {
+      transform: scale(0.97);
+    }
+
+    /* Collapsible Sidebar Styles */
+    #sidebar {
+      transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+    }
+    .sidebar-collapsed {
+      width: 4.5rem !important; /* ~72px Icon rail width */
+    }
+    .sidebar-collapsed .sidebar-hide-content {
+      display: none !important;
+    }
+    .sidebar-collapsed #titles-list .group {
+      justify-content: center !important;
+      padding: 0.6rem 0.4rem !important;
+    }
+    .sidebar-collapsed #titles-list .group span.flex {
+      margin: 0 !important;
+    }
+    
+    /* Sliding right-side glass panel for history */
+    #history-panel {
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    #history-panel.open {
+      transform: translateX(0);
+    }
+
+    /* Custom animations */
+    .copied-toast {
+      animation: slideUpFade 2s ease-in-out forwards;
+    }
+    @keyframes slideUpFade {
+      0% { opacity: 0; transform: translate(-50%, 10px); }
+      15% { opacity: 1; transform: translate(-50%, 0); }
+      85% { opacity: 1; transform: translate(-50%, 0); }
+      100% { opacity: 0; transform: translate(-50%, -10px); }
+    }
+    
+    .dragging {
+      opacity: 0.5;
+      border: 1px dashed var(--text-main) !important;
+    }
+    
+    #spiels-list { transition: opacity 0.2s ease-in-out; }
+
+    @media (max-width: 900px) {
+      #workspace-container {
+        flex-direction: column;
+        overflow-y: auto;
+      }
+      #sidebar {
+        width: 100% !important;
+        height: auto !important;
+        border-right: none;
+        border-bottom: 1px solid var(--border-soft);
+        flex-shrink: 0;
+      }
+      /* Prevent collapsing sidebar layout altogether on narrow views for consistent flow */
+      #sidebar.sidebar-collapsed {
+        width: 100% !important;
+      }
+      #sidebar.sidebar-collapsed .sidebar-hide-content {
+        display: block !important;
+      }
+      #sidebar.sidebar-collapsed #titles-list .group {
+        justify-content: space-between !important;
+        padding: 0.5rem !important;
+      }
+      #btn-toggle-sidebar {
+        display: none !important; /* Hide sidebar collapse button on mobile screens */
+      }
+    }
+  </style>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#A0A3A8',
+              100: '#586C77',
+              500: '#586C77',
+              600: '#0C1E22',
+              700: '#2D4A52'
+            },
+            onyx: {
+              primary: '#0C1E22', secondary: '#2D4A52', tertiary: '#0C1E22',
+              hover: '#586C77', textActive: '#E6EEF2', textInactive: 'rgba(230, 238, 242, 0.65)'
+            }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+
+<body class="h-screen w-screen overflow-hidden flex flex-col transition-colors duration-300">
+
+  <!-- Background Wallpaper Container -->
+  <div id="bg-wallpaper" class="absolute inset-0 z-0 bg-cover bg-center transition-all duration-500 pointer-events-none opacity-40 dark:opacity-20 hidden"></div>
+
+  <div class="relative z-10 flex flex-col h-full w-full">
+    
+    <!-- Edit Mode Active Dynamic Banner -->
+    <div id="edit-mode-banner" class="hidden bg-amber-500 text-[#0C1E22] px-4 py-1.5 text-center text-xs font-bold tracking-wider uppercase shrink-0 transition-all shadow-inner animate-pulse">
+      ⚡ Edit Mode Active — Changes will modify database contents ⚡
+    </div>
+
+    <!-- Top Global Header -->
+    <header id="global-header" class="glass-panel border-b border-[var(--border-soft)] px-6 py-3 flex items-center justify-between shrink-0 transition-all">
+      <div class="flex items-center space-x-3">
+        <div class="p-2 bg-[var(--accent)] text-[#E6EEF2] rounded-lg shadow-md shadow-[var(--accent)]/10">
+          <i data-lucide="layers" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h1 class="text-lg font-bold tracking-tight text-[var(--text-main)]">Easybet StudioDesk</h1>
+          <p class="text-xs text-[var(--text-muted)]">Manage Titles &amp; Interactive Copy-Spiels</p>
+        </div>
+      </div>
+
+      <!-- Controls Menu Bar -->
+      <div class="flex items-center space-x-3">
+        
+        <!-- Sidebar Collapse Toggle Button -->
+        <button id="btn-toggle-sidebar" onclick="toggleSidebar()" class="p-2 rounded-lg hover:bg-[var(--bg-mid)] border border-[var(--border-soft)] bg-[var(--bg-secondary)] text-[var(--text-muted)] hover:text-[var(--text-main)] transition-all duration-200" title="Collapse Shelf (Ctrl+\)">
+          <i id="sidebar-toggle-icon" data-lucide="panel-left-close" class="w-4 h-4"></i>
+        </button>
+
+        <div class="h-5 w-[1px] bg-[var(--border-soft)]"></div>
+
+        <!-- Edit Mode Button -->
+        <button id="btn-toggle-edit" onclick="toggleEditMode()" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border border-[var(--border-soft)] bg-[var(--bg-secondary)] hover:bg-[var(--bg-mid)] text-[var(--text-main)] transition-all duration-200 shadow-sm" title="Toggle Lock/Unlock Edits">
+          <i id="edit-mode-icon" data-lucide="lock" class="w-3.5 h-3.5"></i>
+          <span id="edit-mode-text">Viewer Mode</span>
+        </button>
+
+        <div class="h-5 w-[1px] bg-[var(--border-soft)]"></div>
+
+        <!-- History Controls -->
+        <div id="history-controls" class="hidden items-center space-x-1">
+          <button id="btn-undo" onclick="undo()" class="p-1.5 rounded-lg hover:bg-[var(--bg-mid)] text-[var(--text-muted)] disabled:opacity-30" disabled title="Undo Action (Ctrl+Z)">
+            <i data-lucide="undo-2" class="w-4 h-4"></i>
+          </button>
+          <button id="btn-redo" onclick="redo()" class="p-1.5 rounded-lg hover:bg-[var(--bg-mid)] text-[var(--text-muted)] disabled:opacity-30" disabled title="Redo Action (Ctrl+Y)">
+            <i data-lucide="redo-2" class="w-4 h-4"></i>
+          </button>
+          <div class="h-5 w-[1px] bg-[var(--border-soft)] ml-1"></div>
+        </div>
+
+        <button id="btn-settings" onclick="openSettingsModal()" class="hidden p-2 rounded-lg hover:bg-[var(--bg-mid)] text-[var(--text-muted)] transition-colors" title="Settings & Background">
+          <i data-lucide="sliders" class="w-4 h-4"></i>
+        </button>
+        
+        <button id="btn-impexp" onclick="openImportExportModal()" class="hidden p-2 rounded-lg hover:bg-[var(--bg-mid)] text-[var(--text-muted)] transition-colors" title="Import / Export Data">
+          <i data-lucide="arrow-up-down" class="w-4 h-4"></i>
+        </button>
+
+      </div>
+    </header>
+
+    <div id="workspace-container" class="flex flex-1 overflow-hidden transition-all duration-300">
+      
+      <!-- LEFT SIDEBAR: Titles -->
+      <aside id="sidebar" class="w-80 border-r border-[var(--border-soft)] flex flex-col bg-[var(--bg-secondary)] overflow-hidden shrink-0 transition-all duration-300">
+        
+        <div class="p-4 border-b border-[var(--border-soft)] flex flex-col space-y-3">
+          <div class="flex items-center justify-between sidebar-hide-content">
+            <span class="text-[11px] font-bold tracking-wider text-[var(--text-muted)] uppercase">Titles Shelf</span>
+            <button id="btn-add-title-action" onclick="triggerNewTitle()" class="hidden flex items-center space-x-1 text-xs text-[var(--accent)] hover:text-[var(--accent-soft)] transition-colors font-medium">
+              <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i>
+              <span>Add Title</span>
+            </button>
+          </div>
+
+          <!-- Clearable Search Input for Titles -->
+          <div class="relative">
+            <i data-lucide="search" class="absolute left-2.5 top-2.5 w-4 h-4 text-[var(--text-muted)]"></i>
+            <input type="text" id="title-search" oninput="debouncedSearchTitles()" placeholder="Search titles..." class="w-full text-xs pl-9 pr-8 py-2 bg-[var(--bg-primary)] border border-[var(--border-soft)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--accent)] transition-all text-[var(--text-main)]">
+            <button id="btn-clear-title-search" onclick="clearTitleSearch()" class="absolute right-2.5 top-2.5 hidden text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors" title="Clear search">
+              <i data-lucide="x" class="w-4 h-4"></i>
+            </button>
+          </div>
+
+          <div class="flex flex-col space-y-1.5 pt-1.5 border-t border-[var(--border-soft)] text-xxs sidebar-hide-content">
+            <div class="flex items-center justify-between">
+              <label class="text-[10px] text-[var(--text-muted)] font-semibold uppercase tracking-wider">Sort:</label>
+              <div class="flex items-center space-x-1">
+                <button onclick="setTitleSort('alphabetical')" id="sort-alpha" class="px-2 py-0.5 rounded text-xs transition-all bg-[var(--accent)] text-[#E6EEF2] font-medium">A–Z</button>
+                <button onclick="setTitleSort('spielsCount')" id="sort-count" class="px-2 py-0.5 rounded text-xs transition-all hover:bg-[var(--bg-mid)] text-[var(--text-muted)]">Size</button>
+              </div>
+            </div>
+            <div class="flex items-center justify-between">
+              <label class="text-[10px] text-[var(--text-muted)] font-semibold uppercase tracking-wider">Filter:</label>
+              <div class="flex items-center space-x-1">
+                <button onclick="setSidebarFavFilter(false)" id="sidebar-filter-all" class="px-2 py-0.5 rounded text-xs transition-all bg-[var(--accent)] text-[#E6EEF2] font-medium">Show All</button>
+                <button onclick="setSidebarFavFilter(true)" id="sidebar-filter-fav" class="px-2 py-0.5 rounded text-xs transition-all text-[var(--text-muted)] hover:bg-[var(--bg-mid)] flex items-center space-x-1">
+                  <i data-lucide="star" class="w-3.5 h-3.5 text-amber-500 fill-amber-500"></i>
+                  <span>Favorites</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="titles-list" class="flex-1 overflow-y-auto p-2 space-y-1" ondragover="allowTitleDragOver(event)" ondrop="handleTitleDrop(event)">
+          <!-- Rendered items go here -->
+        </div>
+
+        <div class="p-3 border-t border-[var(--border-soft)] bg-[var(--bg-primary)] flex items-center justify-between text-xs text-[var(--text-muted)] sidebar-hide-content">
+          <span id="title-stats">0 Titles Selected</span>
+          <button onclick="triggerMultiDeleteTitles()" id="btn-multi-delete-titles" class="text-red-400 hover:text-red-300 hidden flex items-center space-x-1 font-semibold transition-colors">
+            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+            <span>Delete Selected</span>
+          </button>
+        </div>
+      </aside>
+
+      <!-- MAIN SPLIT WORKSPACE: Redesigned Strict Black Spiels List Area -->
+      <main class="flex-1 flex flex-col overflow-hidden bg-transparent">
+        
+        <!-- Header Controls for Current Selected Title -->
+        <div class="p-4 border-b border-[var(--border-soft)] flex flex-col md:flex-row md:items-center justify-between gap-3 shrink-0 glass-panel">
+          
+          <div class="flex items-center space-x-3">
+            <div id="title-icon-container" class="w-10 h-10 flex items-center justify-center text-[var(--text-main)]">
+              <i data-lucide="folder" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <div class="flex items-center space-x-2">
+                <h2 id="active-title-name" class="text-base font-bold tracking-tight lowercase text-[var(--text-main)]">Select a Title</h2>
+                <button id="btn-rename-active-title" onclick="triggerRenameActiveTitle()" class="p-1 rounded hover:bg-[var(--bg-mid)] text-[var(--text-muted)] hover:text-[var(--text-main)] hidden transition-colors" title="Rename Title">
+                  <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
+                </button>
+              </div>
+              <p id="active-title-desc" class="text-xs text-[var(--text-muted)]">Choose a workspace title on the left to display its spiels</p>
+            </div>
+          </div>
+
+          <!-- Spiel-specific Search and Actions with Close button inside -->
+          <div class="flex items-center space-x-2 transition-all duration-300">
+            <div id="spiels-search-container" class="relative w-40 md:w-52 opacity-50 pointer-events-none">
+              <i data-lucide="search" class="absolute left-2.5 top-2.5 w-3.5 h-3.5 text-[var(--text-muted)]"></i>
+              <input type="text" id="spiel-search" oninput="debouncedSearchSpiels()" placeholder="Filter current spiels..." class="w-full text-xs pl-8 pr-8 py-2 bg-[var(--bg-secondary)] border border-[var(--border-soft)] rounded-lg focus:outline-none focus:ring-1 focus:ring-[var(--accent)] transition-all text-[var(--text-main)]">
+              <button id="btn-clear-spiel-search" onclick="clearSpielSearch()" class="absolute right-2 top-2 hidden text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors" title="Clear search">
+                <i data-lucide="x" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
+
+            <button id="btn-spiel-fav-filter" onclick="toggleSpielFavFilter()" class="p-2 rounded-lg border border-[var(--border-soft)] bg-transparent hover:bg-[var(--bg-mid)] text-[var(--text-main)] transition-all flex items-center space-x-1 text-xs opacity-50 pointer-events-none shrink-0" title="Filter Favorites Only">
+              <i id="spiel-fav-filter-icon" data-lucide="star" class="w-4 h-4 text-amber-500"></i>
+              <span id="spiel-fav-filter-text" class="hidden md:inline font-semibold">All</span>
+            </button>
+
+            <button id="btn-new-spiel" onclick="triggerNewSpiel()" class="hidden items-center space-x-1.5 px-3 py-2 bg-[var(--accent)] hover:bg-[var(--accent-soft)] text-[#E6EEF2] rounded-lg text-xs font-semibold shadow-sm transition-all shrink-0">
+              <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+              <span>New Spiel</span>
+            </button>
+          </div>
+        </div>
+
+        <div id="spiels-board" class="flex-1 overflow-y-auto p-4 md:p-6 bg-transparent" ondragover="allowSpielDragOver(event)" ondrop="handleSpielDrop(event)">
+          
+          <div id="empty-state" class="h-full flex flex-col items-center justify-center text-center p-8">
+            <div class="w-16 h-16 rounded-full bg-[var(--bg-secondary)] flex items-center justify-center text-[var(--text-muted)] mb-4 animate-pulse border border-[var(--border-soft)]">
+              <i data-lucide="message-square" class="w-8 h-8"></i>
+            </div>
+            <h3 class="text-sm font-semibold text-[var(--text-main)]">No active title or empty workspace</h3>
+            <p class="text-xs text-[var(--text-muted)] max-w-xs mt-1">Select a title from the left panel to display and copy spiels, or turn on Edit Mode to create content.</p>
+          </div>
+
+          <!-- Strict compact list container for rendered spiels -->
+          <div id="spiels-list" class="spiel-list hidden">
+            <!-- Rendered compact row spiels go here -->
+          </div>
+        </div>
+
+        <div id="spiels-footer-actions" class="p-3 border-t border-[var(--border-soft)] bg-[var(--bg-primary)] hidden items-center justify-between text-xs text-[var(--text-muted)]">
+          <span id="spiel-stats">0 Spiels selected</span>
+          <button onclick="triggerMultiDeleteSpiels()" id="btn-multi-delete-spiels" class="text-red-400 hover:text-red-300 hidden flex items-center space-x-1 font-semibold transition-colors">
+            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+            <span>Delete Selected Spiels</span>
+          </button>
+        </div>
+
+      </main>
+
+    </div>
+  </div>
+
+  <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-[var(--bg-deep)] text-[var(--text-main)] border border-[var(--border-soft)] px-4 py-2.5 rounded-xl shadow-xl flex items-center space-x-2 text-xs font-bold z-50 pointer-events-none opacity-0 transition-all duration-300">
+    <i id="toast-icon" data-lucide="info" class="w-4 h-4"></i>
+    <span id="toast-text">Success Message here</span>
+  </div>
+
+  <!-- GLOBAL DELETE CONFIRMATION DIALOG -->
+  <div id="confirm-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[var(--bg-primary)]/80 backdrop-blur-sm hidden">
+    <div class="bg-[var(--bg-secondary)] max-w-sm w-full rounded-2xl p-5 shadow-2xl border border-[var(--border-soft)] animate-in fade-in zoom-in-95 duration-150">
+      <div class="flex items-center space-x-3 text-red-400 mb-3">
+        <i data-lucide="alert-triangle" class="w-6 h-6"></i>
+        <h4 class="font-bold text-[var(--text-main)]">Are you sure?</h4>
+      </div>
+      <p id="confirm-message" class="text-xs text-[var(--text-muted)] mb-5 leading-relaxed">This action cannot be undone. Make sure you want to proceed with deleting this asset.</p>
+      <div class="flex items-center justify-end space-x-2">
+        <button onclick="closeConfirmModal(false)" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold text-[var(--text-muted)] hover:bg-[var(--bg-mid)] border border-[var(--border-soft)] transition-colors">Cancel</button>
+        <button id="btn-confirm-action" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-red-500 hover:bg-red-600 text-white shadow-sm transition-colors">Delete Permanently</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TITLE CREATION / EDITING DIALOG -->
+  <div id="title-modal" class="fixed inset-0 z-40 flex items-center justify-center p-4 bg-[var(--bg-primary)]/80 backdrop-blur-sm hidden">
+    <div class="bg-[var(--bg-secondary)] max-w-md w-full rounded-2xl p-6 shadow-2xl border border-[var(--border-soft)] animate-in fade-in zoom-in-95 duration-150">
+      <div class="flex items-center justify-between mb-4">
+        <h4 id="title-modal-headline" class="font-bold text-sm tracking-tight text-[var(--text-main)]">Add Title Category</h4>
+        <button onclick="closeTitleModal()" class="text-[var(--text-muted)] hover:text-[var(--text-main)]"><i data-lucide="x" class="w-4 h-4"></i></button>
+      </div>
+      
+      <div class="space-y-4">
+        <div>
+          <label class="block text-xs font-medium text-[var(--text-muted)] mb-1">Title Name</label>
+          <input type="text" id="input-title-name" placeholder="e.g. Sales Pitches" class="w-full text-xs p-2.5 bg-[var(--bg-primary)] border border-[var(--border-soft)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--accent)] text-[var(--text-main)]">
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-[var(--text-muted)] mb-1">Description (Optional)</label>
+          <textarea id="input-title-desc" placeholder="Brief metadata or usage context..." rows="2" class="w-full text-xs p-2.5 bg-[var(--bg-primary)] border border-[var(--border-soft)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--accent)] text-[var(--text-main)]"></textarea>
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-[var(--text-muted)] mb-1.5">Accent Color (Applied to Icon)</label>
+          <div id="accent-dots" class="flex items-center space-x-2"></div>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end space-x-2 mt-6">
+        <button onclick="closeTitleModal()" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold text-[var(--text-muted)] hover:bg-[var(--bg-mid)] border border-[var(--border-soft)] transition-colors">Cancel</button>
+        <button id="btn-save-title" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-[var(--accent)] hover:bg-[var(--accent-soft)] text-[#E6EEF2] shadow-sm transition-colors">Save Title</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SPIEL CREATION / EDITING DIALOG -->
+  <div id="spiel-modal" class="fixed inset-0 z-40 flex items-center justify-center p-4 bg-[var(--bg-primary)]/80 backdrop-blur-sm hidden">
+    <div class="bg-[var(--bg-secondary)] max-w-5xl w-full h-[85vh] rounded-2xl p-6 md:p-8 shadow-2xl border border-[var(--border-soft)] flex flex-col animate-in fade-in zoom-in-95 duration-150">
+      <div class="flex items-center justify-between mb-4 shrink-0">
+        <h4 id="spiel-modal-headline" class="font-bold text-base tracking-tight text-[var(--text-main)]">Add Spiel Copy</h4>
+        <button onclick="closeSpielModal()" class="text-[var(--text-muted)] hover:text-[var(--text-main)]"><i data-lucide="x" class="w-5 h-5"></i></button>
+      </div>
+      
+      <div class="space-y-4 flex-1 flex flex-col min-h-0">
+        <div class="shrink-0">
+          <label class="block text-xs font-medium text-[var(--text-muted)] mb-1">Spiel Label / Anchor Tag</label>
+          <input type="text" id="input-spiel-label" placeholder="e.g. Email Opener" class="w-full text-xs p-2.5 bg-[var(--bg-primary)] border border-[var(--border-soft)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--accent)] text-[var(--text-main)]">
+        </div>
+        <div class="flex-1 flex flex-col min-h-0">
+          <div class="flex justify-between items-center mb-1 shrink-0">
+            <label class="block text-xs font-medium text-[var(--text-muted)]">Spiel Text Content (Copied on Tap)</label>
+            <span class="text-[10px] text-[var(--text-muted)]">Shift+Enter for lines</span>
+          </div>
+          <textarea id="input-spiel-body" placeholder="Write or paste your spiel text exactly as it should copy to your clipboard..." class="w-full flex-1 text-sm p-3.5 bg-[var(--bg-primary)] border border-[var(--border-soft)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--accent)] text-[var(--text-main)] font-mono resize-none"></textarea>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end space-x-2 mt-6 shrink-0">
+        <button onclick="closeSpielModal()" class="px-4 py-2 rounded-lg text-xs font-semibold text-[var(--text-muted)] hover:bg-[var(--bg-mid)] border border-[var(--border-soft)] transition-colors">Cancel</button>
+        <button id="btn-save-spiel" class="px-4 py-2 rounded-lg text-xs font-semibold bg-[var(--accent)] hover:bg-[var(--accent-soft)] text-[#E6EEF2] shadow-sm transition-colors">Save Spiel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SYSTEM SETTINGS & BACKGROUND DIALOG -->
+  <div id="settings-modal" class="fixed inset-0 z-40 flex items-center justify-center p-4 bg-[var(--bg-primary)]/80 backdrop-blur-sm hidden">
+    <div class="bg-[var(--bg-secondary)] max-w-md w-full rounded-2xl p-6 shadow-2xl border border-[var(--border-soft)] animate-in fade-in zoom-in-95 duration-150">
+      <div class="flex items-center justify-between mb-4">
+        <h4 class="font-bold text-sm tracking-tight text-[var(--text-main)]">Studio Settings</h4>
+        <button onclick="closeSettingsModal()" class="text-[var(--text-muted)] hover:text-[var(--text-main)]"><i data-lucide="x" class="w-4 h-4"></i></button>
+      </div>
+      <div class="space-y-4">
+        <div>
+          <label class="block text-xs font-medium text-[var(--text-muted)] mb-1">Set Unsplash Background Wallpaper URL</label>
+          <div class="flex space-x-2">
+            <input type="text" id="input-unsplash-url" placeholder="https://images.unsplash.com/photo-..." class="flex-1 text-xs p-2 bg-[var(--bg-primary)] border border-[var(--border-soft)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--accent)] text-[var(--text-main)]">
+            <button onclick="applyWallpaper()" class="px-3 py-2 bg-[var(--accent)] text-[#E6EEF2] font-medium text-xs rounded-lg hover:bg-[var(--accent-soft)] transition-colors">Apply</button>
+          </div>
+          <p class="text-[10px] text-[var(--text-muted)] mt-1">Leave empty to use clean default green backgrounds.</p>
+        </div>
+        <div class="border-t border-[var(--border-soft)] pt-4">
+          <h5 class="text-xs font-semibold mb-2 text-[var(--text-main)]">Keyboard Shortcuts Cheat Sheet</h5>
+          <div class="grid grid-cols-2 gap-2 text-[10px] text-[var(--text-muted)]">
+            <div><kbd class="px-1.5 py-0.5 bg-[var(--bg-mid)] border border-[var(--border-soft)] rounded text-[var(--text-main)]">Ctrl + N</kbd> New Title</div>
+            <div><kbd class="px-1.5 py-0.5 bg-[var(--bg-mid)] border border-[var(--border-soft)] rounded text-[var(--text-main)]">Ctrl + Shift + N</kbd> New Spiel</div>
+            <div><kbd class="px-1.5 py-0.5 bg-[var(--bg-mid)] border border-[var(--border-soft)] rounded text-[var(--text-main)]">Ctrl + Z</kbd> Undo</div>
+            <div><kbd class="px-1.5 py-0.5 bg-[var(--bg-mid)] border border-[var(--border-soft)] rounded text-[var(--text-main)]">Ctrl + Y</kbd> Redo</div>
+            <div><kbd class="px-1.5 py-0.5 bg-[var(--bg-mid)] border border-[var(--border-soft)] rounded text-[var(--text-main)]">Ctrl + E</kbd> Toggle Edit</div>
+            <div><kbd class="px-1.5 py-0.5 bg-[var(--bg-mid)] border border-[var(--border-soft)] rounded text-[var(--text-main)]">Esc</kbd> Close Modals</div>
+          </div>
+        </div>
+      </div>
+      <div class="flex items-center justify-end mt-6">
+        <button onclick="closeSettingsModal()" class="px-4 py-2 bg-transparent border border-[var(--border-soft)] hover:bg-[var(--bg-mid)] rounded-lg text-xs font-semibold text-[var(--text-main)] transition-colors">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- DATA IMPORT/EXPORT DIALOG -->
+  <div id="impexp-modal" class="fixed inset-0 z-40 flex items-center justify-center p-4 bg-[var(--bg-primary)]/80 backdrop-blur-sm hidden">
+    <div class="bg-[var(--bg-secondary)] max-w-lg w-full rounded-2xl p-6 shadow-2xl border border-[var(--border-soft)] animate-in fade-in zoom-in-95 duration-150">
+      <div class="flex items-center justify-between mb-4">
+        <h4 class="font-bold text-sm tracking-tight text-[var(--text-main)]">Import &amp; Export Center</h4>
+        <button onclick="closeImportExportModal()" class="text-[var(--text-muted)] hover:text-[var(--text-main)]"><i data-lucide="x" class="w-4 h-4"></i></button>
+      </div>
+      
+      <div class="space-y-4">
+        <div>
+          <label class="block text-xs font-medium text-[var(--text-muted)] mb-2">Export Data Format</label>
+          <div class="flex space-x-2">
+            <button onclick="exportData('json')" class="flex-1 py-3 border border-[var(--border-soft)] hover:bg-[var(--bg-mid)] rounded-xl flex flex-col items-center justify-center space-y-1 transition-all text-[var(--text-main)]">
+              <i data-lucide="file-json" class="w-5 h-5 text-[var(--accent)]"></i>
+              <span class="text-xs font-semibold">Export JSON</span>
+            </button>
+            <button onclick="exportData('txt')" class="flex-1 py-3 border border-[var(--border-soft)] hover:bg-[var(--bg-mid)] rounded-xl flex flex-col items-center justify-center space-y-1 transition-all text-[var(--text-main)]">
+              <i data-lucide="file-text" class="w-5 h-5 text-[var(--accent-soft)]"></i>
+              <span class="text-xs font-semibold">Export TXT</span>
+            </button>
+          </div>
+        </div>
+        <div class="border-t border-[var(--border-soft)] pt-4">
+          <label class="block text-xs font-medium text-[var(--text-muted)] mb-1.5">Import Workspace File (.json)</label>
+          <div class="flex items-center justify-center w-full">
+            <label for="import-file-input" class="flex flex-col items-center justify-center w-full h-32 border-2 border-[var(--border-soft)] border-dashed rounded-xl cursor-pointer bg-[var(--bg-primary)] hover:bg-[var(--bg-mid)] transition-colors">
+              <div class="flex flex-col items-center justify-center pt-5 pb-6 text-center px-4">
+                <i data-lucide="upload-cloud" class="w-8 h-8 text-[var(--text-muted)] mb-2"></i>
+                <p class="text-xs font-medium text-[var(--text-main)]">Click to upload JSON backup file</p>
+              </div>
+              <input id="import-file-input" type="file" accept=".json" class="hidden" onchange="handleFileImport(event)" />
+            </label>
+          </div>
+        </div>
+      </div>
+      <div class="flex items-center justify-end mt-6">
+        <button onclick="closeImportExportModal()" class="px-4 py-2 bg-transparent border border-[var(--border-soft)] hover:bg-[var(--bg-mid)] rounded-lg text-xs font-semibold text-[var(--text-main)] transition-colors">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- VERSION HISTORY RIGHT-SIDE SLIDING GLASS PANEL -->
+  <div id="history-backdrop" class="fixed inset-0 z-30 bg-[var(--bg-primary)]/60 backdrop-blur-sm hidden" onclick="closeHistoryPanel()"></div>
+  <div id="history-panel" class="fixed inset-y-0 right-0 w-96 z-40 bg-[var(--bg-secondary)] border-l border-[var(--border-soft)] shadow-2xl flex flex-col translate-x-full transition-transform duration-300 ease-in-out backdrop-blur-md">
+    <div class="p-4 border-b border-[var(--border-soft)] flex items-center justify-between shrink-0 bg-[var(--bg-primary)]/40">
+      <div class="flex items-center space-x-2">
+        <i data-lucide="history" class="w-4 h-4 text-[var(--accent-soft)]"></i>
+        <h4 class="font-bold text-sm text-[var(--text-main)]">Version History Log</h4>
+      </div>
+      <button onclick="closeHistoryPanel()" class="text-[var(--text-muted)] hover:text-[var(--text-main)] p-1 rounded-md hover:bg-[var(--bg-mid)] transition-colors">
+        <i data-lucide="x" class="w-4 h-4"></i>
+      </button>
+    </div>
+    
+    <div class="p-3 bg-[var(--bg-primary)]/20 border-b border-[var(--border-soft)] shrink-0">
+      <p id="history-spiel-label" class="text-xs font-bold text-[var(--accent)] truncate">Spiel: Label</p>
+      <p class="text-[10px] text-[var(--text-muted)]">Revert back to any of the saved revisions compiled below.</p>
+    </div>
+
+    <div id="history-entries-container" class="flex-1 overflow-y-auto p-4 space-y-3">
+      <!-- Revisions will be populated here -->
+    </div>
+  </div>
+
+  <!-- Audio element for copy feedback -->
+  <audio id="copySound" preload="auto">
+    <source src="message-notification.mp3" type="audio/mpeg">
+  </audio>
+
+  <script>
+    let db = { titles: [], wallpaper: '' };
+    let undoStack = [];
+    let redoStack = [];
+
+    let activeTitleId = null;
+    let editMode = false;
+    let currentTitleSort = 'alphabetical'; 
+    let sidebarFilterFavOnly = false; 
+    let spielFilterFavOnly = false; 
+    let selectedTitles = new Set();
+    let selectedSpiels = new Set();
+    let currentHistorySpielId = null;
+
+    const defaultData = {
+      titles: [
+        {
+          id: "t1", name: "⚡ sales conversions", desc: "Cold outreach and instant pitch setups", accent: "#586C77", favorite: true,
+          spiels: [
+            { id: "s1", label: "Cold Hook Option A", text: "Hi! Loved your recent piece on scalability. I noticed a micro-leak in your checkout speed, made a short analysis video for you. Do you mind if I send it over here?", favorite: true, history: [] },
+            { id: "s2", label: "Value Prop Mini-Pitch", text: "We help remote-first design teams automate their asset export bottlenecks so they can deliver client packages 2x faster with zero manual file transfers.", favorite: false, history: [] }
+          ]
+        },
+        {
+          id: "t2", name: "💬 support closers", desc: "Standard customer service templates", accent: "#A0A3A8", favorite: false,
+          spiels: [
+            { id: "s3", label: "Apology & Diagnostic", text: "I completely understand how frustrating that latency must be. Let's get this diagnosed immediately.", favorite: false, history: [] }
+          ]
+        }
+      ],
+      wallpaper: ''
+    };
+
+    const accentColors = ["#586C77", "#A0A3A8", "#2D4A52", "#0C1E22", "#E6EEF2", "#FFD700"];
+    let activeSelectedAccent = accentColors[0];
+
+    // On Load Lifecycle
+    window.addEventListener('DOMContentLoaded', () => {
+      const savedData = localStorage.getItem('spiels_manager_db');
+      if (savedData) {
+        try { db = JSON.parse(savedData); } catch (e) { db = defaultData; }
+      } else { db = defaultData; }
+
+      if (!db.titles) db.titles = [];
+      applyBackground(db.wallpaper);
+      syncViewAndEditModeUI();
+      
+      // Load Collapsible Sidebar State
+      const sidebarCollapsed = localStorage.getItem('easybet_sidebar_collapsed') === 'true';
+      const sidebar = document.getElementById('sidebar');
+      const sidebarIcon = document.getElementById('sidebar-toggle-icon');
+      if (sidebarCollapsed) {
+        sidebar.classList.add('sidebar-collapsed');
+        if (sidebarIcon) sidebarIcon.setAttribute('data-lucide', 'panel-left-open');
+      } else {
+        sidebar.classList.remove('sidebar-collapsed');
+        if (sidebarIcon) sidebarIcon.setAttribute('data-lucide', 'panel-left-close');
+      }
+
+      renderTitles();
+      
+      if (db.titles.length > 0) {
+        selectTitle(db.titles[0].id);
+      } else {
+        updateActiveTitlePanel();
+      }
+
+      lucide.createIcons();
+      updateHistoryButtons();
+    });
+
+    // Keyboard Shortcuts
+    window.addEventListener('keydown', (e) => {
+      if (!editMode) {
+        if ((e.ctrlKey || e.metaKey) && (e.key === 'n' || e.key === 'N' || e.key === 'z' || e.key === 'Z' || e.key === 'y' || e.key === 'Y')) {
+          if (e.key !== 'e' && e.key !== 'E') {
+            e.preventDefault();
+            showToast("Edits are locked. Toggle Edit Mode.", "lock");
+            return;
+          }
+        }
+      }
+      if ((e.ctrlKey || e.metaKey) && e.key === 'n' && !e.shiftKey) { e.preventDefault(); triggerNewTitle(); }
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'N' || e.key === 'n')) { e.preventDefault(); triggerNewSpiel(); }
+      if ((e.ctrlKey || e.metaKey) && e.key === 'z') { e.preventDefault(); undo(); }
+      if ((e.ctrlKey || e.metaKey) && e.key === 'y') { e.preventDefault(); redo(); }
+      if ((e.ctrlKey || e.metaKey) && e.key === 'e') { e.preventDefault(); toggleEditMode(); }
+      if (e.key === 'Escape') { 
+        closeTitleModal(); 
+        closeSpielModal(); 
+        closeSettingsModal(); 
+        closeConfirmModal(false); 
+        closeImportExportModal(); 
+        closeHistoryPanel(); 
+      }
+    });
+
+    // Fuzzy Scoring Engine (Calculated without external packages)
+    function fuzzyScore(query, text) {
+      if (!query) return 1;
+      if (!text) return 0;
+      query = query.toLowerCase().trim();
+      text = text.toLowerCase().trim();
+      
+      // Strict matching wins highest relevance
+      if (text === query) return 1.0;
+      if (text.includes(query)) return 0.9;
+      
+      const queryWords = query.split(/\s+/);
+      const textWords = text.split(/\s+/);
+      
+      let matchedCount = 0;
+      let totalMatchQuality = 0;
+      
+      for (const qw of queryWords) {
+        let maxWordScore = 0;
+        for (const tw of textWords) {
+          if (tw === qw) {
+            maxWordScore = Math.max(maxWordScore, 1.0);
+          } else if (tw.includes(qw)) {
+            maxWordScore = Math.max(maxWordScore, qw.length / tw.length);
+          } else if (qw.includes(tw)) {
+            maxWordScore = Math.max(maxWordScore, (tw.length / qw.length) * 0.8);
+          } else {
+            // Check Levenshtein Distance for small typo tolerances
+            const dist = levenshteinDistance(qw, tw);
+            const maxLen = Math.max(qw.length, tw.length);
+            const matchScore = (maxLen - dist) / maxLen;
+            if (matchScore > 0.6) {
+              maxWordScore = Math.max(maxWordScore, matchScore * 0.75); // slight typo penalty applied
+            }
+          }
+        }
+        
+        if (maxWordScore > 0) {
+          matchedCount++;
+          totalMatchQuality += maxWordScore;
+        }
+      }
+      
+      if (matchedCount === 0) return 0;
+      const coverage = matchedCount / queryWords.length;
+      const averageQuality = totalMatchQuality / queryWords.length;
+      return coverage * averageQuality;
+    }
+
+    // Levenshtein helper
+    function levenshteinDistance(a, b) {
+      const matrix = [];
+      for (let i = 0; i <= b.length; i++) {
+        matrix[i] = [i];
+      }
+      for (let j = 0; j <= a.length; j++) {
+        matrix[0][j] = j;
+      }
+      for (let i = 1; i <= b.length; i++) {
+        for (let j = 1; j <= a.length; j++) {
+          if (b.charAt(i - 1) === a.charAt(j - 1)) {
+            matrix[i][j] = matrix[i - 1][j - 1];
+          } else {
+            matrix[i][j] = Math.min(
+              matrix[i - 1][j - 1] + 1, // substitution
+              matrix[i][j - 1] + 1,     // insertion
+              matrix[i - 1][j] + 1      // deletion
+            );
+          }
+        }
+      }
+      return matrix[b.length][a.length];
+    }
+
+    // Debounced search trigger methods
+    let titleSearchTimeout = null;
+    function debouncedSearchTitles() {
+      const input = document.getElementById('title-search');
+      const clearBtn = document.getElementById('btn-clear-title-search');
+      if (input.value.length > 0) {
+        clearBtn.classList.remove('hidden');
+      } else {
+        clearBtn.classList.add('hidden');
+      }
+      
+      clearTimeout(titleSearchTimeout);
+      titleSearchTimeout = setTimeout(() => {
+        renderTitles();
+      }, 150);
+    }
+
+    let spielSearchTimeout = null;
+    function debouncedSearchSpiels() {
+      const input = document.getElementById('spiel-search');
+      const clearBtn = document.getElementById('btn-clear-spiel-search');
+      if (input.value.length > 0) {
+        clearBtn.classList.remove('hidden');
+      } else {
+        clearBtn.classList.add('hidden');
+      }
+
+      clearTimeout(spielSearchTimeout);
+      spielSearchTimeout = setTimeout(() => {
+        renderSpiels();
+      }, 150);
+    }
+
+    // Clear and Refocus Input fields
+    function clearTitleSearch() {
+      const input = document.getElementById('title-search');
+      input.value = '';
+      document.getElementById('btn-clear-title-search').classList.add('hidden');
+      input.focus();
+      renderTitles();
+    }
+
+    function clearSpielSearch() {
+      const input = document.getElementById('spiel-search');
+      input.value = '';
+      document.getElementById('btn-clear-spiel-search').classList.add('hidden');
+      input.focus();
+      renderSpiels();
+    }
+
+    // Sidebar Collapse Controls
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const icon = document.getElementById('sidebar-toggle-icon');
+      
+      const isCollapsed = sidebar.classList.toggle('sidebar-collapsed');
+      
+      // Save state to localStorage
+      localStorage.setItem('easybet_sidebar_collapsed', isCollapsed ? 'true' : 'false');
+      
+      if (isCollapsed) {
+        icon.setAttribute('data-lucide', 'panel-left-open');
+      } else {
+        icon.setAttribute('data-lucide', 'panel-left-close');
+      }
+      lucide.createIcons();
+    }
+
+    function saveState(actionLabel = "Modify Database") {
+      if (!editMode) return;
+      const snap = JSON.stringify(db);
+      if (undoStack.length >= 30) undoStack.shift();
+      undoStack.push(snap);
+      redoStack = []; 
+      commitToStorage();
+      updateHistoryButtons();
+    }
+
+    function commitToStorage() { localStorage.setItem('spiels_manager_db', JSON.stringify(db)); }
+    
+    function updateHistoryButtons() {
+      const btnUndo = document.getElementById('btn-undo');
+      const btnRedo = document.getElementById('btn-redo');
+      if (btnUndo) btnUndo.disabled = undoStack.length === 0;
+      if (btnRedo) btnRedo.disabled = redoStack.length === 0;
+    }
+
+    function undo() {
+      if (!editMode || undoStack.length === 0) return;
+      redoStack.push(JSON.stringify(db));
+      db = JSON.parse(undoStack.pop());
+      commitToStorage(); updateHistoryButtons();
+      renderTitles();
+      if (activeTitleId) selectTitle(db.titles.find(t => t.id === activeTitleId) ? activeTitleId : (db.titles[0]?.id || null));
+      showToast("Undo applied successfully.", "undo-2");
+    }
+
+    function redo() {
+      if (!editMode || redoStack.length === 0) return;
+      undoStack.push(JSON.stringify(db));
+      db = JSON.parse(redoStack.pop());
+      commitToStorage(); updateHistoryButtons();
+      renderTitles();
+      if (activeTitleId) selectTitle(db.titles.find(t => t.id === activeTitleId) ? activeTitleId : (db.titles[0]?.id || null));
+      showToast("Redo applied successfully.", "redo-2");
+    }
+
+    function applyBackground(url) {
+      const bgContainer = document.getElementById('bg-wallpaper');
+      if (url && url.trim() !== '') {
+        bgContainer.style.backgroundImage = `url('${url}')`;
+        bgContainer.classList.remove('hidden');
+      } else {
+        bgContainer.style.backgroundImage = '';
+        bgContainer.classList.add('hidden');
+      }
+    }
+
+    function applyWallpaper() {
+      if (!editMode) return;
+      const url = document.getElementById('input-unsplash-url').value;
+      saveState("Update Background Wallpaper");
+      db.wallpaper = url;
+      commitToStorage();
+      applyBackground(url);
+      showToast("Wallpaper configuration updated.", "image");
+    }
+
+    function showToast(message, icon = "info", colorHex = "#586C77") {
+      const toast = document.getElementById('toast');
+      const text = document.getElementById('toast-text');
+      const iconContainer = document.getElementById('toast-icon');
+      if (!toast || !text || !iconContainer) return;
+      
+      text.innerText = message;
+      text.style.color = colorHex;
+      
+      iconContainer.setAttribute('data-lucide', icon);
+      iconContainer.style.color = colorHex;
+      
+      lucide.createIcons();
+      toast.style.opacity = '1'; toast.style.transform = 'translate(-50%, -10px)';
+      setTimeout(() => { toast.style.opacity = '0'; toast.style.transform = 'translate(-50%, 10px)'; }, 2500);
+    }
+
+    function syncViewAndEditModeUI() {
+      const btn = document.getElementById('btn-toggle-edit');
+      const text = document.getElementById('edit-mode-text');
+      const icon = document.getElementById('edit-mode-icon');
+      const renameBtn = document.getElementById('btn-rename-active-title');
+      const banner = document.getElementById('edit-mode-banner');
+      const header = document.getElementById('global-header');
+      const addTitleBtn = document.getElementById('btn-add-title-action');
+      const newSpielBtn = document.getElementById('btn-new-spiel');
+      const historyCtrls = document.getElementById('history-controls');
+      const settingsBtn = document.getElementById('btn-settings');
+      const impexpBtn = document.getElementById('btn-impexp');
+
+      const activeTitle = db.titles.find(t => t.id === activeTitleId);
+
+      if (editMode) {
+        btn.classList.add('bg-amber-500', 'text-[#0C1E22]', 'border-amber-600', 'hover:bg-amber-600');
+        btn.classList.remove('bg-[var(--bg-secondary)]', 'border-[var(--border-soft)]', 'hover:bg-[var(--bg-mid)]', 'text-[var(--text-main)]');
+        text.innerText = "Edit Mode";
+        icon.setAttribute('data-lucide', 'unlock');
+        banner.classList.remove('hidden');
+        header.classList.add('border-amber-500/50');
+        addTitleBtn.classList.remove('hidden'); addTitleBtn.classList.add('flex');
+        newSpielBtn.classList.remove('hidden'); newSpielBtn.classList.add('flex');
+        historyCtrls.classList.remove('hidden'); historyCtrls.classList.add('flex');
+        settingsBtn.classList.remove('hidden'); impexpBtn.classList.remove('hidden');
+        if (activeTitle && renameBtn) renameBtn.classList.remove('hidden');
+      } else {
+        btn.classList.remove('bg-amber-500', 'text-[#0C1E22]', 'border-amber-600', 'hover:bg-amber-600');
+        btn.classList.add('bg-[var(--bg-secondary)]', 'border-[var(--border-soft)]', 'hover:bg-[var(--bg-mid)]', 'text-[var(--text-main)]');
+        text.innerText = "Viewer Mode";
+        icon.setAttribute('data-lucide', 'lock');
+        banner.classList.add('hidden');
+        header.classList.remove('border-amber-500/50');
+        addTitleBtn.classList.add('hidden'); addTitleBtn.classList.remove('flex');
+        newSpielBtn.classList.add('hidden'); newSpielBtn.classList.remove('flex');
+        historyCtrls.classList.add('hidden'); historyCtrls.classList.remove('flex');
+        settingsBtn.classList.add('hidden'); impexpBtn.classList.add('hidden');
+        if (renameBtn) renameBtn.classList.add('hidden');
+      }
+
+      const spielsSearchContainer = document.getElementById('spiels-search-container');
+      const spielFavFilterBtn = document.getElementById('btn-spiel-fav-filter');
+
+      if (activeTitle) {
+        spielsSearchContainer.classList.remove('opacity-50', 'pointer-events-none');
+        spielFavFilterBtn.classList.remove('opacity-50', 'pointer-events-none');
+      } else {
+        spielsSearchContainer.classList.add('opacity-50', 'pointer-events-none');
+        spielFavFilterBtn.classList.add('opacity-50', 'pointer-events-none');
+      }
+      lucide.createIcons();
+    }
+
+    function toggleEditMode() {
+      editMode = !editMode;
+      selectedTitles.clear(); selectedSpiels.clear();
+      syncViewAndEditModeUI();
+      if (editMode) showToast("Developer Workspace unlocked.", "unlock");
+      else showToast("Workspace locked safely in secure Viewer Mode.", "lock");
+      renderTitles(); renderSpiels();
+    }
+
+    function setSidebarFavFilter(favOnly) {
+      sidebarFilterFavOnly = favOnly;
+      const btnAll = document.getElementById('sidebar-filter-all');
+      const btnFav = document.getElementById('sidebar-filter-fav');
+      if (favOnly) {
+        btnFav.className = "px-2 py-0.5 rounded text-xs transition-all bg-amber-500 text-[#0C1E22] font-semibold flex items-center space-x-1";
+        btnAll.className = "px-2 py-0.5 rounded text-xs transition-all hover:bg-[var(--bg-mid)] text-[var(--text-muted)]";
+      } else {
+        btnFav.className = "px-2 py-0.5 rounded text-xs transition-all text-[var(--text-muted)] hover:bg-[var(--bg-mid)] flex items-center space-x-1";
+        btnAll.className = "px-2 py-0.5 rounded text-xs transition-all bg-[var(--accent)] text-[#E6EEF2] font-medium";
+      }
+      renderTitles();
+    }
+
+    function toggleSpielFavFilter() {
+      spielFilterFavOnly = !spielFilterFavOnly;
+      const btn = document.getElementById('btn-spiel-fav-filter');
+      const text = document.getElementById('spiel-fav-filter-text');
+      const icon = document.getElementById('spiel-fav-filter-icon');
+      if (spielFilterFavOnly) {
+        btn.classList.add('bg-amber-500', 'text-[#0C1E22]', 'border-amber-600', 'hover:bg-amber-600');
+        btn.classList.remove('bg-transparent', 'border-[var(--border-soft)]', 'text-[var(--text-main)]', 'hover:bg-[var(--bg-mid)]');
+        text.innerText = "Favorites Only"; icon.classList.add('fill-[#0C1E22]'); icon.classList.remove('text-amber-500'); icon.classList.add('text-[#0C1E22]');
+      } else {
+        btn.classList.remove('bg-amber-500', 'text-[#0C1E22]', 'border-amber-600', 'hover:bg-amber-600');
+        btn.classList.add('bg-transparent', 'border-[var(--border-soft)]', 'text-[var(--text-main)]', 'hover:bg-[var(--bg-mid)]');
+        text.innerText = "All"; icon.classList.remove('fill-[#0C1E22]'); icon.classList.add('text-amber-500'); icon.classList.remove('text-[#0C1E22]');
+      }
+      renderSpiels();
+    }
+
+    function toggleFavoriteTitle(id, event) {
+      if (event) event.stopPropagation();
+      const title = db.titles.find(t => t.id === id);
+      if (title) {
+        if (editMode) saveState("Toggle Favorite Title");
+        title.favorite = !title.favorite;
+        commitToStorage(); renderTitles();
+        showToast(title.favorite ? `"${title.name}" favorited` : `"${title.name}" unfavorited`, "star");
+      }
+    }
+
+    function toggleFavoriteSpiel(id, event) {
+      if (event) event.stopPropagation();
+      const activeTitle = db.titles.find(t => t.id === activeTitleId);
+      if (activeTitle && activeTitle.spiels) {
+        const spiel = activeTitle.spiels.find(s => s.id === id);
+        if (spiel) {
+          if (editMode) saveState("Toggle Favorite Spiel");
+          spiel.favorite = !spiel.favorite;
+          commitToStorage(); renderSpiels();
+          showToast(spiel.favorite ? `"${spiel.label}" favorited` : `"${spiel.label}" unfavorited`, "star");
+        }
+      }
+    }
+
+    function setTitleSort(type) {
+      currentTitleSort = type;
+      const sortAlpha = document.getElementById('sort-alpha');
+      const sortCount = document.getElementById('sort-count');
+      if (type === 'alphabetical') {
+        sortAlpha.className = "px-2 py-0.5 rounded text-xs bg-[var(--accent)] text-[#E6EEF2] font-medium transition-all";
+        sortCount.className = "px-2 py-0.5 rounded text-xs hover:bg-[var(--bg-mid)] text-[var(--text-muted)] transition-all";
+      } else {
+        sortAlpha.className = "px-2 py-0.5 rounded text-xs hover:bg-[var(--bg-mid)] text-[var(--text-muted)] transition-all";
+        sortCount.className = "px-2 py-0.5 rounded text-xs bg-[var(--accent)] text-[#E6EEF2] font-medium transition-all";
+      }
+      renderTitles();
+    }
+
+    function getSortedAndFilteredTitles() {
+      const searchVal = document.getElementById('title-search').value.trim();
+      let filtered = [];
+
+      if (searchVal.length > 0) {
+        // Evaluate fuzzy search relevance scores
+        const scored = db.titles.map(t => {
+          const nameScore = fuzzyScore(searchVal, t.name);
+          const descScore = t.desc ? fuzzyScore(searchVal, t.desc) : 0;
+          const bestScore = Math.max(nameScore, descScore);
+          return { title: t, score: bestScore };
+        });
+
+        // Relevance matching threshold
+        const threshold = 0.25;
+        filtered = scored
+          .filter(item => item.score >= threshold)
+          .sort((a, b) => b.score - a.score)
+          .map(item => item.title);
+      } else {
+        filtered = [...db.titles];
+        if (currentTitleSort === 'alphabetical') {
+          filtered.sort((a, b) => a.name.localeCompare(b.name, undefined, {numeric: true, sensitivity: 'base'}));
+        } else if (currentTitleSort === 'spielsCount') {
+          filtered.sort((a, b) => (b.spiels?.length || 0) - (a.spiels?.length || 0));
+        }
+      }
+
+      return filtered.filter(t => !sidebarFilterFavOnly || t.favorite);
+    }
+
+    function renderTitleRow(title, container) {
+      const isSelected = activeTitleId === title.id;
+      const checked = selectedTitles.has(title.id);
+      const count = title.spiels ? title.spiels.length : 0;
+      
+      const titleRow = document.createElement('div');
+      titleRow.className = `group flex items-center justify-between p-2 rounded-lg transition-all duration-150 cursor-pointer ${
+        isSelected 
+          ? 'bg-[var(--bg-mid)] text-[var(--accent)] border border-[var(--border-soft)]' 
+          : 'hover:bg-[var(--bg-mid)] text-[var(--text-main)] border border-transparent'
+      }`;
+      
+      if (editMode) {
+        titleRow.draggable = true;
+        titleRow.setAttribute('ondragstart', `handleTitleDragStart(event, '${title.id}')`);
+        titleRow.setAttribute('ondragend', `handleTitleDragEnd(event)`);
+        titleRow.setAttribute('data-title-id', title.id);
+      }
+
+      titleRow.addEventListener('click', (e) => {
+        if (e.target.closest('.no-select-trigger')) return;
+        selectTitle(title.id);
+      });
+
+      const activeIcon = title.favorite ? 'lock' : 'hash';
+
+      titleRow.innerHTML = `
+        <div class="flex items-center space-x-2.5 min-w-0 flex-1">
+          ${editMode ? `
+            <div class="no-select-trigger flex items-center pr-1 sidebar-hide-content">
+              <input type="checkbox" ${checked ? 'checked' : ''} onchange="toggleSelectTitle('${title.id}')" class="rounded border-[var(--border-soft)] accent-[var(--accent)] h-3.5 w-3.5 cursor-pointer">
+            </div>
+            <div class="cursor-grab text-[var(--text-muted)] hover:text-[var(--text-main)] p-0.5 sidebar-hide-content">
+              <i data-lucide="grip-vertical" class="w-3.5 h-3.5"></i>
+            </div>
+          ` : ''}
+          <span class="flex items-center justify-center shrink-0" style="color: ${title.accent || 'var(--text-muted)'}">
+            <i data-lucide="${activeIcon}" class="w-4 h-4 stroke-[2.5]"></i>
+          </span>
+          <div class="truncate pr-1 flex-1 sidebar-hide-content">
+            <span class="text-xs font-semibold block truncate leading-tight lowercase text-[var(--text-main)]">${escapeHTML(title.name)}</span>
+            ${title.desc ? `<span class="text-[10px] text-[var(--text-muted)] truncate block mt-0.5 lowercase">${escapeHTML(title.desc)}</span>` : ''}
+          </div>
+        </div>
+        <div class="flex items-center space-x-1.5 shrink-0 no-select-trigger ml-1 sidebar-hide-content">
+          <button onclick="toggleFavoriteTitle('${title.id}', event)" class="p-1 rounded hover:bg-[var(--bg-deep)] text-[var(--text-muted)] hover:text-amber-500 transition-all">
+            <i data-lucide="star" class="w-3.5 h-3.5 ${title.favorite ? 'text-amber-500 fill-amber-500' : ''}"></i>
+          </button>
+          <span class="text-[10px] bg-[var(--bg-deep)] border border-[var(--border-soft)] px-1.5 py-0.5 rounded-full text-[var(--text-muted)] font-bold">${count}</span>
+          ${editMode ? `
+            <div class="opacity-0 group-hover:opacity-100 flex items-center space-x-0.5 transition-all duration-150">
+              <button onclick="triggerEditTitle('${title.id}')" class="p-1 rounded hover:bg-[var(--bg-deep)] text-[var(--text-muted)] hover:text-[var(--accent)]"><i data-lucide="edit-2" class="w-3 h-3"></i></button>
+              <button onclick="triggerDeleteTitle('${title.id}')" class="p-1 rounded hover:bg-[var(--bg-deep)] text-red-400 hover:text-red-300"><i data-lucide="trash-2" class="w-3 h-3"></i></button>
+            </div>
+          ` : ''}
+        </div>
+      `;
+      container.appendChild(titleRow);
+    }
+
+    function renderTitles() {
+      const container = document.getElementById('titles-list');
+      if (!container) return;
+      container.innerHTML = '';
+      const list = getSortedAndFilteredTitles();
+
+      if (list.length === 0) {
+        container.innerHTML = `<div class="text-center py-8 px-4 text-xs text-[var(--text-muted)] sidebar-hide-content">No titles match.</div>`;
+        return;
+      }
+
+      const favorites = list.filter(t => t.favorite);
+      const regulars = list.filter(t => !t.favorite);
+
+      if (favorites.length > 0) {
+        const favHeader = document.createElement('div');
+        favHeader.className = "text-[10px] font-bold tracking-wider uppercase text-amber-500 px-2 py-1 mt-2 flex items-center space-x-1 select-none sidebar-hide-content";
+        favHeader.innerHTML = `<i data-lucide="star" class="w-3 h-3 fill-amber-500"></i> <span>Starred Titles</span>`;
+        container.appendChild(favHeader);
+        favorites.forEach(title => renderTitleRow(title, container));
+      }
+
+      if (regulars.length > 0) {
+        if (favorites.length > 0) {
+          const separator = document.createElement('div');
+          separator.className = "border-t border-[var(--border-soft)] my-2 mx-2 sidebar-hide-content";
+          container.appendChild(separator);
+        }
+        const othersHeader = document.createElement('div');
+        othersHeader.className = "text-[10px] font-bold tracking-wider uppercase text-[var(--text-muted)] px-2 py-1 mt-2 flex items-center space-x-1 select-none sidebar-hide-content";
+        othersHeader.innerHTML = `<i data-lucide="grid" class="w-3 h-3"></i> <span>Channels / Categories</span>`;
+        container.appendChild(othersHeader);
+        regulars.forEach(title => renderTitleRow(title, container));
+      }
+      lucide.createIcons();
+      updateSelectedTitlesFooter();
+    }
+
+    function selectTitle(id) {
+      activeTitleId = id; selectedSpiels.clear();
+      renderTitles(); updateActiveTitlePanel();
+    }
+
+    function updateActiveTitlePanel() {
+      const activeTitle = db.titles.find(t => t.id === activeTitleId);
+      const activeTitleName = document.getElementById('active-title-name');
+      const activeTitleDesc = document.getElementById('active-title-desc');
+      const titleIconContainer = document.getElementById('title-icon-container');
+      const spielsList = document.getElementById('spiels-list');
+      const emptyState = document.getElementById('empty-state');
+
+      if (!activeTitle) {
+        activeTitleName.innerText = "Select a Title";
+        activeTitleDesc.innerText = "Choose a workspace title on the left to display its spiels";
+        titleIconContainer.innerHTML = `<i data-lucide="folder" class="w-5 h-5 text-[var(--text-main)]"></i>`;
+        spielsList.classList.add('hidden'); emptyState.classList.remove('hidden');
+        syncViewAndEditModeUI(); renderSpiels();
+        return;
+      }
+
+      activeTitleName.innerText = activeTitle.name.toLowerCase();
+      activeTitleDesc.innerText = activeTitle.desc || "Standard interactive Spiel collection";
+      
+      const activeIcon = activeTitle.favorite ? 'lock' : 'hash';
+      titleIconContainer.innerHTML = `<i data-lucide="${activeIcon}" class="w-5 h-5 stroke-[2.5]" style="color: ${activeTitle.accent || 'var(--accent)'}"></i>`;
+      
+      syncViewAndEditModeUI(); renderSpiels();
+    }
+
+    function renderSpielCard(spiel, listContainer) {
+      const isSelected = selectedSpiels.has(spiel.id);
+      const card = document.createElement('div');
+      
+      card.className = "spiel-item group";
+
+      if (editMode) {
+        card.draggable = true;
+        card.setAttribute('ondragstart', `handleSpielDragStart(event, '${spiel.id}')`);
+        card.setAttribute('ondragend', `handleSpielDragEnd(event)`);
+        card.setAttribute('data-spiel-id', spiel.id);
+      }
+
+      card.addEventListener('click', (e) => {
+        if (e.target.closest('.no-click-copy')) return;
+        copyToClipboard(spiel.text);
+      });
+
+      card.innerHTML = `
+        <div class="flex items-start justify-between mb-1 no-click-copy z-10 relative">
+          <div class="flex items-center space-x-2 min-w-0 pr-4">
+            ${editMode ? `<input type="checkbox" ${isSelected ? 'checked' : ''} onchange="toggleSelectSpiel('${spiel.id}')" class="h-3.5 w-3.5 cursor-pointer shrink-0 accent-[var(--accent)]">` : ''}
+            ${editMode ? `<div class="cursor-grab p-0.5 shrink-0 text-[var(--text-muted)] hover:text-[var(--text-main)]">⋮⋮</div>` : ''}
+            <span class="spiel-title truncate" title="${escapeHTML(spiel.label)}">${escapeHTML(spiel.label)}</span>
+            ${spiel.favorite ? `<span class="starred text-[12px] shrink-0">★</span>` : ''}
+          </div>
+
+          <!-- Quick Action Tray -->
+          <div class="flex items-center space-x-3 shrink-0 mt-0.5">
+            ${!spiel.favorite ? `
+              <button onclick="toggleFavoriteSpiel('${spiel.id}', event)" class="opacity-0 group-hover:opacity-100 transition-opacity text-[var(--text-muted)] hover:text-[#FFD700] text-sm" title="Favorite">☆</button>
+            ` : `
+              <button onclick="toggleFavoriteSpiel('${spiel.id}', event)" class="text-[#FFD700] text-sm" title="Unfavorite">★</button>
+            `}
+
+            ${editMode ? `
+              <button onclick="openHistoryPanel('${spiel.id}')" class="opacity-0 group-hover:opacity-100 transition-opacity text-[var(--text-muted)] hover:text-[var(--text-main)] flex items-center" title="Version History">
+                <i data-lucide="history" class="w-3.5 h-3.5"></i>
+              </button>
+              <button onclick="triggerEditSpiel('${spiel.id}')" class="opacity-0 group-hover:opacity-100 transition-opacity text-[var(--text-muted)] hover:text-[var(--text-main)] flex items-center" title="Edit">
+                <i data-lucide="edit-2" class="w-3.5 h-3.5"></i>
+              </button>
+              <button onclick="triggerDeleteSpiel('${spiel.id}')" class="opacity-0 group-hover:opacity-100 transition-opacity text-red-400/80 hover:text-red-400 flex items-center" title="Delete">
+                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+              </button>
+            ` : `
+              <div class="copy-icon flex items-center space-x-1">
+                <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                <span class="text-[10px] font-bold tracking-wider uppercase">Copy</span>
+              </div>
+            `}
+          </div>
+        </div>
+        <div class="spiel-text">${escapeHTML(spiel.text)}</div>
+      `;
+
+      listContainer.appendChild(card);
+    }
+
+    function renderSpiels() {
+      const activeTitle = db.titles.find(t => t.id === activeTitleId);
+      const listContainer = document.getElementById('spiels-list');
+      const emptyState = document.getElementById('empty-state');
+
+      if (!activeTitle || !activeTitle.spiels || activeTitle.spiels.length === 0) {
+        listContainer.classList.add('hidden'); emptyState.classList.remove('hidden');
+        document.getElementById('spiels-footer-actions').classList.add('hidden'); return;
+      }
+
+      const query = document.getElementById('spiel-search').value.trim();
+      let filtered = [];
+
+      if (query.length > 0) {
+        const parentCategoryName = activeTitle.name; // category equivalence
+        const scored = activeTitle.spiels.map(s => {
+          const labelScore = fuzzyScore(query, s.label);
+          const textScore = fuzzyScore(query, s.text);
+          const categoryScore = fuzzyScore(query, parentCategoryName);
+          const bestScore = Math.max(labelScore, textScore, categoryScore);
+          return { spiel: s, score: bestScore };
+        });
+
+        // Relevance matching threshold
+        const threshold = 0.25;
+        filtered = scored
+          .filter(item => item.score >= threshold)
+          .sort((a, b) => b.score - a.score)
+          .map(item => item.spiel);
+      } else {
+        filtered = [...activeTitle.spiels];
+      }
+
+      const matchingFiltered = filtered.filter(s => !spielFilterFavOnly || s.favorite);
+
+      if (matchingFiltered.length === 0) {
+        listContainer.classList.add('hidden'); emptyState.classList.remove('hidden');
+        emptyState.querySelector('h3').innerText = "No matching spiels";
+        emptyState.querySelector('p').innerText = "Try adjusting your fuzzy search text or favorites toggle filter.";
+        document.getElementById('spiels-footer-actions').classList.add('hidden'); return;
+      }
+
+      emptyState.classList.add('hidden'); listContainer.classList.remove('hidden');
+      listContainer.innerHTML = '';
+
+      const favorites = matchingFiltered.filter(s => s.favorite);
+      const regulars = matchingFiltered.filter(s => !s.favorite);
+
+      if (favorites.length > 0) {
+        const favHeader = document.createElement('div');
+        favHeader.className = "text-xs font-bold uppercase mt-2 mb-3 flex items-center space-x-1 select-none w-full starred border-b border-amber-500/20 pb-2";
+        favHeader.innerHTML = `<span>★ Starred Spiels</span>`;
+        listContainer.appendChild(favHeader);
+        favorites.forEach(spiel => renderSpielCard(spiel, listContainer));
+      }
+
+      if (regulars.length > 0) {
+        if (favorites.length > 0) {
+          const spacing = document.createElement('div'); spacing.className = "h-4 w-full"; listContainer.appendChild(spacing);
+        }
+        const othersHeader = document.createElement('div');
+        othersHeader.className = "text-xs font-bold uppercase mt-4 mb-3 flex items-center space-x-1 select-none w-full text-[var(--text-muted)] border-b border-[var(--border-soft)] pb-2";
+        othersHeader.innerHTML = `<span style="color: var(--text-main)">Other Category Spiels</span>`;
+        listContainer.appendChild(othersHeader);
+        regulars.forEach(spiel => renderSpielCard(spiel, listContainer));
+      }
+
+      updateSelectedSpielsFooter();
+      lucide.createIcons();
+    }
+
+    let lastSoundTime = 0;
+
+    function playCopySound() {
+      const now = Date.now();
+      if (now - lastSoundTime < 150) return;
+      lastSoundTime = now;
+
+      const sound = document.getElementById("copySound");
+      if (!sound) return;
+
+      try {
+        sound.currentTime = 0;
+        sound.volume = 0.4;
+        sound.playbackRate = 0.95 + Math.random() * 0.1;
+        const playPromise = sound.play();
+        if (playPromise !== undefined) {
+          playPromise.catch(error => console.log("Sound blocked:", error));
+        }
+      } catch (err) {
+        console.log("Sound blocked:", err);
+      }
+    }
+
+    function copyToClipboard(text) {
+      const tempTextArea = document.createElement("textarea");
+      tempTextArea.value = text;
+      tempTextArea.style.position = "fixed"; tempTextArea.style.top = "0"; tempTextArea.style.left = "0"; tempTextArea.style.opacity = "0";
+      document.body.appendChild(tempTextArea);
+      tempTextArea.focus(); tempTextArea.select();
+      try {
+        const successful = document.execCommand("copy");
+        if (successful) {
+          showToast("Copied to clipboard", "check-circle", "var(--accent)");
+          playCopySound();
+        }
+        else showToast("Failed to copy clipboard.", "alert-circle", "#FF0000");
+      } catch (err) { showToast("Browser restrictions prevented auto-copy.", "alert-circle", "#FF0000"); }
+      document.body.removeChild(tempTextArea);
+    }
+
+    function escapeHTML(str) {
+      if (!str) return '';
+      return str.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag));
+    }
+
+    let targetTitleIdEditing = null;
+    function triggerNewTitle() {
+      if (!editMode) { showToast("Edits are locked. Toggle Edit Mode.", "lock", "#FF0000"); return; }
+      targetTitleIdEditing = null;
+      document.getElementById('title-modal-headline').innerText = "Create Title Workspace";
+      document.getElementById('input-title-name').value = ''; document.getElementById('input-title-desc').value = '';
+      activeSelectedAccent = accentColors[0]; renderAccentSelector();
+      document.getElementById('title-modal').classList.remove('hidden'); document.getElementById('input-title-name').focus();
+    }
+    
+    function triggerEditTitle(id) {
+      if (!editMode) return;
+      const title = db.titles.find(t => t.id === id); if (!title) return;
+      targetTitleIdEditing = id;
+      document.getElementById('title-modal-headline').innerText = `Edit Title: ${title.name}`;
+      document.getElementById('input-title-name').value = title.name; document.getElementById('input-title-desc').value = title.desc || '';
+      activeSelectedAccent = title.accent || accentColors[0]; renderAccentSelector();
+      document.getElementById('title-modal').classList.remove('hidden'); document.getElementById('input-title-name').focus();
+    }
+    
+    function triggerRenameActiveTitle() { if (editMode && activeTitleId) triggerEditTitle(activeTitleId); }
+    
+    function renderAccentSelector() {
+      const container = document.getElementById('accent-dots'); container.innerHTML = '';
+      accentColors.forEach(color => {
+        const isSelected = activeSelectedAccent === color;
+        const btn = document.createElement('button'); btn.type = 'button';
+        btn.className = `w-6 h-6 rounded-full border-2 transition-transform duration-150 shrink-0 ${isSelected ? 'border-[var(--text-main)] scale-110' : 'border-transparent hover:scale-105'}`;
+        btn.style.backgroundColor = color;
+        btn.onclick = () => { activeSelectedAccent = color; renderAccentSelector(); };
+        container.appendChild(btn);
+      });
+    }
+    
+    function closeTitleModal() { document.getElementById('title-modal').classList.add('hidden'); }
+    
+    document.getElementById('btn-save-title').addEventListener('click', () => {
+      if (!editMode) return;
+      const name = document.getElementById('input-title-name').value.trim(); const desc = document.getElementById('input-title-desc').value.trim();
+      if (!name) { showToast("Please enter a valid title name.", "alert-triangle", "#FF0000"); return; }
+      saveState(targetTitleIdEditing ? "Edit Title" : "Create Title");
+      if (targetTitleIdEditing) {
+        const title = db.titles.find(t => t.id === targetTitleIdEditing);
+        if (title) { title.name = name; title.desc = desc; title.accent = activeSelectedAccent; showToast("Title modified.", "check-circle", "var(--accent)"); }
+      } else {
+        const newTitle = { id: 'title_' + Date.now().toString(36), name: name, desc: desc, accent: activeSelectedAccent, favorite: false, spiels: [] };
+        db.titles.push(newTitle); activeTitleId = newTitle.id; showToast("New title added.", "check-circle", "var(--accent)");
+      }
+      commitToStorage(); closeTitleModal(); renderTitles(); updateActiveTitlePanel();
+    });
+
+    let pendingConfirmAction = null;
+    function triggerDeleteTitle(id) {
+      if (!editMode) return;
+      const title = db.titles.find(t => t.id === id); if (!title) return;
+      document.getElementById('confirm-message').innerText = `Delete "${title.name}" permanently? (${title.spiels?.length || 0} spiels will be lost).`;
+      pendingConfirmAction = () => {
+        saveState("Delete Title");
+        db.titles = db.titles.filter(t => t.id !== id);
+        if (activeTitleId === id) activeTitleId = db.titles[0]?.id || null;
+        commitToStorage(); renderTitles(); updateActiveTitlePanel(); showToast("Title destroyed.", "trash-2");
+      };
+      document.getElementById('confirm-modal').classList.remove('hidden');
+    }
+    
+    function closeConfirmModal(proceed = false) {
+      document.getElementById('confirm-modal').classList.add('hidden');
+      if (proceed && pendingConfirmAction) pendingConfirmAction();
+      pendingConfirmAction = null;
+    }
+    document.getElementById('btn-confirm-action').addEventListener('click', () => { closeConfirmModal(true); });
+
+    let targetSpielIdEditing = null;
+    function triggerNewSpiel() {
+      if (!editMode) { showToast("Edits are locked.", "lock", "#FF0000"); return; }
+      if (!activeTitleId) { showToast("Select a Title first.", "alert-triangle", "#FF0000"); return; }
+      targetSpielIdEditing = null;
+      document.getElementById('spiel-modal-headline').innerText = "Create New Spiel Content";
+      document.getElementById('input-spiel-label').value = ''; document.getElementById('input-spiel-body').value = '';
+      document.getElementById('spiel-modal').classList.remove('hidden'); document.getElementById('input-spiel-label').focus();
+    }
+    
+    function triggerEditSpiel(id) {
+      if (!editMode) return;
+      const activeTitle = db.titles.find(t => t.id === activeTitleId); if (!activeTitle) return;
+      const spiel = activeTitle.spiels.find(s => s.id === id); if (!spiel) return;
+      targetSpielIdEditing = id;
+      document.getElementById('spiel-modal-headline').innerText = "Modify Spiel Copy";
+      document.getElementById('input-spiel-label').value = spiel.label; document.getElementById('input-spiel-body').value = spiel.text;
+      document.getElementById('spiel-modal').classList.remove('hidden'); document.getElementById('input-spiel-label').focus();
+    }
+    
+    function closeSpielModal() { document.getElementById('spiel-modal').classList.add('hidden'); }
+    
+    document.getElementById('btn-save-spiel').addEventListener('click', () => {
+      if (!editMode) return;
+      const label = document.getElementById('input-spiel-label').value.trim(); 
+      const body = document.getElementById('input-spiel-body').value.trim();
+      
+      if (!label || !body) { showToast("Both label and text body are required.", "alert-triangle", "#FF0000"); return; }
+      const activeTitle = db.titles.find(t => t.id === activeTitleId); if (!activeTitle) return;
+      
+      saveState(targetSpielIdEditing ? "Edit Spiel" : "Create Spiel");
+      
+      if (targetSpielIdEditing) {
+        const spiel = activeTitle.spiels.find(s => s.id === targetSpielIdEditing);
+        if (spiel) {
+          // Initialize history tracking lazily on edit
+          if (!spiel.history) spiel.history = [];
+          
+          // Capture previous state into history log before overwriting
+          if (spiel.label !== label || spiel.text !== body) {
+            const now = new Date();
+            const historyEntry = {
+              id: 'hist_' + Date.now().toString(36) + '_' + Math.random().toString(36).substr(2, 5),
+              timestamp: now.getTime(),
+              timestampLabel: now.toLocaleString(),
+              label: spiel.label,
+              text: spiel.text,
+              versionLabel: spiel._nextVersionLabel || "Manual edit"
+            };
+            
+            // Clean up transient tag
+            delete spiel._nextVersionLabel;
+
+            // Push to front of chronological log
+            spiel.history.unshift(historyEntry);
+
+            // Cap at 20 entries
+            if (spiel.history.length > 20) {
+              spiel.history = spiel.history.slice(0, 20);
+            }
+          }
+
+          spiel.label = label; spiel.text = body; 
+          showToast("Spiel modified.", "check-circle", "var(--accent)");
+        }
+      } else {
+        if (!activeTitle.spiels) activeTitle.spiels = [];
+        const newSpiel = { 
+          id: 'spiel_' + Date.now().toString(36), 
+          label: label, 
+          text: body, 
+          favorite: false,
+          history: [] // Instantiate ready to receive edits
+        };
+        activeTitle.spiels.push(newSpiel); 
+        showToast("New Copy-Spiel created.", "check-circle", "var(--accent)");
+      }
+      commitToStorage(); closeSpielModal(); renderSpiels(); renderTitles();
+    });
+
+    // History Panel Controllers
+    function openHistoryPanel(spielId) {
+      const activeTitle = db.titles.find(t => t.id === activeTitleId); if (!activeTitle) return;
+      const spiel = activeTitle.spiels.find(s => s.id === spielId); if (!spiel) return;
+
+      currentHistorySpielId = spielId;
+      document.getElementById('history-spiel-label').innerText = `Spiel: ${spiel.label}`;
+      renderHistoryList(spiel);
+
+      document.getElementById('history-panel').classList.add('open');
+      document.getElementById('history-backdrop').classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function closeHistoryPanel() {
+      document.getElementById('history-panel').classList.remove('open');
+      document.getElementById('history-backdrop').classList.add('hidden');
+      currentHistorySpielId = null;
+    }
+
+    function renderHistoryList(spiel) {
+      const container = document.getElementById('history-entries-container');
+      if (!container) return;
+      container.innerHTML = '';
+
+      if (!spiel.history || spiel.history.length === 0) {
+        container.innerHTML = `
+          <div class="h-full flex flex-col items-center justify-center text-center p-6 text-[var(--text-muted)] mt-12">
+            <i data-lucide="history" class="w-8 h-8 mb-2 opacity-50"></i>
+            <p class="text-xs font-semibold">No previous versions yet</p>
+            <p class="text-[10px] mt-1 opacity-70">Saves will automatically build a revert history log here.</p>
+          </div>
+        `;
+        lucide.createIcons();
+        return;
+      }
+
+      spiel.history.forEach(entry => {
+        const previewText = entry.text.length > 100 ? entry.text.slice(0, 100) + '...' : entry.text;
+        const row = document.createElement('div');
+        row.className = "p-3 bg-[var(--bg-primary)]/50 border border-[var(--border-soft)] rounded-xl space-y-2 flex flex-col justify-between transition-all hover:border-[var(--accent)]";
+        
+        const isManual = entry.versionLabel === "Manual edit";
+        const badgeStyle = isManual ? "bg-cyan-500/10 text-cyan-400 border border-cyan-500/20" : "bg-amber-500/10 text-amber-400 border border-amber-500/20";
+
+        row.innerHTML = `
+          <div class="flex items-center justify-between">
+            <span class="text-[10px] text-[var(--text-muted)] font-medium">${entry.timestampLabel}</span>
+            <span class="text-[9px] px-1.5 py-0.5 rounded-full font-bold ${badgeStyle}">${entry.versionLabel}</span>
+          </div>
+          <div class="text-xs text-[var(--text-main)] bg-[var(--bg-deep)]/40 p-2 rounded-lg font-mono whitespace-pre-wrap break-all border border-[var(--border-subtle)]">${escapeHTML(previewText)}</div>
+          <div class="flex justify-between items-center pt-1 border-t border-[var(--border-soft)]">
+            <span class="text-[10px] text-[var(--text-muted)] font-bold truncate pr-2" title="${escapeHTML(entry.label)}">Tag: ${escapeHTML(entry.label)}</span>
+            <button onclick="restoreSpielVersion('${spiel.id}', '${entry.id}')" class="px-2.5 py-1 rounded-md text-[10px] font-bold bg-[var(--accent)] hover:bg-[var(--accent-soft)] text-[#E6EEF2] flex items-center space-x-1 transition-all shrink-0">
+              <i data-lucide="rotate-ccw" class="w-3 h-3"></i>
+              <span>Restore</span>
+            </button>
+          </div>
+        `;
+        container.appendChild(row);
+      });
+      lucide.createIcons();
+    }
+
+    // Restore historical revision log
+    function restoreSpielVersion(spielId, historyEntryId) {
+      const activeTitle = db.titles.find(t => t.id === activeTitleId); if (!activeTitle) return;
+      const spiel = activeTitle.spiels.find(s => s.id === spielId); if (!spiel) return;
+      const entry = spiel.history.find(h => h.id === historyEntryId); if (!entry) return;
+
+      document.getElementById('confirm-message').innerText = `Restore "${spiel.label}" to the version from ${entry.timestampLabel}?`;
+      pendingConfirmAction = () => {
+        saveState("Restore Spiel Version");
+
+        const currentLabel = spiel.label;
+        const currentText = spiel.text;
+
+        // Apply history states directly
+        spiel.label = entry.label;
+        spiel.text = entry.text;
+
+        // Push current values to history labeled as 'Restored'
+        const now = new Date();
+        const restoreHistoryEntry = {
+          id: 'hist_' + Date.now().toString(36) + '_' + Math.random().toString(36).substr(2, 5),
+          timestamp: now.getTime(),
+          timestampLabel: now.toLocaleString(),
+          label: currentLabel,
+          text: currentText,
+          versionLabel: "Restored"
+        };
+
+        if (!spiel.history) spiel.history = [];
+        spiel.history.unshift(restoreHistoryEntry);
+
+        if (spiel.history.length > 20) {
+          spiel.history = spiel.history.slice(0, 20);
+        }
+
+        commitToStorage();
+        renderSpiels();
+        renderHistoryList(spiel);
+        showToast("Spiel restored successfully.", "rotate-ccw", "var(--accent)");
+      };
+      document.getElementById('confirm-modal').classList.remove('hidden');
+    }
+
+    function triggerDeleteSpiel(id) {
+      if (!editMode) return;
+      const activeTitle = db.titles.find(t => t.id === activeTitleId); if (!activeTitle) return;
+      const spiel = activeTitle.spiels.find(s => s.id === id); if (!spiel) return;
+      document.getElementById('confirm-message').innerText = `Delete the Spiel: "${spiel.label}"?`;
+      pendingConfirmAction = () => {
+        saveState("Delete Spiel");
+        activeTitle.spiels = activeTitle.spiels.filter(s => s.id !== id);
+        commitToStorage(); renderSpiels(); renderTitles(); showToast("Spiel destroyed.", "trash-2");
+      };
+      document.getElementById('confirm-modal').classList.remove('hidden');
+    }
+
+    function toggleSelectTitle(id) {
+      if (!editMode) return;
+      if (selectedTitles.has(id)) selectedTitles.delete(id); else selectedTitles.add(id);
+      updateSelectedTitlesFooter();
+    }
+
+    function updateSelectedTitlesFooter() {
+      const stats = document.getElementById('title-stats'); const deleteBtn = document.getElementById('btn-multi-delete-titles');
+      stats.innerText = `${selectedTitles.size} Selected`;
+      if (selectedTitles.size > 0 && editMode) { deleteBtn.classList.remove('hidden'); deleteBtn.classList.add('flex'); } 
+      else { deleteBtn.classList.add('hidden'); deleteBtn.classList.remove('flex'); }
+    }
+
+    function triggerMultiDeleteTitles() {
+      if (!editMode || selectedTitles.size === 0) return;
+      document.getElementById('confirm-message').innerText = `Delete ${selectedTitles.size} titles and all their spiels? Cannot be reverted.`;
+      pendingConfirmAction = () => {
+        saveState("Bulk Delete Titles");
+        db.titles = db.titles.filter(t => !selectedTitles.has(t.id));
+        if (selectedTitles.has(activeTitleId)) activeTitleId = db.titles[0]?.id || null;
+        selectedTitles.clear(); commitToStorage(); renderTitles(); updateActiveTitlePanel(); showToast("Titles cleared.", "trash-2");
+      };
+      document.getElementById('confirm-modal').classList.remove('hidden');
+    }
+
+    function toggleSelectSpiel(id) {
+      if (!editMode) return;
+      if (selectedSpiels.has(id)) selectedSpiels.delete(id); else selectedSpiels.add(id);
+      updateSelectedSpielsFooter();
+    }
+
+    function updateSelectedSpielsFooter() {
+      const footer = document.getElementById('spiels-footer-actions');
+      const textStats = document.getElementById('spiel-stats'); const deleteBtn = document.getElementById('btn-multi-delete-spiels');
+      textStats.innerText = `${selectedSpiels.size} Spiels Selected`;
+      if (editMode && selectedSpiels.size > 0) { footer.classList.remove('hidden'); footer.classList.add('flex'); deleteBtn.classList.remove('hidden'); deleteBtn.classList.add('flex'); } 
+      else { footer.classList.add('hidden'); deleteBtn.classList.add('hidden'); }
+    }
+
+    function triggerMultiDeleteSpiels() {
+      if (!editMode) return;
+      const activeTitle = db.titles.find(t => t.id === activeTitleId); if (!activeTitle || selectedSpiels.size === 0) return;
+      document.getElementById('confirm-message').innerText = `Delete ${selectedSpiels.size} selected spiels?`;
+      pendingConfirmAction = () => {
+        saveState("Bulk Delete Spiels");
+        activeTitle.spiels = activeTitle.spiels.filter(s => !selectedSpiels.has(s.id));
+        selectedSpiels.clear(); commitToStorage(); renderSpiels(); renderTitles(); showToast("Spiels destroyed.", "trash-2");
+      };
+      document.getElementById('confirm-modal').classList.remove('hidden');
+    }
+
+    // Drag-Drop Category
+    let dragTitleId = null;
+    function handleTitleDragStart(e, id) { if(!editMode) return e.preventDefault(); dragTitleId = id; e.target.classList.add('dragging'); e.dataTransfer.setData('text/plain', id); e.dataTransfer.effectAllowed = 'move'; }
+    function handleTitleDragEnd(e) { e.target.classList.remove('dragging'); }
+    function allowTitleDragOver(e) { if(!editMode) return; e.preventDefault(); e.dataTransfer.dropEffect = 'move'; }
+    function handleTitleDrop(e) {
+      if (!editMode) return; e.preventDefault();
+      const targetElement = e.target.closest('[data-title-id]'); if (!targetElement) return;
+      const targetId = targetElement.getAttribute('data-title-id'); if (dragTitleId === targetId) return;
+      const dragIndex = db.titles.findIndex(t => t.id === dragTitleId); const dropIndex = db.titles.findIndex(t => t.id === targetId);
+      if (dragIndex !== -1 && dropIndex !== -1) {
+        saveState("Reorder Titles"); const [removed] = db.titles.splice(dragIndex, 1); db.titles.splice(dropIndex, 0, removed);
+        commitToStorage(); renderTitles();
+      }
+    }
+
+    // Drag-Drop Spiel Content
+    let dragSpielId = null;
+    function handleSpielDragStart(e, id) { if(!editMode) return e.preventDefault(); dragSpielId = id; e.target.classList.add('dragging'); e.dataTransfer.setData('text/plain', id); e.dataTransfer.effectAllowed = 'move'; }
+    function handleSpielDragEnd(e) { e.target.classList.remove('dragging'); }
+    function allowSpielDragOver(e) { if(!editMode) return; e.preventDefault(); e.dataTransfer.dropEffect = 'move'; }
+    function handleSpielDrop(e) {
+      if (!editMode) return; e.preventDefault();
+      const targetElement = e.target.closest('[data-spiel-id]'); if (!targetElement) return;
+      const targetId = targetElement.getAttribute('data-spiel-id'); if (dragSpielId === targetId) return;
+      const activeTitle = db.titles.find(t => t.id === activeTitleId); if (!activeTitle) return;
+      const dragIndex = activeTitle.spiels.findIndex(s => s.id === dragSpielId); const dropIndex = activeTitle.spiels.findIndex(s => s.id === targetId);
+      if (dragIndex !== -1 && dropIndex !== -1) {
+        saveState("Reorder Spiels"); const [removed] = activeTitle.spiels.splice(dragIndex, 1); activeTitle.spiels.splice(dropIndex, 0, removed);
+        commitToStorage(); renderSpiels();
+      }
+    }
+
+    function openSettingsModal() { if (!editMode) return; document.getElementById('input-unsplash-url').value = db.wallpaper || ''; document.getElementById('settings-modal').classList.remove('hidden'); }
+    function closeSettingsModal() { document.getElementById('settings-modal').classList.add('hidden'); }
+    function openImportExportModal() { if (!editMode) return; document.getElementById('impexp-modal').classList.remove('hidden'); }
+    function closeImportExportModal() { document.getElementById('impexp-modal').classList.add('hidden'); }
+
+    function exportData(format) {
+      let finalOutput = JSON.stringify(db, null, 2);
+      let mimeType = "application/json"; let extension = "json";
+      if (format === 'txt') {
+        mimeType = "text/plain"; extension = "txt";
+        finalOutput = "Easybet StudioDesk Export\n==================\n\n";
+        db.titles.forEach(t => {
+          finalOutput += `[TITLE]: ${t.name}\nDescription: ${t.desc || 'N/A'}\n\n`;
+          if (t.spiels && t.spiels.length > 0) t.spiels.forEach(s => finalOutput += `--- ${s.label} ---\n${s.text}\n\n`);
+          else finalOutput += "(No spiels)\n\n";
+          finalOutput += "==================\n\n";
+        });
+      }
+      const blob = new Blob([finalOutput], { type: mimeType }); const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = `easybet_studiodesk_backup_${new Date().toISOString().split('T')[0]}.${extension}`;
+      a.click(); URL.revokeObjectURL(url);
+      showToast(`Workspace exported as .${extension}`, "download", "var(--accent)"); closeImportExportModal();
+    }
+
+    function handleFileImport(event) {
+      const file = event.target.files[0]; if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const imported = JSON.parse(e.target.result);
+          if (imported && imported.titles) {
+            saveState("Import Backup"); db = imported; commitToStorage();
+            renderTitles(); if (db.titles.length > 0) selectTitle(db.titles[0].id); else updateActiveTitlePanel();
+            applyBackground(db.wallpaper); showToast("Backup imported!", "upload-cloud", "var(--accent)");
+          } else showToast("Invalid Easybet StudioDesk backup.", "alert-triangle", "#FF0000");
+        } catch (err) { showToast("Failed to parse JSON.", "alert-triangle", "#FF0000"); }
+        event.target.value = ''; closeImportExportModal();
+      };
+      reader.readAsText(file);
+    }
+  </script>
+</body>
+</html>

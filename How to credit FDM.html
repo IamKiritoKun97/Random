@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <!-- Tab Icon / Favicon -->
+  <link rel="icon" type="image/png" href="Easybet logo.png">
+  <link rel="shortcut icon" type="image/png" href="FDM How to credit.png">
+    <title>How to credit 150% First Deposit Match on Sports and Lucky Numbers</title>
+    <style>
+        /* Exact Admin Panel Styling */
+        :root {
+            --border-color: #ccc;
+            --text-color: #333;
+            --bg-color: #f5f5f5;
+            --panel-bg: #fff;
+            --btn-blue: #337ab7;
+            --btn-blue-hover: #286090;
+            --btn-red: #d9534f;
+            --btn-default: #fff;
+            --btn-default-border: #ccc;
+            --font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            --copy-hover: #e8f0fe;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: var(--font-family);
+            font-size: 13px;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            position: relative; /* For floating panels */
+        }
+        
+        /* New Header Style */
+        h1.main-header {
+            text-align: center;
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            width: 100%;
+        }
+        
+        .main-container {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            max-width: 1200px;
+            align-items: center;
+        }
+
+        .modal-wrap {
+            width: 100%;
+            background: var(--panel-bg);
+            border: 1px solid rgba(0,0,0,0.2);
+            border-radius: 4px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        .header {
+            padding: 15px;
+            border-bottom: 1px solid #e5e5e5;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header-title {
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .header-title span {
+            font-weight: normal;
+            color: #777;
+        }
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: #000;
+            opacity: 0.2;
+            cursor: pointer;
+        }
+        .close-btn:hover { opacity: 0.5; }
+
+        /* Main Content */
+        .content {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .left-col {
+            flex: 1 1 600px;
+            padding: 15px;
+            border-right: 1px solid #e5e5e5;
+        }
+        .right-col {
+            flex: 1 1 400px;
+            padding: 15px;
+            background-color: #fafafa;
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: inline-block;
+            max-width: 100%;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+        .form-control {
+            display: block;
+            width: 100%;
+            height: 30px;
+            padding: 5px 10px;
+            font-size: 13px;
+            line-height: 1.5;
+            color: #555;
+            background-color: #fff;
+            background-image: none;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+            font-family: inherit;
+        }
+        select.form-control {
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath fill='%23555' d='M0 3l5 5 5-5z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 8px center;
+            padding-right: 20px;
+        }
+        
+        .inline-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            gap: 10px;
+        }
+        .inline-row .form-control {
+            width: auto;
+            display: inline-block;
+        }
+        .inline-text {
+            color: #333;
+        }
+        .input-sm { width: 80px !important; }
+        .input-md { width: 120px !important; }
+
+        .checkbox-row {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 8px;
+            gap: 5px;
+        }
+        .checkbox-row input {
+            margin-top: 2px;
+        }
+        .checkbox-row label {
+            font-weight: normal;
+            margin: 0;
+        }
+
+        /* Date Picker Group */
+        .date-group {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .date-input {
+            display: flex;
+            align-items: center;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            background: #eee;
+            overflow: hidden;
+            width: 150px;
+        }
+        .date-input input {
+            border: none;
+            background: transparent;
+            padding: 5px 10px;
+            width: 100%;
+            outline: none;
+            font-size: 13px;
+            color: #555;
+        }
+        .date-icon {
+            padding: 5px 8px;
+            background: #fff;
+            border-left: 1px solid #ccc;
+            color: #555;
+        }
+        .time-input {
+            width: 40px !important;
+            text-align: center;
+        }
+
+        /* Copyable Areas */
+        .copy-wrapper {
+            position: relative;
+            cursor: pointer;
+            display: inline-block;
+            width: 100%;
+        }
+        .copy-wrapper.inline { width: auto; }
+        
+        /* FIX: Ensure disabled elements don't block clicks */
+        .copy-wrapper select:disabled, 
+        .copy-wrapper input:disabled {
+            pointer-events: none; 
+        }
+        
+        /* Transparent overlay to guarantee click registers on wrapper */
+        .click-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 10;
+        }
+
+        .copy-wrapper input, .copy-wrapper select {
+            cursor: pointer;
+        }
+        .copy-wrapper:not(.highlight-copy):hover input, 
+        .copy-wrapper:not(.highlight-copy):hover select, 
+        .copy-wrapper:not(.highlight-copy):hover .date-input {
+            background-color: var(--copy-hover) !important;
+            border-color: #80bdff;
+        }
+        .copy-icon {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 14px;
+            height: 14px;
+            fill: #777;
+            opacity: 0;
+            transition: opacity 0.2s;
+            pointer-events: none;
+            z-index: 11;
+        }
+        select.form-control + .click-overlay + .copy-icon,
+        select.form-control + .copy-icon { right: 25px; }
+        
+        .copy-wrapper:hover .copy-icon,
+        .highlight-copy:hover .copy-icon { opacity: 1; }
+
+        /* Right Panel Specifics */
+        .box {
+            border: 1px solid #e5e5e5;
+            background: #fff;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 3px;
+        }
+        .box-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .tags-area {
+            border: 1px solid #ccc;
+            padding: 5px;
+            min-height: 40px;
+            background: #fff;
+            border-radius: 3px;
+        }
+        .tag {
+            display: inline-block;
+            padding: 3px 6px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            font-size: 12px;
+            margin: 2px;
+            background: #fff;
+            cursor: pointer;
+            transition: background 0.2s;
+            position: relative;
+        }
+        .tag:not(.highlight-copy):hover { background: var(--copy-hover); }
+        .tag .remove { color: #999; margin-left: 5px; cursor: pointer; z-index: 20; position: relative; }
+        
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 15px;
+        }
+        .tab {
+            padding: 10px 15px;
+            cursor: pointer;
+            color: #555;
+            margin-bottom: -1px;
+        }
+        .tab.active {
+            background: #fafafa;
+            border: 1px solid #ddd;
+            border-bottom-color: transparent;
+            border-top: 2px solid #3c8dbc;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 6px 12px;
+            font-size: 13px;
+            font-weight: normal;
+            line-height: 1.42857143;
+            text-align: center;
+            white-space: nowrap;
+            vertical-align: middle;
+            cursor: pointer;
+            border: 1px solid transparent;
+            border-radius: 3px;
+        }
+        .btn-danger {
+            color: #fff;
+            background-color: var(--btn-red);
+            border-color: #d43f3a;
+        }
+        .btn-default {
+            color: #333;
+            background-color: var(--btn-default);
+            border-color: var(--btn-default-border);
+        }
+        .btn-primary {
+            color: #fff;
+            background-color: var(--btn-blue);
+            border-color: #2e6da4;
+        }
+        .btn-primary:hover {
+            background-color: var(--btn-blue-hover);
+        }
+
+        .limit-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .limit-add-row {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .input-group-addon {
+            padding: 5px 10px;
+            font-size: 13px;
+            font-weight: normal;
+            line-height: 1;
+            color: #555;
+            text-align: center;
+            background-color: #eee;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+
+        .actions-footer {
+            padding: 15px;
+            background: #fff;
+            border-top: 1px solid #e5e5e5;
+            text-align: right;
+        }
+
+        .main-create-footer {
+            padding: 20px;
+            background: #eee;
+            border-top: 1px solid #dcdcdc;
+            text-align: center;
+        }
+        .btn-create-large {
+            padding: 10px 40px;
+            font-size: 16px;
+            font-weight: bold;
+            background-color: #5cb85c;
+            border-color: #4cae4c;
+            color: white;
+        }
+        .btn-create-large:hover { background-color: #449d44; }
+
+        /* Toast */
+        #toast {
+            visibility: hidden;
+            min-width: 250px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 4px;
+            padding: 16px;
+            position: fixed;
+            z-index: 1000;
+            left: 50%;
+            bottom: 30px;
+            transform: translateX(-50%);
+            font-size: 15px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            opacity: 0;
+            transition: opacity 0.3s, bottom 0.3s;
+            white-space: pre-line; /* Allows line breaks */
+            line-height: 1.5;
+        }
+        #toast.show {
+            visibility: visible;
+            opacity: 1;
+            bottom: 50px;
+        }
+
+        /* ================================================= */
+        /* COPYABLE FIELD HIGHLIGHTING SYSTEM                */
+        /* ================================================= */
+        .highlight-copy {
+            background-color: #fff8d6 !important;
+            box-shadow: 0 0 0 3px rgba(255,193,7,.15) !important;
+            transition: all 0.2s ease-in-out;
+            animation: pulseGlow 5s infinite;
+            border-radius: 3px;
+        }
+        .highlight-copy input, 
+        .highlight-copy select,
+        .highlight-copy .date-input,
+        .highlight-copy .date-input input {
+            background-color: transparent !important;
+            border-color: #ffc107 !important;
+        }
+        .highlight-copy.tag {
+            border-color: #ffc107 !important;
+        }
+        
+        .highlight-copy:hover {
+            filter: brightness(1.05);
+            transform: scale(1.01);
+            cursor: pointer;
+            z-index: 5;
+        }
+        .highlight-copy:hover input, 
+        .highlight-copy:hover select,
+        .highlight-copy:hover .date-input {
+            border-color: #e0a800 !important;
+        }
+
+        @keyframes pulseGlow {
+            0% { box-shadow: 0 0 0 3px rgba(255,193,7,.15); }
+            50% { box-shadow: 0 0 0 6px rgba(255,193,7,.3); }
+            100% { box-shadow: 0 0 0 3px rgba(255,193,7,.15); }
+        }
+
+        .copy-badge {
+            position: absolute;
+            right: 30px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #ffc107;
+            color: #000;
+            font-size: 10px;
+            font-weight: 700;
+            border-radius: 4px;
+            padding: 2px 6px;
+            pointer-events: none;
+            z-index: 12;
+        }
+        /* Adjust badge for tags */
+        .tag .copy-badge {
+            position: static;
+            display: inline-block;
+            transform: none;
+            margin-left: 8px;
+            margin-right: 5px;
+        }
+
+        /* ================================================= */
+        /* FLOATING PANELS                                   */
+        /* ================================================= */
+        .visual-guide-panel {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #fff8d6;
+            border: 1px solid #ffc107;
+            border-radius: 6px;
+            padding: 15px;
+            width: 220px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            z-index: 500;
+        }
+        .visual-guide-panel h4 {
+            margin-bottom: 10px;
+            font-size: 12px;
+            text-transform: uppercase;
+            color: #a67c00;
+            border-bottom: 1px solid #ffc107;
+            padding-bottom: 5px;
+        }
+        .visual-guide-panel ul {
+            list-style: none;
+        }
+        .visual-guide-panel li {
+            margin-bottom: 5px;
+            font-size: 12px;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .copy-history-panel {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #fff;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            padding: 15px;
+            width: 220px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            z-index: 500;
+        }
+        .copy-history-panel h4 {
+            margin-bottom: 10px;
+            font-size: 12px;
+            text-transform: uppercase;
+            color: #555;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
+        }
+        .copy-history-panel ul {
+            list-style: none;
+        }
+        .copy-history-panel li {
+            margin-bottom: 5px;
+            font-size: 12px;
+            color: #337ab7;
+            background: #f9f9f9;
+            padding: 4px 8px;
+            border-radius: 3px;
+            border: 1px dashed #ccc;
+            word-break: break-all;
+        }
+
+        /* ================================================= */
+        /* QUICK COPY SECTION                                */
+        /* ================================================= */
+        .quick-copy-section {
+            padding: 15px 20px;
+            background: #fff;
+            border-top: 1px solid #e5e5e5;
+        }
+        .quick-copy-section h3 {
+            margin-bottom: 15px;
+            font-size: 14px;
+            color: #333;
+        }
+        .quick-copy-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .quick-copy-card {
+            flex: 1 1 calc(25% - 10px);
+            min-width: 150px;
+            padding: 10px;
+            border: 1px solid #ffc107;
+            border-radius: 4px;
+            text-align: center;
+            position: relative;
+        }
+        .quick-copy-card strong {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 11px;
+            text-transform: uppercase;
+            color: #a67c00;
+        }
+        .quick-copy-card span, .quick-copy-card div {
+            font-size: 13px;
+            font-weight: bold;
+            color: #333;
+        }
+        .quick-copy-card .copy-badge {
+            top: -8px;
+            right: -8px;
+            transform: none;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="visual-guide-panel">
+        <h4>IMPORTANT COPY VALUES</h4>
+        <ul>
+            <li>✓ Bonus Name</li>
+            <li>✓ Bonus Type</li>
+            <li>✓ Expiration Date</li>
+            <li>✓ Time Zone</li>
+            <li>✓ Wallet Amount</li>
+            <li>✓ Withdrawal Limit</li>
+            <li>✓ Win Limit</li>
+            <li>✓ Sports 4301</li>
+            <li>✓ Lucky Numbers 4200</li>
+        </ul>
+    </div>
+
+    <div class="copy-history-panel">
+        <h4>Recently Copied</h4>
+        <ul id="history-list">
+            <li style="color:#999; border:none; background:transparent;">No copies yet</li>
+        </ul>
+    </div>
+
+    <div class="main-container">
+        <!-- Added Main Header -->
+        <h1 class="main-header">
+          150% First Deposit Match on Sports and Lucky Numbers
+        </h1>
+        
+        <div class="modal-wrap">
+            <div class="header">
+                <div class="header-title">Rabbie Mokwena <span>| Create a new bonus wallet</span></div>
+                <button class="close-btn">&times;</button>
+            </div>
+    
+            <div class="content">
+                <div class="left-col">
+                    
+                    <div class="form-group">
+                        <label>Bonus Name</label>
+                        <div class="copy-wrapper highlight-copy" onclick="copyText('150% First Deposit Match')">
+                            <input type="text" class="form-control" value="150% First Deposit Match" readonly>
+                            <div class="click-overlay"></div>
+                            <div class="copy-badge">COPY</div>
+                            <svg class="copy-icon" viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+                        </div>
+                    </div>
+    
+                    <div class="form-group">
+                        <label>Bonus type</label>
+                        <div class="copy-wrapper highlight-copy" onclick="copyText('Internal games')">
+                            <select class="form-control" disabled style="color: #555;">
+                                <option selected>Internal games</option>
+                            </select>
+                            <div class="click-overlay"></div>
+                            <div class="copy-badge">COPY</div>
+                            <svg class="copy-icon" viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+                        </div>
+                    </div>
+    
+                    <div class="form-group">
+                        <label>Bonus wallet expiration time</label>
+                        <div class="date-group">
+                            <div class="copy-wrapper inline highlight-copy" onclick="copyText(document.getElementById('expiry-date').value)">
+                                <div class="date-input">
+                                    <!-- Updated Expiration Date Placeholder -->
+                                    <input type="text" id="expiry-date" readonly>
+                                    <div class="date-icon">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>
+                                    </div>
+                                </div>
+                                <div class="click-overlay"></div>
+                                <div class="copy-badge" style="right: 5px;">COPY</div>
+                            </div>
+                            <input type="text" class="form-control time-input" value="00" readonly> : 
+                            <input type="text" class="form-control time-input" value="00" readonly>
+                        </div>
+                    </div>
+    
+                    <div class="form-group">
+                        <label>Time Zone</label>
+                        <div class="copy-wrapper highlight-copy" onclick="copyText('Africa/Johannesburg')">
+                            <select class="form-control" disabled style="color: #555;">
+                                <option selected>Africa/Johannesburg</option>
+                            </select>
+                            <div class="click-overlay"></div>
+                            <div class="copy-badge">COPY</div>
+                            <svg class="copy-icon" viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+                        </div>
+                    </div>
+    
+                    <div class="inline-row" style="background:#f9f9f9; padding:5px; border:1px dashed #ccc; margin-bottom:5px;">
+                        <input type="number" id="calc-input" class="form-control input-md" placeholder="Enter deposit">
+                        <span class="inline-text" style="color:#666; font-style:italic;">First Approved Deposit (Auto-calculates below)</span>
+                    </div>
+    
+                    <div class="inline-row">
+                        <div class="copy-wrapper inline highlight-copy" onclick="copyText(document.getElementById('wallet-output').value)" style="width: 120px;">
+                            <input type="text" id="wallet-output" class="form-control input-md" style="color: #333; font-weight: bold;" readonly>
+                            <div class="click-overlay"></div>
+                            <div class="copy-badge">COPY</div>
+                            <svg class="copy-icon" viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+                        </div>
+                        <span class="inline-text">Amount using which the wallet is created.</span>
+                    </div>
+    
+                    <div class="inline-row">
+                        <input type="text" class="form-control input-sm" value="1">
+                        <span class="inline-text">Amount of times a user needs to rollover the initial payin to get payed out.</span>
+                    </div>
+    
+                    <div class="inline-row">
+                        <input type="text" class="form-control input-sm" value="1.01">
+                        <span class="inline-text">Minimum odds per bet leg required to be able to place a bet.</span>
+                    </div>
+    
+                    <div class="inline-row">
+                        <input type="text" class="form-control input-sm" value="1.01">
+                        <span class="inline-text">- Max</span>
+                        <input type="text" class="form-control input-sm">
+                        <span class="inline-text">Allowed odds per bet.</span>
+                    </div>
+    
+                    <div class="inline-row">
+                        <input type="text" class="form-control input-sm" value="1">
+                        <span class="inline-text">- Max</span>
+                        <input type="text" class="form-control input-sm">
+                        <span class="inline-text" style="flex:1;">Allowed amount of bet legs per bet entry. 1 - single bets and multibets are allowed, 2 and more - only multibets are allowed.</span>
+                    </div>
+    
+                    <div class="inline-row">
+                        <div class="copy-wrapper inline highlight-copy" onclick="copyText('15000')" style="width: 120px;">
+                            <input type="text" class="form-control input-md" value="15000" readonly>
+                            <div class="click-overlay"></div>
+                            <div class="copy-badge">COPY</div>
+                            <svg class="copy-icon" viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+                        </div>
+                        <span class="inline-text">The maximum allowable amount that can be withdrawn.</span>
+                    </div>
+    
+                    <div class="inline-row">
+                        <div style="width: 120px;">
+                            <textarea class="form-control" style="resize:none; height: 30px; padding: 5px 10px;"></textarea>
+                        </div>
+                        <span class="inline-text">The highest possible amount that can be won on a single betting slip.</span>
+                    </div>
+    
+                    <div class="inline-row">
+                        <span class="inline-text">Min</span>
+                        <input type="text" class="form-control input-sm">
+                        <span class="inline-text">- Max</span>
+                        <input type="text" class="form-control input-sm">
+                        <span class="inline-text">Stake limits per slip</span>
+                    </div>
+    
+                    <div class="checkbox-row">
+                        <input type="checkbox" checked>
+                        <label>Stake should be deducted from winnings.</label>
+                    </div>
+                    <div class="checkbox-row">
+                        <input type="checkbox">
+                        <label>Force the user to use all his bonus balance to place a bet.</label>
+                    </div>
+                    <div class="checkbox-row">
+                        <input type="checkbox">
+                        <label>Payout after each bet.</label>
+                    </div>
+                    <div class="checkbox-row">
+                        <input type="checkbox">
+                        <label>Notify user</label>
+                    </div>
+    
+                    <div class="form-group" style="margin-top: 15px;">
+                        <label>Supported games</label>
+                        <input type="text" class="form-control" value="All games" readonly style="color: #777;">
+                    </div>
+    
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea class="form-control" rows="3" style="resize:none;"></textarea>
+                        <div style="text-align: right; color: #999; font-size: 11px; margin-top: 2px;">0 / 512</div>
+                    </div>
+    
+                </div>
+    
+                <!-- Cleared Specific Area as per instructions -->
+                <div class="right-col">
+                    <!-- cleared content -->
+                </div>
+            </div>
+    
+            <div class="quick-copy-section">
+                <h3>Quick Copy Reference</h3>
+                <div class="quick-copy-grid">
+                    <div class="quick-copy-card highlight-copy" onclick="copyText('150% First Deposit Match')">
+                        <div class="copy-badge">COPY</div>
+                        <strong>Bonus Name</strong>
+                        <div>150% First Deposit Match</div>
+                    </div>
+                    <div class="quick-copy-card highlight-copy" onclick="copyText('Internal games')">
+                        <div class="copy-badge">COPY</div>
+                        <strong>Bonus Type</strong>
+                        <div>Internal games</div>
+                    </div>
+                    <div class="quick-copy-card highlight-copy" onclick="copyText(document.getElementById('expiry-date').value)">
+                        <div class="copy-badge">COPY</div>
+                        <strong>Expiration Date</strong>
+                        <div id="qc-exp"></div>
+                    </div>
+                    <div class="quick-copy-card highlight-copy" onclick="copyText('Africa/Johannesburg')">
+                        <div class="copy-badge">COPY</div>
+                        <strong>Time Zone</strong>
+                        <div>Africa/Johannesburg</div>
+                    </div>
+                    <div class="quick-copy-card highlight-copy" onclick="copyText('15000')">
+                        <div class="copy-badge">COPY</div>
+                        <strong>Withdrawal Limit</strong>
+                        <div>15000</div>
+                    </div>
+                    <div class="quick-copy-card highlight-copy" onclick="copyText('15000')">
+                        <div class="copy-badge">COPY</div>
+                        <strong>Win Limit</strong>
+                        <div>15000</div>
+                    </div>
+                    <div class="quick-copy-card highlight-copy" onclick="copyText('4301')">
+                        <div class="copy-badge">COPY</div>
+                        <strong>Sports 4301</strong>
+                        <div>4301</div>
+                    </div>
+                    <div class="quick-copy-card highlight-copy" onclick="copyText('4200')">
+                        <div class="copy-badge">COPY</div>
+                        <strong>Lucky Numbers 4200</strong>
+                        <div>4200</div>
+                    </div>
+                </div>
+            </div>
+    
+            <div class="main-create-footer">
+                <button class="btn btn-create-large" onclick="triggerCreate()">Create</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast"></div>
+
+    <script>
+        // Global Array for Smart Copy History
+        let copyHistoryData = [];
+
+        // Updated Auto Date Logic for Johannesburg time + 14 days
+        function getJohannesburgDatePlus14() {
+          const now = new Date();
+
+          // Convert to Johannesburg time
+          const jhbTime = new Date(
+            now.toLocaleString("en-US", { timeZone: "Africa/Johannesburg" })
+          );
+
+          // Add 14 days
+          jhbTime.setDate(jhbTime.getDate() + 14);
+
+          const day = jhbTime.getDate();
+          const month = jhbTime.getMonth() + 1;
+          const year = jhbTime.getFullYear();
+
+          return `${day}/${month}/${year}`;
+        }
+
+        // 2. Deposit Calculator Logic (Value x 1.5)
+        function initializeCalculator() {
+            const calcInput = document.getElementById('calc-input');
+            const walletOutput = document.getElementById('wallet-output');
+
+            calcInput.addEventListener('input', function(e) {
+                const val = parseFloat(e.target.value);
+                if (!isNaN(val)) {
+                    // Multiply by 1.5
+                    const result = val * 1.5;
+                    walletOutput.value = result; 
+                } else {
+                    walletOutput.value = '';
+                }
+            });
+        }
+
+        // 3. Smart Copy to Clipboard system
+        function copyText(text) {
+            if (!text) return;
+            
+            navigator.clipboard.writeText(text).then(() => {
+                triggerSuccessSequence(text);
+            }).catch(err => {
+                console.error('Failed to copy text: ', err);
+                const tempInput = document.createElement("input");
+                tempInput.value = text;
+                document.body.appendChild(tempInput);
+                tempInput.select();
+                document.execCommand("copy");
+                document.body.removeChild(tempInput);
+                triggerSuccessSequence(text);
+            });
+        }
+
+        function triggerSuccessSequence(text) {
+            // Update Toast
+            showToast(`✓ Copied Successfully\n${text}`);
+            
+            // Update History
+            copyHistoryData.unshift(text);
+            if (copyHistoryData.length > 5) {
+                copyHistoryData.pop();
+            }
+            renderHistory();
+        }
+
+        function renderHistory() {
+            const list = document.getElementById('history-list');
+            list.innerHTML = '';
+            copyHistoryData.forEach(item => {
+                const li = document.createElement('li');
+                li.innerText = item;
+                list.appendChild(li);
+            });
+        }
+
+        // Toast Notification Display
+        function showToast(message) {
+            const toast = document.getElementById("toast");
+            toast.innerText = message;
+            toast.className = "show";
+            
+            setTimeout(function(){ 
+                toast.className = toast.className.replace("show", ""); 
+            }, 3000);
+        }
+
+        // Create Button mock action
+        function triggerCreate() {
+            showToast("Processing Wallet Creation...");
+        }
+
+        // Inject into HTML on load
+        document.addEventListener("DOMContentLoaded", function () {
+          const expiryDate = getJohannesburgDatePlus14();
+          
+          const expiryElement = document.getElementById("expiry-date");
+          if (expiryElement) {
+            // Check if it's an input field
+            if(expiryElement.tagName === "INPUT") {
+                expiryElement.value = expiryDate;
+            } else {
+                expiryElement.textContent = expiryDate;
+            }
+          }
+          
+          // Sync with Quick Copy panel
+          const qcExpElement = document.getElementById("qc-exp");
+          if(qcExpElement) {
+              qcExpElement.innerText = expiryDate;
+          }
+          
+          initializeCalculator();
+        });
+    </script>
+</body>
+</html>

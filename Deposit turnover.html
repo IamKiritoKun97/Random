@@ -1,0 +1,676 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Easybet - Deposit Turnover & Customer Support Template</title>
+    <style>
+        :root {
+            /* --- WALLPAPER CONFIGURATION --- */
+            --wallpaper-url: url("https://images.unsplash.com/photo-1770131100714-12a6989ec31d?q=80&w=697&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
+            
+            /* --- THEME COLORS --- */
+            --bg-overlay: rgba(0, 0, 0, 0.65); /* Darkens wallpaper for readability */
+            --glass-bg: rgba(15, 15, 15, 0.55);
+            --glass-border: rgba(255, 255, 255, 0.12);
+            --accent-silver: #ffffff;
+            --accent-muted: #bcbcbc;
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.7);
+            --status-met: #4ade80;
+            --status-pending: #fbbf24;
+            --panel-blur: blur(24px);
+            --input-bg: rgba(255, 255, 255, 0.05);
+            --highlight-bg: rgba(251, 191, 36, 0.15);
+            --highlight-border: rgba(251, 191, 36, 0.4);
+            --highlight-text: #fcd34d;
+            --highlight-met-bg: rgba(74, 222, 128, 0.15);
+            --highlight-met-border: rgba(74, 222, 128, 0.4);
+            --highlight-met-text: #86efac;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-primary);
+            position: relative;
+            background-image: var(--wallpaper-url);
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-overlay);
+            z-index: -1;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1.25fr;
+            width: 100%;
+            max-width: 1250px;
+            gap: 28px;
+            padding: 40px 20px;
+            animation: fadeIn 1s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: 1;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- Glass Panels --- */
+        .panel {
+            background: var(--glass-bg);
+            backdrop-filter: var(--panel-blur);
+            -webkit-backdrop-filter: var(--panel-blur);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+            transition: border-color 0.4s ease, transform 0.3s ease;
+        }
+
+        .panel:hover {
+            border-color: rgba(255, 255, 255, 0.18);
+        }
+
+        .header-section {
+            margin-bottom: 30px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding-bottom: 20px;
+        }
+
+        .header-section h1 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            color: var(--accent-silver);
+            text-transform: uppercase;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header-section h1 span {
+            background: #ff0000;
+            color: white;
+            font-size: 0.7rem;
+            padding: 4px 8px;
+            border-radius: 6px;
+            letter-spacing: 1px;
+            font-weight: 900;
+        }
+
+        .header-section p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            font-weight: 400;
+            opacity: 0.8;
+        }
+
+        /* --- Form Elements --- */
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-wrapper span {
+            position: absolute;
+            left: 18px;
+            color: var(--text-secondary);
+            font-weight: 600;
+            font-size: 1rem;
+            pointer-events: none;
+        }
+
+        input {
+            width: 100%;
+            background: var(--input-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 14px;
+            padding: 16px 16px 16px 40px;
+            color: var(--text-primary);
+            font-size: 1.1rem;
+            font-weight: 500;
+            outline: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        input:focus {
+            border-color: rgba(255, 255, 255, 0.4);
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.05);
+        }
+
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Remove arrows from number input */
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .error-msg {
+            color: #ff6b6b;
+            font-size: 0.75rem;
+            margin-top: 8px;
+            display: none;
+        }
+
+        .btn-reset {
+            margin-top: 15px;
+            background: transparent;
+            border: 1px solid var(--glass-border);
+            color: var(--text-secondary);
+            padding: 12px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            align-self: flex-start;
+        }
+
+        .btn-reset:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--text-primary);
+            border-color: rgba(255, 255, 255, 0.25);
+        }
+
+        /* --- Dynamic Support Template Card --- */
+        .preview-panel {
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            border: 1px solid var(--glass-border);
+            background: rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+
+        .preview-panel:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 255, 255, 0.3);
+            transform: translateY(-4px);
+        }
+
+        .preview-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding-bottom: 16px;
+            margin-bottom: 20px;
+        }
+
+        .preview-badge {
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            font-size: 0.75rem;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .preview-badge.pending {
+            background: rgba(251, 191, 36, 0.15);
+            color: var(--status-pending);
+            border: 1px solid rgba(251, 191, 36, 0.3);
+        }
+
+        .preview-badge.met {
+            background: rgba(74, 222, 128, 0.15);
+            color: var(--status-met);
+            border: 1px solid rgba(74, 222, 128, 0.3);
+        }
+
+        .copy-action-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #ffffff;
+            padding: 8px 16px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            transition: all 0.2s ease;
+        }
+
+        .preview-panel:hover .copy-action-btn {
+            background: #ffffff;
+            color: #000000;
+            box-shadow: 0 4px 12px rgba(255, 255, 255, 0.15);
+        }
+
+        .template-body {
+            background: rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 24px;
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: rgba(255, 255, 255, 0.85);
+            white-space: pre-wrap;
+            position: relative;
+            transition: background 0.3s ease;
+        }
+
+        .preview-panel:hover .template-body {
+            background: rgba(0, 0, 0, 0.35);
+        }
+
+        /* Visual highlighting for injected dynamic fields */
+        .highlight-pill {
+            display: inline-block;
+            background: var(--highlight-bg);
+            border: 1px solid var(--highlight-border);
+            color: var(--highlight-text);
+            padding: 1px 8px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            margin: 0 2px;
+            transition: all 0.3s ease;
+        }
+
+        .highlight-pill.met {
+            background: var(--highlight-met-bg);
+            border: 1px solid var(--highlight-met-border);
+            color: var(--highlight-met-text);
+        }
+
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 20px;
+            text-align: center;
+            color: var(--text-secondary);
+        }
+
+        .empty-state svg {
+            width: 48px;
+            height: 48px;
+            margin-bottom: 16px;
+            stroke: rgba(255, 255, 255, 0.25);
+        }
+
+        .empty-state p {
+            font-size: 1rem;
+            font-weight: 500;
+            opacity: 0.6;
+        }
+
+        /* --- Toast Notifications --- */
+        .toast {
+            position: fixed;
+            bottom: 40px;
+            background: #ffffff;
+            color: #000000;
+            padding: 16px 32px;
+            border-radius: 16px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            transform: translateY(150px);
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: 1000;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.45);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+        }
+
+        /* --- Footer --- */
+        .footer {
+            margin: 40px 0;
+            max-width: 900px;
+            text-align: center;
+            z-index: 1;
+        }
+
+        .clause-text {
+            font-size: 0.8rem;
+            line-height: 1.8;
+            color: var(--text-secondary);
+            opacity: 0.7;
+            margin-bottom: 20px;
+            padding: 0 20px;
+        }
+
+        .terms-link {
+            color: var(--accent-silver);
+            text-decoration: none;
+            font-size: 0.8rem;
+            font-weight: 700;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+            padding-bottom: 4px;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .terms-link:hover {
+            color: white;
+            border-bottom-color: white;
+            letter-spacing: 1.5px;
+        }
+
+        /* --- Responsive Styles --- */
+        @media (max-width: 1024px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+                padding-top: 20px;
+                max-width: 700px;
+            }
+            .panel {
+                padding: 32px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="dashboard">
+        <!-- Input Panel -->
+        <div class="panel">
+            <div class="header-section">
+                <h1>Easybet <span>TOOL</span></h1>
+                <p>Withdrawal Eligibility & Response Builder</p>
+            </div>
+
+            <div class="form-content">
+                <div class="input-group">
+                    <label for="totalDeposit">Total Deposit Amount / DEP</label>
+                    <div class="input-wrapper">
+                        <span>R</span>
+                        <input type="number" id="totalDeposit" placeholder="0.00" step="0.01">
+                    </div>
+                    <div id="errDeposit" class="error-msg">Please enter a valid deposit amount.</div>
+                </div>
+
+                <div class="input-group">
+                    <label for="totalWagering">Total Amount Wagered / PIS</label>
+                    <div class="input-wrapper">
+                        <span>R</span>
+                        <input type="number" id="totalWagering" placeholder="0.00" step="0.01">
+                    </div>
+                    <div id="errWagering" class="error-msg">Please enter a valid wagering amount.</div>
+                </div>
+
+                <div class="input-group">
+                    <label for="earlyCashout">Total Early Cash Out / ECO</label>
+                    <div class="input-wrapper">
+                        <span>R</span>
+                        <input type="number" id="earlyCashout" placeholder="0.00" step="0.01" value="0.00">
+                    </div>
+                    <div id="errCashout" class="error-msg">Please enter a valid amount (or 0).</div>
+                </div>
+            </div>
+
+            <button class="btn-reset" onclick="resetForm()">Clear Inputs</button>
+        </div>
+
+        <!-- Dynamic Response Card (Preview Panel) -->
+        <div id="previewArea" class="panel preview-panel" onclick="copyTemplateToClipboard()">
+            <div class="preview-header">
+                <span id="statusBadge" class="preview-badge">No Status</span>
+                <button class="copy-action-btn">
+                    <svg id="copyIcon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                    <span id="copyText">Tap to Copy</span>
+                </button>
+            </div>
+            
+            <div id="liveResult">
+                <div class="empty-state">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <p>Enter deposit and wagering values on the left to generate the ready-to-copy customer response template.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p class="clause-text">
+            <strong>Clause 7.11.</strong> If the value of a deposit has not been played through in full once before a withdrawal is requested, Easybet reserves the right to refuse a requested withdrawal until the value of such deposit has been played through in full. Under no circumstances will refunds be considered for Easyload, 1voucher, OTT and Bluvoucher voucher transactions.
+        </p>
+        <a href="https://easybet.co.za/page/terms-conditions/withdrawals" class="terms-link" target="_blank">Full Terms & Conditions</a>
+    </div>
+
+    <div id="copyToast" class="toast">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="color: #4ade80;">
+            <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+        Response template copied! Ready to paste.
+    </div>
+
+    <script>
+        const inputs = ['totalDeposit', 'totalWagering', 'earlyCashout'];
+        
+        // Hold references to the plain text version of generated templates for raw clean clipboard storage
+        let compiledPlainText = "";
+        
+        // Listen for live updates
+        inputs.forEach(id => {
+            document.getElementById(id).addEventListener('input', updateCalculator);
+        });
+
+        function updateCalculator() {
+            const deposit = parseFloat(document.getElementById('totalDeposit').value);
+            const wagering = parseFloat(document.getElementById('totalWagering').value);
+            const cashout = parseFloat(document.getElementById('earlyCashout').value) || 0;
+
+            const liveResult = document.getElementById('liveResult');
+            const statusBadge = document.getElementById('statusBadge');
+            const previewArea = document.getElementById('previewArea');
+
+            // Hide errors while typing
+            document.querySelectorAll('.error-msg').forEach(el => el.style.display = 'none');
+
+            // Reset dynamic variables
+            compiledPlainText = "";
+
+            // Handle empty state
+            if (isNaN(deposit) || isNaN(wagering)) {
+                statusBadge.innerText = "Awaiting Input";
+                statusBadge.className = "preview-badge";
+                liveResult.innerHTML = `
+                    <div class="empty-state">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <p>Enter values to generate customer response preview...</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // Calculation Logic
+            const qualifyingPlay = wagering - cashout;
+            const remaining = deposit - qualifyingPlay;
+
+            if (remaining > 0) {
+                /* --- Template Option A: Remaining Wagering Required (Declined Withdrawal) --- */
+                statusBadge.innerText = "Wagering Required";
+                statusBadge.className = "preview-badge pending";
+
+                // Formulate HTML-rendered text with highlighting
+                const displayRemainingVal = `<span class="highlight-pill">R${remaining.toFixed(2)}</span>`;
+                const displayCashoutVal = `<span class="highlight-pill">R${cashout.toFixed(2)}</span>`;
+
+                let earlyCashoutHtmlBlock = "";
+                if (cashout > 0) {
+                    earlyCashoutHtmlBlock = ` Please note that your Early Cash Out of ${displayCashoutVal} does not count toward the play-through requirement, which is why the balance remains.`;
+                }
+
+                liveResult.innerHTML = `
+                    <div class="template-body" id="templateText">Thanks for your patience, I understand how concerning it is to see your withdrawal declined and I am here to help.
+
+After reviewing your account, your recent withdrawal was declined because the deposit amount has not yet been fully played through.${earlyCashoutHtmlBlock}
+
+According to clause  7.11, if the value of a deposit has not been played through in full once before a withdrawal is requested, Easybet reserves the right to refuse the withdrawal until the deposit has been played through.
+
+To resolve this, please place bets totaling at least ${displayRemainingVal} or more. Once completed, you will be able to submit a new withdrawal successfully.
+
+Please also note that under no circumstances will refunds be considered for Easyload, 1voucher, OTT and Bluvoucher voucher transactions. To proceed, kindly ensure your deposit is fully played through before requesting another withdrawal.
+
+For full details, you may refer to the terms here: https://easybet.co.za/page/terms-conditions/withdrawals</div>
+                `;
+
+                // Formulate raw plain text for clean copying (no html pills)
+                let earlyCashoutPlainBlock = "";
+                if (cashout > 0) {
+                    earlyCashoutPlainBlock = ` Please note that your Early Cash Out of R${cashout.toFixed(2)} does not count toward the play-through requirement, which is why the balance remains.`;
+                }
+
+                compiledPlainText = `Thanks for your patience, I understand how concerning it is to see your withdrawal declined and I am here to help.\n\nAfter reviewing your account, your recent withdrawal was declined because the deposit amount has not yet been fully played through.${earlyCashoutPlainBlock}\n\nAccording to clause  7.11, if the value of a deposit has not been played through in full once before a withdrawal is requested, Easybet reserves the right to refuse the withdrawal until the deposit has been played through.\n\nTo resolve this, please place bets totaling at least R${remaining.toFixed(2)} or more. Once completed, you will be able to submit a new withdrawal successfully.\n\nPlease also note that under no circumstances will refunds be considered for Easyload, 1voucher, OTT and Bluvoucher voucher transactions. To proceed, kindly ensure your deposit is fully played through before requesting another withdrawal.\n\nFor full details, you may refer to the terms here: https://easybet.co.za/page/terms-conditions/withdrawals`;
+
+            } else {
+                /* --- Template Option B: Play-through Completed (Withdrawal Met) --- */
+                statusBadge.innerText = "Requirements Met";
+                statusBadge.className = "preview-badge met";
+
+                const displayDepositVal = `<span class="highlight-pill met">R${deposit.toFixed(2)}</span>`;
+                const displayPlayVal = `<span class="highlight-pill met">R${qualifyingPlay.toFixed(2)}</span>`;
+
+                liveResult.innerHTML = `
+                    <div class="template-body" id="templateText">Thank you for your patience while we verified your account eligibility. 
+
+I have good news! I’ve checked your account and can confirm that you have successfully met the play-through requirements for your deposit of ${displayDepositVal} (with total qualifying play of ${displayPlayVal}).
+
+Your profile is fully cleared and verified. You may now request your withdrawal, and it will be processed according to our standard timelines.
+
+For full details, you can review our standard withdrawal guidelines here: https://easybet.co.za/page/terms-conditions/withdrawals.</div>
+                `;
+
+                compiledPlainText = `Thank you for your patience while we verified your account eligibility.\n\nI have good news! I’ve checked your account and can confirm that you have successfully met the play-through requirements for your deposit of R${deposit.toFixed(2)} (with total qualifying play of R${qualifyingPlay.toFixed(2)}).\n\nYour profile is fully cleared and verified. You may now request your withdrawal, and it will be processed according to our standard timelines.\n\nFor full details, you can review our standard withdrawal guidelines here: https://easybet.co.za/page/terms-conditions/withdrawals.`;
+            }
+        }
+
+        function copyTemplateToClipboard() {
+            if (!compiledPlainText) return;
+
+            // Secure backup approach utilizing textareas to combat iframe container copy failures
+            const textArea = document.createElement("textarea");
+            textArea.value = compiledPlainText;
+            textArea.style.position = "fixed";
+            textArea.style.left = "-9999px";
+            textArea.style.top = "0";
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            
+            try {
+                const successful = document.execCommand('copy');
+                if (successful) {
+                    showToast();
+                    animateCopyIcon();
+                }
+            } catch (err) {
+                console.error('Unable to copy customer response', err);
+            }
+            
+            document.body.removeChild(textArea);
+        }
+
+        function animateCopyIcon() {
+            const copyIcon = document.getElementById('copyIcon');
+            const copyText = document.getElementById('copyText');
+            
+            // Swap to success tick
+            copyText.innerText = "Copied!";
+            copyIcon.outerHTML = `
+                <svg id="copyIcon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="#4ade80" stroke-width="3">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+            `;
+
+            // Reset back after 2 seconds
+            setTimeout(() => {
+                const updatedIcon = document.getElementById('copyIcon');
+                document.getElementById('copyText').innerText = "Tap to Copy";
+                updatedIcon.outerHTML = `
+                    <svg id="copyIcon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                `;
+            }, 2000);
+        }
+
+        function showToast() {
+            const toast = document.getElementById('copyToast');
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2500);
+        }
+
+        function resetForm() {
+            inputs.forEach(id => {
+                document.getElementById(id).value = id === 'earlyCashout' ? '0.00' : '';
+            });
+            updateCalculator();
+        }
+    </script>
+</body>
+</html>

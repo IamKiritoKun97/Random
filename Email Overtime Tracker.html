@@ -1,0 +1,318 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Overtime Tracker</title>
+    <!-- Premium Favicon -->
+    <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/9068/9068643.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #1e3a8a, #3b82f6, #93c5fd);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+        }
+
+        .glass-button {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.2s ease;
+        }
+
+        .glass-button:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .glass-button:active {
+            transform: translateY(1px);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .progress-ring__circle {
+            transition: stroke-dashoffset 0.35s;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+
+        /* Custom Scrollbar for Logs */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="p-4 sm:p-8">
+    <!-- Background decorative blur elements -->
+    <div class="fixed top-[-10%] left-[-10%] w-96 h-96 bg-blue-400 rounded-full mix-blend-multiply filter blur-[100px] opacity-70 z-0 pointer-events-none animate-pulse duration-1000"></div>
+    <div class="fixed bottom-[-10%] right-[-10%] w-96 h-96 bg-indigo-500 rounded-full mix-blend-multiply filter blur-[100px] opacity-70 z-0 pointer-events-none animate-pulse delay-700 duration-1000"></div>
+
+    <div class="glass-panel rounded-3xl p-6 sm:p-8 w-full max-w-sm flex flex-col relative z-10">
+        
+        <!-- Toast Notification -->
+        <div id="toast" class="absolute -top-12 left-1/2 transform -translate-x-1/2 glass-panel px-4 py-2 text-xs font-medium text-green-300 opacity-0 transition-opacity duration-300 pointer-events-none rounded-full whitespace-nowrap shadow-lg">
+            New hour started. Tracker reset.
+        </div>
+
+        <!-- Header & Live Time -->
+        <div class="flex justify-between items-start w-full mb-4">
+            <div>
+                <h1 class="text-lg font-semibold opacity-90 tracking-wide uppercase text-blue-100">Overtime Tracker</h1>
+                <p class="text-xs opacity-70 mt-0.5">Goal: 13 Emails / Hour</p>
+            </div>
+            <div class="text-right">
+                <div id="liveClock" class="text-sm font-mono font-medium tracking-wider text-blue-50">--:--:--</div>
+                <div class="text-[10px] uppercase tracking-widest opacity-60">PH Time</div>
+            </div>
+        </div>
+
+        <div class="w-full bg-white/10 border border-white/20 rounded-xl py-2 px-3 mb-6 text-center">
+            <span id="currentHourDisplay" class="text-sm font-medium text-blue-200">Current Hour: --:--</span>
+        </div>
+
+        <!-- Tracker Visualization -->
+        <div class="relative w-40 h-40 mx-auto mb-6 flex items-center justify-center">
+            <svg class="w-full h-full absolute top-0 left-0 drop-shadow-lg" viewBox="0 0 120 120">
+                <circle class="text-white opacity-20" stroke-width="8" stroke="currentColor" fill="transparent" r="52" cx="60" cy="60" />
+                <circle id="progressRing" class="progress-ring__circle text-white" stroke-width="8" stroke-linecap="round" stroke="currentColor" fill="transparent" r="52" cx="60" cy="60" />
+            </svg>
+            
+            <div class="z-10 flex flex-col items-center">
+                <span id="countDisplay" class="text-5xl font-bold tracking-tighter shadow-sm">0</span>
+                <span class="text-[10px] font-medium uppercase tracking-widest opacity-70 mt-1">Sent</span>
+            </div>
+        </div>
+
+        <!-- Controls -->
+        <div class="w-full flex justify-between items-center gap-3 mb-4">
+            <button onclick="decrementCount()" class="glass-button w-14 h-14 rounded-full flex items-center justify-center text-3xl font-light focus:outline-none" aria-label="Subtract 1">-</button>
+            <button onclick="incrementCount()" class="glass-button flex-1 h-14 rounded-2xl flex items-center justify-center text-2xl font-medium focus:outline-none" aria-label="Add 1">+1</button>
+        </div>
+
+        <div class="flex justify-between items-center px-1 mb-6">
+            <div id="statusMessage" class="text-xs font-medium opacity-0 transition-opacity duration-300 text-green-300">
+                Goal Reached!
+            </div>
+            <button onclick="resetCountManual()" class="text-xs font-medium opacity-60 hover:opacity-100 transition-opacity uppercase tracking-widest focus:outline-none pb-0.5 border-b border-transparent hover:border-white">
+                Reset Current
+            </button>
+        </div>
+
+        <!-- History Logs UI -->
+        <div class="w-full pt-4 border-t border-white/20 flex flex-col flex-1 min-h-[120px]">
+            <div class="flex justify-between items-center mb-3">
+                <span class="text-xs font-medium uppercase tracking-widest opacity-80 text-blue-100">Hourly Logs</span>
+                <button onclick="clearLogs()" class="text-[10px] font-medium opacity-50 hover:opacity-100 uppercase tracking-wider transition-opacity focus:outline-none">Clear History</button>
+            </div>
+            
+            <div id="logContainer" class="flex flex-col gap-2 flex-1 max-h-36 overflow-y-auto pr-1 custom-scrollbar">
+                <!-- Logs rendered via JS -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const goal = 13;
+        
+        // Safe parsing from localStorage to prevent NaN errors
+        let count = parseInt(localStorage.getItem("phEmailTracker_count"));
+        if (isNaN(count)) count = 0;
+        
+        let lastTrackedHour = parseInt(localStorage.getItem("phEmailTracker_lastHour"));
+        if (isNaN(lastTrackedHour)) lastTrackedHour = null;
+        
+        let logs = JSON.parse(localStorage.getItem("phEmailTracker_logs"));
+        if (!Array.isArray(logs)) logs = [];
+        
+        // DOM Elements
+        const countDisplay = document.getElementById('countDisplay');
+        const progressRing = document.getElementById('progressRing');
+        const statusMessage = document.getElementById('statusMessage');
+        const logContainer = document.getElementById('logContainer');
+
+        // Hardcoded radius (52 from HTML) ensures it works even before layout paints completely
+        const radius = 52;
+        const circumference = radius * 2 * Math.PI;
+        progressRing.style.strokeDasharray = `${circumference} ${circumference}`;
+        
+        // SAFELY get PH Hour (0-23) without 'Invalid Date' parsing errors
+        function getPHHour() {
+            const options = { timeZone: 'Asia/Manila', hour: 'numeric', hour12: false };
+            let hour = parseInt(new Intl.DateTimeFormat('en-US', options).format(new Date()), 10);
+            if (hour === 24) hour = 0;
+            return hour;
+        }
+
+        // SAFELY get formatted PH time string for live clock
+        function getPHTimeString() {
+            const options = { timeZone: 'Asia/Manila', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true };
+            return new Intl.DateTimeFormat('en-US', options).format(new Date());
+        }
+
+        function formatTo12Hour(hour24) {
+            if (hour24 === 0) return "12AM";
+            if (hour24 === 12) return "12PM";
+            return hour24 > 12 ? `${hour24 - 12}PM` : `${hour24}AM`;
+        }
+
+        function formatHourRange(hour) {
+            let nextHour = (hour + 1) % 24;
+            return `${formatTo12Hour(hour)}–${formatTo12Hour(nextHour)}`;
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById("toast");
+            toast.innerText = msg;
+            toast.classList.remove("opacity-0");
+            setTimeout(() => toast.classList.add("opacity-0"), 4000);
+        }
+
+        function saveLog(hour, countToSave) {
+            logs.unshift({
+                hourRange: formatHourRange(hour),
+                total: countToSave
+            });
+            if (logs.length > 24) logs.pop();
+            localStorage.setItem("phEmailTracker_logs", JSON.stringify(logs));
+        }
+
+        function renderLogs() {
+            if (logs.length === 0) {
+                logContainer.innerHTML = `<div class="text-xs opacity-50 text-center py-4 italic">No logs recorded yet.</div>`;
+                return;
+            }
+            logContainer.innerHTML = logs.map(log => `
+                <div class="flex justify-between items-center bg-white/5 hover:bg-white/10 transition-colors rounded-lg px-3 py-2 text-sm border border-white/10 shadow-sm backdrop-blur-sm">
+                    <span class="opacity-80 font-medium">${log.hourRange}</span>
+                    <span class="font-bold ${log.total >= goal ? 'text-green-300' : 'text-blue-100'}">${log.total} <span class="text-[10px] font-normal opacity-70 uppercase tracking-wide">Sent</span></span>
+                </div>
+            `).join("");
+        }
+
+        function clearLogs() {
+            if(confirm("Are you sure you want to clear your log history?")) {
+                logs = [];
+                localStorage.removeItem("phEmailTracker_logs");
+                renderLogs();
+            }
+        }
+
+        function updateDisplay() {
+            countDisplay.innerText = count;
+            localStorage.setItem("phEmailTracker_count", count);
+            
+            const progress = Math.max(0, Math.min(count / goal, 1));
+            const offset = circumference - progress * circumference;
+            progressRing.style.strokeDashoffset = offset;
+
+            if (count >= goal) {
+                statusMessage.classList.remove('opacity-0');
+                statusMessage.classList.add('opacity-100');
+                statusMessage.innerText = count === goal ? "Goal Reached!" : `${count - goal} Over Goal!`;
+            } else {
+                statusMessage.classList.remove('opacity-100');
+                statusMessage.classList.add('opacity-0');
+            }
+        }
+
+        function checkHourChange() {
+            const currentHour = getPHHour();
+
+            if (lastTrackedHour === null || isNaN(lastTrackedHour)) {
+                lastTrackedHour = currentHour;
+                localStorage.setItem("phEmailTracker_lastHour", lastTrackedHour);
+                return;
+            }
+
+            if (currentHour !== lastTrackedHour) {
+                saveLog(lastTrackedHour, count);
+                
+                // Auto Reset Process
+                count = 0;
+                lastTrackedHour = currentHour;
+                
+                localStorage.setItem("phEmailTracker_count", count);
+                localStorage.setItem("phEmailTracker_lastHour", lastTrackedHour);
+                
+                updateDisplay();
+                renderLogs();
+                showToast("New hour started. Tracker reset and saved.");
+            }
+        }
+
+        function updateLiveClock() {
+            document.getElementById("liveClock").innerText = getPHTimeString();
+            const currentHour = getPHHour();
+            document.getElementById("currentHourDisplay").innerText = `Active Block: ${formatHourRange(currentHour)}`;
+        }
+
+        function incrementCount() {
+            count++;
+            updateDisplay();
+            
+            countDisplay.style.transform = 'scale(1.2)';
+            setTimeout(() => {
+                countDisplay.style.transform = 'scale(1)';
+                countDisplay.style.transition = 'transform 0.15s ease-out';
+            }, 50);
+        }
+
+        function decrementCount() {
+            if (count > 0) {
+                count--;
+                updateDisplay();
+            }
+        }
+
+        function resetCountManual() {
+            count = 0;
+            updateDisplay();
+        }
+
+        renderLogs();
+        updateDisplay();
+        updateLiveClock();
+        checkHourChange();
+
+        setInterval(() => {
+            updateLiveClock();
+            checkHourChange();
+        }, 1000);
+    </script>
+</body>
+</html>

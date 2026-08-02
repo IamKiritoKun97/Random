@@ -1,0 +1,728 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PIN Resend and Reversal</title>
+    <link rel="icon" href="https://www.easybet.co.za/favicon.ico" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-deep: #030305;
+            --glass-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.01));
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-border-highlight: rgba(255, 255, 255, 0.2);
+            --accent-white: #ffffff;
+            --text-main: #f4f4f5;
+            --text-muted: #8a8a93;
+            --shadow-premium: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+            --shadow-glow: 0 0 20px rgba(255, 255, 255, 0.05);
+            --danger: #ff4757;
+        }
+
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0; 
+            font-family: 'Outfit', sans-serif; 
+        }
+
+        body {
+            background-color: var(--bg-deep);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        .ambient-orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(120px);
+            z-index: -1;
+            opacity: 0.4;
+            pointer-events: none;
+            animation: float 20s infinite alternate;
+        }
+
+        .orb-1 {
+            top: -10%; left: -5%;
+            width: 50vw; height: 50vw;
+            background: #1e1136;
+        }
+
+        .orb-2 {
+            bottom: -20%; right: -5%;
+            width: 60vw; height: 60vw;
+            background: #0d1b2a;
+            animation-delay: -10s;
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(30px, 50px) scale(1.1); }
+        }
+
+        .tab-nav {
+            width: 100%;
+            max-width: 1300px;
+            margin-bottom: 30px;
+            display: flex;
+            gap: 16px;
+            background: rgba(10, 10, 12, 0.4);
+            padding: 10px;
+            border-radius: 24px;
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 16px;
+            border: 1px solid transparent;
+            background: transparent;
+            color: var(--text-muted);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            border-radius: 16px;
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+
+        .tab-btn.active {
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--accent-white);
+            border-color: var(--glass-border-highlight);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .tab-btn:not(.active):hover {
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .portal-container { display: none; width: 100%; max-width: 1300px; }
+        .portal-container.active { display: block; animation: fadeUp 0.6s cubic-bezier(0.165, 0.84, 0.44, 1); }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .glass-frame {
+            width: 100%;
+            background: rgba(15, 15, 20, 0.4);
+            border: 1px solid var(--glass-border);
+            border-radius: 32px;
+            display: grid;
+            grid-template-columns: 460px 1fr;
+            min-height: 820px;
+            box-shadow: var(--shadow-premium);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            overflow: hidden;
+        }
+
+        .control-panel { 
+            padding: 48px; 
+            background: linear-gradient(180deg, rgba(255,255,255,0.03) 0%, transparent 100%);
+            border-right: 1px solid var(--glass-border); 
+            display: flex; 
+            flex-direction: column; 
+        }
+
+        .preview-panel { 
+            padding: 48px; 
+            background: radial-gradient(circle at top right, rgba(255, 255, 255, 0.02), transparent); 
+            overflow-y: auto;
+            max-height: 820px;
+        }
+
+        .brand-header { display: flex; align-items: center; gap: 16px; margin-bottom: 48px; }
+        .brand-logo { 
+            width: 40px; height: 40px; 
+            background: linear-gradient(135deg, #fff, #ccc);
+            border-radius: 12px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            color: #000;
+            box-shadow: 0 4px 15px rgba(255,255,255,0.2);
+        }
+
+        h1 { font-size: 1rem; font-weight: 700; letter-spacing: 4px; text-transform: uppercase; color: var(--accent-white); }
+        
+        .input-group { margin-bottom: 28px; }
+        .label { 
+            font-size: 10px; 
+            font-weight: 700; 
+            text-transform: uppercase; 
+            letter-spacing: 2px; 
+            color: var(--text-muted); 
+            margin-bottom: 12px; 
+            display: block; 
+        }
+
+        .glass-input { 
+            width: 100%; 
+            background: rgba(0, 0, 0, 0.3); 
+            border: 1px solid var(--glass-border); 
+            border-radius: 16px; 
+            padding: 16px 20px; 
+            color: #fff; 
+            font-size: 0.95rem; 
+            transition: all 0.3s ease; 
+            outline: none; 
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .glass-input:focus { 
+            border-color: var(--glass-border-highlight); 
+            background: rgba(0, 0, 0, 0.5);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.2), 0 0 0 4px rgba(255,255,255,0.05);
+        }
+        
+        .glass-input::placeholder { color: rgba(255,255,255,0.2); }
+
+        textarea.glass-input { 
+            height: 140px; 
+            resize: none; 
+            font-family: 'JetBrains Mono', monospace; 
+            font-size: 0.85rem; 
+            line-height: 1.6;
+        }
+
+        .btn-stack { margin-top: auto; display: flex; flex-direction: column; gap: 14px; }
+        .glass-btn { 
+            padding: 18px; 
+            border-radius: 16px; 
+            border: 1px solid var(--glass-border); 
+            background: rgba(255,255,255,0.03); 
+            color: var(--text-main); 
+            font-size: 0.75rem; 
+            font-weight: 700; 
+            text-transform: uppercase; 
+            letter-spacing: 2px;
+            cursor: pointer; 
+            text-align: center; 
+            text-decoration: none; 
+            transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+            backdrop-filter: blur(10px);
+        }
+
+        .glass-btn:hover { 
+            background: rgba(255, 255, 255, 0.08); 
+            transform: translateY(-2px); 
+            border-color: var(--glass-border-highlight); 
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+        
+        .btn-reset { color: var(--danger); border-color: rgba(255, 71, 87, 0.2); }
+        .btn-reset:hover { background: rgba(255, 71, 87, 0.1); border-color: rgba(255, 71, 87, 0.4); }
+
+        .quick-actions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 40px; }
+        .action-card { 
+            background: rgba(255,255,255,0.02); 
+            border: 1px solid var(--glass-border); 
+            padding: 20px; 
+            border-radius: 20px; 
+            cursor: pointer; 
+            transition: all 0.3s ease; 
+        }
+
+        .action-card:hover { 
+            border-color: var(--glass-border-highlight); 
+            background: rgba(255, 255, 255, 0.05); 
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+        .action-card .lbl { font-size: 9px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; display: block; }
+        .action-card .val { font-size: 11px; font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        .template-section { display: flex; flex-direction: column; gap: 32px; }
+        .output-card { 
+            background: rgba(0, 0, 0, 0.3); 
+            border: 1px solid var(--glass-border); 
+            border-radius: 24px; 
+            padding: 36px 32px; 
+            position: relative; 
+            cursor: pointer; 
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1); 
+        }
+
+        .output-card:hover { 
+            background: rgba(255, 255, 255, 0.02); 
+            border-color: rgba(255, 255, 255, 0.15);
+            transform: scale(1.01);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+        }
+
+        .badge { 
+            position: absolute; 
+            top: -12px; 
+            left: 32px; 
+            padding: 6px 16px; 
+            border-radius: 10px; 
+            font-size: 9px; 
+            font-weight: 800; 
+            text-transform: uppercase; 
+            letter-spacing: 1.5px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .badge-standard { background: #222; color: #eee; border: 1px solid #444; }
+        .badge-accent { background: var(--accent-white); color: #000; border: 1px solid #fff; }
+        .badge-magenta { background: rgba(90, 30, 58, 0.8); color: #f472b6; border: 1px solid rgba(244, 114, 182, 0.3); }
+
+        .content-area { 
+            font-size: 0.95rem; 
+            color: rgba(255, 255, 255, 0.9); 
+            line-height: 1.8; 
+            white-space: pre-wrap; 
+            margin-top: 8px; 
+        }
+
+        .copy-trigger { 
+            position: absolute; 
+            bottom: 24px; 
+            right: 32px; 
+            font-size: 9px; 
+            font-weight: 700;
+            color: var(--text-muted);
+            letter-spacing: 1.5px;
+            opacity: 0; 
+            transition: opacity 0.3s;
+            background: rgba(255,255,255,0.1);
+            padding: 6px 12px;
+            border-radius: 8px;
+        }
+
+        .output-card:hover .copy-trigger { opacity: 1; }
+
+        #toast { 
+            visibility: hidden; 
+            position: fixed; 
+            bottom: 40px; 
+            background: rgba(255, 255, 255, 0.95); 
+            color: #000; 
+            padding: 16px 32px; 
+            border-radius: 16px; 
+            font-size: 0.85rem;
+            font-weight: 700; 
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            z-index: 1000; 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform: translateY(20px) scale(0.9);
+            opacity: 0;
+        }
+
+        #toast.show { visibility: visible; transform: translateY(0) scale(1); opacity: 1; }
+
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 2000;
+            opacity: 0; pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.active { opacity: 1; pointer-events: auto; }
+
+        .custom-modal {
+            background: rgba(20, 20, 25, 0.85);
+            border: 1px solid var(--glass-border-highlight);
+            border-radius: 24px;
+            padding: 40px;
+            width: 90%; max-width: 400px;
+            text-align: center;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+            transform: translateY(20px) scale(0.95);
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+
+        .modal-overlay.active .custom-modal { transform: translateY(0) scale(1); }
+
+        .custom-modal p { font-size: 1.1rem; margin-bottom: 30px; font-weight: 500; }
+        .modal-actions { display: flex; gap: 16px; justify-content: center; }
+        .modal-btn { flex: 1; padding: 14px; border-radius: 12px; font-weight: 700; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; font-size: 0.8rem; transition: all 0.3s; }
+        .modal-btn-cancel { background: transparent; border: 1px solid var(--glass-border); color: #fff; }
+        .modal-btn-cancel:hover { background: rgba(255,255,255,0.05); }
+        .modal-btn-confirm { background: rgba(255, 71, 87, 0.1); border: 1px solid rgba(255, 71, 87, 0.4); color: var(--danger); }
+        .modal-btn-confirm:hover { background: rgba(255, 71, 87, 0.2); }
+
+        @media (max-width: 1080px) { 
+            .glass-frame { grid-template-columns: 1fr; min-height: auto; } 
+            .control-panel { border-right: none; border-bottom: 1px solid var(--glass-border); padding: 32px; }
+            .preview-panel { padding: 32px; max-height: none; }
+            .quick-actions { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="ambient-orb orb-1"></div>
+<div class="ambient-orb orb-2"></div>
+
+<div id="toast">Copied to Clipboard</div>
+
+<div id="modal-overlay" class="modal-overlay">
+    <div class="custom-modal">
+        <p id="modal-msg">Are you sure you want to reset?</p>
+        <div class="modal-actions">
+            <button class="modal-btn modal-btn-cancel" onclick="closeModal()">Cancel</button>
+            <button class="modal-btn modal-btn-confirm" id="modal-confirm-btn">Yes, Reset</button>
+        </div>
+    </div>
+</div>
+
+<!-- Tab Navigation -->
+<div class="tab-nav">
+    <button class="tab-btn active" onclick="switchTab(event, 'pin-portal')">1. OTT Resend PIN</button>
+    <button class="tab-btn" onclick="switchTab(event, 'reversal-portal')">2. OTT Reversal</button>
+</div>
+
+<div id="pin-portal" class="portal-container active">
+    <div class="glass-frame">
+        <div class="control-panel">
+            <div class="brand-header">
+                <div class="brand-logo">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                </div>
+                <h1>OTT Resend PIN</h1>
+            </div>
+            <div class="input-group">
+                <label class="label">Customer Profile Details</label>
+                <textarea id="pin_block" class="glass-input" placeholder="Paste Name, Email, Phone here..." oninput="syncPin()"></textarea>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div class="input-group">
+                    <label class="label">Amount (ZAR)</label>
+                    <input type="text" id="pin_amt" class="glass-input" placeholder="e.g. 1000" oninput="syncPin()">
+                </div>
+                <div class="input-group">
+                    <label class="label">Date & Time</label>
+                    <input type="date" id="pin_dt" class="glass-input" oninput="syncPin()">
+                </div>
+            </div>
+            <div class="input-group">
+                <label class="label">Transaction UUID</label>
+                <input type="text" id="pin_uid" class="glass-input" placeholder="Reference ID" oninput="syncPin()">
+            </div>
+            <div class="btn-stack">
+                <a href="https://docs.google.com/spreadsheets/d/1tRqHqBu3ZurdbODmYX_PUWGqRV5k9WH4Y9RbRnzNE9M/edit?gid=0#gid=0" target="_blank" class="glass-btn">Internal Ledger</a>
+                <button onclick="downloadPin()" class="glass-btn">Export Request Log</button>
+                <button onclick="reqClearPin()" class="glass-btn btn-reset">Reset Workspace</button>
+            </div>
+        </div>
+        <div class="preview-panel">
+            <div class="quick-actions">
+                <div class="action-card" onclick="copyRaw('support@ott-mobile.com', 'Recipient')">
+                    <span class="lbl">RECIPIENT</span><div class="val">support@ott-mobile.com</div>
+                </div>
+                <div class="action-card" onclick="copyRaw('palisa@ott-mobile.com', 'CC')">
+                    <span class="lbl">CC</span><div class="val">palisa@ott-mobile.com</div>
+                </div>
+                <div class="action-card" onclick="copyRaw('RESEND PIN REQUEST', 'Subject')">
+                    <span class="lbl">SUBJECT</span><div class="val">RESEND PIN REQUEST</div>
+                </div>
+            </div>
+            <div class="template-section">
+                <!-- Main Email Draft -->
+                <div class="output-card" onclick="copyDiv('pin_email-out', 'Email Draft')">
+                    <span class="badge badge-accent">Email Draft</span>
+                    <div id="pin_email-out" class="content-area"></div>
+                    <div class="copy-trigger">TAP TO COPY</div>
+                </div>
+                
+                <!-- Slack Log Entry -->
+                <div class="output-card" onclick="copyDiv('pin_slack-out', 'Slack Logs')">
+                    <span class="badge badge-magenta">Slack Log Entry</span>
+                    <div id="pin_slack-out" class="content-area font-mono" style="font-size: 0.85rem;"></div>
+                    <div class="copy-trigger">TAP TO COPY</div>
+                </div>
+                
+                <!-- Follow-up Spiel 1 -->
+                <div class="output-card" onclick="copyDiv('pin_fup1-out', 'Follow-up 1')">
+                    <span class="badge badge-standard">Follow-up 1</span>
+                    <div id="pin_fup1-out" class="content-area">Hi team,
+
+Thank you for your assistance.
+
+I look forward to receiving further confirmation on this matter.
+
+Cheers!</div>
+                    <div class="copy-trigger">TAP TO COPY</div>
+                </div>
+
+                <!-- Follow-up Spiel 2 -->
+                <div class="output-card" onclick="copyDiv('pin_fup2-out', 'Follow-up 2')">
+                    <span class="badge badge-standard">Follow-up 2</span>
+                    <div id="pin_fup2-out" class="content-area">Thank you so much for your support, Team. 
+
+Have a great day ahead.</div>
+                    <div class="copy-trigger">TAP TO COPY</div>
+                </div>
+
+                <!-- Customer Spiel -->
+                <div class="output-card" onclick="copyDiv('pin_spiel-out', 'Customer Spiel')">
+                    <span class="badge badge-standard">Customer Spiel</span>
+                    <div id="pin_spiel-out" class="content-area">Thank you for patiently waiting. The PIN resend request has been submitted successfully. Please allow up to 24 hours to receive the SMS and kindly make sure your phone line remains active with strong network coverage during this time.
+
+Please be assured that your funds are safe while the PIN resend is being processed.</div>
+                    <div class="copy-trigger">TAP TO COPY</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="reversal-portal" class="portal-container">
+    <div class="glass-frame">
+        <div class="control-panel">
+            <div class="brand-header">
+                <div class="brand-logo">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"></path><path d="M21 3v5h-5"></path></svg>
+                </div>
+                <h1>OTT Reversal Portal</h1>
+            </div>
+            <div class="input-group">
+                <label class="label">Customer Profile Block</label>
+                <textarea id="rev_block" class="glass-input" placeholder="Full Name | ID Number | Phone | Email..." oninput="syncRev()"></textarea>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div class="input-group">
+                    <label class="label">Amount (ZAR)</label>
+                    <input type="text" id="rev_amt" class="glass-input" placeholder="e.g. 2500" oninput="syncRev()">
+                </div>
+                <div class="input-group">
+                    <label class="label">Withdrawal Date</label>
+                    <input type="date" id="rev_dt" class="glass-input" oninput="syncRev()">
+                </div>
+            </div>
+            <div class="input-group">
+                <label class="label">Transaction Reference</label>
+                <input type="text" id="rev_uid" class="glass-input" placeholder="UUID / Reference" oninput="syncRev()">
+            </div>
+            <div class="btn-stack">
+                <a href="https://docs.google.com/spreadsheets/d/1tRqHqBu3ZurdbODmYX_PUWGqRV5k9WH4Y9RbRnzNE9M/edit?gid=0#gid=0" target="_blank" class="glass-btn">Internal Ledger</a>
+                <button onclick="downloadRev()" class="glass-btn">Export Tracking Data</button>
+                <button onclick="reqClearRev()" class="glass-btn btn-reset">Reset Workspace</button>
+            </div>
+        </div>
+        <div class="preview-panel">
+            <div class="quick-actions">
+                <div class="action-card" onclick="copyRaw('support@ott-mobile.com', 'Recipient')">
+                    <span class="lbl">RECIPIENT</span><div class="val">support@ott-mobile.com</div>
+                </div>
+                <div class="action-card" onclick="copyRaw('palisa@ott-mobile.com', 'CC')">
+                    <span class="lbl">CC</span><div class="val">palisa@ott-mobile.com</div>
+                </div>
+                <div class="action-card" onclick="copyRaw('OTT REVERSAL REQUEST', 'Subject')">
+                    <span class="lbl">SUBJECT</span><div class="val">OTT REVERSAL REQUEST</div>
+                </div>
+            </div>
+            <div class="template-section">
+                <div class="output-card" onclick="copyDiv('rev_email-out', 'Email Body')">
+                    <span class="badge badge-accent">Email Draft</span>
+                    <div id="rev_email-out" class="content-area"></div>
+                    <div class="copy-trigger">TAP TO COPY</div>
+                </div>
+                <div class="output-card" onclick="copyDiv('rev_slack-out', 'Slack Logs')">
+                    <span class="badge badge-magenta">Slack Log Entry</span>
+                    <div id="rev_slack-out" class="content-area font-mono" style="font-size: 0.85rem;"></div>
+                    <div class="copy-trigger">TAP TO COPY</div>
+                </div>
+                <div class="output-card" onclick="copyDiv('rev_spiel-out', 'Customer Spiel')">
+                    <span class="badge badge-standard">Customer Spiel</span>
+                    <div id="rev_spiel-out" class="content-area">Thank you for waiting. I have successfully initiated the reversal request for your OTT withdrawal. The funds are currently being processed to be returned directly to your Easybet account. 
+
+Please note that reversal requests typically take 1–3 working days to reflect. I will continue to monitor this closely to ensure it is handled with priority.
+
+Thank you for your patience and understanding!</div>
+                    <div class="copy-trigger">TAP TO COPY</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- TAB LOGIC ---
+    function switchTab(evt, portalId) {
+        document.querySelectorAll('.portal-container').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(portalId).classList.add('active');
+        evt.currentTarget.classList.add('active');
+    }
+
+    // --- GLOBAL UTILS ---
+    function showToast(msg) {
+        const t = document.getElementById('toast');
+        t.innerText = msg; 
+        t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 2500);
+    }
+
+    function copyRaw(text, label) {
+        const el = document.createElement('textarea');
+        el.value = text; document.body.appendChild(el);
+        el.select(); document.execCommand('copy');
+        document.body.removeChild(el);
+        showToast(`${label} Copied`);
+    }
+
+    function copyDiv(id, label) { copyRaw(document.getElementById(id).innerText, label); }
+
+    function formatDateLong(iso) {
+        if (!iso) return "[Date]";
+        const d = new Date(iso);
+        return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' });
+    }
+
+    function formatDateShort(iso) {
+        if (!iso) return "[Date]";
+        const d = new Date(iso);
+        return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
+    }
+
+    // --- CUSTOM MODAL LOGIC ---
+    let pendingConfirmAction = null;
+    function openModal(msg, action) {
+        document.getElementById('modal-msg').innerText = msg;
+        pendingConfirmAction = action;
+        document.getElementById('modal-overlay').classList.add('active');
+        
+        document.getElementById('modal-confirm-btn').onclick = () => {
+            if(pendingConfirmAction) pendingConfirmAction();
+            closeModal();
+        };
+    }
+    
+    function closeModal() {
+        document.getElementById('modal-overlay').classList.remove('active');
+        pendingConfirmAction = null;
+    }
+
+    // --- PIN PORTAL LOGIC ---
+    function syncPin() {
+        const data = {
+            block: document.getElementById('pin_block').value,
+            amt: document.getElementById('pin_amt').value,
+            dt: document.getElementById('pin_dt').value,
+            uid: document.getElementById('pin_uid').value
+        };
+        localStorage.setItem('ott_resend_pin_v3', JSON.stringify(data));
+        
+        const displayAmt = data.amt ? `R${data.amt}` : "[Amount]";
+        const dL = formatDateLong(data.dt);
+        const dS = formatDateShort(data.dt);
+        
+        // Define default structure if block is empty
+        const defaultDetails = "Customer Name:\nEmail:\nPhone:";
+        const detailsBlock = data.block.trim() ? data.block.trim() : defaultDetails;
+
+        // New Email Structure
+        const email = `Hi Team,\n\nI hope this email finds you well.\n\nCould you please resend the PIN for the customer's approved withdrawal request? The details are provided below for your reference:\n\n${detailsBlock}\nAmount: ${displayAmt}\nUUID: ${data.uid || "[UUID]"}\nDate & Time: ${dL}\n\nYour assistance with this matter is greatly appreciated. Please let me know if any additional information is required.\n\nThank you for your support, and I look forward to your response.\n\nHave a great day!`;
+        
+        const slack = `For reference: RESEND PIN REQUEST. Email sent to OTT Support.\n${data.block.trim() || 'No details provided'}\nDate: ${dS}\nAmount: ${displayAmt}\nTransaction ID: ${data.uid || "[UUID]"}`;
+        
+        document.getElementById('pin_email-out').innerText = email;
+        document.getElementById('pin_slack-out').innerText = slack;
+    }
+
+    // --- REVERSAL PORTAL LOGIC ---
+    function syncRev() {
+        const data = {
+            block: document.getElementById('rev_block').value,
+            amt: document.getElementById('rev_amt').value,
+            dt: document.getElementById('rev_dt').value,
+            uid: document.getElementById('rev_uid').value
+        };
+        localStorage.setItem('ott_premium_rev_v3', JSON.stringify(data));
+        
+        const displayAmt = data.amt ? `R${data.amt}` : "[Amount]";
+        const dL = formatDateLong(data.dt);
+        const dS = formatDateShort(data.dt);
+        
+        const email = `Hi Team,\n\nKindly assist with this OTT reversal request. The customer has requested that the funds be returned to their Easybet account.\n\n${data.block.trim()}\n\nDate of Withdrawal: ${dL}\nAmount: ${displayAmt}\nTransaction UUID: ${data.uid || "[UUID/Reference]"}\n\nThank you for your assistance.`;
+        const slack = `For reference: REVERSAL REQUEST. Email sent to OTT Support.\n${data.block.trim()}\nDate: ${dS}\nAmount: ${displayAmt}\nTransaction ID: ${data.uid || "[UUID]"}`;
+        
+        document.getElementById('rev_email-out').innerText = email;
+        document.getElementById('rev_slack-out').innerText = slack;
+    }
+
+    // --- INITIALIZATION ---
+    window.onload = () => {
+        // Load PIN State
+        const s1 = JSON.parse(localStorage.getItem('ott_resend_pin_v3'));
+        if(s1){ 
+            document.getElementById('pin_block').value = s1.block || ''; 
+            document.getElementById('pin_amt').value = s1.amt || '';
+            document.getElementById('pin_dt').value = s1.dt || '';
+            document.getElementById('pin_uid').value = s1.uid || '';
+        } else { 
+            document.getElementById('pin_dt').valueAsDate = new Date(); 
+        }
+        
+        // Load REV State
+        const s2 = JSON.parse(localStorage.getItem('ott_premium_rev_v3'));
+        if(s2){
+            document.getElementById('rev_block').value = s2.block || '';
+            document.getElementById('rev_amt').value = s2.amt || '';
+            document.getElementById('rev_dt').value = s2.dt || '';
+            document.getElementById('rev_uid').value = s2.uid || '';
+        } else { 
+            document.getElementById('rev_dt').valueAsDate = new Date(); 
+        }
+        
+        syncPin(); 
+        syncRev();
+    };
+
+    // --- ACTIONS ---
+    function reqClearPin() { 
+        openModal("Reset PIN Resend form data?", () => {
+            localStorage.removeItem('ott_resend_pin_v3');
+            location.reload();
+        });
+    }
+
+    function reqClearRev() { 
+        openModal("Reset Reversal form data?", () => {
+            localStorage.removeItem('ott_premium_rev_v3');
+            location.reload();
+        });
+    }
+
+    function downloadPin() {
+        const content = `RESEND PIN REQUEST EXPORT\n\n1. EMAIL BODY\n${document.getElementById('pin_email-out').innerText}`;
+        const blob = new Blob([content], {type: 'text/plain'});
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'Easybet_Resend_PIN.txt'; a.click();
+        showToast("Log Exported");
+    }
+
+    function downloadRev() {
+        const content = `REVERSAL REQUEST EXPORT\n\n1. EMAIL BODY\n${document.getElementById('rev_email-out').innerText}`;
+        const blob = new Blob([content], {type: 'text/plain'});
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'Easybet_Reversal.txt'; a.click();
+        showToast("Log Exported");
+    }
+</script>
+
+</body>
+</html>

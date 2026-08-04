@@ -22,6 +22,7 @@
             justify-content: center;
             margin: 0;
             overflow: hidden;
+            padding: 1rem;
         }
 
         @keyframes gradientBG {
@@ -82,88 +83,110 @@
     <div class="fixed top-[-10%] left-[-10%] w-96 h-96 bg-blue-400 rounded-full mix-blend-multiply filter blur-[100px] opacity-70 z-0 pointer-events-none animate-pulse duration-1000"></div>
     <div class="fixed bottom-[-10%] right-[-10%] w-96 h-96 bg-indigo-500 rounded-full mix-blend-multiply filter blur-[100px] opacity-70 z-0 pointer-events-none animate-pulse delay-700 duration-1000"></div>
 
-    <div class="glass-panel rounded-3xl p-6 sm:p-8 w-full max-w-sm flex flex-col relative z-10">
+    <!-- MAIN CONTAINER -->
+    <div class="glass-panel rounded-3xl p-6 sm:p-8 w-full max-w-4xl flex flex-col md:flex-row gap-6 relative z-10">
         
         <!-- Toast Notification -->
-        <div id="toast" class="absolute -top-12 left-1/2 transform -translate-x-1/2 glass-panel px-4 py-2 text-xs font-medium text-green-300 opacity-0 transition-opacity duration-300 pointer-events-none rounded-full whitespace-nowrap shadow-lg">
+        <div id="toast" class="absolute -top-12 left-1/2 transform -translate-x-1/2 glass-panel px-4 py-2 text-xs font-medium text-green-300 opacity-0 transition-opacity duration-300 pointer-events-none rounded-full whitespace-nowrap shadow-lg z-50">
             New hour started. Tracker reset.
         </div>
 
-        <!-- Header & Live Time -->
-        <div class="flex justify-between items-start w-full mb-4">
-            <div>
-                <h1 class="text-lg font-semibold opacity-90 tracking-wide uppercase text-blue-100">Overtime Tracker</h1>
-                <p class="text-xs opacity-70 mt-0.5">Goal: 13 Emails / Hour</p>
-            </div>
-            <div class="text-right">
-                <div id="liveClock" class="text-sm font-mono font-medium tracking-wider text-blue-50">--:--:--</div>
-                <div class="text-[10px] uppercase tracking-widest opacity-60">PH Time</div>
-            </div>
-        </div>
-
-        <div class="w-full bg-white/10 border border-white/20 rounded-xl py-2 px-3 mb-6 text-center">
-            <span id="currentHourDisplay" class="text-sm font-medium text-blue-200">Current Hour: --:--</span>
-        </div>
-
-        <!-- Tracker Visualization -->
-        <div class="relative w-40 h-40 mx-auto mb-6 flex items-center justify-center">
-            <svg class="w-full h-full absolute top-0 left-0 drop-shadow-lg" viewBox="0 0 120 120">
-                <circle class="text-white opacity-20" stroke-width="8" stroke="currentColor" fill="transparent" r="52" cx="60" cy="60" />
-                <circle id="progressRing" class="progress-ring__circle text-white" stroke-width="8" stroke-linecap="round" stroke="currentColor" fill="transparent" r="52" cx="60" cy="60" />
-            </svg>
+        <!-- LEFT PANEL: Tracker -->
+        <div class="flex flex-col w-full md:max-w-sm">
             
-            <div class="z-10 flex flex-col items-center">
-                <span id="countDisplay" class="text-5xl font-bold tracking-tighter shadow-sm">0</span>
-                <span class="text-[10px] font-medium uppercase tracking-widest opacity-70 mt-1">Sent</span>
+            <!-- Header & Live Time -->
+            <div class="flex justify-between items-start w-full mb-4">
+                <div>
+                    <h1 class="text-lg font-semibold opacity-90 tracking-wide uppercase text-blue-100">Overtime Tracker</h1>
+                    <p class="text-xs opacity-70 mt-0.5">Goal: 13 Emails / Hour</p>
+                </div>
+                <div class="text-right">
+                    <div id="liveClock" class="text-sm font-mono font-medium tracking-wider text-blue-50">--:--:--</div>
+                    <div class="text-[10px] uppercase tracking-widest opacity-60">PH Time</div>
+                </div>
+            </div>
+
+            <!-- OVERNIGHT TRACKER UI -->
+            <div class="w-full bg-white/10 border border-white/20 rounded-xl py-2 px-3 mb-4 text-center">
+                <span class="text-xs uppercase opacity-70">Overnight Productivity (9PM - 9AM)</span>
+                <div id="nightCountDisplay" class="text-lg font-semibold text-blue-200 transition-colors duration-300">0</div>
+            </div>
+
+            <!-- Current Hour Display -->
+            <div class="w-full bg-white/10 border border-white/20 rounded-xl py-2 px-3 mb-6 text-center">
+                <span id="currentHourDisplay" class="text-sm font-medium text-blue-200">Current Hour: --:--</span>
+            </div>
+
+            <!-- Tracker Visualization -->
+            <div class="relative w-40 h-40 mx-auto mb-6 flex items-center justify-center">
+                <svg class="w-full h-full absolute top-0 left-0 drop-shadow-lg" viewBox="0 0 120 120">
+                    <circle class="text-white opacity-20" stroke-width="8" stroke="currentColor" fill="transparent" r="52" cx="60" cy="60" />
+                    <circle id="progressRing" class="progress-ring__circle text-white" stroke-width="8" stroke-linecap="round" stroke="currentColor" fill="transparent" r="52" cx="60" cy="60" />
+                </svg>
+                
+                <div class="z-10 flex flex-col items-center">
+                    <span id="countDisplay" class="text-5xl font-bold tracking-tighter shadow-sm">0</span>
+                    <span class="text-[10px] font-medium uppercase tracking-widest opacity-70 mt-1">Sent</span>
+                </div>
+            </div>
+
+            <!-- Controls -->
+            <div class="w-full flex justify-between items-center gap-3 mb-4">
+                <button onclick="decrementCount()" class="glass-button w-14 h-14 rounded-full flex items-center justify-center text-3xl font-light focus:outline-none" aria-label="Subtract 1">-</button>
+                <button onclick="incrementCount()" class="glass-button flex-1 h-14 rounded-2xl flex items-center justify-center text-2xl font-medium focus:outline-none" aria-label="Add 1">+1</button>
+            </div>
+
+            <!-- Reset & Status -->
+            <div class="flex justify-between items-center px-1">
+                <div id="statusMessage" class="text-xs font-medium opacity-0 transition-opacity duration-300 text-green-300">
+                    Goal Reached!
+                </div>
+                <button onclick="resetCountManual()" class="text-xs font-medium opacity-60 hover:opacity-100 transition-opacity uppercase tracking-widest focus:outline-none pb-0.5 border-b border-transparent hover:border-white">
+                    Reset Current
+                </button>
             </div>
         </div>
 
-        <!-- Controls -->
-        <div class="w-full flex justify-between items-center gap-3 mb-4">
-            <button onclick="decrementCount()" class="glass-button w-14 h-14 rounded-full flex items-center justify-center text-3xl font-light focus:outline-none" aria-label="Subtract 1">-</button>
-            <button onclick="incrementCount()" class="glass-button flex-1 h-14 rounded-2xl flex items-center justify-center text-2xl font-medium focus:outline-none" aria-label="Add 1">+1</button>
-        </div>
-
-        <div class="flex justify-between items-center px-1 mb-6">
-            <div id="statusMessage" class="text-xs font-medium opacity-0 transition-opacity duration-300 text-green-300">
-                Goal Reached!
-            </div>
-            <button onclick="resetCountManual()" class="text-xs font-medium opacity-60 hover:opacity-100 transition-opacity uppercase tracking-widest focus:outline-none pb-0.5 border-b border-transparent hover:border-white">
-                Reset Current
-            </button>
-        </div>
-
-        <!-- History Logs UI -->
-        <div class="w-full pt-4 border-t border-white/20 flex flex-col flex-1 min-h-[120px]">
+        <!-- RIGHT PANEL: History Logs -->
+        <div class="w-full md:w-80 flex flex-col glass-panel rounded-2xl p-4 border border-white/20 mt-6 md:mt-0">
             <div class="flex justify-between items-center mb-3">
                 <span class="text-xs font-medium uppercase tracking-widest opacity-80 text-blue-100">Hourly Logs</span>
-                <button onclick="clearLogs()" class="text-[10px] font-medium opacity-50 hover:opacity-100 uppercase tracking-wider transition-opacity focus:outline-none">Clear History</button>
+                <button onclick="clearLogs()" class="text-[10px] font-medium opacity-50 hover:opacity-100 uppercase tracking-wider transition-opacity focus:outline-none">Clear</button>
             </div>
             
-            <div id="logContainer" class="flex flex-col gap-2 flex-1 max-h-36 overflow-y-auto pr-1 custom-scrollbar">
+            <div id="logContainer" class="flex flex-col gap-2 flex-1 max-h-64 md:max-h-96 overflow-y-auto pr-1 custom-scrollbar">
                 <!-- Logs rendered via JS -->
             </div>
         </div>
+
     </div>
 
     <script>
         const goal = 13;
         
-        // Safe parsing from localStorage to prevent NaN errors
+        // Main counter state
         let count = parseInt(localStorage.getItem("phEmailTracker_count"));
         if (isNaN(count)) count = 0;
         
+        // Hour tracking state
         let lastTrackedHour = parseInt(localStorage.getItem("phEmailTracker_lastHour"));
         if (isNaN(lastTrackedHour)) lastTrackedHour = null;
         
+        // Logs state
         let logs = JSON.parse(localStorage.getItem("phEmailTracker_logs"));
         if (!Array.isArray(logs)) logs = [];
+
+        // Night counter state variables
+        let nightCount = parseInt(localStorage.getItem("phEmailTracker_nightCount"));
+        if (isNaN(nightCount)) nightCount = 0;
+        let lastNightReset = localStorage.getItem("phEmailTracker_lastNightReset");
         
         // DOM Elements
         const countDisplay = document.getElementById('countDisplay');
         const progressRing = document.getElementById('progressRing');
         const statusMessage = document.getElementById('statusMessage');
         const logContainer = document.getElementById('logContainer');
+        const nightDisplay = document.getElementById("nightCountDisplay");
 
         // Hardcoded radius (52 from HTML) ensures it works even before layout paints completely
         const radius = 52;
@@ -202,6 +225,36 @@
             setTimeout(() => toast.classList.add("opacity-0"), 4000);
         }
 
+        // Night Shift Checker
+        function isNightShiftHour(date) {
+            const hour = date.getHours();
+            return (hour >= 21 || hour < 9);
+        }
+
+        // Night Reset Logic (triggers at 9AM)
+        function handleNightReset() {
+            const now = new Date();
+            const todayKey = now.toDateString();
+
+            if (now.getHours() === 9 && lastNightReset !== todayKey) {
+                nightCount = 0;
+                localStorage.setItem("phEmailTracker_nightCount", nightCount);
+                localStorage.setItem("phEmailTracker_lastNightReset", todayKey);
+                updateNightDisplay();
+            }
+        }
+
+        // Update display for Night total & Highlight UX
+        function updateNightDisplay() {
+            nightDisplay.textContent = nightCount;
+
+            if (isNightShiftHour(new Date())) {
+                nightDisplay.style.color = "#22c55e"; // Highlight Green during active hours
+            } else {
+                nightDisplay.style.color = "#bfdbfe"; // Standard Blue
+            }
+        }
+
         function saveLog(hour, countToSave) {
             logs.unshift({
                 hourRange: formatHourRange(hour),
@@ -225,11 +278,13 @@
         }
 
         function clearLogs() {
-            if(confirm("Are you sure you want to clear your log history?")) {
-                logs = [];
-                localStorage.removeItem("phEmailTracker_logs");
-                renderLogs();
-            }
+            // Using confirm instead of custom alert/modal for direct adherence, 
+            // but standard instructions requested to avoid alert/confirm entirely.
+            // Using a non-blocking UI transition would be better, but implementing a quick soft-clear:
+            logs = [];
+            localStorage.removeItem("phEmailTracker_logs");
+            renderLogs();
+            showToast("Log history cleared.");
         }
 
         function updateDisplay() {
@@ -285,6 +340,14 @@
             count++;
             updateDisplay();
             
+            // Increment Night Count if applicable
+            const now = new Date();
+            if (isNightShiftHour(now)) {
+                nightCount++;
+                localStorage.setItem("phEmailTracker_nightCount", nightCount);
+                updateNightDisplay();
+            }
+
             countDisplay.style.transform = 'scale(1.2)';
             setTimeout(() => {
                 countDisplay.style.transform = 'scale(1)';
@@ -304,14 +367,24 @@
             updateDisplay();
         }
 
+        // Setup and Initial Renders
         renderLogs();
         updateDisplay();
         updateLiveClock();
         checkHourChange();
+        
+        // Init Night Tracking display
+        updateNightDisplay();
+        handleNightReset();
 
+        // Application Timer Loop
         setInterval(() => {
             updateLiveClock();
             checkHourChange();
+            handleNightReset(); // Check for 9AM reset during the loop
+            
+            // Check if we entered/exited night shift block to update visual highlight
+            updateNightDisplay(); 
         }, 1000);
     </script>
 </body>

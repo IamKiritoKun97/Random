@@ -9,6 +9,7 @@
     <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/9068/9068643.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -83,11 +84,21 @@
     <div class="fixed top-[-10%] left-[-10%] w-96 h-96 bg-blue-400 rounded-full mix-blend-multiply filter blur-[100px] opacity-70 z-0 pointer-events-none animate-pulse duration-1000"></div>
     <div class="fixed bottom-[-10%] right-[-10%] w-96 h-96 bg-indigo-500 rounded-full mix-blend-multiply filter blur-[100px] opacity-70 z-0 pointer-events-none animate-pulse delay-700 duration-1000"></div>
 
+    <!-- Name Prompt Modal (Replaces blocking prompt()) -->
+    <div id="nameModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm hidden transition-opacity duration-300">
+        <div class="glass-panel p-6 sm:p-8 rounded-3xl w-full max-w-sm text-center mx-4 shadow-2xl border border-white/30">
+            <h2 class="text-2xl font-semibold mb-2 tracking-tight">Welcome!</h2>
+            <p class="text-sm opacity-80 mb-6 font-light">Enter your first name to personalize your tracker.</p>
+            <input type="text" id="nameInput" class="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/50 focus:outline-none focus:border-blue-300 focus:ring-2 focus:ring-blue-300/50 mb-6 transition-all" placeholder="e.g. Ray T." onkeypress="if(event.key === 'Enter') saveName()">
+            <button onclick="saveName()" class="w-full glass-button hover:bg-white/20 text-white font-medium py-3 rounded-xl transition-all shadow-lg">Start Tracking</button>
+        </div>
+    </div>
+
     <!-- MAIN CONTAINER -->
-    <div class="glass-panel rounded-3xl p-6 sm:p-8 w-full max-w-4xl flex flex-col md:flex-row gap-6 relative z-10">
+    <div class="glass-panel rounded-3xl p-6 sm:p-8 w-full max-w-4xl flex flex-col md:flex-row gap-6 relative z-10 shadow-2xl border border-white/30">
         
         <!-- Toast Notification -->
-        <div id="toast" class="absolute -top-12 left-1/2 transform -translate-x-1/2 glass-panel px-4 py-2 text-xs font-medium text-green-300 opacity-0 transition-opacity duration-300 pointer-events-none rounded-full whitespace-nowrap shadow-lg z-50">
+        <div id="toast" class="absolute -top-12 left-1/2 transform -translate-x-1/2 glass-panel px-5 py-2.5 text-sm font-medium text-white opacity-0 transition-opacity duration-300 pointer-events-none rounded-full whitespace-nowrap shadow-lg z-50 border border-white/20 bg-blue-900/60">
             New hour started. Tracker reset.
         </div>
 
@@ -95,50 +106,51 @@
         <div class="flex flex-col w-full md:max-w-sm">
             
             <!-- Header & Live Time -->
-            <div class="flex justify-between items-start w-full mb-4">
+            <div class="flex justify-between items-start w-full mb-5">
                 <div>
                     <h1 class="text-lg font-semibold opacity-90 tracking-wide uppercase text-blue-100">Overtime Tracker</h1>
                     <p class="text-xs opacity-70 mt-0.5">Goal: 13 Emails / Hour</p>
                 </div>
                 <div class="text-right">
-                    <div id="liveClock" class="text-sm font-mono font-medium tracking-wider text-blue-50">--:--:--</div>
+                    <div id="liveClock" class="text-sm font-mono font-medium tracking-wider text-blue-50 drop-shadow-sm">--:--:--</div>
                     <div class="text-[10px] uppercase tracking-widest opacity-60">PH Time</div>
                 </div>
             </div>
 
             <!-- OVERNIGHT TRACKER UI -->
-            <div class="w-full bg-white/10 border border-white/20 rounded-xl py-2 px-3 mb-4 text-center">
-                <span class="text-xs uppercase opacity-70">Overnight Productivity (9PM - 9AM)</span>
-                <div id="nightCountDisplay" class="text-lg font-semibold text-blue-200 transition-colors duration-300">0</div>
+            <div class="w-full bg-white/10 border border-white/20 rounded-xl py-3 px-4 mb-4 text-center shadow-inner backdrop-blur-sm transition-colors duration-300" id="nightTrackerContainer">
+                <span class="text-xs font-medium uppercase tracking-wider opacity-80">Overnight Productivity</span>
+                <div class="text-[10px] uppercase opacity-60 mb-1">(9PM - 9AM)</div>
+                <div id="nightCountDisplay" class="text-2xl font-bold text-blue-200 transition-colors duration-300 drop-shadow-md">0</div>
             </div>
 
             <!-- Current Hour Display -->
-            <div class="w-full bg-white/10 border border-white/20 rounded-xl py-2 px-3 mb-6 text-center">
-                <span id="currentHourDisplay" class="text-sm font-medium text-blue-200">Current Hour: --:--</span>
+            <div class="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 px-3 mb-6 text-center shadow-sm">
+                <span id="currentHourDisplay" class="text-sm font-medium text-blue-100 tracking-wide">Current Hour: --:--</span>
             </div>
 
             <!-- Tracker Visualization -->
-            <div class="relative w-40 h-40 mx-auto mb-6 flex items-center justify-center">
+            <div class="relative w-44 h-44 mx-auto mb-6 flex items-center justify-center">
                 <svg class="w-full h-full absolute top-0 left-0 drop-shadow-lg" viewBox="0 0 120 120">
-                    <circle class="text-white opacity-20" stroke-width="8" stroke="currentColor" fill="transparent" r="52" cx="60" cy="60" />
-                    <circle id="progressRing" class="progress-ring__circle text-white" stroke-width="8" stroke-linecap="round" stroke="currentColor" fill="transparent" r="52" cx="60" cy="60" />
+                    <circle class="text-white opacity-10" stroke-width="8" stroke="currentColor" fill="transparent" r="52" cx="60" cy="60" />
+                    <circle id="progressRing" class="progress-ring__circle text-white drop-shadow-md" stroke-width="8" stroke-linecap="round" stroke="currentColor" fill="transparent" r="52" cx="60" cy="60" />
                 </svg>
                 
                 <div class="z-10 flex flex-col items-center">
-                    <span id="countDisplay" class="text-5xl font-bold tracking-tighter shadow-sm">0</span>
-                    <span class="text-[10px] font-medium uppercase tracking-widest opacity-70 mt-1">Sent</span>
+                    <span id="countDisplay" class="text-6xl font-bold tracking-tighter shadow-sm drop-shadow-md">0</span>
+                    <span class="text-[11px] font-medium uppercase tracking-widest opacity-80 mt-1">Sent</span>
                 </div>
             </div>
 
             <!-- Controls -->
-            <div class="w-full flex justify-between items-center gap-3 mb-4">
-                <button onclick="decrementCount()" class="glass-button w-14 h-14 rounded-full flex items-center justify-center text-3xl font-light focus:outline-none" aria-label="Subtract 1">-</button>
-                <button onclick="incrementCount()" class="glass-button flex-1 h-14 rounded-2xl flex items-center justify-center text-2xl font-medium focus:outline-none" aria-label="Add 1">+1</button>
+            <div class="w-full flex justify-between items-center gap-4 mb-5">
+                <button onclick="decrementCount()" class="glass-button w-16 h-16 rounded-full flex items-center justify-center text-3xl font-light focus:outline-none" aria-label="Subtract 1">-</button>
+                <button onclick="incrementCount()" class="glass-button flex-1 h-16 rounded-2xl flex items-center justify-center text-2xl font-semibold tracking-wide focus:outline-none shadow-lg" aria-label="Add 1">+1</button>
             </div>
 
             <!-- Reset & Status -->
-            <div class="flex justify-between items-center px-1">
-                <div id="statusMessage" class="text-xs font-medium opacity-0 transition-opacity duration-300 text-green-300">
+            <div class="flex justify-between items-center px-2">
+                <div id="statusMessage" class="text-xs font-semibold opacity-0 transition-opacity duration-300 text-green-300 tracking-wide">
                     Goal Reached!
                 </div>
                 <button onclick="resetCountManual()" class="text-xs font-medium opacity-60 hover:opacity-100 transition-opacity uppercase tracking-widest focus:outline-none pb-0.5 border-b border-transparent hover:border-white">
@@ -148,22 +160,40 @@
         </div>
 
         <!-- RIGHT PANEL: History Logs -->
-        <div class="w-full md:w-80 flex flex-col glass-panel rounded-2xl p-4 border border-white/20 mt-6 md:mt-0">
-            <div class="flex justify-between items-center mb-3">
-                <span class="text-xs font-medium uppercase tracking-widest opacity-80 text-blue-100">Hourly Logs</span>
-                <button onclick="clearLogs()" class="text-[10px] font-medium opacity-50 hover:opacity-100 uppercase tracking-wider transition-opacity focus:outline-none">Clear</button>
+        <div class="w-full md:w-80 flex flex-col glass-panel rounded-2xl p-5 border border-white/20 mt-6 md:mt-0 shadow-inner">
+            <div class="flex justify-between items-center mb-4">
+                <span class="text-xs font-semibold uppercase tracking-widest opacity-90 text-blue-100">Hourly Logs</span>
+                <button onclick="clearLogs()" class="text-[10px] font-bold opacity-50 hover:opacity-100 text-red-200 hover:text-red-100 uppercase tracking-wider transition-opacity focus:outline-none">Clear</button>
             </div>
             
-            <div id="logContainer" class="flex flex-col gap-2 flex-1 max-h-64 md:max-h-96 overflow-y-auto pr-1 custom-scrollbar">
+            <div id="logContainer" class="flex flex-col gap-2 flex-1 max-h-[300px] md:max-h-[420px] overflow-y-auto pr-2 custom-scrollbar">
                 <!-- Logs rendered via JS -->
             </div>
         </div>
-
     </div>
 
     <script>
         const goal = 13;
         
+        // Feature 1: Multiple Motivational Sounds Setup
+        const sounds = [
+            "https://www.myinstants.com/media/sounds/good-job.mp3",
+            "https://www.myinstants.com/media/sounds/anime-wow-sound-effect.mp3",
+            "https://www.myinstants.com/media/sounds/mario-coin.mp3",
+            "https://www.myinstants.com/media/sounds/final-fantasy-v-level-up.mp3",
+            "https://www.myinstants.com/media/sounds/yay_z.mp3",
+            "https://www.myinstants.com/media/sounds/crowd-cheer.mp3",
+            "https://www.myinstants.com/media/sounds/bell-ring.mp3",
+            "https://www.myinstants.com/media/sounds/success-1.mp3",
+            "https://www.myinstants.com/media/sounds/magic-chime-01.mp3",
+            "https://www.myinstants.com/media/sounds/tada-1.mp3"
+        ];
+        let lastAudio = null;
+        let lastSoundIndex = -1;
+        
+        // Global User Name Variable
+        let userName = "Champion";
+
         // Main counter state
         let count = parseInt(localStorage.getItem("phEmailTracker_count"));
         if (isNaN(count)) count = 0;
@@ -179,7 +209,6 @@
         // Night counter state variables
         let nightCount = parseInt(localStorage.getItem("phEmailTracker_nightCount"));
         if (isNaN(nightCount)) nightCount = 0;
-        let lastNightReset = localStorage.getItem("phEmailTracker_lastNightReset");
         
         // DOM Elements
         const countDisplay = document.getElementById('countDisplay');
@@ -187,12 +216,50 @@
         const statusMessage = document.getElementById('statusMessage');
         const logContainer = document.getElementById('logContainer');
         const nightDisplay = document.getElementById("nightCountDisplay");
+        const nightContainer = document.getElementById("nightTrackerContainer");
 
-        // Hardcoded radius (52 from HTML) ensures it works even before layout paints completely
+        // UI Prep
         const radius = 52;
         const circumference = radius * 2 * Math.PI;
         progressRing.style.strokeDasharray = `${circumference} ${circumference}`;
         
+        window.onload = () => {
+            initPersonalization();
+            renderLogs();
+            updateDisplay();
+            updateLiveClock();
+            checkHourChange();
+            handleNightSession();
+            updateNightDisplay();
+            
+            // Start Application Timer Loop
+            setInterval(() => {
+                updateLiveClock();
+                checkHourChange();
+                handleNightSession();
+                updateNightDisplay();
+            }, 1000);
+        };
+
+        function initPersonalization() {
+            const storedName = localStorage.getItem("tracker_userName");
+            if (!storedName) {
+                // Show custom modal instead of blocking prompt
+                document.getElementById("nameModal").classList.remove("hidden");
+                setTimeout(() => document.getElementById("nameInput").focus(), 100);
+            } else {
+                userName = storedName;
+            }
+        }
+
+        function saveName() {
+            const input = document.getElementById("nameInput").value.trim();
+            userName = input || "Champion";
+            localStorage.setItem("tracker_userName", userName);
+            document.getElementById("nameModal").classList.add("hidden");
+            showToast(`Welcome, ${userName}! Let's crush those goals.`);
+        }
+
         // SAFELY get PH Hour (0-23) without 'Invalid Date' parsing errors
         function getPHHour() {
             const options = { timeZone: 'Asia/Manila', hour: 'numeric', hour12: false };
@@ -218,73 +285,68 @@
             return `${formatTo12Hour(hour)}–${formatTo12Hour(nextHour)}`;
         }
 
-        function showToast(msg) {
-            const toast = document.getElementById("toast");
-            toast.innerText = msg;
-            toast.classList.remove("opacity-0");
-            setTimeout(() => toast.classList.add("opacity-0"), 4000);
-        }
-
-        // Night Shift Checker
-        function isNightShiftHour(date) {
-            const hour = date.getHours();
-            return (hour >= 21 || hour < 9);
-        }
-
-        // Night Reset Logic (triggers at 9AM)
-        function handleNightReset() {
+        // Create a Night Session Key based on PH Date/Time
+        function getNightSessionKey() {
+            const hour = getPHHour();
             const now = new Date();
-            const todayKey = now.toDateString();
 
-            if (now.getHours() === 9 && lastNightReset !== todayKey) {
+            const phDate = new Intl.DateTimeFormat('en-CA', {
+                timeZone: 'Asia/Manila',
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit'
+            }).format(now);
+
+            const date = new Date(phDate);
+
+            // If it's before 9 AM, attribute this to the previous day's night shift
+            if (hour < 9) {
+                date.setDate(date.getDate() - 1);
+            }
+
+            return date.toISOString().split('T')[0];
+        }
+
+        // Handle Night Session Reset Boundary (Exactly at 9:00 AM PH time)
+        function handleNightSession() {
+            const currentSession = getNightSessionKey();
+            const storedSession = localStorage.getItem("phEmailTracker_nightSession");
+
+            if (storedSession !== currentSession) {
+                // We've crossed the 9 AM boundary into a new shift day
                 nightCount = 0;
-                localStorage.setItem("phEmailTracker_nightCount", nightCount);
-                localStorage.setItem("phEmailTracker_lastNightReset", todayKey);
+                localStorage.setItem("phEmailTracker_nightCount", 0);
+                localStorage.setItem("phEmailTracker_nightSession", currentSession);
                 updateNightDisplay();
             }
         }
 
-        // Update display for Night total & Highlight UX
         function updateNightDisplay() {
             nightDisplay.textContent = nightCount;
+            const hour = getPHHour();
 
-            if (isNightShiftHour(new Date())) {
-                nightDisplay.style.color = "#22c55e"; // Highlight Green during active hours
+            // Highlight UX for active night shift (9 PM to 9 AM)
+            if (hour >= 21 || hour < 9) {
+                nightDisplay.style.color = "#4ade80"; // Bright Green
+                nightDisplay.style.textShadow = "0 0 10px rgba(74, 222, 128, 0.5)";
+                nightContainer.style.borderColor = "rgba(74, 222, 128, 0.3)";
+                nightContainer.style.background = "rgba(255, 255, 255, 0.15)";
             } else {
                 nightDisplay.style.color = "#bfdbfe"; // Standard Blue
+                nightDisplay.style.textShadow = "none";
+                nightContainer.style.borderColor = "rgba(255, 255, 255, 0.2)";
+                nightContainer.style.background = "rgba(255, 255, 255, 0.1)";
             }
         }
 
-        function saveLog(hour, countToSave) {
-            logs.unshift({
-                hourRange: formatHourRange(hour),
-                total: countToSave
-            });
-            if (logs.length > 24) logs.pop();
-            localStorage.setItem("phEmailTracker_logs", JSON.stringify(logs));
-        }
-
-        function renderLogs() {
-            if (logs.length === 0) {
-                logContainer.innerHTML = `<div class="text-xs opacity-50 text-center py-4 italic">No logs recorded yet.</div>`;
-                return;
-            }
-            logContainer.innerHTML = logs.map(log => `
-                <div class="flex justify-between items-center bg-white/5 hover:bg-white/10 transition-colors rounded-lg px-3 py-2 text-sm border border-white/10 shadow-sm backdrop-blur-sm">
-                    <span class="opacity-80 font-medium">${log.hourRange}</span>
-                    <span class="font-bold ${log.total >= goal ? 'text-green-300' : 'text-blue-100'}">${log.total} <span class="text-[10px] font-normal opacity-70 uppercase tracking-wide">Sent</span></span>
-                </div>
-            `).join("");
-        }
-
-        function clearLogs() {
-            // Using confirm instead of custom alert/modal for direct adherence, 
-            // but standard instructions requested to avoid alert/confirm entirely.
-            // Using a non-blocking UI transition would be better, but implementing a quick soft-clear:
-            logs = [];
-            localStorage.removeItem("phEmailTracker_logs");
-            renderLogs();
-            showToast("Log history cleared.");
+        function showToast(msg) {
+            const toast = document.getElementById("toast");
+            toast.innerText = msg;
+            toast.classList.remove("opacity-0");
+            
+            // Clear previous timeout if multiple clicks happen quickly
+            if(window.toastTimeout) clearTimeout(window.toastTimeout);
+            window.toastTimeout = setTimeout(() => toast.classList.add("opacity-0"), 2500);
         }
 
         function updateDisplay() {
@@ -303,6 +365,101 @@
                 statusMessage.classList.remove('opacity-100');
                 statusMessage.classList.add('opacity-0');
             }
+        }
+
+        function incrementCount() {
+            count++;
+            updateDisplay();
+            
+            // Strict Filter Increment Night Count (9 PM - 9 AM)
+            const hour = getPHHour();
+            if (hour >= 21 || hour < 9) {
+                nightCount++;
+                localStorage.setItem("phEmailTracker_nightCount", nightCount);
+                updateNightDisplay();
+            }
+
+            // Feature 1: Play Random Motivational Sound (No overlap, no consecutive repeats)
+            let randomIndex;
+            do {
+                randomIndex = Math.floor(Math.random() * sounds.length);
+            } while (randomIndex === lastSoundIndex);
+            
+            lastSoundIndex = randomIndex;
+            
+            if (lastAudio) {
+                lastAudio.pause();
+                lastAudio.currentTime = 0;
+            }
+            
+            lastAudio = new Audio(sounds[randomIndex]);
+            lastAudio.play().catch(err => {
+                console.log("Audio playback blocked or failed:", err);
+            });
+
+            // Feature 3: Personalized Toast message
+            const messages = [
+                `Nice work, ${userName}! Keep going!`,
+                `Great job, ${userName}!`,
+                `You're on fire, ${userName}!`,
+                `Keep it up, ${userName}!`
+            ];
+            const randomMsg = messages[Math.floor(Math.random() * messages.length)];
+            showToast(randomMsg);
+
+            // Pop Animation
+            countDisplay.style.transform = 'scale(1.25)';
+            setTimeout(() => {
+                countDisplay.style.transform = 'scale(1)';
+                countDisplay.style.transition = 'transform 0.2s ease-out';
+            }, 50);
+        }
+
+        function decrementCount() {
+            if (count > 0) {
+                count--;
+                updateDisplay();
+            }
+        }
+
+        function resetCountManual() {
+            count = 0;
+            updateDisplay();
+        }
+
+        function saveLog(hour, countToSave) {
+            logs.unshift({
+                hourRange: formatHourRange(hour),
+                total: countToSave
+            });
+            if (logs.length > 24) logs.pop();
+            localStorage.setItem("phEmailTracker_logs", JSON.stringify(logs));
+        }
+
+        function renderLogs() {
+            if (logs.length === 0) {
+                logContainer.innerHTML = `<div class="text-xs opacity-50 text-center py-6 italic">No logs recorded yet.</div>`;
+                return;
+            }
+            logContainer.innerHTML = logs.map(log => `
+                <div class="flex justify-between items-center bg-white/5 hover:bg-white/10 transition-colors rounded-xl px-4 py-3 text-sm border border-white/10 shadow-sm backdrop-blur-md">
+                    <span class="opacity-90 font-medium tracking-wide">${log.hourRange}</span>
+                    <span class="font-bold text-lg ${log.total >= goal ? 'text-green-300 drop-shadow-sm' : 'text-blue-100'}">${log.total} <span class="text-[10px] font-normal opacity-70 uppercase tracking-widest ml-1">Sent</span></span>
+                </div>
+            `).join("");
+        }
+
+        function clearLogs() {
+            logs = [];
+            localStorage.removeItem("phEmailTracker_logs");
+            
+            // Also reset night count when logs are cleared
+            nightCount = 0;
+            localStorage.setItem("phEmailTracker_nightCount", nightCount);
+            updateNightDisplay();
+            
+            renderLogs();
+            showToast("Log history and overnight productivity cleared.");
         }
 
         function checkHourChange() {
@@ -335,57 +492,6 @@
             const currentHour = getPHHour();
             document.getElementById("currentHourDisplay").innerText = `Active Block: ${formatHourRange(currentHour)}`;
         }
-
-        function incrementCount() {
-            count++;
-            updateDisplay();
-            
-            // Increment Night Count if applicable
-            const now = new Date();
-            if (isNightShiftHour(now)) {
-                nightCount++;
-                localStorage.setItem("phEmailTracker_nightCount", nightCount);
-                updateNightDisplay();
-            }
-
-            countDisplay.style.transform = 'scale(1.2)';
-            setTimeout(() => {
-                countDisplay.style.transform = 'scale(1)';
-                countDisplay.style.transition = 'transform 0.15s ease-out';
-            }, 50);
-        }
-
-        function decrementCount() {
-            if (count > 0) {
-                count--;
-                updateDisplay();
-            }
-        }
-
-        function resetCountManual() {
-            count = 0;
-            updateDisplay();
-        }
-
-        // Setup and Initial Renders
-        renderLogs();
-        updateDisplay();
-        updateLiveClock();
-        checkHourChange();
-        
-        // Init Night Tracking display
-        updateNightDisplay();
-        handleNightReset();
-
-        // Application Timer Loop
-        setInterval(() => {
-            updateLiveClock();
-            checkHourChange();
-            handleNightReset(); // Check for 9AM reset during the loop
-            
-            // Check if we entered/exited night shift block to update visual highlight
-            updateNightDisplay(); 
-        }, 1000);
     </script>
 </body>
 </html>

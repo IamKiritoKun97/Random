@@ -1,87 +1,51 @@
+
+<!-- ... existing code ... -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>3-Month Document Checker</title>
-    
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%233b82f6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='18' rx='2' ry='2'%3E%3C/rect%3E%3Cline x1='16' y1='2' x2='16' y2='6'%3E%3C/line%3E%3Cline x1='8' y1='2' x2='8' y2='6'%3E%3C/line%3E%3Cline x1='3' y1='10' x2='21' y2='10'%3E%3C/line%3E%3Cpath d='M9 16l2 2 4-4'%3E%3C/path%3E%3C/svg%3E">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23f59e0b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='18' rx='2' ry='2'%3E%3C/rect%3E%3Cline x1='16' y1='2' x2='16' y2='6'%3E%3C/line%3E%3Cline x1='8' y1='2' x2='8' y2='6'%3E%3C/line%3E%3Cline x1='3' y1='10' x2='21' y2='10'%3E%3C/line%3E%3Cpath d='M9 16l2 2 4-4'%3E%3C/path%3E%3C/svg%3E">
     
     <style>
         :root {
-            color-scheme: light dark;
+            color-scheme: dark;
             
-            /* Color Palette */
-            --bg-body: #f8fafc;
-            --bg-card: #ffffff;
+            /* Crystal Obsidian & Gold Palette */
+            --bg-body: #070604;
             
-            --text-main: #0f172a;
-            --text-muted: #64748b;
-            --border-color: #cbd5e1;
-            --focus-ring: #3b82f6;
-            --btn-clear-bg: #f1f5f9;
-            --btn-clear-hover: #e2e8f0;
-
-            /* Status Colors */
-            --status-valid-bg: #ecfdf5;
-            --status-valid-border: #10b981;
-            --status-valid-text: #065f46;
-            --status-valid-badge: rgba(16, 185, 129, 0.15);
-
-            --status-soon-bg: #fffbeb;
-            --status-soon-border: #f59e0b;
-            --status-soon-text: #92400e;
-            --status-soon-badge: rgba(245, 158, 11, 0.15);
-
-            --status-today-bg: #fff7ed;
-            --status-today-border: #f97316;
-            --status-today-text: #9a3412;
-            --status-today-badge: rgba(249, 115, 22, 0.15);
-
-            --status-expired-bg: #fef2f2;
-            --status-expired-border: #ef4444;
-            --status-expired-text: #991b1b;
-            --status-expired-badge: rgba(239, 68, 68, 0.15);
+            --text-main: #fcfbf8;
+            --text-muted: #b3aba0;
+            --border-color: rgba(245, 158, 11, 0.25);
+            --focus-ring: #f59e0b;
+            --focus-glow: rgba(245, 158, 11, 0.4);
             
-            --error-text: #dc2626;
-        }
+            --btn-clear-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.02));
+            --btn-clear-hover: linear-gradient(135deg, rgba(245, 158, 11, 0.3), rgba(245, 158, 11, 0.1));
+            
+            /* Crystal Status Colors - Gold Theme */
+            --status-valid-bg: rgba(16, 185, 129, 0.08);
+            --status-valid-border: #34d399;
+            --status-valid-text: #6ee7b7;
+            --status-valid-badge: rgba(16, 185, 129, 0.2);
 
-        @media (prefers-color-scheme: dark) {
-            :root {
-                --bg-body: #0f172a;
-                --bg-card: #1e293b;
-                
-                --text-main: #f8fafc;
-                --text-muted: #94a3b8;
-                --border-color: #334155;
-                --focus-ring: #3b82f6;
-                --btn-clear-bg: #334155;
-                --btn-clear-hover: #475569;
+            --status-soon-bg: rgba(245, 158, 11, 0.08);
+            --status-soon-border: #fbbf24;
+            --status-soon-text: #fcd34d;
+            --status-soon-badge: rgba(245, 158, 11, 0.2);
 
-                /* Dark mode optimized status colors for readability */
-                --status-valid-bg: rgba(16, 185, 129, 0.1);
-                --status-valid-badge: rgba(16, 185, 129, 0.2);
-                --status-valid-text: #34d399;
+            --status-today-bg: rgba(249, 115, 22, 0.08);
+            --status-today-border: #fb923c;
+            --status-today-text: #fdba74;
+            --status-today-badge: rgba(249, 115, 22, 0.2);
 
-                --status-soon-bg: rgba(245, 158, 11, 0.1);
-                --status-soon-badge: rgba(245, 158, 11, 0.2);
-                --status-soon-text: #fbbf24;
-
-                --status-today-bg: rgba(249, 115, 22, 0.1);
-                --status-today-badge: rgba(249, 115, 22, 0.2);
-                --status-today-text: #fb923c;
-
-                --status-expired-bg: rgba(239, 68, 68, 0.1);
-                --status-expired-badge: rgba(239, 68, 68, 0.2);
-                --status-expired-text: #f87171;
-            }
-
-            /* Adjustments for specific elements in dark mode */
-            .btn-clear { color: #cbd5e1; }
-            #dateInput::placeholder { color: #64748b; }
-            #emptyState svg { color: #475569 !important; }
-            .detail-row { border-bottom-color: rgba(255, 255, 255, 0.08); }
-            .card { box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.3), 0 1px 3px 0 rgba(0, 0, 0, 0.3); }
+            --status-expired-bg: rgba(239, 68, 68, 0.08);
+            --status-expired-border: #f87171;
+            --status-expired-text: #fca5a5;
+            --status-expired-badge: rgba(239, 68, 68, 0.2);
+            
+            --error-text: #fca5a5;
         }
 
         body {
@@ -98,45 +62,136 @@
             -webkit-font-smoothing: antialiased;
         }
 
+        .orb-container {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            overflow: hidden;
+            z-index: -1;
+            pointer-events: none;
+        }
+        
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.45;
+            will-change: transform;
+        }
+
+        .orb-1 {
+            width: 45vw; height: 45vw;
+            background: #78350f; /* Deep Amber / Bronze */
+            top: -10%; left: -10%;
+            animation: float-1 25s infinite ease-in-out alternate;
+        }
+
+        .orb-2 {
+            width: 38vw; height: 38vw;
+            background: #b45309; /* Warm Gold */
+            bottom: -20%; right: -10%;
+            animation: float-2 30s infinite ease-in-out alternate-reverse;
+        }
+
+        .orb-3 {
+            width: 28vw; height: 28vw;
+            background: #451a03; /* Dark Rich Ochre */
+            top: 40%; left: 55%;
+            animation: float-3 35s infinite ease-in-out alternate;
+        }
+
+        @keyframes float-1 {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(15vw, 15vh) scale(1.1); }
+        }
+        @keyframes float-2 {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(-20vw, -10vh) scale(1.2); }
+        }
+        @keyframes float-3 {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(-10vw, 20vh) scale(0.9); }
+        }
+
         .card {
-            background: var(--bg-card);
+            background: linear-gradient(135deg, rgba(60, 40, 15, 0.15) 0%, rgba(10, 8, 5, 0.6) 100%);
+            backdrop-filter: blur(28px) saturate(130%);
+            -webkit-backdrop-filter: blur(28px) saturate(130%);
             width: 100%;
             max-width: 460px;
-            border-radius: 16px;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01), 0 1px 3px 0 rgba(0, 0, 0, 0.05);
-            padding: 32px;
+            border-radius: 24px;
+            
+            /* Crystal faceted edges with gold tone */
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-top: 1px solid rgba(245, 158, 11, 0.35);
+            border-left: 1px solid rgba(245, 158, 11, 0.18);
+            
+            box-shadow: 
+                0 30px 60px -10px rgba(0, 0, 0, 0.9), 
+                0 0 40px rgba(245, 158, 11, 0.15),
+                inset 0 0 20px rgba(255, 255, 255, 0.02);
+            
+            padding: 36px;
             box-sizing: border-box;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        /* Moving crystal shimmer reflection */
+        .card::after {
+            content: '';
+            position: absolute;
+            top: -150%; left: -50%;
+            width: 50%; height: 400%;
+            background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.12), transparent);
+            transform: rotate(35deg);
+            animation: crystal-shimmer 7s infinite cubic-bezier(0.4, 0, 0.2, 1);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        @keyframes crystal-shimmer {
+            0% { left: -100%; }
+            15% { left: 200%; }
+            100% { left: 200%; }
         }
 
         header {
-            margin-bottom: 28px;
+            margin-bottom: 32px;
+            position: relative;
         }
 
         h1 {
-            font-size: 22px;
+            font-size: 24px;
             font-weight: 700;
             margin: 0 0 8px 0;
-            color: var(--text-main);
+            color: #fff;
             letter-spacing: -0.02em;
+            background: linear-gradient(to right, #fff, #fde68a);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         .subtitle {
             font-size: 15px;
             color: var(--text-muted);
             margin: 0;
-            line-height: 1.4;
+            line-height: 1.5;
         }
 
         .field-container {
             margin-bottom: 16px;
+            position: relative;
         }
 
         .field-label {
             display: block;
-            font-size: 14px;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
             font-weight: 600;
-            margin-bottom: 8px;
-            color: var(--text-main);
+            margin-bottom: 10px;
+            color: #fde68a;
         }
 
         .field-controls {
@@ -149,36 +204,44 @@
             display: flex;
             align-items: center;
             flex-grow: 1;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            background: var(--bg-card);
-            transition: border-color 0.2s, box-shadow 0.2s;
+            
+            /* Inner crystal cutout */
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.5), rgba(40, 25, 10, 0.2));
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-top: 1px solid rgba(245, 158, 11, 0.2);
+            border-left: 1px solid rgba(245, 158, 11, 0.1);
+            box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.6), 0 2px 5px rgba(0,0,0,0.2);
+            
+            transition: all 0.3s ease;
         }
 
         .input-wrapper:focus-within {
             border-color: var(--focus-ring);
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+            background: rgba(0, 0, 0, 0.6);
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4), 0 0 20px var(--focus-glow);
         }
 
         .input-wrapper.input-error {
             border-color: var(--error-text);
-            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.15);
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4), 0 0 15px rgba(239, 68, 68, 0.3);
         }
 
         #dateInput {
             flex-grow: 1;
             border: none;
             background: transparent;
-            padding: 14px 16px;
+            padding: 16px;
             font-size: 16px;
-            color: var(--text-main);
+            color: #fff;
             outline: none;
             width: 100%;
             font-variant-numeric: tabular-nums;
+            letter-spacing: 0.02em;
         }
 
         #dateInput::placeholder {
-            color: #94a3b8;
+            color: #786d5c;
         }
 
         .calendar-icon-container {
@@ -188,65 +251,86 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            color: var(--text-muted);
+            color: #f59e0b;
             flex-shrink: 0;
+            margin-right: 4px;
         }
 
         .calendar-icon-container svg {
-            transition: color 0.2s;
+            transition: all 0.3s;
+            filter: drop-shadow(0 0 8px rgba(245, 158, 11, 0.3));
         }
 
+        .input-wrapper:focus-within .calendar-icon-container svg,
         .calendar-icon-container:hover svg {
-            color: var(--text-main);
+            color: #fde68a;
+            filter: drop-shadow(0 0 10px rgba(253, 230, 138, 0.6));
         }
 
-        /* Hidden native date picker overlaid on the icon for flawless cross-browser compatibility */
         .picker-overlay {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            opacity: 0;
-            cursor: pointer;
+            top: 0; left: 0; width: 100%; height: 100%;
+            opacity: 0; cursor: pointer;
+            color-scheme: dark;
         }
 
         .btn-clear {
             flex-shrink: 0;
             padding: 0 20px;
             background: var(--btn-clear-bg);
-            color: #475569;
-            border: none;
-            border-radius: 8px;
-            font-size: 15px;
-            font-weight: 500;
+            color: #fde68a;
+            border-radius: 12px;
+            
+            /* Button faceted edge */
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-top: 1px solid rgba(245, 158, 11, 0.3);
+            border-left: 1px solid rgba(245, 158, 11, 0.15);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            
+            font-size: 15px; font-weight: 600;
             cursor: pointer;
-            transition: background 0.2s, color 0.2s;
+            transition: all 0.2s;
             outline: none;
+            backdrop-filter: blur(8px);
         }
 
         .btn-clear:hover {
             background: var(--btn-clear-hover);
-            color: var(--text-main);
+            color: #fff;
+            box-shadow: 0 0 20px rgba(245, 158, 11, 0.3);
+            transform: translateY(-1px);
+        }
+
+        .btn-clear:active {
+            transform: translateY(1px);
         }
 
         .btn-clear:focus-visible {
-            outline: 2px solid var(--focus-ring);
-            outline-offset: 2px;
+            border-color: var(--focus-ring);
+            box-shadow: 0 0 0 2px var(--bg-body), 0 0 0 4px var(--focus-ring);
         }
 
         .error-msg {
             display: none;
             color: var(--error-text);
-            font-size: 14px;
-            margin-top: 8px;
+            font-size: 13.5px;
+            margin-top: 10px;
             font-weight: 500;
+            padding-left: 4px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
         }
 
         .empty-state {
             text-align: center;
-            padding: 40px 20px 20px 20px;
+            padding: 48px 20px 24px 20px;
             color: var(--text-muted);
+            position: relative;
+        }
+
+        .empty-state svg {
+            color: #786d5c;
+            margin-bottom: 16px;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5));
         }
 
         .empty-state p {
@@ -256,41 +340,50 @@
 
         .result-box {
             display: none;
-            margin-top: 24px;
-            border-radius: 12px;
+            margin-top: 28px;
+            border-radius: 16px;
             padding: 24px;
-            border-left-width: 6px;
-            border-left-style: solid;
-            animation: fadeIn 0.3s ease;
+            
+            /* Inner crystal module with gold highlights */
+            background: linear-gradient(135deg, rgba(60, 35, 10, 0.3), rgba(0, 0, 0, 0.5));
+            border-top: 1px solid rgba(245, 158, 11, 0.3);
+            border-left: 1px solid rgba(245, 158, 11, 0.15);
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            border-left-width: 4px;
+            
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(8px); }
-            to { opacity: 1; transform: translateY(0); }
+            from { opacity: 0; transform: translateY(12px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
         }
 
         .result-status {
             display: inline-block;
-            font-size: 13px;
-            font-weight: 700;
-            letter-spacing: 0.05em;
-            padding: 4px 10px;
-            border-radius: 6px;
-            margin-bottom: 12px;
+            font-size: 12px; font-weight: 800;
+            letter-spacing: 0.1em; text-transform: uppercase;
+            padding: 6px 12px; border-radius: 8px;
+            margin-bottom: 16px;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-top-color: rgba(255,255,255,0.3);
         }
 
         .result-message {
             font-size: 15.5px;
-            margin: 0 0 20px 0;
-            line-height: 1.4;
-            color: var(--text-main);
+            margin: 0 0 24px 0;
+            line-height: 1.5;
+            color: #fff;
         }
 
         .detail-row {
             display: flex;
             justify-content: space-between;
-            padding: 10px 0;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
         }
 
         .detail-row:last-child {
@@ -304,57 +397,75 @@
         }
 
         .detail-val {
-            color: var(--text-main);
-            font-weight: 600;
-            font-size: 14.5px;
+            color: #fff;
+            font-weight: 600; font-size: 15px;
             font-variant-numeric: tabular-nums;
+            text-shadow: 0 2px 6px rgba(0,0,0,0.8);
         }
 
         .status-valid {
             background-color: var(--status-valid-bg);
             border-left-color: var(--status-valid-border);
+            box-shadow: inset 30px 0 60px -30px rgba(16, 185, 129, 0.1), 0 10px 30px rgba(0,0,0,0.5);
         }
         .status-valid .result-status {
             background: var(--status-valid-badge);
             color: var(--status-valid-text);
+            border-color: rgba(16, 185, 129, 0.4);
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.2);
         }
 
         .status-soon {
             background-color: var(--status-soon-bg);
             border-left-color: var(--status-soon-border);
+            box-shadow: inset 30px 0 60px -30px rgba(245, 158, 11, 0.1), 0 10px 30px rgba(0,0,0,0.5);
         }
         .status-soon .result-status {
             background: var(--status-soon-badge);
             color: var(--status-soon-text);
+            border-color: rgba(245, 158, 11, 0.4);
+            box-shadow: 0 0 20px rgba(245, 158, 11, 0.2);
         }
 
         .status-today {
             background-color: var(--status-today-bg);
             border-left-color: var(--status-today-border);
+            box-shadow: inset 30px 0 60px -30px rgba(249, 115, 22, 0.1), 0 10px 30px rgba(0,0,0,0.5);
         }
         .status-today .result-status {
             background: var(--status-today-badge);
             color: var(--status-today-text);
+            border-color: rgba(249, 115, 22, 0.4);
+            box-shadow: 0 0 20px rgba(249, 115, 22, 0.2);
         }
 
         .status-expired {
             background-color: var(--status-expired-bg);
             border-left-color: var(--status-expired-border);
+            box-shadow: inset 30px 0 60px -30px rgba(239, 68, 68, 0.1), 0 10px 30px rgba(0,0,0,0.5);
         }
         .status-expired .result-status {
             background: var(--status-expired-badge);
             color: var(--status-expired-text);
+            border-color: rgba(239, 68, 68, 0.4);
+            box-shadow: 0 0 20px rgba(239, 68, 68, 0.2);
         }
 
-        /* Responsive adjustments */
         @media (max-width: 400px) {
             .field-controls { flex-direction: column; }
-            .btn-clear { padding: 12px 20px; }
-            .detail-row { flex-direction: column; gap: 4px; padding: 12px 0; }
+            .btn-clear { padding: 14px 20px; }
+            .detail-row { flex-direction: column; gap: 6px; padding: 14px 0; }
+            .card { padding: 24px; }
         }
     </style>
 </head>
 <body>
+
+    <div class="orb-container">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
 
     <main class="card">
         <header>
@@ -387,7 +498,7 @@
 
         <div id="emptyState" class="empty-state">
             <!-- Empty state SVG illustration -->
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" style="color: #cbd5e1; margin-bottom: 16px;">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
                 <polyline points="14 2 14 8 20 8"></polyline>
                 <line x1="16" y1="13" x2="8" y2="13"></line>
@@ -513,7 +624,7 @@
                 let trimmed = val.trim();
                 if (!trimmed) return { empty: true };
 
-                // Handle pure digit inputs like MMDDYYYY (8 digits) or MMDDYY (6 digits)
+                // Handle pure numeric continuous inputs like MMDDYYYY (8 digits) or MMDDYY (6 digits)
                 if (/^\d{8}$/.test(trimmed)) {
                     trimmed = `${trimmed.slice(0, 2)}/${trimmed.slice(2, 4)}/${trimmed.slice(4, 8)}`;
                 } else if (/^\d{6}$/.test(trimmed)) {
@@ -646,7 +757,7 @@
                 renderResult(m, d, y, expiry.m, expiry.d, expiry.y, todayM, todayD, todayY, diffDays);
             }
 
-            // 1. Text Input event: Handles rapid validation when typing a full 4-digit year, or pasting.
+            // 1. Text Input event: Handles rapid validation when typing a full date or continuous digits.
             dateInput.addEventListener('input', (e) => {
                 const val = dateInput.value.trim();
                 
@@ -656,8 +767,7 @@
                     return;
                 }
 
-                // Auto-trigger immediately on 'input' if the user types a full 4-digit year format,
-                // or an 8-digit continuous date string (MMDDYYYY).
+                // Auto-trigger immediately if user types/pastes full format or 8-digit numeric string
                 if (/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/.test(val) || /^\d{8}$/.test(val)) {
                     const res = parseAndValidateInput(val);
                     if (!res.invalid && !res.empty) {

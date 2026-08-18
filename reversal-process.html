@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reversal Process</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            /* Palette: Sophisticated Neutrals */
+            --bg-page: #e9edf3;
+            --bg-header-start: #0b1220;
+            --bg-header-mid: #111827;
+            --bg-header-end: #172033;
+            
+            --bg-workspace-left: #f4f6f8;
+            --bg-workspace-right: #ffffff;
+            
+            /* Typography Colors */
+            --text-header-primary: #ffffff;
+            --text-header-muted: #94a3b8;
+            --text-primary: #0f172a;
+            --text-muted: #64748b;
+            
+            /* Accents & States */
+            --color-accent: #4f46e5;
+            --color-success: #10b981;
+            
+            /* Borders & Shadows */
+            --border-app: rgba(15, 23, 42, 0.08);
+            --border-panel: #e2e8f0;
+            --border-input: #d9dee7;
+            --border-card: #e5e7eb;
+            
+            --shadow-app: 0 30px 80px rgba(15, 23, 42, 0.12);
+            --shadow-card: 0 2px 5px rgba(15, 23, 42, 0.03), 0 10px 25px rgba(15, 23, 42, 0.04);
+            
+            --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--bg-page);
+            background-image: radial-gradient(circle at 50% 0%, rgba(255,255,255,0.4) 0%, transparent 70%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 40px 24px;
+            color: var(--text-primary);
+        }
+
+        .app-frame {
+            width: 100%;
+            max-width: 1400px;
+            background: var(--bg-workspace-right);
+            border-radius: 20px;
+            box-shadow: var(--shadow-app);
+            border: 1px solid var(--border-app);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .app-header {
+            background: linear-gradient(135deg, var(--bg-header-start) 0%, var(--bg-header-mid) 55%, var(--bg-header-end) 100%);
+            padding: 32px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .header-content {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .eyebrow {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            color: var(--text-header-muted);
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .app-title {
+            font-size: 30px;
+            font-weight: 600;
+            color: var(--text-header-primary);
+            letter-spacing: -0.02em;
+            line-height: 1.2;
+        }
+
+        .app-subtitle {
+            font-size: 14px;
+            color: var(--text-header-muted);
+            margin-top: 4px;
+        }
+
+        .system-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-header-primary);
+            letter-spacing: 0.04em;
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            background-color: var(--color-success);
+            border-radius: 50%;
+            box-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
+        }
+
+        .app-body {
+            display: flex;
+            flex: 1;
+            background: var(--bg-workspace-right);
+        }
+
+        .panel-left {
+            width: 34%;
+            background: var(--bg-workspace-left);
+            padding: 40px;
+            border-right: 1px solid var(--border-panel);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panel-right {
+            width: 66%;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .section-header {
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+        }
+
+        .section-desc {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 32px;
+        }
+
+        .input-group {
+            margin-bottom: 24px;
+        }
+
+        .input-labels {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 8px;
+        }
+
+        .input-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .input-helper {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-prefix {
+            position: absolute;
+            left: 16px;
+            color: var(--text-muted);
+            font-weight: 500;
+            font-size: 15px;
+            pointer-events: none;
+        }
+
+        .control-input {
+            width: 100%;
+            height: 52px;
+            background: #ffffff;
+            border: 1px solid var(--border-input);
+            border-radius: 10px;
+            padding: 0 16px;
+            font-family: var(--font-sans);
+            font-size: 15px;
+            color: var(--text-primary);
+            box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.01);
+            transition: all 0.2s ease;
+        }
+
+        .input-wrapper.has-prefix .control-input {
+            padding-left: 36px;
+        }
+
+        .control-input:focus {
+            outline: none;
+            border-color: var(--color-accent);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .preview-header-bar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 32px;
+        }
+
+        .live-indicator {
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            color: var(--color-success);
+            background: rgba(16, 185, 129, 0.1);
+            padding: 4px 8px;
+            border-radius: 6px;
+            text-transform: uppercase;
+        }
+
+        .bubbles-container {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .action-bubble {
+            width: 100%;
+            height: 72px;
+            background: #ffffff;
+            border: 1px solid var(--border-card);
+            border-radius: 12px;
+            padding: 0 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: var(--shadow-card);
+            cursor: pointer;
+            outline: none;
+            transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+        }
+
+        .action-bubble:hover, .action-bubble:focus-visible {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05), 0 16px 32px rgba(15, 23, 42, 0.06);
+            border-color: #d1d5db;
+        }
+
+        .action-bubble:active {
+            transform: translateY(0);
+        }
+
+        .bubble-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .bubble-num {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            background: rgba(15,23,42,0.04);
+            border: 1px solid rgba(15,23,42,0.06);
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .bubble-label {
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            color: var(--text-primary);
+            text-transform: uppercase;
+        }
+
+        .bubble-right {
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+
+        .bubble-hint {
+            font-size: 12px;
+            color: var(--text-muted);
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .action-bubble:hover .bubble-hint {
+            opacity: 1;
+        }
+
+        .pill-copied {
+            position: absolute;
+            right: 0;
+            background: var(--color-accent);
+            color: #ffffff;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+            padding: 6px 12px;
+            border-radius: 12px;
+            opacity: 0;
+            transform: scale(0.95);
+            transition: opacity 0.15s ease, transform 0.15s ease;
+            pointer-events: none;
+        }
+
+        .action-bubble.is-copied {
+            border-color: var(--color-accent);
+            background: #fafaff;
+        }
+
+        .action-bubble.is-copied .pill-copied {
+            opacity: 1;
+            transform: scale(1);
+        }
+        
+        .action-bubble.is-copied .bubble-hint {
+            opacity: 0;
+        }
+
+        @media (max-width: 992px) {
+            .app-body {
+                flex-direction: column;
+            }
+            .panel-left, .panel-right {
+                width: 100%;
+            }
+            .panel-left {
+                border-right: none;
+                border-bottom: 1px solid var(--border-panel);
+            }
+            .app-header {
+                padding: 24px;
+                flex-direction: column;
+                gap: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-frame">
+        <header class="app-header">
+            <div class="header-content">
+                <div class="eyebrow">SUPPORT OPERATIONS</div>
+                <h1 class="app-title">Reversal Process<br>and Email Send to Customer</h1>
+                <p class="app-subtitle">Prepare the reversal request and customer email from one workspace.</p>
+            </div>
+            <div class="system-status">
+                <div class="status-dot"></div>
+                SYSTEM READY
+            </div>
+        </header>
+
+        <main class="app-body">
+            <aside class="panel-left">
+                <h2 class="section-header">INPUT DETAILS</h2>
+                <p class="section-desc">Enter the information used to populate the messages.</p>
+                
+                <div class="input-group">
+                    <div class="input-labels">
+                        <label class="input-label" for="amountInput">Amount</label>
+                        <span class="input-helper">Reversal amount</span>
+                    </div>
+                    <div class="input-wrapper has-prefix">
+                        <span class="input-prefix">R</span>
+                        <input type="text" id="amountInput" class="control-input" placeholder="0.00" autocomplete="off">
+                    </div>
+                </div>
+                
+                <div class="input-group">
+                    <div class="input-labels">
+                        <label class="input-label" for="nameInput">Customer name</label>
+                        <span class="input-helper">Name used in email</span>
+                    </div>
+                    <div class="input-wrapper">
+                        <input type="text" id="nameInput" class="control-input" placeholder="Enter name" autocomplete="off">
+                    </div>
+                </div>
+                
+                <div class="input-group">
+                    <div class="input-labels">
+                        <label class="input-label" for="idInput">Interaction ID</label>
+                        <span class="input-helper">Support reference</span>
+                    </div>
+                    <div class="input-wrapper">
+                        <input type="text" id="idInput" class="control-input" placeholder="Enter ID" autocomplete="off">
+                    </div>
+                </div>
+            </aside>
+
+            <section class="panel-right">
+                <div class="preview-header-bar">
+                    <h2 class="section-header" style="margin:0;">LIVE PREVIEW</h2>
+                    <div class="live-indicator">LIVE</div>
+                </div>
+                
+                <div class="bubbles-container">
+                    
+                    <!-- Button 1 -->
+                    <button class="action-bubble" onclick="copyMessage(this, 1)" aria-label="Copy Team Message">
+                        <div class="bubble-left">
+                            <span class="bubble-num">01</span>
+                            <span class="bubble-label">TEAM MESSAGE</span>
+                        </div>
+                        <div class="bubble-right">
+                            <span class="bubble-hint">Click to copy</span>
+                            <span class="pill-copied">COPIED</span>
+                        </div>
+                    </button>
+
+                    <!-- Button 2 -->
+                    <button class="action-bubble" onclick="copyMessage(this, 2)" aria-label="Copy Subject">
+                        <div class="bubble-left">
+                            <span class="bubble-num">02</span>
+                            <span class="bubble-label">SUBJECT</span>
+                        </div>
+                        <div class="bubble-right">
+                            <span class="bubble-hint">Click to copy</span>
+                            <span class="pill-copied">COPIED</span>
+                        </div>
+                    </button>
+
+                    <!-- Button 3 -->
+                    <button class="action-bubble" onclick="copyMessage(this, 3)" aria-label="Copy Email Body">
+                        <div class="bubble-left">
+                            <span class="bubble-num">03</span>
+                            <span class="bubble-label">EMAIL BODY</span>
+                        </div>
+                        <div class="bubble-right">
+                            <span class="bubble-hint">Click to copy</span>
+                            <span class="pill-copied">COPIED</span>
+                        </div>
+                    </button>
+
+                    <!-- Button 4 -->
+                    <button class="action-bubble" onclick="copyMessage(this, 4)" aria-label="Copy Confirmation">
+                        <div class="bubble-left">
+                            <span class="bubble-num">04</span>
+                            <span class="bubble-label">CONFIRMATION</span>
+                        </div>
+                        <div class="bubble-right">
+                            <span class="bubble-hint">Click to copy</span>
+                            <span class="pill-copied">COPIED</span>
+                        </div>
+                    </button>
+
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // The EXACT text requested for all 4 copy actions. 
+        const messages = {
+            1: `Hi team, T @Fred, brrs @Jaykee @Rei, I'd like to ask for assistance in crediting the funds back to the account of the customer please. Thank you.`,
+            2: `Subject: R{{Amount}} Successfully Credited back to Your Account`,
+            3: `Dear {{Name}},\n\nI hope you are well.\n\nThanks for patiently waiting and we’re pleased to inform you that the amount of R{{Amount}} has been successfully credited back to your Easybet account.\n\nIf you have any further questions or need assistance with anything else, please feel free to let us know. We’re here to support you and ensure everything runs smoothly for you.\n\nWe appreciate your patience while we worked on resolving this for you.`,
+            4: `Thanks T, email update sent to the customer. Interaction ID {{Interaction ID}}`
+        };
+
+        async function copyMessage(buttonElement, messageId) {
+            // 1. Get the raw text from our dictionary
+            let textToCopy = messages[messageId];
+
+            // 2. Fetch live inputs
+            const amount = document.getElementById('amountInput').value.trim() || '{{Amount}}';
+            const name = document.getElementById('nameInput').value.trim() || '{{Name}}';
+            const interactionId = document.getElementById('idInput').value.trim() || '{{Interaction ID}}';
+
+            // 3. Process placeholders
+            textToCopy = textToCopy.replace(/\{\{Amount\}\}/g, amount);
+            textToCopy = textToCopy.replace(/\{\{Name\}\}/g, name);
+            textToCopy = textToCopy.replace(/\{\{Interaction ID\}\}/g, interactionId);
+
+            try {
+                // 4. Write directly to clipboard
+                await navigator.clipboard.writeText(textToCopy);
+                
+                // 5. Remove 'is-copied' state from all buttons just in case
+                document.querySelectorAll('.action-bubble').forEach(btn => {
+                    btn.classList.remove('is-copied');
+                });
+                
+                // 6. Apply success state ONLY to the clicked button
+                buttonElement.classList.add('is-copied');
+                
+                // 7. Clear the state after 1.5 seconds
+                setTimeout(() => {
+                    buttonElement.classList.remove('is-copied');
+                }, 1500);
+                
+            } catch (err) {
+                console.error('Failed to copy text: ', err);
+            }
+        }
+    </script>
+</body>
+</html>

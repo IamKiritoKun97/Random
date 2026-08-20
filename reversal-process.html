@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -436,6 +438,31 @@
                 </div>
                 
                 <div class="bubbles-container">
+
+<!-- Button 5 -->
+                    <button class="action-bubble" onclick="copyMessage(this, 5)" aria-label="Copy Confirmation">
+                        <div class="bubble-left">
+                            <span class="bubble-num">05</span>
+                            <span class="bubble-label">Initial Flag to Slack</span>
+                        </div>
+                        <div class="bubble-right">
+                            <span class="bubble-hint">Click to copy</span>
+                            <span class="pill-copied">COPIED</span>
+                        </div>
+                    </button>
+
+<!-- Button 6 -->
+                    <button class="action-bubble" onclick="copyMessage(this, 6)" aria-label="Copy Confirmation">
+                        <div class="bubble-left">
+                            <span class="bubble-num">06</span>
+                            <span class="bubble-label">Initial Flag to Slack - Reversal fee R11.50 </span>
+                        </div>
+                        <div class="bubble-right">
+                            <span class="bubble-hint">Click to copy</span>
+                            <span class="pill-copied">COPIED</span>
+                        </div>
+                    </button>
+
                     
                     <!-- Button 1 -->
                     <button class="action-bubble" onclick="copyMessage(this, 1)" aria-label="Copy Team Message">
@@ -485,18 +512,22 @@
                         </div>
                     </button>
 
+
+
                 </div>
             </section>
         </main>
     </div>
 
     <script>
-        // The EXACT text requested for all 4 copy actions. 
+        // The EXACT text requested for all 5 copy actions. 
         const messages = {
             1: `Hi team, T @Fred, brrs @Jaykee @Rei, I'd like to ask for assistance in crediting the funds back to the account of the customer please. Thank you.`,
             2: `Subject: R{{Amount}} Successfully Credited back to Your Account`,
             3: `Dear {{Name}},\n\nI hope you are well.\n\nThanks for patiently waiting and we’re pleased to inform you that the amount of R{{Amount}} has been successfully credited back to your Easybet account.\n\nIf you have any further questions or need assistance with anything else, please feel free to let us know. We’re here to support you and ensure everything runs smoothly for you.\n\nWe appreciate your patience while we worked on resolving this for you.`,
-            4: `Thanks T, email update sent to the customer. Interaction ID {{Interaction ID}}`
+            4: `Thanks T, email update sent to the customer. Interaction ID {{Interaction ID}}`,
+5: `Hi Team, T @Fred, brrs @Jaykee @Rei. The customer reached out requesting to have the funds reversed back to their Easybet account. The customer has already contacted OTT Support regarding this matter. Please advise, thank you.`,
+6: `Hi Team, T @Fred, brrs @Jaykee @Rei. The customer reached out requesting to have the funds reversed back to their Easybet account. The customer has already contacted OTT Support regarding this matter and agreed on the reversal fee of R11.50. Please advise, thank you.`
         };
 
         async function copyMessage(buttonElement, messageId) {

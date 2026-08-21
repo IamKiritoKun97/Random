@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -84,7 +83,7 @@
     <div class="fixed top-[-10%] left-[-10%] w-96 h-96 bg-blue-400 rounded-full mix-blend-multiply filter blur-[100px] opacity-70 z-0 pointer-events-none animate-pulse duration-1000"></div>
     <div class="fixed bottom-[-10%] right-[-10%] w-96 h-96 bg-indigo-500 rounded-full mix-blend-multiply filter blur-[100px] opacity-70 z-0 pointer-events-none animate-pulse delay-700 duration-1000"></div>
 
-    <!-- Name Prompt Modal (Replaces blocking prompt()) -->
+    <!-- Name Prompt Modal -->
     <div id="nameModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm hidden transition-opacity duration-300">
         <div class="glass-panel p-6 sm:p-8 rounded-3xl w-full max-w-sm text-center mx-4 shadow-2xl border border-white/30">
             <h2 class="text-2xl font-semibold mb-2 tracking-tight">Welcome!</h2>
@@ -105,11 +104,20 @@
         <!-- LEFT PANEL: Tracker -->
         <div class="flex flex-col w-full md:max-w-sm">
             
-            <!-- Header & Live Time -->
+            <!-- Header & Live Time & Adjustable Target -->
             <div class="flex justify-between items-start w-full mb-5">
                 <div>
                     <h1 class="text-lg font-semibold opacity-90 tracking-wide uppercase text-blue-100">Overtime Tracker</h1>
-                    <p class="text-xs opacity-70 mt-0.5">Goal: 13 Emails / Hour</p>
+                    <!-- Adjustable Target UI -->
+                    <div class="flex items-center gap-2 mt-1">
+                        <span class="text-xs opacity-70">Goal:</span>
+                        <div class="flex items-center bg-white/10 rounded-md border border-white/20">
+                            <button onclick="changeTarget(-1)" class="px-2 py-0.5 text-xs hover:bg-white/20 transition-colors focus:outline-none">-</button>
+                            <span id="targetDisplay" class="text-xs font-semibold px-2 w-5 text-center">6</span>
+                            <button onclick="changeTarget(1)" class="px-2 py-0.5 text-xs hover:bg-white/20 transition-colors focus:outline-none">+</button>
+                        </div>
+                        <span class="text-xs opacity-70">/ Hour</span>
+                    </div>
                 </div>
                 <div class="text-right">
                     <div id="liveClock" class="text-sm font-mono font-medium tracking-wider text-blue-50 drop-shadow-sm">--:--:--</div>
@@ -173,8 +181,6 @@
     </div>
 
     <script>
-        const goal = 13;
-        
         // Feature 1: Multiple Motivational Sounds Setup
         const sounds = [
             "https://www.myinstants.com/media/sounds/good-job.mp3",
@@ -191,24 +197,25 @@
         let lastAudio = null;
         let lastSoundIndex = -1;
         
-        // Global User Name Variable
         let userName = "Champion";
 
-        // Main counter state
+        // Main Application State
+        let hourlyTarget = parseInt(localStorage.getItem("phEmailTracker_target"));
+        if (isNaN(hourlyTarget) || hourlyTarget < 6) hourlyTarget = 6;
+        if (hourlyTarget > 10) hourlyTarget = 10;
+
         let count = parseInt(localStorage.getItem("phEmailTracker_count"));
         if (isNaN(count)) count = 0;
         
-        // Hour tracking state
         let lastTrackedHour = parseInt(localStorage.getItem("phEmailTracker_lastHour"));
         if (isNaN(lastTrackedHour)) lastTrackedHour = null;
         
-        // Logs state
         let logs = JSON.parse(localStorage.getItem("phEmailTracker_logs"));
         if (!Array.isArray(logs)) logs = [];
 
-        // Night counter state variables
-        let nightCount = parseInt(localStorage.getItem("phEmailTracker_nightCount"));
-        if (isNaN(nightCount)) nightCount = 0;
+        // Note: Independent nightCount state is removed to fix sync bugs.
+        // It is now calculated entirely from the source (logs + current count).
+        localStorage.removeItem("phEmailTracker_nightCount");
         
         // DOM Elements
         const countDisplay = document.getElementById('countDisplay');
@@ -217,6 +224,7 @@
         const logContainer = document.getElementById('logContainer');
         const nightDisplay = document.getElementById("nightCountDisplay");
         const nightContainer = document.getElementById("nightTrackerContainer");
+        const targetDisplay = document.getElementById("targetDisplay");
 
         // UI Prep
         const radius = 52;
@@ -225,26 +233,22 @@
         
         window.onload = () => {
             initPersonalization();
+            updateAll(); // Sync UI from loaded state right away
             renderLogs();
-            updateDisplay();
             updateLiveClock();
             checkHourChange();
-            handleNightSession();
-            updateNightDisplay();
             
             // Start Application Timer Loop
             setInterval(() => {
                 updateLiveClock();
                 checkHourChange();
-                handleNightSession();
-                updateNightDisplay();
+                updateNightDisplay(); // Keep visual styling (colors) in sync with exact time
             }, 1000);
         };
 
         function initPersonalization() {
             const storedName = localStorage.getItem("tracker_userName");
             if (!storedName) {
-                // Show custom modal instead of blocking prompt
                 document.getElementById("nameModal").classList.remove("hidden");
                 setTimeout(() => document.getElementById("nameInput").focus(), 100);
             } else {
@@ -260,15 +264,24 @@
             showToast(`Welcome, ${userName}! Let's crush those goals.`);
         }
 
-        // SAFELY get PH Hour (0-23) without 'Invalid Date' parsing errors
-        function getPHHour() {
+        // Target Configuration
+        function changeTarget(delta) {
+            let newTarget = hourlyTarget + delta;
+            if (newTarget >= 6 && newTarget <= 10) {
+                hourlyTarget = newTarget;
+                localStorage.setItem("phEmailTracker_target", hourlyTarget);
+                updateAll(); // Instantly update ring, statuses, and history visualization
+            }
+        }
+
+        // Time Helpers
+        function getPHHour(date = new Date()) {
             const options = { timeZone: 'Asia/Manila', hour: 'numeric', hour12: false };
-            let hour = parseInt(new Intl.DateTimeFormat('en-US', options).format(new Date()), 10);
+            let hour = parseInt(new Intl.DateTimeFormat('en-US', options).format(date), 10);
             if (hour === 24) hour = 0;
             return hour;
         }
 
-        // SAFELY get formatted PH time string for live clock
         function getPHTimeString() {
             const options = { timeZone: 'Asia/Manila', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true };
             return new Intl.DateTimeFormat('en-US', options).format(new Date());
@@ -285,44 +298,78 @@
             return `${formatTo12Hour(hour)}–${formatTo12Hour(nextHour)}`;
         }
 
-        // Create a Night Session Key based on PH Date/Time
-        function getNightSessionKey() {
-            const hour = getPHHour();
-            const now = new Date();
-
+        // Single Source of Truth for Overnight Productivity
+        function getNightSessionKey(date = new Date(), hour = getPHHour(date)) {
             const phDate = new Intl.DateTimeFormat('en-CA', {
                 timeZone: 'Asia/Manila',
                 year: 'numeric',
                 month: '2-digit',
                 day: '2-digit'
-            }).format(now);
+            }).format(date);
 
-            const date = new Date(phDate);
-
-            // If it's before 9 AM, attribute this to the previous day's night shift
+            const d = new Date(phDate);
             if (hour < 9) {
-                date.setDate(date.getDate() - 1);
+                d.setDate(d.getDate() - 1);
             }
-
-            return date.toISOString().split('T')[0];
+            return d.toISOString().split('T')[0];
         }
 
-        // Handle Night Session Reset Boundary (Exactly at 9:00 AM PH time)
-        function handleNightSession() {
-            const currentSession = getNightSessionKey();
-            const storedSession = localStorage.getItem("phEmailTracker_nightSession");
-
-            if (storedSession !== currentSession) {
-                // We've crossed the 9 AM boundary into a new shift day
-                nightCount = 0;
-                localStorage.setItem("phEmailTracker_nightCount", 0);
-                localStorage.setItem("phEmailTracker_nightSession", currentSession);
-                updateNightDisplay();
+        function calculateOvernightProductivity() {
+            const now = new Date();
+            const hour = getPHHour(now);
+            const currentSession = getNightSessionKey(now, hour);
+            const isNight = (hour >= 21 || hour < 9);
+            
+            let nightTotal = 0;
+            
+            // Add previous night hours stored in logs for THIS specific shift
+            logs.forEach(log => {
+                if (log.nightSession === currentSession) {
+                    nightTotal += log.total;
+                }
+            });
+            
+            // Strictly sync active hour count if it's currently a night hour
+            if (isNight) {
+                nightTotal += count;
             }
+            
+            return nightTotal;
+        }
+
+        // Global Sync UI updater - runs exactly once per modification
+        function updateAll() {
+            // 1. Update Core State & Target
+            targetDisplay.innerText = hourlyTarget;
+            countDisplay.innerText = count;
+            localStorage.setItem("phEmailTracker_count", count);
+            
+            // 2. Update Progress Calculation (Target Aware)
+            const progress = Math.max(0, Math.min(count / hourlyTarget, 1));
+            const offset = circumference - progress * circumference;
+            progressRing.style.strokeDashoffset = offset;
+
+            // 3. Status Output Updates
+            if (count >= hourlyTarget) {
+                statusMessage.classList.remove('opacity-0');
+                statusMessage.classList.add('opacity-100');
+                statusMessage.innerText = count === hourlyTarget ? "Goal Reached!" : `${count - hourlyTarget} Over Goal!`;
+            } else {
+                statusMessage.classList.remove('opacity-100');
+                statusMessage.classList.add('opacity-0');
+            }
+
+            // 4. Force Overnight Total to synchronize with current real state
+            updateNightDisplay();
+            
+            // 5. Update log colors if goal was changed
+            renderLogs();
         }
 
         function updateNightDisplay() {
-            nightDisplay.textContent = nightCount;
+            const currentNightTotal = calculateOvernightProductivity();
+            nightDisplay.textContent = currentNightTotal;
+            
             const hour = getPHHour();
 
             // Highlight UX for active night shift (9 PM to 9 AM)
@@ -344,42 +391,16 @@
             toast.innerText = msg;
             toast.classList.remove("opacity-0");
             
-            // Clear previous timeout if multiple clicks happen quickly
             if(window.toastTimeout) clearTimeout(window.toastTimeout);
             window.toastTimeout = setTimeout(() => toast.classList.add("opacity-0"), 2500);
         }
 
-        function updateDisplay() {
-            countDisplay.innerText = count;
-            localStorage.setItem("phEmailTracker_count", count);
-            
-            const progress = Math.max(0, Math.min(count / goal, 1));
-            const offset = circumference - progress * circumference;
-            progressRing.style.strokeDashoffset = offset;
-
-            if (count >= goal) {
-                statusMessage.classList.remove('opacity-0');
-                statusMessage.classList.add('opacity-100');
-                statusMessage.innerText = count === goal ? "Goal Reached!" : `${count - goal} Over Goal!`;
-            } else {
-                statusMessage.classList.remove('opacity-100');
-                statusMessage.classList.add('opacity-0');
-            }
-        }
-
         function incrementCount() {
             count++;
-            updateDisplay();
             
-            // Strict Filter Increment Night Count (9 PM - 9 AM)
-            const hour = getPHHour();
-            if (hour >= 21 || hour < 9) {
-                nightCount++;
-                localStorage.setItem("phEmailTracker_nightCount", nightCount);
-                updateNightDisplay();
-            }
+            updateAll(); // Automatically cascades into precise Overnight updates
 
-            // Feature 1: Play Random Motivational Sound (No overlap, no consecutive repeats)
+            // Play Random Motivational Sound
             let randomIndex;
             do {
                 randomIndex = Math.floor(Math.random() * sounds.length);
@@ -393,19 +414,15 @@
             }
             
             lastAudio = new Audio(sounds[randomIndex]);
-            lastAudio.play().catch(err => {
-                console.log("Audio playback blocked or failed:", err);
-            });
+            lastAudio.play().catch(err => console.log("Audio playback blocked or failed:", err));
 
-            // Feature 3: Personalized Toast message
             const messages = [
                 `Nice work, ${userName}! Keep going!`,
                 `Great job, ${userName}!`,
                 `You're on fire, ${userName}!`,
                 `Keep it up, ${userName}!`
             ];
-            const randomMsg = messages[Math.floor(Math.random() * messages.length)];
-            showToast(randomMsg);
+            showToast(messages[Math.floor(Math.random() * messages.length)]);
 
             // Pop Animation
             countDisplay.style.transform = 'scale(1.25)';
@@ -418,20 +435,26 @@
         function decrementCount() {
             if (count > 0) {
                 count--;
-                updateDisplay();
+                updateAll(); // This cleanly propagates the -1 to the Overnight Total without desync
             }
         }
 
         function resetCountManual() {
             count = 0;
-            updateDisplay();
+            updateAll();
         }
 
         function saveLog(hour, countToSave) {
+            const now = new Date();
+            const isNight = (hour >= 21 || hour < 9);
+            
             logs.unshift({
                 hourRange: formatHourRange(hour),
-                total: countToSave
+                total: countToSave,
+                // Assign a strict session id so overnight calculations can retrieve these specific logs
+                nightSession: isNight ? getNightSessionKey(now, hour) : null
             });
+            
             if (logs.length > 24) logs.pop();
             localStorage.setItem("phEmailTracker_logs", JSON.stringify(logs));
         }
@@ -444,7 +467,7 @@
             logContainer.innerHTML = logs.map(log => `
                 <div class="flex justify-between items-center bg-white/5 hover:bg-white/10 transition-colors rounded-xl px-4 py-3 text-sm border border-white/10 shadow-sm backdrop-blur-md">
                     <span class="opacity-90 font-medium tracking-wide">${log.hourRange}</span>
-                    <span class="font-bold text-lg ${log.total >= goal ? 'text-green-300 drop-shadow-sm' : 'text-blue-100'}">${log.total} <span class="text-[10px] font-normal opacity-70 uppercase tracking-widest ml-1">Sent</span></span>
+                    <span class="font-bold text-lg ${log.total >= hourlyTarget ? 'text-green-300 drop-shadow-sm' : 'text-blue-100'}">${log.total} <span class="text-[10px] font-normal opacity-70 uppercase tracking-widest ml-1">Sent</span></span>
                 </div>
             `).join("");
         }
@@ -452,13 +475,7 @@
         function clearLogs() {
             logs = [];
             localStorage.removeItem("phEmailTracker_logs");
-            
-            // Also reset night count when logs are cleared
-            nightCount = 0;
-            localStorage.setItem("phEmailTracker_nightCount", nightCount);
-            updateNightDisplay();
-            
-            renderLogs();
+            updateAll(); // Overnight productivity automatically resets as it's derived from the wiped logs
             showToast("Log history and overnight productivity cleared.");
         }
 
@@ -474,15 +491,13 @@
             if (currentHour !== lastTrackedHour) {
                 saveLog(lastTrackedHour, count);
                 
-                // Auto Reset Process
-                count = 0;
+                count = 0; // Reset active shift
                 lastTrackedHour = currentHour;
                 
                 localStorage.setItem("phEmailTracker_count", count);
                 localStorage.setItem("phEmailTracker_lastHour", lastTrackedHour);
                 
-                updateDisplay();
-                renderLogs();
+                updateAll();
                 showToast("New hour started. Tracker reset and saved.");
             }
         }

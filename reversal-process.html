@@ -1,5 +1,6 @@
 
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -443,7 +444,7 @@
                     <button class="action-bubble" onclick="copyMessage(this, 5)" aria-label="Copy Confirmation">
                         <div class="bubble-left">
                             <span class="bubble-num">05</span>
-                            <span class="bubble-label">Initial Flag to Slack</span>
+                            <span class="bubble-label">Initial Flag to Slack - Without Reversal Fee</span>
                         </div>
                         <div class="bubble-right">
                             <span class="bubble-hint">Click to copy</span>
@@ -463,6 +464,29 @@
                         </div>
                     </button>
 
+<!-- Button 7 -->
+                    <button class="action-bubble" onclick="copyMessage(this, 7)" aria-label="Copy Confirmation">
+                        <div class="bubble-left">
+                            <span class="bubble-num">07</span>
+                            <span class="bubble-label">Withdrawal Reversal Fee Confirmation Sent to Customer</span>
+                        </div>
+                        <div class="bubble-right">
+                            <span class="bubble-hint">Click to copy</span>
+                            <span class="pill-copied">COPIED</span>
+                        </div>
+                    </button>
+
+<!-- Button 8 -->
+                    <button class="action-bubble" onclick="copyMessage(this, 8)" aria-label="Copy Confirmation">
+                        <div class="bubble-left">
+                            <span class="bubble-num">08</span>
+                            <span class="bubble-label">SUBJECT: Withdrawal Reversal Fee Confirmation</span>
+                        </div>
+                        <div class="bubble-right">
+                            <span class="bubble-hint">Click to copy</span>
+                            <span class="pill-copied">COPIED</span>
+                        </div>
+                    </button>
                     
                     <!-- Button 1 -->
                     <button class="action-bubble" onclick="copyMessage(this, 1)" aria-label="Copy Team Message">
@@ -480,7 +504,7 @@
                     <button class="action-bubble" onclick="copyMessage(this, 2)" aria-label="Copy Subject">
                         <div class="bubble-left">
                             <span class="bubble-num">02</span>
-                            <span class="bubble-label">SUBJECT</span>
+                            <span class="bubble-label">SUBJECT: Successfully Credited back to Your Account</span>
                         </div>
                         <div class="bubble-right">
                             <span class="bubble-hint">Click to copy</span>
@@ -523,11 +547,13 @@
         // The EXACT text requested for all 5 copy actions. 
         const messages = {
             1: `Hi team, T @Fred, brrs @Jaykee @Rei, I'd like to ask for assistance in crediting the funds back to the account of the customer please. Thank you.`,
-            2: `Subject: R{{Amount}} Successfully Credited back to Your Account`,
-            3: `Dear {{Name}},\n\nI hope you are well.\n\nThanks for patiently waiting and we’re pleased to inform you that the amount of R{{Amount}} has been successfully credited back to your Easybet account.\n\nIf you have any further questions or need assistance with anything else, please feel free to let us know. We’re here to support you and ensure everything runs smoothly for you.\n\nWe appreciate your patience while we worked on resolving this for you.`,
+            2: `R{{Amount}} Successfully Credited back to Your Account`,
+            3: `Dear {{Name}},\n\nI hope you are well.\n\nThanks for patiently waiting and I'm pleased to inform you that the amount of R{{Amount}} has been successfully credited back to your Easybet account.\n\nIf you have any further questions or need assistance with anything else, please feel free to let us know. We’re here to support you and ensure everything runs smoothly for you.\n\nWe appreciate your patience while we worked on resolving this for you.\n\nPlease don’t worry, I’m here to assist you every step of the way. You’re welcome to reply to this email or reach our support team via Live Chat at https://easybet.co.za/page/Landing-Page.\n\nWe value your cooperation and thank you for choosing Easybet!`,
             4: `Thanks T, email update sent to the customer. Interaction ID {{Interaction ID}}`,
 5: `Hi Team, T @Fred, brrs @Jaykee @Rei. The customer reached out requesting to have the funds reversed back to their Easybet account. The customer has already contacted OTT Support regarding this matter. Please advise, thank you.`,
-6: `Hi Team, T @Fred, brrs @Jaykee @Rei. The customer reached out requesting to have the funds reversed back to their Easybet account. The customer has already contacted OTT Support regarding this matter and agreed on the reversal fee of R11.50. Please advise, thank you.`
+6: `Hi Team, T @Fred, brrs @Jaykee @Rei. The customer reached out requesting to have the funds reversed back to their Easybet account. The customer has already contacted OTT Support regarding this matter and agreed on the reversal fee of R11.50. Please advise, thank you.`,
+7: `Dear {{Name}},\n\nI hope you are well.\n\nThank you for patiently waiting. I'm pleased to inform you that we have received an update from the OTT Support team regarding your reversal request for R{{Amount}}. Rest assured, we will keep you updated throughout the process.\n\nPlease be informed that a reversal fee of R11.50 applies. Could you kindly confirm if you agree to this fee so we can proceed with your reversal request accordingly?\n\nOnce you confirm, we will process this immediately.\n\nPlease don’t worry, I’m here to assist you every step of the way. You’re welcome to reply to this email or reach our support team via Live Chat at https://easybet.co.za/page/Landing-Page.\n\nWe value your cooperation and thank you for choosing Easybet!`,
+8: `Withdrawal Reversal Fee Confirmation`
         };
 
         async function copyMessage(buttonElement, messageId) {

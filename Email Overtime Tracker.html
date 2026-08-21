@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -125,11 +126,41 @@
                 </div>
             </div>
 
-            <!-- OVERNIGHT TRACKER UI -->
-            <div class="w-full bg-white/10 border border-white/20 rounded-xl py-3 px-4 mb-4 text-center shadow-inner backdrop-blur-sm transition-colors duration-300" id="nightTrackerContainer">
-                <span class="text-xs font-medium uppercase tracking-wider opacity-80">Overnight Productivity</span>
-                <div class="text-[10px] uppercase opacity-60 mb-1">(9PM - 9AM)</div>
-                <div id="nightCountDisplay" class="text-2xl font-bold text-blue-200 transition-colors duration-300 drop-shadow-md">0</div>
+            <!-- OVERNIGHT PRODUCTIVITY UI -->
+            <div class="w-full bg-white/10 border border-white/20 rounded-xl p-4 mb-6 shadow-inner backdrop-blur-sm transition-all duration-300" id="nightTrackerContainer">
+                <div class="flex justify-between items-start mb-4 border-b border-white/10 pb-3">
+                    <div>
+                        <span class="text-[11px] font-semibold uppercase tracking-widest opacity-90 text-blue-100 block mb-1">Overnight Productivity</span>
+                        <div class="text-[10px] uppercase font-medium text-blue-200/80">Working Window: 10:00 PM &rarr; 6:00 AM</div>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-3 mb-4">
+                    <div class="bg-black/20 rounded-lg p-3 text-center border border-white/5">
+                        <div class="text-[10px] font-medium uppercase tracking-wider opacity-60 mb-1">Total Target</div>
+                        <div id="nightTargetDisplay" class="text-xl font-bold text-blue-50">0</div>
+                    </div>
+                    <div class="bg-black/20 rounded-lg p-3 text-center border border-white/5">
+                        <div class="text-[10px] font-medium uppercase tracking-wider opacity-60 mb-1">Remaining</div>
+                        <div id="nightRemainingDisplay" class="text-xl font-bold text-blue-50">0</div>
+                    </div>
+                </div>
+
+                <div class="flex justify-between items-end mb-2 px-1">
+                    <div>
+                        <div class="text-[10px] font-medium uppercase tracking-wider opacity-60 mb-1">Progress</div>
+                        <div class="text-3xl font-bold text-white leading-none drop-shadow-sm" id="nightProgressText">0 <span class="text-base text-white/50 font-medium ml-0.5">/ 0</span></div>
+                    </div>
+                    <div class="text-right flex flex-col justify-end">
+                        <div id="nightStatusDisplay" class="text-[11px] font-semibold text-white tracking-wide mb-1">...</div>
+                        <div id="nightPercentDisplay" class="text-sm font-bold text-blue-200 uppercase tracking-wider">0%</div>
+                    </div>
+                </div>
+                
+                <!-- Progress Bar -->
+                <div class="w-full bg-black/30 rounded-full h-2 mt-2 overflow-hidden border border-white/10 relative">
+                    <div id="nightProgressBar" class="bg-blue-400 h-full rounded-full transition-all duration-700 ease-out" style="width: 0%"></div>
+                </div>
             </div>
 
             <!-- Current Hour Display -->
@@ -183,16 +214,7 @@
     <script>
         // Feature 1: Multiple Motivational Sounds Setup
         const sounds = [
-            "https://www.myinstants.com/media/sounds/good-job.mp3",
-            "https://www.myinstants.com/media/sounds/anime-wow-sound-effect.mp3",
-            "https://www.myinstants.com/media/sounds/mario-coin.mp3",
-            "https://www.myinstants.com/media/sounds/final-fantasy-v-level-up.mp3",
-            "https://www.myinstants.com/media/sounds/yay_z.mp3",
-            "https://www.myinstants.com/media/sounds/crowd-cheer.mp3",
-            "https://www.myinstants.com/media/sounds/bell-ring.mp3",
-            "https://www.myinstants.com/media/sounds/success-1.mp3",
-            "https://www.myinstants.com/media/sounds/magic-chime-01.mp3",
-            "https://www.myinstants.com/media/sounds/tada-1.mp3"
+            "https://www.myinstants.com/media/sounds/good-job.mp3"
         ];
         let lastAudio = null;
         let lastSoundIndex = -1;
@@ -222,7 +244,6 @@
         const progressRing = document.getElementById('progressRing');
         const statusMessage = document.getElementById('statusMessage');
         const logContainer = document.getElementById('logContainer');
-        const nightDisplay = document.getElementById("nightCountDisplay");
         const nightContainer = document.getElementById("nightTrackerContainer");
         const targetDisplay = document.getElementById("targetDisplay");
 
@@ -308,7 +329,7 @@
             }).format(date);
 
             const d = new Date(phDate);
-            if (hour < 9) {
+            if (hour < 6) {
                 d.setDate(d.getDate() - 1);
             }
             return d.toISOString().split('T')[0];
@@ -318,7 +339,7 @@
             const now = new Date();
             const hour = getPHHour(now);
             const currentSession = getNightSessionKey(now, hour);
-            const isNight = (hour >= 21 || hour < 9);
+            const isNight = (hour >= 22 || hour < 6);
             
             let nightTotal = 0;
             
@@ -368,21 +389,47 @@
 
         function updateNightDisplay() {
             const currentNightTotal = calculateOvernightProductivity();
-            nightDisplay.textContent = currentNightTotal;
+            const nightTarget = hourlyTarget * 8; // 8-hour shift calculation
+            const remaining = Math.max(0, nightTarget - currentNightTotal);
+            const difference = currentNightTotal - nightTarget;
+            
+            document.getElementById("nightTargetDisplay").innerText = nightTarget;
+            document.getElementById("nightRemainingDisplay").innerText = remaining;
+            document.getElementById("nightProgressText").innerHTML = `${currentNightTotal} <span class="text-base text-white/50 font-medium ml-0.5">/ ${nightTarget}</span>`;
+            
+            const statusElement = document.getElementById("nightStatusDisplay");
+            const progressBar = document.getElementById("nightProgressBar");
+            const percentDisplay = document.getElementById("nightPercentDisplay");
+
+            let percent = (currentNightTotal / nightTarget) * 100;
+            percentDisplay.innerText = `${parseFloat(percent.toFixed(2))}%`;
+            progressBar.style.width = `${Math.min(100, percent)}%`;
+
+            if (difference < 0) {
+                statusElement.innerText = `Behind by ${Math.abs(difference)} emails`;
+                statusElement.className = "text-[11px] font-semibold text-red-300 tracking-wide drop-shadow-sm";
+                progressBar.className = "bg-blue-400 h-full rounded-full transition-all duration-700 ease-out";
+            } else if (difference === 0) {
+                statusElement.innerText = "On target";
+                statusElement.className = "text-[11px] font-semibold text-green-300 tracking-wide drop-shadow-sm";
+                progressBar.className = "bg-green-400 h-full rounded-full transition-all duration-700 ease-out shadow-[0_0_10px_rgba(74,222,128,0.5)]";
+            } else {
+                statusElement.innerText = `Ahead by ${difference} emails`;
+                statusElement.className = "text-[11px] font-semibold text-green-300 tracking-wide drop-shadow-sm";
+                progressBar.className = "bg-green-400 h-full rounded-full transition-all duration-700 ease-out shadow-[0_0_10px_rgba(74,222,128,0.5)]";
+            }
             
             const hour = getPHHour();
 
-            // Highlight UX for active night shift (9 PM to 9 AM)
-            if (hour >= 21 || hour < 9) {
-                nightDisplay.style.color = "#4ade80"; // Bright Green
-                nightDisplay.style.textShadow = "0 0 10px rgba(74, 222, 128, 0.5)";
-                nightContainer.style.borderColor = "rgba(74, 222, 128, 0.3)";
+            // Highlight UX for active night shift (10 PM to 6 AM)
+            if (hour >= 22 || hour < 6) {
+                nightContainer.style.borderColor = "rgba(74, 222, 128, 0.4)";
                 nightContainer.style.background = "rgba(255, 255, 255, 0.15)";
+                nightContainer.style.boxShadow = "inset 0 0 20px rgba(74,222,128,0.1)";
             } else {
-                nightDisplay.style.color = "#bfdbfe"; // Standard Blue
-                nightDisplay.style.textShadow = "none";
                 nightContainer.style.borderColor = "rgba(255, 255, 255, 0.2)";
                 nightContainer.style.background = "rgba(255, 255, 255, 0.1)";
+                nightContainer.style.boxShadow = "none";
             }
         }
 
@@ -446,7 +493,7 @@
 
         function saveLog(hour, countToSave) {
             const now = new Date();
-            const isNight = (hour >= 21 || hour < 9);
+            const isNight = (hour >= 22 || hour < 6);
             
             logs.unshift({
                 hourRange: formatHourRange(hour),

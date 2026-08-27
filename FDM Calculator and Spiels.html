@@ -1,0 +1,464 @@
+
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>150% First Deposit Match Calculator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+
+<style>
+:root {
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --transition: 0.2s ease;
+  --green: #22c55e;
+  --orange: #f97316;
+  --red: #ef4444;
+  --accent: #16a34a;
+  --accent-bright: #4ade80;
+}
+
+[data-theme="dark"] {
+  --bg-base: #0b0f14;
+  --bg-surface: #111822;
+  --bg-card: #161e2c;
+  --bg-input: #0d1420;
+  --border: rgba(255,255,255,0.1);
+  --border-focus: rgba(74, 222, 128, 0.5);
+  --text-primary: #f0f4ff;
+  --text-secondary: #a0aec0;
+  --text-muted: #4a5568;
+  --header-bg: rgba(11,15,20,0.95);
+}
+
+[data-theme="light"] {
+  --bg-base: #f0f4f8;
+  --bg-surface: #ffffff;
+  --bg-card: #ffffff;
+  --bg-input: #f8fafc;
+  --border: rgba(0,0,0,0.1);
+  --border-focus: rgba(22,163,74,0.5);
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+  --header-bg: rgba(240,244,248,0.95);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: var(--font-sans);
+  background: var(--bg-base);
+  color: var(--text-primary);
+  min-height: 100vh;
+  font-size: 14px;
+  line-height: 1.5;
+  transition: background var(--transition), color var(--transition);
+}
+input, select, textarea, button { font-family: inherit; }
+button { cursor: pointer; border: none; outline: none; }
+
+.app-container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+.topbar {
+  position: sticky; top: 0; z-index: 90;
+  background: var(--header-bg);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--border);
+  padding: 16px 0;
+  margin-bottom: 24px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.topbar-title { font-size: 18px; font-weight: 800; display: flex; align-items: center; gap: 10px; }
+.topbar-title span { color: var(--accent-bright); }
+.topbar-controls { display: flex; gap: 12px; }
+
+.theme-toggle {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: var(--bg-card); border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; color: var(--text-primary); transition: all var(--transition);
+}
+.theme-toggle:hover { border-color: var(--accent-bright); }
+
+.grid-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+@media (max-width: 900px) { .grid-layout { grid-template-columns: 1fr; } }
+
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+}
+.card-header { margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+.card-title { font-size: 16px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+
+.stats-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px;
+}
+@media (max-width: 600px) { .stats-grid { grid-template-columns: 1fr; } }
+.stat-box {
+  background: var(--bg-input); border: 1px solid var(--border);
+  border-radius: var(--radius-md); padding: 16px;
+}
+.stat-label { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px; }
+.stat-value { font-family: var(--font-mono); font-size: 22px; font-weight: 700; }
+.stat-value.green { color: var(--green); }
+.stat-value.orange { color: var(--orange); }
+.stat-value.red { color: var(--red); }
+
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.form-group { display: flex; flex-direction: column; gap: 6px; }
+.form-group.full { grid-column: 1 / -1; }
+.form-label { font-size: 12px; font-weight: 600; color: var(--text-secondary); }
+.input-wrap { position: relative; }
+.input-prefix { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-weight: 600; color: var(--text-muted); }
+.form-input {
+  width: 100%; padding: 10px 14px;
+  background: var(--bg-input); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); color: var(--text-primary);
+  font-size: 14px; transition: border var(--transition);
+}
+.form-input.has-prefix { padding-left: 28px; }
+.form-input:focus { outline: none; border-color: var(--border-focus); }
+select.form-input { cursor: pointer; }
+
+.progress-container { margin: 24px 0 16px; }
+.progress-header { display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; margin-bottom: 8px; color: var(--text-secondary); }
+.progress-track { height: 8px; background: rgba(255,255,255,0.05); border-radius: 99px; overflow: hidden; }
+[data-theme="light"] .progress-track { background: rgba(0,0,0,0.05); }
+.progress-bar { height: 100%; background: var(--red); transition: width 0.4s ease, background 0.4s ease; min-width: 2px; }
+.progress-bar.green { background: var(--green); }
+.progress-bar.orange { background: var(--orange); }
+
+.btn {
+  display: inline-flex; align-items: center; gap: 8px; justify-content: center;
+  padding: 10px 20px; border-radius: var(--radius-sm);
+  font-size: 14px; font-weight: 600; transition: all var(--transition);
+}
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-primary:hover { background: #15803d; }
+.btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text-primary); }
+.btn-outline:hover { border-color: var(--text-primary); }
+
+.spiel-box {
+  background: var(--bg-input); border: 1px solid var(--border);
+  border-radius: var(--radius-md); padding: 20px;
+  font-size: 14px; line-height: 1.7; color: var(--text-primary);
+  white-space: pre-wrap; min-height: 300px;
+}
+.rules-list { font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
+.rules-list li { margin-bottom: 8px; padding-left: 16px; position: relative; }
+.rules-list li::before { content: "•"; position: absolute; left: 0; color: var(--accent-bright); font-weight: bold; }
+.highlight { color: var(--accent-bright); font-weight: 600; }
+
+.toast {
+  position: fixed; bottom: 20px; right: 20px; background: var(--green); color: #fff;
+  padding: 12px 24px; border-radius: var(--radius-sm); font-weight: 600;
+  transform: translateY(100px); opacity: 0; transition: all 0.3s ease; z-index: 1000;
+}
+.toast.show { transform: translateY(0); opacity: 1; }
+</style>
+</head>
+<body>
+
+<div class="app-container">
+  <header class="topbar">
+    <div class="topbar-title">🎁 150% First Deposit Match <span>Calculator</span></div>
+    <div class="topbar-controls">
+      <button class="btn btn-outline" onclick="resetForm()">↺ Reset</button>
+      <button class="theme-toggle" onclick="toggleTheme()" title="Toggle Theme">🌙</button>
+    </div>
+  </header>
+
+  <div class="stats-grid">
+    <div class="stat-box">
+      <div class="stat-label">Bonus Amount (Capped R5000)</div>
+      <div class="stat-value green" id="st-bonus">R0.00</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-label">Total Required Wagering</div>
+      <div class="stat-value" id="st-target">R0.00</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-label">Remaining to Wager</div>
+      <div class="stat-value red" id="st-remaining">R0.00</div>
+    </div>
+  </div>
+
+  <div class="grid-layout">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">⚙️ Calculation Inputs</div>
+      </div>
+      <div class="form-grid">
+        <div class="form-group full">
+          <label class="form-label">Promotion Type</label>
+          <select class="form-input" id="promoType" onchange="calculate()">
+            <option value="sports">150% First Deposit Match on Sports</option>
+            <option value="casino">150% First Deposit Match Casino Bonus (Slots)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">First Deposit Amount</label>
+          <div class="input-wrap">
+            <span class="input-prefix">R</span>
+            <input type="number" class="form-input has-prefix" id="depositAmount" placeholder="0.00" oninput="calculate()" min="0">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Currently Wagered</label>
+          <div class="input-wrap">
+            <span class="input-prefix">R</span>
+            <input type="number" class="form-input has-prefix" id="currentWagered" placeholder="0.00" oninput="calculate()" min="0">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">First Deposit Date & Time</label>
+          <input type="datetime-local" class="form-input" id="depositDate" oninput="calculate()">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Account Registration Date & Time</label>
+          <input type="datetime-local" class="form-input" id="regDate" oninput="calculate()">
+        </div>
+      </div>
+
+      <div class="progress-container">
+        <div class="progress-header">
+          <span>Rollover Progress</span>
+          <span id="progressPct" class="text-mono">0%</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-bar" id="progressBar" style="width: 0%"></div>
+        </div>
+      </div>
+
+      <div style="margin-top: 24px;">
+        <h4 style="font-size: 13px; font-weight: 700; margin-bottom: 12px; color: var(--accent-bright);">Quick Rules Overview</h4>
+        <ul class="rules-list" id="rulesList">
+          <!-- Populated by JS -->
+        </ul>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">💬 Generated Spiel</div>
+        <button class="btn btn-primary" onclick="copySpiel()">📋 Copy Spiel</button>
+      </div>
+      <div class="spiel-box" id="spielOutput">Please fill in the input fields on the left to generate the response spiel.</div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast">Copied to clipboard!</div>
+
+<script>
+// --- Configuration & Constants ---
+const CUTOFF_DATE = "2026-08-17T08:00"; // Format matches datetime-local value format YYYY-MM-DDTHH:mm
+const MAX_BONUS = 5000;
+const MIN_DEPOSIT = 50;
+
+const PROMOS = {
+  sports: {
+    multiplier: 4,
+    link: "https://easybet.co.za/page/deposit-match",
+    rules: [
+      "4x deposit rollover at minimum odds (see date rules).",
+      "Deposits BEFORE Aug 17, 2026 8:00 AM: Min odds 2.0.",
+      "Deposits FROM Aug 17, 2026 8:00 AM: Min odds 3.0 (Sports only).",
+      "Only settled bets count. Expiry: 14 days. Max win: R25,000."
+    ]
+  },
+  casino: {
+    multiplier: 15,
+    link: "https://easybet.co.za/page/deposit-match",
+    rules: [
+      "15x deposit rollover on Slots only.",
+      "Wagering for credited bonus is 1x on all Casino Games.",
+      "Crash games require min 1.50x multiplier.",
+      "Expiry: 7 days. Max win: R25,000."
+    ]
+  }
+};
+
+// --- Formatters ---
+const formatCurrency = (val) => parseFloat(val || 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+const parseNum = (val) => parseFloat(val) || 0;
+
+function formatDateTime(dateString) {
+  if (!dateString) return "[Date Not Set]";
+  const d = new Date(dateString);
+  const pad = (n) => n.toString().padStart(2, '0');
+  // Format as DD/MM/YY at HH:mm:ss
+  return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear().toString().slice(-2)} at ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+}
+
+function formatDate(dateString) {
+  if (!dateString) return "[Date Not Set]";
+  const d = new Date(dateString);
+  const pad = (n) => n.toString().padStart(2, '0');
+  return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear().toString().slice(-2)}`;
+}
+
+function addDays(dateString, days) {
+  if (!dateString) return "[Expiry Date]";
+  const d = new Date(dateString);
+  d.setDate(d.getDate() + days);
+  return formatDate(d.toISOString());
+}
+
+// --- Main Logic ---
+function calculate() {
+  const type = document.getElementById('promoType').value;
+  const depStr = document.getElementById('depositAmount').value;
+  const wagStr = document.getElementById('currentWagered').value;
+  const depDate = document.getElementById('depositDate').value;
+  const regDate = document.getElementById('regDate').value;
+
+  const deposit = parseNum(depStr);
+  const wagered = parseNum(wagStr);
+  
+  // Calculate Target (Multiplier * Deposit)
+  const multiplier = PROMOS[type].multiplier;
+  const target = deposit * multiplier;
+  
+  // Calculate Bonus (150% capped at 5000)
+  let rawBonus = deposit * 1.5;
+  const bonus = Math.min(rawBonus, MAX_BONUS);
+  
+  // Calculate Remaining
+  let remaining = target - wagered;
+  if (remaining < 0) remaining = 0;
+
+  // Calculate Progress
+  let progress = target > 0 ? (wagered / target) * 100 : 0;
+  progress = Math.min(progress, 100);
+
+  // Update UI
+  document.getElementById('st-target').innerText = `R${formatCurrency(target)}`;
+  document.getElementById('st-bonus').innerText = `R${formatCurrency(bonus)}`;
+  document.getElementById('st-remaining').innerText = `R${formatCurrency(remaining)}`;
+  
+  const progressEl = document.getElementById('progressBar');
+  progressEl.style.width = `${progress}%`;
+  document.getElementById('progressPct').innerText = `${progress.toFixed(1)}%`;
+  
+  if (progress === 100 && target > 0) {
+    progressEl.className = 'progress-bar green';
+    document.getElementById('st-remaining').className = 'stat-value green';
+  } else if (progress > 50) {
+    progressEl.className = 'progress-bar orange';
+    document.getElementById('st-remaining').className = 'stat-value orange';
+  } else {
+    progressEl.className = 'progress-bar red';
+    document.getElementById('st-remaining').className = 'stat-value red';
+  }
+
+  updateRulesList(type);
+  generateSpiel(type, deposit, wagered, target, remaining, bonus, depDate, regDate, progress === 100 && target > 0);
+}
+
+function updateRulesList(type) {
+  const list = document.getElementById('rulesList');
+  list.innerHTML = PROMOS[type].rules.map(r => `<li>${r}</li>`).join('');
+}
+
+// --- Spiel Generation ---
+function generateSpiel(type, deposit, wagered, target, remaining, bonus, depDate, regDate, isQualified) {
+  const out = document.getElementById('spielOutput');
+  
+  // Guard clause if no input
+  if (deposit === 0) {
+    out.innerText = "Please fill in the input fields on the left to generate the response spiel.";
+    return;
+  }
+
+  const fDep = formatCurrency(deposit);
+  const fWag = formatCurrency(wagered);
+  const fTar = formatCurrency(target);
+  const fRem = formatCurrency(remaining);
+  const fBon = formatCurrency(bonus);
+  const strDepDate = formatDateTime(depDate);
+  const strRegDate = formatDateTime(regDate);
+  const strExpiryDate = addDays(regDate, 30);
+
+  let spiel = "";
+
+  if (type === 'sports') {
+    const isOldRule = depDate && depDate < CUTOFF_DATE;
+    const minOdds = isOldRule ? "2.0" : "3.0";
+
+    spiel += `I truly appreciate your patience while we reviewed your account and the applicable Sports Bonus requirements.\n\n`;
+    
+    if (isOldRule) {
+      spiel += `I’m happy to clarify this for you, as the change to the minimum odds requirement does not affect your First Deposit Match Bonus.\n\n`;
+      spiel += `The update regarding the minimum odds was introduced on August 17, 2026. As confirmed by our internal team, if a player’s first deposit was made before 8:00 AM on August 17, 2026, the previous requirement of minimum odds of 2.0 still applies. Only first deposits made from 8:00 AM on August 17, 2026 follow the new requirement of minimum odds of 3.0, with sports-only activity qualifying.\n\n`;
+      spiel += `I can see that your first deposit of R${fDep} was made on ${strDepDate}. This means the previous requirement of minimum odds of 2.0 applies to your bonus.\n\n`;
+      spiel += `This is good news, as you do not need to meet the new 3.0 minimum odds requirement.\n\n`;
+    } else {
+      spiel += `Please note that following an update on August 17, 2026, the minimum odds requirement for the Sports Bonus is 3.0 for all qualifying first deposits made from 8:00 AM onwards, with sports-only activity qualifying.\n\n`;
+    }
+
+    spiel += `Based on the activity reviewed thoroughly, you have wagered a total of R${fWag} on selections with odds of ${minOdds} and above. Bets below odds of ${minOdds} were excluded from this calculation.\n\n`;
+    spiel += `Your required rollover is 4x your first deposit of R${fDep}, which means you needed to wager a total of R${fTar} to complete the rollover requirement.\n\n`;
+
+    if (isQualified) {
+      spiel += `As your qualifying wagering currently stands at R${fWag}, you have successfully exceeded the required R${fTar} rollover amount.\n\n`;
+      spiel += `I have flagged this with our Promotions Team for the bonus to be credited to your account. Please note that the Promotions Team will handle the crediting, so it may take some time to reflect. Rest assured, you will receive a notification once there is an update regarding your bonus.\n\n`;
+    } else {
+      spiel += `As your qualifying wagering currently stands at R${fWag}, you still need to wager an additional R${fRem} to meet the rollover requirement.\n\n`;
+    }
+
+  } else if (type === 'casino') {
+    spiel += `I truly appreciate your patience while we reviewed your account and the applicable Casino Bonus requirements.\n\n`;
+    spiel += `Based on the activity reviewed thoroughly, you have wagered a total of R${fWag} on Slots.\n\n`;
+    spiel += `Your required rollover is 15x your first deposit of R${fDep}, which means you needed to wager a total of R${fTar} to complete the rollover requirement.\n\n`;
+
+    if (isQualified) {
+      spiel += `As your qualifying wagering currently stands at R${fWag}, you have successfully exceeded the required R${fTar} rollover amount.\n\n`;
+      spiel += `I have flagged this to our Promotions Team for the R${fBon} bonus to be credited to your Casino Bonus Wallet. Please note that the promotions team will credit the bonus not us so it may take some time but you will receive a notification once there is an update regarding the crediting of your bonus.\n\n`;
+    } else {
+      spiel += `As your qualifying wagering currently stands at R${fWag}, you still need to wager an additional R${fRem} on Slots to meet the rollover requirement.\n\n`;
+    }
+  }
+
+  // General Ending
+  spiel += `Regarding the deadline, your account was registered on ${strRegDate}, and you have 30 days from registration to meet the minimum qualification criteria. This means your qualification period runs until ${strExpiryDate}.\n\n`;
+  spiel += `For the full promotion details, please refer to:\n${PROMOS[type].link}`;
+
+  out.innerText = spiel;
+}
+
+// --- Utilities ---
+function resetForm() {
+  document.querySelectorAll('input').forEach(el => el.value = '');
+  document.getElementById('promoType').value = 'sports';
+  calculate();
+}
+
+function copySpiel() {
+  const text = document.getElementById('spielOutput').innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    const toast = document.getElementById('toast');
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 2500);
+  });
+}
+
+function toggleTheme() {
+  const html = document.documentElement;
+  const isDark = html.getAttribute('data-theme') === 'dark';
+  html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+}
+
+// Initialize
+calculate();
+</script>
+</body>
+</html>

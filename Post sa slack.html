@@ -1,3 +1,1856 @@
+
+I have an existing single-file HTML application called:
+
+"EASYBET Customer Formatter Pro"
+
+I want you to redesign and improve the application substantially, especially the customer status/tagging interface.
+
+I am providing the existing HTML as the source of truth.
+
+The existing application uses:
+- HTML
+- Tailwind CSS
+- Vanilla JavaScript
+- Inter font
+- JetBrains Mono
+- Dark/glassmorphism styling
+- Multiple customer profiles
+- Raw customer data textarea
+- Status/tag selection
+- Live formatted output
+- Copy-to-clipboard functionality
+
+The application currently works, but the STATUS/TAGGING UI is confusing because all tags are displayed as one large flat list underneath the textarea.
+
+The primary goal of this redesign is:
+
+MAKE THE STATUS/TAGGING EXPERIENCE MUCH CLEARER, FASTER, AND HARDER TO USE INCORRECTLY.
+
+Do not change the purpose of the application.
+
+Do not replace the application with React, Vue, or another framework.
+
+Keep it as a self-contained HTML + Tailwind CSS + Vanilla JavaScript application.
+
+==================================================
+CRITICAL REQUIREMENT #1
+NEVER CHANGE THE OFFICIAL STATUS TEXT
+==================================================
+
+THIS IS NON-NEGOTIABLE.
+
+The following 16 status/tag texts are the official and correct wording.
+
+They MUST remain EXACTLY as written.
+
+Do NOT:
+- Rename them
+- Shorten them
+- Reword them
+- Fix their grammar
+- Change capitalization
+- Change punctuation
+- Change apostrophes
+- Replace words
+- Add words
+- Remove words
+- Use synonyms
+- Automatically title-case them
+- Automatically lowercase them
+- "Improve" their wording
+
+The exact official values are:
+
+Customer used this account to contact us
+Original account
+Deleted account
+No real money deposit
+With real money deposit
+With balance
+Not FICA
+FICA verified
+R50 Sign Up Bonus Fully Used
+R50 Sign Up Bonus Partially Used
+R50 Sign Up Bonus Not Used
+R50 Sign Up Bonus Not Issued
+Manually disabled
+Unfinished Registration
+Bank Account Details Owner
+Using Someone Else’s Bank Account Details
+
+These strings are BUSINESS-CRITICAL.
+
+The final output must use these exact strings.
+
+For example:
+
+"Original account"
+
+must remain:
+
+"Original account"
+
+NOT:
+
+"Original"
+"Original Account"
+"Account - Original"
+
+Likewise:
+
+"With real money deposit"
+
+must remain:
+
+"With real money deposit"
+
+NOT:
+
+"Real Money Deposit"
+"Real deposit"
+"Has deposit"
+
+Likewise:
+
+"Using Someone Else’s Bank Account Details"
+
+must remain:
+
+"Using Someone Else’s Bank Account Details"
+
+NOT:
+
+"Someone Else's Account"
+"Other Bank Account"
+"Using Another Person's Account"
+
+DO NOT alter any of these strings under any circumstance.
+
+==================================================
+CRITICAL REQUIREMENT #2
+PRESERVE THE FINAL OUTPUT
+==================================================
+
+The existing application takes the raw customer information and appends the selected status/tag text underneath it.
+
+Keep this behavior.
+
+For example, if the textarea contains:
+
+Brandon Daniels | 5114955 |
+Email: danielsbrandon012@gmail.com
+Phone: +27769930582
+Registered At: 20/04/25 10:07:55
+Last Login: 16/05/25 15:26:29
+
+and the user selects:
+
+Original account
+With real money deposit
+FICA verified
+
+the output should be:
+
+Brandon Daniels | 5114955 |
+Email: danielsbrandon012@gmail.com
+Phone: +27769930582
+Registered At: 20/04/25 10:07:55
+Last Login: 16/05/25 15:26:29
+Original account
+With real money deposit
+FICA verified
+
+Do not add decorative UI elements into the copied output.
+
+Do not add category headings into the copied output.
+
+Do not add emojis into the copied output.
+
+Do not add checkmarks into the copied output.
+
+Do not add profile headings into the copied output unless explicitly configured as an optional output feature.
+
+The copied output must contain the actual customer text plus the selected official status values.
+
+==================================================
+1. MAIN UX PROBLEM TO SOLVE
+==================================================
+
+Currently the interface is approximately:
+
+TEXTAREA
+
+Customer used this account to contact us
+Original account
+Deleted account
+No real money deposit
+With real money deposit
+With balance
+Not FICA
+FICA verified
+R50 Sign Up Bonus Fully Used
+R50 Sign Up Bonus Partially Used
+R50 Sign Up Bonus Not Used
+R50 Sign Up Bonus Not Issued
+Manually disabled
+Unfinished Registration
+Bank Account Details Owner
+Using Someone Else’s Bank Account Details
+
+This large flat list is difficult to scan.
+
+The user can easily:
+- Miss a tag
+- Select the wrong tag
+- Forget which tags are already selected
+- Confuse related tags
+- Accidentally select contradictory statuses
+
+Redesign the interface so the tags are organized logically.
+
+==================================================
+2. MOVE STATUS/TAGS BESIDE THE TEXTAREA
+==================================================
+
+This is the PRIMARY visual change.
+
+Do NOT place the large tag list underneath the textarea anymore on desktop.
+
+Instead, each customer profile should use a two-column layout.
+
+LEFT:
+ACCOUNT DETAILS
+
+RIGHT:
+STATUS & TAGS
+
+Example:
+
+┌─────────────────────────────────────────────────────────┐
+│ CUSTOMER PROFILE 01                              [ × ] │
+│                                                         │
+│ ┌────────────────────────────┐ ┌──────────────────────┐ │
+│ │ ACCOUNT DETAILS            │ │ STATUS & TAGS        │ │
+│ │                            │ │                      │ │
+│ │ Paste raw details here...  │ │ ACCOUNT TYPE         │ │
+│ │                            │ │ [Original account]    │ │
+│ │                            │ │ [Deleted account]     │ │
+│ │                            │ │                      │ │
+│ │                            │ │ DEPOSIT / BALANCE    │ │
+│ │                            │ │ [No real money...]    │ │
+│ │                            │ │ [With real money...]  │ │
+│ │                            │ │ [With balance]        │ │
+│ │                            │ │                      │ │
+│ │                            │ │ FICA STATUS           │ │
+│ │                            │ │ [Not FICA]            │ │
+│ │                            │ │ [FICA verified]       │ │
+│ └────────────────────────────┘ └──────────────────────┘ │
+└─────────────────────────────────────────────────────────┘
+
+The textarea should take approximately 55–60% of the profile width.
+
+The Status & Tags panel should take approximately 40–45%.
+
+On mobile:
+- Stack the sections vertically.
+- Account Details first.
+- Status & Tags second.
+
+The layout must remain comfortable on smaller screens.
+
+==================================================
+3. GROUP THE 16 OFFICIAL STATUSES
+==================================================
+
+Do not display all 16 statuses as one flat list.
+
+Organize them into logical categories.
+
+Use these categories:
+
+A. ACCOUNT TYPE
+
+Customer used this account to contact us
+Original account
+Deleted account
+
+B. DEPOSIT / BALANCE
+
+No real money deposit
+With real money deposit
+With balance
+
+C. FICA STATUS
+
+Not FICA
+FICA verified
+
+D. R50 SIGN UP BONUS
+
+R50 Sign Up Bonus Fully Used
+R50 Sign Up Bonus Partially Used
+R50 Sign Up Bonus Not Used
+R50 Sign Up Bonus Not Issued
+
+E. ACCOUNT CONDITION
+
+Manually disabled
+Unfinished Registration
+
+F. BANK ACCOUNT
+
+Bank Account Details Owner
+Using Someone Else’s Bank Account Details
+
+The category names are UI organization only.
+
+DO NOT add these category names to the copied output.
+
+==================================================
+4. CENTRALIZE ALL STATUS DATA
+==================================================
+
+Do NOT duplicate the status HTML in multiple places.
+
+The current implementation repeats status markup for the initial profile and dynamically created profiles.
+
+Replace this with one centralized JavaScript configuration.
+
+Use something similar to:
+
+const STATUS_CONFIG = [
+    {
+        id: "accountType",
+        title: "ACCOUNT TYPE",
+        selection: "single",
+        options: [
+            {
+                id: "customerUsedAccount",
+                label: "Customer used this account to contact us",
+                value: "Customer used this account to contact us"
+            },
+            {
+                id: "originalAccount",
+                label: "Original account",
+                value: "Original account"
+            },
+            {
+                id: "deletedAccount",
+                label: "Deleted account",
+                value: "Deleted account"
+            }
+        ]
+    },
+
+    {
+        id: "depositBalance",
+        title: "DEPOSIT / BALANCE",
+        selection: "multi",
+        options: [
+            {
+                id: "noRealMoneyDeposit",
+                label: "No real money deposit",
+                value: "No real money deposit"
+            },
+            {
+                id: "withRealMoneyDeposit",
+                label: "With real money deposit",
+                value: "With real money deposit"
+            },
+            {
+                id: "withBalance",
+                label: "With balance",
+                value: "With balance"
+            }
+        ]
+    },
+
+    {
+        id: "ficaStatus",
+        title: "FICA STATUS",
+        selection: "single",
+        options: [
+            {
+                id: "notFica",
+                label: "Not FICA",
+                value: "Not FICA"
+            },
+            {
+                id: "ficaVerified",
+                label: "FICA verified",
+                value: "FICA verified"
+            }
+        ]
+    },
+
+    {
+        id: "signupBonus",
+        title: "R50 SIGN UP BONUS",
+        selection: "single",
+        options: [
+            {
+                id: "bonusFullyUsed",
+                label: "R50 Sign Up Bonus Fully Used",
+                value: "R50 Sign Up Bonus Fully Used"
+            },
+            {
+                id: "bonusPartiallyUsed",
+                label: "R50 Sign Up Bonus Partially Used",
+                value: "R50 Sign Up Bonus Partially Used"
+            },
+            {
+                id: "bonusNotUsed",
+                label: "R50 Sign Up Bonus Not Used",
+                value: "R50 Sign Up Bonus Not Used"
+            },
+            {
+                id: "bonusNotIssued",
+                label: "R50 Sign Up Bonus Not Issued",
+                value: "R50 Sign Up Bonus Not Issued"
+            }
+        ]
+    },
+
+    {
+        id: "accountCondition",
+        title: "ACCOUNT CONDITION",
+        selection: "multi",
+        options: [
+            {
+                id: "manuallyDisabled",
+                label: "Manually disabled",
+                value: "Manually disabled"
+            },
+            {
+                id: "unfinishedRegistration",
+                label: "Unfinished Registration",
+                value: "Unfinished Registration"
+            }
+        ]
+    },
+
+    {
+        id: "bankAccount",
+        title: "BANK ACCOUNT",
+        selection: "single",
+        options: [
+            {
+                id: "bankAccountOwner",
+                label: "Bank Account Details Owner",
+                value: "Bank Account Details Owner"
+            },
+            {
+                id: "someoneElsesBankDetails",
+                label: "Using Someone Else’s Bank Account Details",
+                value: "Using Someone Else’s Bank Account Details"
+            }
+        ]
+    }
+];
+
+IMPORTANT:
+
+The `value` fields must contain the exact official text.
+
+Do not generate values dynamically.
+
+Do not derive values from IDs.
+
+Do not use automatic capitalization.
+
+Do not use `innerText` as the source of truth.
+
+The centralized configuration must be the single source of truth.
+
+==================================================
+5. STATUS SELECTION RULES
+==================================================
+
+Some statuses represent mutually exclusive choices.
+
+Implement selection rules by category.
+
+ACCOUNT TYPE:
+
+Only one of these should be selected:
+
+Original account
+Deleted account
+
+However:
+
+Customer used this account to contact us
+
+may remain independently selectable.
+
+FICA STATUS:
+
+Only one:
+
+Not FICA
+FICA verified
+
+R50 SIGN UP BONUS:
+
+Only one:
+
+R50 Sign Up Bonus Fully Used
+R50 Sign Up Bonus Partially Used
+R50 Sign Up Bonus Not Used
+R50 Sign Up Bonus Not Issued
+
+BANK ACCOUNT:
+
+Only one:
+
+Bank Account Details Owner
+Using Someone Else’s Bank Account Details
+
+ACCOUNT CONDITION:
+
+These can be independently selected:
+
+Manually disabled
+Unfinished Registration
+
+DEPOSIT / BALANCE:
+
+Do NOT blindly assume these are mutually exclusive.
+
+The application should support configurable selection behavior.
+
+For example:
+
+selection: "single"
+
+or:
+
+selection: "multi"
+
+The behavior should be controlled by STATUS_CONFIG.
+
+If "With balance" can coexist with "With real money deposit", the configuration must allow both.
+
+Do not silently change business logic.
+
+==================================================
+6. STATUS CHIPS SHOULD BE REAL BUTTONS
+==================================================
+
+The current implementation uses clickable `<span>` elements.
+
+Replace interactive status spans with actual:
+
+<button>
+
+elements.
+
+Benefits:
+- Keyboard accessibility
+- Better semantics
+- Better focus handling
+- Better accessibility
+- Easier event handling
+
+Each status button should contain:
+
+data-status-id
+data-group-id
+
+Example:
+
+<button
+    type="button"
+    class="status-chip"
+    data-status-id="originalAccount"
+    data-group-id="accountType">
+    Original account
+</button>
+
+==================================================
+7. MAKE SELECTED STATES OBVIOUS
+==================================================
+
+The existing application changes the selected chip to white.
+
+Keep the overall monochrome style but make the selected state more obvious.
+
+UNSELECTED:
+- Dark translucent background
+- Subtle border
+- Muted text
+
+HOVER:
+- Slightly brighter background
+- Brighter border
+
+SELECTED:
+- High contrast
+- Strong border
+- Slight glow
+- Clear check indicator
+
+Example:
+
+[ Original account ]
+
+selected:
+
+[ ✓ Original account ]
+
+The checkmark is UI ONLY.
+
+It must NEVER appear in copied output.
+
+Do not rely solely on color to indicate selection.
+
+==================================================
+8. SELECTED STATUS SUMMARY
+==================================================
+
+At the bottom of each profile, display a compact summary.
+
+Example:
+
+SELECTED STATUS
+✓ Original account
+✓ With real money deposit
+✓ FICA verified
+
+If nothing is selected:
+
+SELECTED STATUS
+No statuses selected
+
+This summary should update instantly.
+
+The summary is UI only.
+
+Do not include the "SELECTED STATUS" heading in copied output.
+
+Do not include checkmarks in copied output.
+
+==================================================
+9. SHOW CATEGORY COUNTS
+==================================================
+
+Each category should show how many options are selected.
+
+Examples:
+
+ACCOUNT TYPE
+1 selected
+
+DEPOSIT / BALANCE
+2 selected
+
+FICA STATUS
+1 selected
+
+R50 SIGN UP BONUS
+0 selected
+
+This should update live.
+
+Possible format:
+
+ACCOUNT TYPE                 1 selected
+
+or:
+
+ACCOUNT TYPE     [1]
+
+Keep it visually subtle.
+
+==================================================
+10. ADD "CLEAR ALL TAGS"
+==================================================
+
+Inside the Status & Tags panel, add:
+
+Clear All
+
+This should:
+- Remove all selected statuses
+- Keep the textarea unchanged
+- Keep the profile
+- Update the selected summary
+- Update category counters
+- Update live output
+
+Do not delete the customer profile.
+
+==================================================
+11. ADD STATUS SEARCH
+==================================================
+
+There are 16 statuses, and the number may grow.
+
+Add a small search box at the top of the Status & Tags panel.
+
+Placeholder:
+
+Search statuses...
+
+Examples:
+
+Searching:
+
+bonus
+
+should display the R50 Sign Up Bonus statuses.
+
+Searching:
+
+bank
+
+should display:
+
+Bank Account Details Owner
+Using Someone Else’s Bank Account Details
+
+Searching:
+
+fica
+
+should display:
+
+Not FICA
+FICA verified
+
+The search should filter the status options without modifying the actual configuration.
+
+Add a small clear × button inside or beside the search field.
+
+If the search is empty, show all statuses.
+
+Search should be case-insensitive.
+
+==================================================
+12. COLLAPSIBLE STATUS GROUPS
+==================================================
+
+Because the panel may eventually contain more statuses, make categories collapsible.
+
+Example:
+
+▼ ACCOUNT TYPE              1 selected
+    [✓ Original account]
+    [Deleted account]
+
+▼ DEPOSIT / BALANCE          2 selected
+    [✓ With real money deposit]
+    [✓ With balance]
+
+▶ FICA STATUS                0 selected
+
+▶ R50 SIGN UP BONUS          0 selected
+
+The group header should be clickable.
+
+When collapsed:
+- Hide its options.
+- Keep its selection count visible.
+
+When expanded:
+- Show its options.
+
+Do not make the UI overly complicated.
+
+The most frequently used groups can be expanded by default.
+
+==================================================
+13. PROFILE HEADER
+==================================================
+
+Improve the customer profile card.
+
+Instead of a plain card, give it a clear header:
+
+CUSTOMER PROFILE 01
+
+and on the right:
+
+[ Clear ] [ × ]
+
+The profile number should update automatically:
+
+CUSTOMER PROFILE 01
+CUSTOMER PROFILE 02
+CUSTOMER PROFILE 03
+
+If Profile 02 is deleted, renumber remaining profiles appropriately.
+
+The profile header should not affect copied output.
+
+==================================================
+14. ADD PROFILE
+==================================================
+
+Keep the existing:
+
+Add Profile
+
+button.
+
+When clicked:
+- Create a new customer profile.
+- Create the textarea.
+- Create the complete Status & Tags panel.
+- Give it independent state.
+- Focus the textarea.
+- Scroll the new profile into view.
+- Update profile numbering.
+- Update live output.
+
+Each profile must have completely independent:
+- textarea content
+- selected statuses
+- search field
+- collapsed groups
+
+Selecting a status on Profile 01 must NEVER select it on Profile 02.
+
+==================================================
+15. REMOVE PROFILE
+==================================================
+
+Keep the existing remove profile functionality.
+
+When removing:
+- Remove only that profile.
+- Do not affect other profiles.
+- Update profile numbering.
+- Update live output.
+
+Use a smooth animation if appropriate.
+
+==================================================
+16. CLEAR PROFILE
+==================================================
+
+Add a:
+
+Clear
+
+button to each profile.
+
+It should:
+- Clear textarea
+- Clear all selected statuses
+- Keep the profile itself
+- Update selected status summary
+- Update counters
+- Update live output
+
+Prefer a simple undo-style toast rather than an intrusive browser confirm dialog.
+
+==================================================
+17. OPTIONAL DUPLICATE PROFILE
+==================================================
+
+If practical, add:
+
+Duplicate
+
+to the profile header.
+
+If implemented, it must duplicate:
+- textarea content
+- selected statuses
+
+It must NOT duplicate:
+- search text
+- temporary UI state
+- focus state
+
+The duplicated profile must have its own independent state.
+
+==================================================
+18. LIVE OUTPUT
+==================================================
+
+Keep the existing Live Output panel on the right side of the application.
+
+The output should update instantly when:
+- Text changes
+- Status is selected
+- Status is deselected
+- Profile is added
+- Profile is removed
+- Profile is cleared
+
+Keep the existing plain-text output concept.
+
+Do not insert UI formatting into the copied content.
+
+==================================================
+19. COPY OUTPUT BUTTON
+==================================================
+
+The existing application allows clicking the entire preview panel to copy.
+
+Keep this functionality if possible.
+
+However, also add an obvious:
+
+Copy Output
+
+button.
+
+The user should not have to know that the entire panel is clickable.
+
+After successful copy, display:
+
+Copied
+
+or:
+
+✓ Copied
+
+The toast may continue to say:
+
+COPIED TO CLIPBOARD
+
+The UI message can be different from the customer status text.
+
+DO NOT change any of the 16 official statuses.
+
+Use:
+
+navigator.clipboard.writeText()
+
+when available.
+
+Provide a fallback for browsers where necessary.
+
+==================================================
+20. OUTPUT MUST NOT CONTAIN UI LABELS
+==================================================
+
+This is extremely important.
+
+If the UI has:
+
+ACCOUNT TYPE
+
+DEPOSIT / BALANCE
+
+FICA STATUS
+
+R50 SIGN UP BONUS
+
+etc.
+
+DO NOT put those headings into the copied output.
+
+If the UI displays:
+
+✓ Original account
+
+the output must only contain:
+
+Original account
+
+If the UI displays:
+
+[✓] FICA verified
+
+the output must only contain:
+
+FICA verified
+
+The output must use:
+
+option.value
+
+not:
+- button.innerText
+- display text generated elsewhere
+- category heading
+- status ID
+
+==================================================
+21. DO NOT USE SHORTENED UI STATUS NAMES
+==================================================
+
+Do NOT change the official text even for visual purposes.
+
+Avoid this:
+
+[Original]
+
+[Real Deposit]
+
+[Balance]
+
+[Verified]
+
+[Someone Else's Account]
+
+Instead use the exact official strings:
+
+[Original account]
+
+[With real money deposit]
+
+[With balance]
+
+[FICA verified]
+
+[Using Someone Else’s Bank Account Details]
+
+The UI should become easier through:
+- Grouping
+- Layout
+- Spacing
+- Search
+- Icons
+- Counters
+- Collapsing
+- Better typography
+
+NOT by changing the official wording.
+
+==================================================
+22. LONG STATUS TEXT HANDLING
+==================================================
+
+Some status labels are naturally long.
+
+For example:
+
+Customer used this account to contact us
+
+Using Someone Else’s Bank Account Details
+
+Do not shorten them.
+
+Instead:
+- Allow buttons to wrap naturally.
+- Use appropriate line height.
+- Allow the text to occupy multiple lines.
+- Make the entire button clickable.
+- Do not truncate important text.
+- Avoid ellipsis when it hides the official wording.
+- Use tooltips only as supplementary information.
+
+The full official wording should remain visible whenever practical.
+
+==================================================
+23. VISUAL DESIGN
+==================================================
+
+Keep the existing visual identity.
+
+Use:
+- Near-black background
+- Glassmorphism
+- Subtle borders
+- White primary actions
+- Dark translucent cards
+- Inter
+- JetBrains Mono for customer data and output
+- Subtle shadows
+- Restrained animations
+- Premium internal customer-support tool aesthetic
+
+Do NOT turn this into a colorful dashboard.
+
+Avoid excessive colors.
+
+The UI should feel:
+- Professional
+- Fast
+- Clean
+- Premium
+- Operational
+- Easy to scan
+
+==================================================
+24. CATEGORY VISUAL HIERARCHY
+==================================================
+
+Make category sections visually distinct without introducing excessive color.
+
+For example:
+
+ACCOUNT TYPE
+────────────────────────
+
+[Customer used this account to contact us]
+[Original account]
+[Deleted account]
+
+DEPOSIT / BALANCE
+────────────────────────
+
+[No real money deposit]
+[With real money deposit]
+[With balance]
+
+Use:
+- Small uppercase category heading
+- Subtle divider
+- Selection count
+- Consistent spacing
+
+Do not use large colorful cards for every category.
+
+==================================================
+25. STATUS PANEL SCROLLING
+==================================================
+
+The Status & Tags panel should be independently scrollable if it becomes taller than the profile.
+
+The textarea should not become unnecessarily tiny.
+
+The user should be able to scroll through tags without losing access to the customer details.
+
+Avoid making the entire page jump when interacting with tags.
+
+==================================================
+26. RESPONSIVE DESIGN
+==================================================
+
+Desktop:
+
+Use a two-column profile layout.
+
+Tablet:
+
+Keep two columns if enough space exists.
+
+Mobile:
+
+Stack:
+
+1. Customer Profile Header
+2. Account Details
+3. Status & Tags
+4. Selected Status Summary
+
+Make all controls touch-friendly.
+
+Do not allow horizontal overflow.
+
+Long status names must wrap instead of breaking the layout.
+
+==================================================
+27. ACCESSIBILITY
+==================================================
+
+Improve accessibility.
+
+Requirements:
+
+- Use real `<button>` elements.
+- Use visible keyboard focus states.
+- Support Enter/Space for buttons.
+- Use appropriate aria-labels where necessary.
+- Search field must be keyboard accessible.
+- Clear buttons must have accessible names.
+- Remove buttons must have accessible names.
+- Copy button must have an accessible name.
+- Do not rely only on color to communicate selection.
+
+For example:
+
+aria-pressed="true"
+
+for selected status buttons.
+
+Update aria-pressed dynamically.
+
+==================================================
+28. AVOID INLINE ONCLICK WHERE POSSIBLE
+==================================================
+
+The current application uses inline handlers such as:
+
+onclick="toggleStatus(this)"
+
+Refactor this.
+
+Use event delegation or standard JavaScript event listeners.
+
+For example:
+
+document.addEventListener("click", (event) => {
+    const statusButton = event.target.closest("[data-status-id]");
+
+    if (!statusButton) return;
+
+    handleStatusSelection(statusButton);
+});
+
+This will make dynamically created profiles easier to manage.
+
+==================================================
+29. REUSABLE JAVASCRIPT FUNCTIONS
+==================================================
+
+Structure the JavaScript into clear functions.
+
+Recommended functions:
+
+createProfile()
+renderStatusPanel()
+renderStatusGroups()
+renderStatusOption()
+handleStatusSelection()
+getSelectedStatuses()
+updateSelectedSummary()
+updateCategoryCounts()
+updatePreview()
+updateProfileNumbers()
+clearStatuses()
+clearProfile()
+removeProfile()
+duplicateProfile()
+filterStatuses()
+toggleStatusGroup()
+copyToClipboard()
+showToast()
+
+Do not create unnecessary complexity.
+
+Keep the code readable and maintainable.
+
+==================================================
+30. PROFILE STATE
+==================================================
+
+Each profile should maintain its own state.
+
+A profile state can conceptually look like:
+
+{
+    id: "profile-1",
+    text: "...",
+    selectedStatuses: [],
+    searchTerm: "",
+    collapsedGroups: {}
+}
+
+Do not rely on global status state.
+
+Each customer profile must be independent.
+
+==================================================
+31. STATUS IDS VS STATUS VALUES
+==================================================
+
+Use internal IDs for JavaScript logic.
+
+For example:
+
+originalAccount
+
+can be the internal ID.
+
+But the official output value must remain:
+
+Original account
+
+Similarly:
+
+someoneElsesBankDetails
+
+can be the internal ID.
+
+But the official output value must remain:
+
+Using Someone Else’s Bank Account Details
+
+Never output the internal ID.
+
+Never convert IDs into labels automatically.
+
+==================================================
+32. STATUS ORDER
+==================================================
+
+When multiple statuses are selected, output them in the same logical order as the STATUS_CONFIG.
+
+Do not output them in random click order unless the original behavior specifically requires click order.
+
+Recommended order:
+
+ACCOUNT TYPE
+then
+DEPOSIT / BALANCE
+then
+FICA STATUS
+then
+R50 SIGN UP BONUS
+then
+ACCOUNT CONDITION
+then
+BANK ACCOUNT
+
+However, the output should contain ONLY the selected official status text.
+
+Do not output category headings.
+
+==================================================
+33. MULTIPLE CUSTOMER OUTPUT
+==================================================
+
+When multiple profiles exist, continue supporting combined output.
+
+Each profile's customer text should be followed by that profile's selected statuses.
+
+Do not allow statuses from Profile 01 to appear under Profile 02.
+
+Do not mix customer data between profiles.
+
+Maintain a clear separation between profiles in the internal data model.
+
+If separators are considered, do not introduce them into copied output unless they are explicitly part of the existing required format.
+
+Output correctness is more important than visual decoration.
+
+==================================================
+34. EMPTY PROFILES
+==================================================
+
+If a profile has no customer text:
+
+Do not output its selected statuses by themselves.
+
+A profile should only contribute to the output when it contains customer text.
+
+This prevents orphaned statuses from appearing.
+
+==================================================
+35. PRESERVE EXISTING CUSTOMER DATA FORMAT
+==================================================
+
+Do not parse, rewrite, normalize, or rearrange the raw customer information unless explicitly required.
+
+If the user pastes:
+
+Brandon Daniels | 5114955 |
+Email: danielsbrandon012@gmail.com
+Phone: +27769930582
+Registered At: 20/04/25 10:07:55
+Last Login: 16/05/25 15:26:29
+
+keep it exactly as entered, apart from the existing trim behavior if necessary.
+
+Do not automatically:
+- Change dates
+- Change phone numbers
+- Change email addresses
+- Reformat names
+- Change capitalization
+- Add labels
+- Remove lines
+
+The textarea content is user-provided source data.
+
+==================================================
+36. DO NOT BREAK EXISTING COPY BEHAVIOR
+==================================================
+
+The copy action must copy the actual formatted plain text.
+
+Do not copy:
+- HTML
+- Markdown
+- Buttons
+- Category headings
+- Check icons
+- UI labels
+- Search terms
+
+Only copy the final formatted text.
+
+==================================================
+37. TOAST / FEEDBACK
+==================================================
+
+Keep the existing toast functionality.
+
+Improve it slightly if useful.
+
+Examples:
+
+COPIED TO CLIPBOARD
+
+PROFILE CLEARED
+
+TAGS CLEARED
+
+The toast should be subtle and disappear automatically.
+
+Do not create intrusive modal dialogs for normal operations.
+
+==================================================
+38. ANIMATION
+==================================================
+
+Keep animations subtle.
+
+Use small transitions for:
+- Selecting a status
+- Deselecting a status
+- Expanding/collapsing groups
+- Adding profiles
+- Removing profiles
+- Copy confirmation
+
+Do not over-animate.
+
+This is an operational support tool, so speed and clarity are more important than flashy animations.
+
+==================================================
+39. FIX EXISTING CODE QUALITY ISSUES
+==================================================
+
+The current implementation has duplicated status markup.
+
+Remove this duplication.
+
+The dynamically generated profile currently contains an unnecessary nested flex wrapper around the status list.
+
+Clean that up.
+
+Ensure all HTML is valid.
+
+Ensure all template strings are properly closed.
+
+Ensure dynamically generated profiles have the same functionality as the initial profile.
+
+Do not maintain separate versions of the status list.
+
+==================================================
+40. SINGLE SOURCE OF TRUTH
+==================================================
+
+There should be ONE place in the JavaScript where the 16 official statuses are defined.
+
+If I add a new status later, I should only have to modify STATUS_CONFIG.
+
+The application should automatically:
+- Display it
+- Include it in search
+- Include it in the appropriate category
+- Apply selection rules
+- Include it in selected summary
+- Include it in output
+
+Do not require editing multiple HTML sections.
+
+==================================================
+41. EXACT TEXT VALIDATION
+==================================================
+
+Before finishing, perform an exact validation of the official status strings.
+
+The application MUST contain these exact 16 values:
+
+1. Customer used this account to contact us
+2. Original account
+3. Deleted account
+4. No real money deposit
+5. With real money deposit
+6. With balance
+7. Not FICA
+8. FICA verified
+9. R50 Sign Up Bonus Fully Used
+10. R50 Sign Up Bonus Partially Used
+11. R50 Sign Up Bonus Not Used
+12. R50 Sign Up Bonus Not Issued
+13. Manually disabled
+14. Unfinished Registration
+15. Bank Account Details Owner
+16. Using Someone Else’s Bank Account Details
+
+Check them character-for-character.
+
+Do not accidentally change:
+
+- capitalization
+- spacing
+- punctuation
+- apostrophe characters
+- wording
+
+Especially preserve:
+
+Using Someone Else’s Bank Account Details
+
+including the apostrophe character.
+
+==================================================
+42. DO NOT "CORRECT" THE WORDING
+==================================================
+
+Even if a status looks grammatically unusual, do not modify it.
+
+The business wording is authoritative.
+
+Do not make editorial corrections.
+
+Do not change:
+
+"Bank Account Details Owner"
+
+to something you believe is more grammatically natural.
+
+Do not change:
+
+"Using Someone Else’s Bank Account Details"
+
+to another phrase.
+
+Do not change:
+
+"Not FICA"
+
+to another phrase.
+
+Do not change any official status.
+
+==================================================
+43. TEST ALL STATUS COMBINATIONS
+==================================================
+
+Before delivering the final code, test:
+
+ACCOUNT TYPE:
+- Original account
+- Deleted account
+- Customer used this account to contact us
+
+FICA:
+- Not FICA
+- FICA verified
+
+R50 BONUS:
+- Fully Used
+- Partially Used
+- Not Used
+- Not Issued
+
+BANK ACCOUNT:
+- Bank Account Details Owner
+- Using Someone Else’s Bank Account Details
+
+DEPOSIT:
+- No real money deposit
+- With real money deposit
+- With balance
+
+Also test combinations where multiple categories are selected.
+
+Verify that:
+- The correct statuses appear.
+- Mutually exclusive choices behave correctly.
+- No unrelated profile is affected.
+- The copied text is correct.
+- No UI-only elements appear in copied output.
+
+==================================================
+44. TEST MULTIPLE PROFILES
+==================================================
+
+Test:
+
+Profile 01:
+Customer A
+Original account
+
+Profile 02:
+Customer B
+Deleted account
+
+Verify that the output is:
+
+Customer A
+Original account
+
+Customer B
+Deleted account
+
+and NOT:
+
+Customer A
+Original account
+Deleted account
+
+Statuses must never leak between profiles.
+
+==================================================
+45. TEST ADD / REMOVE / CLEAR
+==================================================
+
+Verify:
+
+Add Profile:
+- Creates a fully functional profile.
+
+Remove Profile:
+- Removes only that profile.
+
+Clear:
+- Clears text and tags for that profile.
+
+Clear All Tags:
+- Clears tags only.
+
+None of these should break the remaining profiles.
+
+==================================================
+46. TEST SEARCH
+==================================================
+
+Verify:
+
+Search "bonus"
+
+shows only bonus statuses.
+
+Search "bank"
+
+shows bank account statuses.
+
+Search "fica"
+
+shows FICA statuses.
+
+Clear search:
+
+shows everything again.
+
+Search should not change selection state.
+
+==================================================
+47. TEST COLLAPSIBLE GROUPS
+==================================================
+
+Verify:
+
+- Clicking category header expands/collapses.
+- Selected count remains visible while collapsed.
+- Selection state is preserved when collapsing.
+- Selection state is preserved when searching.
+- Each profile has independent collapsed states.
+
+==================================================
+48. TEST COPY
+==================================================
+
+Verify:
+
+Copy Output copies only the final formatted text.
+
+Verify:
+- No HTML
+- No category names
+- No check icons
+- No selected counters
+- No UI text
+- No search text
+- No buttons
+
+Only the customer data and selected official statuses.
+
+==================================================
+49. PERFORMANCE
+==================================================
+
+Keep the application lightweight.
+
+Do not introduce unnecessary libraries.
+
+Do not add a framework.
+
+Avoid excessive DOM rebuilding.
+
+The application should feel instant when:
+- Typing
+- Selecting statuses
+- Adding profiles
+- Removing profiles
+- Searching
+
+==================================================
+50. FINAL VISUAL GOAL
+==================================================
+
+The finished application should feel like a professional internal customer-support/customer-account tool.
+
+The user workflow should be:
+
+1. Open EASYBET Customer Formatter Pro.
+2. Click Add Profile if needed.
+3. Paste customer information into Account Details.
+4. Look immediately to the right at Status & Tags.
+5. Select the appropriate status under the correct category.
+6. See clear visual confirmation of selections.
+7. See category counters.
+8. See Selected Status summary.
+9. Check Live Output.
+10. Click Copy Output.
+11. Move to the next customer.
+
+The user should NEVER have to scan through one giant flat list of 16+ tags.
+
+==================================================
+51. PRIORITY ORDER
+==================================================
+
+If you have to choose between requirements, follow this priority:
+
+1. NEVER change the 16 official status texts.
+2. Do not break copied output.
+3. Do not break multiple customer profiles.
+4. Make status selection clearer.
+5. Prevent contradictory selections where appropriate.
+6. Improve speed and usability.
+7. Preserve the existing visual identity.
+8. Add animations and cosmetic improvements.
+
+Functionality and exact business text are more important than visual effects.
+
+==================================================
+52. FINAL DELIVERABLE
+==================================================
+
+Return the COMPLETE updated HTML document.
+
+It must be:
+- Self-contained
+- Immediately runnable in a browser
+- HTML + Tailwind CSS + Vanilla JavaScript
+- No React
+- No Vue
+- No backend
+- No build process
+
+Keep the existing CDN-based Tailwind approach if appropriate.
+
+Do not return only snippets.
+
+Do not return only the changed section.
+
+Return the complete working HTML.
+
+==================================================
+53. FINAL PRE-DELIVERY CHECKLIST
+==================================================
+
+Before giving me the code, verify all of the following:
+
+[ ] All 16 official status strings remain EXACTLY unchanged.
+
+[ ] No status has been renamed.
+
+[ ] No status has been shortened.
+
+[ ] No status has been grammatically corrected.
+
+[ ] No status has been automatically reformatted.
+
+[ ] The tags are no longer displayed as one giant flat list underneath the textarea.
+
+[ ] Statuses are displayed in categorized sections.
+
+[ ] Status & Tags appears beside Account Details on desktop.
+
+[ ] Mobile layout stacks correctly.
+
+[ ] Mutually exclusive status groups work correctly.
+
+[ ] Multi-select groups work correctly.
+
+[ ] Every profile has independent status state.
+
+[ ] Add Profile works.
+
+[ ] Remove Profile works.
+
+[ ] Clear Profile works.
+
+[ ] Clear All Tags works.
+
+[ ] Status search works.
+
+[ ] Category collapse/expand works.
+
+[ ] Selected status summary works.
+
+[ ] Category selection counters work.
+
+[ ] Selected statuses have obvious visual states.
+
+[ ] Selected statuses have a check indicator.
+
+[ ] Check indicators never appear in copied output.
+
+[ ] Category headings never appear in copied output.
+
+[ ] Search text never appears in copied output.
+
+[ ] UI labels never appear in copied output.
+
+[ ] Raw customer text is preserved.
+
+[ ] Live output updates immediately.
+
+[ ] Copy Output works.
+
+[ ] Multiple customer profiles do not mix statuses.
+
+[ ] Empty profiles do not output orphaned statuses.
+
+[ ] No duplicate status configuration exists.
+
+[ ] No unnecessary nested status containers exist.
+
+[ ] No JavaScript console errors exist.
+
+[ ] No broken HTML exists.
+
+[ ] No horizontal overflow occurs on mobile.
+
+[ ] Keyboard accessibility works.
+
+[ ] The final code is complete and runnable.
+
+MOST IMPORTANT:
+
+DO NOT CHANGE THE OFFICIAL STATUS TEXT.
+
+THESE 16 STRINGS ARE THE SOURCE OF TRUTH:
+
+Customer used this account to contact us
+Original account
+Deleted account
+No real money deposit
+With real money deposit
+With balance
+Not FICA
+FICA verified
+R50 Sign Up Bonus Fully Used
+R50 Sign Up Bonus Partially Used
+R50 Sign Up Bonus Not Used
+R50 Sign Up Bonus Not Issued
+Manually disabled
+Unfinished Registration
+Bank Account Details Owner
+Using Someone Else’s Bank Account Details
+
+Improve the DESIGN and USER EXPERIENCE around these statuses.
+
+DO NOT improve or modify the WORDING of these statuses.
+
+
+
+HTML > 
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -165,17 +2018,20 @@ Last Login: 16/05/25 15:26:29</textarea>
                     <div class="flex flex-wrap gap-2">
 <span onclick="toggleStatus(this)" class="status-chip px-3 py-2 rounded-lg text-[10px] font-bold tracking-wider">Customer used this account to contact us</span>
 <span onclick="toggleStatus(this)" class="status-chip px-3 py-2 rounded-lg text-[10px] font-bold tracking-wider">Original account</span>
+<span onclick="toggleStatus(this)" class="status-chip px-3 py-2 rounded-lg text-[10px] font-bold tracking-wider">Deleted account</span>
  <span onclick="toggleStatus(this)" class="status-chip px-3 py-2 rounded-lg text-[10px] font-bold tracking-wider">No real money deposit</span>
  <span onclick="toggleStatus(this)" class="status-chip px-3 py-2 rounded-lg text-[10px] font-bold tracking-wider">With real money deposit</span>
 <span onclick="toggleStatus(this)" class="status-chip px-3 py-2 rounded-lg text-[10px] font-bold tracking-wider">With balance</span>
                         <span onclick="toggleStatus(this)" class="status-chip px-3 py-2 rounded-lg text-[10px] font-bold tracking-wider">Not FICA</span>
                         <span onclick="toggleStatus(this)" class="status-chip px-3 py-2 rounded-lg text-[10px] font-bold tracking-wider">FICA verified</span>
-<span onclick="toggleStatus(this)" class="status-chip px-3 py-2 rounded-lg text-[10px] font-bold tracking-wider">R50 Bonus Fully Used</span>
-<span onclick="toggleStatus(this)" class="status-chip px-3 py-2 rounded-lg text-[10px] font-bold tracking-wider">R50 Bonus Partially Used</span>
-<span onclick="toggleStatus(this)" class="status-chip px-3 py-2 rounded-lg text-[10px] font-bold tracking-wider">R50 Bonus Not Used</span>
-<span onclick="toggleStatus(this)" class="status-chip px-3 py-2 rounded-lg text-[10px] font-bold tracking-wider">R50 Bonus Not Issued</span>
+<span onclick="toggleStatus(this)" class="status-chip px-3 py-2 rounded-lg text-[10px] font-bold tracking-wider">R50 Sign Up Bonus Fully Used</span>
+<span onclick="toggleStatus(this)" class="status-chip px-3 py-2 rounded-lg text-[10px] font-bold tracking-wider">R50 Sign Up Bonus Partially Used</span>
+<span onclick="toggleStatus(this)" class="status-chip px-3 py-2 rounded-lg text-[10px] font-bold tracking-wider">R50 Sign Up Bonus Not Used</span>
+<span onclick="toggleStatus(this)" class="status-chip px-3 py-2 rounded-lg text-[10px] font-bold tracking-wider">R50 Sign Up Bonus Not Issued</span>
 <span onclick="toggleStatus(this)" class="status-chip px-3 py-2 rounded-lg text-[10px] font-bold tracking-wider">Manually disabled</span>
 <span onclick="toggleStatus(this)" class="status-chip px-3 py-2 rounded-lg text-[10px] font-bold tracking-wider">Unfinished Registration</span>
+<span onclick="toggleStatus(this)" class="status-chip px-3 py-2 rounded-lg text-[10px] font-bold tracking-wider">Bank Account Details Owner</span>
+<span onclick="toggleStatus(this)" class="status-chip px-3 py-2 rounded-lg text-[10px] font-bold tracking-wider">Using Someone Else’s Bank Account Details</span>
                     </div>
                 </div>
             </div>
@@ -254,17 +2110,20 @@ Last Login: 16/05/25 15:26:29</textarea>
                       <div class="flex flex-wrap gap-2">
 <span onclick="toggleStatus(this)" class="status-chip px-3 py-2 rounded-lg text-[10px] font-bold tracking-wider">Customer used this account to contact us</span>
 <span onclick="toggleStatus(this)" class="status-chip px-3 py-2 rounded-lg text-[10px] font-bold tracking-wider">Original account</span>
+<span onclick="toggleStatus(this)" class="status-chip px-3 py-2 rounded-lg text-[10px] font-bold tracking-wider">Deleted account</span>
  <span onclick="toggleStatus(this)" class="status-chip px-3 py-2 rounded-lg text-[10px] font-bold tracking-wider">No real money deposit</span>
  <span onclick="toggleStatus(this)" class="status-chip px-3 py-2 rounded-lg text-[10px] font-bold tracking-wider">With real money deposit</span>
 <span onclick="toggleStatus(this)" class="status-chip px-3 py-2 rounded-lg text-[10px] font-bold tracking-wider">With balance</span>
                         <span onclick="toggleStatus(this)" class="status-chip px-3 py-2 rounded-lg text-[10px] font-bold tracking-wider">Not FICA</span>
                         <span onclick="toggleStatus(this)" class="status-chip px-3 py-2 rounded-lg text-[10px] font-bold tracking-wider">FICA verified</span>
-<span onclick="toggleStatus(this)" class="status-chip px-3 py-2 rounded-lg text-[10px] font-bold tracking-wider">R50 Bonus Fully Used</span>
-<span onclick="toggleStatus(this)" class="status-chip px-3 py-2 rounded-lg text-[10px] font-bold tracking-wider">R50 Bonus Partially Used</span>
-<span onclick="toggleStatus(this)" class="status-chip px-3 py-2 rounded-lg text-[10px] font-bold tracking-wider">R50 Bonus Not Used</span>
-<span onclick="toggleStatus(this)" class="status-chip px-3 py-2 rounded-lg text-[10px] font-bold tracking-wider">R50 Bonus Not Issued</span>
+<span onclick="toggleStatus(this)" class="status-chip px-3 py-2 rounded-lg text-[10px] font-bold tracking-wider">R50 Sign Up Bonus Fully Used</span>
+<span onclick="toggleStatus(this)" class="status-chip px-3 py-2 rounded-lg text-[10px] font-bold tracking-wider">R50 Sign Up Bonus Partially Used</span>
+<span onclick="toggleStatus(this)" class="status-chip px-3 py-2 rounded-lg text-[10px] font-bold tracking-wider">R50 Sign Up Bonus Not Used</span>
+<span onclick="toggleStatus(this)" class="status-chip px-3 py-2 rounded-lg text-[10px] font-bold tracking-wider">R50 Sign Up Bonus Not Issued</span>
 <span onclick="toggleStatus(this)" class="status-chip px-3 py-2 rounded-lg text-[10px] font-bold tracking-wider">Manually disabled</span>
 <span onclick="toggleStatus(this)" class="status-chip px-3 py-2 rounded-lg text-[10px] font-bold tracking-wider">Unfinished Registration</span>
+<span onclick="toggleStatus(this)" class="status-chip px-3 py-2 rounded-lg text-[10px] font-bold tracking-wider">Bank Account Details Owner</span>
+<span onclick="toggleStatus(this)" class="status-chip px-3 py-2 rounded-lg text-[10px] font-bold tracking-wider">Using Someone Else’s Bank Account Details</span>
 
                 </div>
             `;

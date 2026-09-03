@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bank Branch Codes</title>
+    <style>
+        /* * Reset & Base Styles 
+         * Using a modern, clean system font stack for a premium utility feel.
+         */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+            background-color: #09090b; /* Deep dark background */
+            /* Subtle colorful ambient lights to enhance the glass effect */
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(56, 189, 248, 0.04), transparent 25%),
+                radial-gradient(circle at 85% 30%, rgba(167, 139, 250, 0.04), transparent 25%);
+            background-attachment: fixed;
+            color: #f8fafc;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* * Typography 
+         */
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 500;
+            letter-spacing: -0.025em;
+            margin-top: 48px;
+            margin-bottom: 32px;
+            color: #f8fafc;
+            text-align: center;
+            padding: 0 20px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+        }
+
+        /* * Search Bar 
+         */
+        .search-container {
+            margin-bottom: 32px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            padding: 0 4px;
+        }
+
+        #search-input {
+            width: 100%;
+            max-width: 480px;
+            appearance: none;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 9999px; /* Pill shape */
+            padding: 14px 24px;
+            font-size: 1rem;
+            color: #f8fafc;
+            outline: none;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.02);
+        }
+
+        #search-input::placeholder {
+            color: #64748b;
+        }
+
+        #search-input:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        #search-input:focus {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(56, 189, 248, 0.4);
+            box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.02);
+        }
+
+        .no-results {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 48px 20px;
+            color: #94a3b8;
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+
+        /* * Layout
+         */
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            padding: 0 24px 64px;
+        }
+
+        .grid {
+            display: grid;
+            /* Responsive grid that prevents horizontal scrolling on small devices */
+            grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+            gap: 16px;
+        }
+
+        /* * Glassmorphism Cards 
+         * Container for the separately clickable rows
+         */
+        .bank-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 8px; /* Padding creates the frame around the clickable rows */
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        /* * Separately Clickable Rows 
+         */
+        .copy-row {
+            appearance: none;
+            background: transparent;
+            border: 1px solid transparent;
+            border-radius: 10px;
+            padding: 12px 16px;
+            text-align: left;
+            cursor: pointer;
+            position: relative;
+            width: 100%;
+            font: inherit;
+            color: inherit;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            -webkit-tap-highlight-color: transparent; /* Remove default tap highlight on mobile */
+            outline: none;
+            overflow: hidden;
+        }
+
+        /* Hover & Focus Effects */
+        @media (hover: hover) {
+            .copy-row:hover {
+                background: rgba(255, 255, 255, 0.05);
+            }
+        }
+        
+        .copy-row:active {
+            transform: scale(0.98);
+            background: rgba(255, 255, 255, 0.02);
+        }
+        
+        .copy-row:focus-visible {
+            border-color: rgba(56, 189, 248, 0.5);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        /* * Row Content Styling 
+         */
+        .row-content {
+            transition: opacity 0.2s ease, transform 0.2s ease;
+        }
+
+        .bank-name {
+            font-size: 1.125rem;
+            font-weight: 500;
+            color: #ffffff;
+        }
+
+        .branch-code {
+            font-size: 1.0625rem;
+            color: #94a3b8;
+            /* Ensures numbers like '0' and '1' align perfectly and beautifully */
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* * Copied Feedback State
+         */
+        .copy-feedback {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            padding: 0 16px; /* Match row padding */
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #4ade80; /* Subtle neon green */
+            background: rgba(74, 222, 128, 0.1); /* Green glass tint */
+            opacity: 0;
+            pointer-events: none; /* Let clicks pass through if clicking again quickly */
+            transition: opacity 0.2s ease;
+        }
+
+        /* Apply copied state via JS */
+        .copy-row.copied .row-content {
+            opacity: 0;
+            transform: translateY(-4px); /* Subtle physical shift out */
+        }
+
+        .copy-row.copied .copy-feedback {
+            opacity: 1;
+        }
+
+        /* * Responsive Adjustments
+         */
+        @media (max-width: 414px) {
+            .container {
+                padding: 0 16px 48px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Bank Branch Codes</h1>
+    
+    <div class="container">
+        <div class="search-container">
+            <input type="text" id="search-input" placeholder="Search banks or codes..." aria-label="Search banks or codes" autocomplete="off">
+        </div>
+
+        <main class="grid" id="bank-grid">
+            <!-- Bubbles will be injected here via JavaScript -->
+        </main>
+    </div>
+
+    <script>
+        // Data Configuration (Exact banks and branch codes preserving leading zeros)
+        const bankData = [
+            { name: "Absa Bank", code: "632005" },
+            { name: "African Bank", code: "430000" },
+            { name: "Access Bank", code: "410506" },
+            { name: "Capitec Bank", code: "470010" },
+            { name: "Finbond Mutual", code: "589000" },
+            { name: "Discovery Bank", code: "679000" },
+            { name: "FNB", code: "250655" },
+            { name: "Grindrod Bank", code: "223626" },
+            { name: "Investec Bank", code: "580105" },
+            { name: "Nedbank", code: "198765" },
+            { name: "Sasfin Bank", code: "683000" },
+            { name: "OM Bank", code: "352000" },
+            { name: "Standard Bank", code: "051001" },
+            { name: "Tyme Bank", code: "678910" },
+            { name: "Bidvest Bank", code: "470010" },
+            { name: "Mercantile Bank", code: "450105" }
+        ];
+
+        // Initialize Application
+        function init() {
+            renderBanks(bankData);
+
+            // Setup real-time search listener
+            const searchInput = document.getElementById('search-input');
+            searchInput.addEventListener('input', (e) => {
+                const searchTerm = e.target.value.toLowerCase().trim();
+                
+                const filteredData = bankData.filter(bank => 
+                    bank.name.toLowerCase().includes(searchTerm) || 
+                    bank.code.includes(searchTerm)
+                );
+                
+                renderBanks(filteredData);
+            });
+        }
+
+        // Render bank cards to the grid
+        function renderBanks(data) {
+            const gridContainer = document.getElementById('bank-grid');
+            gridContainer.innerHTML = ''; // Clear existing content
+
+            if (data.length === 0) {
+                gridContainer.innerHTML = '<div class="no-results">No matches found.</div>';
+                return;
+            }
+
+            // Generate DOM elements directly from the data array
+            data.forEach(bank => {
+                // Create the Glass Card Container
+                const card = document.createElement('div');
+                card.className = 'bank-card';
+                
+                // Create Separately Clickable Rows
+                const nameRow = createCopyRow(bank.name, 'bank-name', `Copy bank name: ${bank.name}`);
+                const codeRow = createCopyRow(bank.code, 'branch-code', `Copy branch code: ${bank.code}`);
+
+                card.appendChild(nameRow);
+                card.appendChild(codeRow);
+                gridContainer.appendChild(card);
+            });
+        }
+
+        // Helper to generate a clickable row for individual copy
+        function createCopyRow(textToCopy, textClass, ariaLabel) {
+            const row = document.createElement('button');
+            row.className = 'copy-row';
+            row.setAttribute('aria-label', ariaLabel);
+            
+            row.innerHTML = `
+                <div class="row-content ${textClass}">${textToCopy}</div>
+                <div class="copy-feedback">Copied</div>
+            `;
+
+            row.addEventListener('click', () => {
+                handleCopyInteraction(row, textToCopy);
+            });
+
+            return row;
+        }
+
+        // Handles the clipboard logic and visual feedback
+        function handleCopyInteraction(element, textToCopy) {
+            const showSuccessState = () => {
+                element.classList.add('copied');
+                
+                // Automatically return normal state after 1.2 seconds
+                setTimeout(() => {
+                    element.classList.remove('copied');
+                }, 1200);
+            };
+
+            // Attempt to use the modern Clipboard API
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(textToCopy)
+                    .then(showSuccessState)
+                    .catch(() => fallbackCopy(textToCopy, showSuccessState));
+            } else {
+                // Fallback for older browsers or insecure contexts
+                fallbackCopy(textToCopy, showSuccessState);
+            }
+        }
+
+        // Silent, invisible fallback copy mechanism if modern API is unavailable
+        function fallbackCopy(text, successCallback) {
+            try {
+                const textArea = document.createElement("textarea");
+                textArea.value = text;
+                
+                // Avoid scrolling to bottom or interfering with layout
+                textArea.style.position = "fixed";
+                textArea.style.left = "-999999px";
+                textArea.style.top = "-999999px";
+                document.body.appendChild(textArea);
+                
+                textArea.focus();
+                textArea.select();
+                
+                const successful = document.execCommand('copy');
+                textArea.remove();
+                
+                if (successful) {
+                    successCallback();
+                }
+            } catch (err) {
+                // Fail gracefully keeping interface clean as requested.
+            }
+        }
+
+        // Run when DOM is ready
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

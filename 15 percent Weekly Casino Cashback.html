@@ -4,11 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Tab Icon / Favicon -->
-<link rel="icon" type="image/png" href="15percentcasinocb.png">
-<link rel="shortcut icon" href="15percentcasinocb.png">
-    <title>15% Weekly Casino Cashback Spiels</title>
+    <link rel="icon" type="image/png" href="Easybet logo.png">
+    <link rel="shortcut icon" type="image/png" href="15percent.png">
+    <title>15% Cashback Sports Bonus Spiels</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
-    
     <style>
         :root {
             --bg-body: #050505;
@@ -43,115 +42,20 @@
             overflow-x: hidden;
         }
 
-        .filter-tree {
-            list-style: none;
-            padding: 0;
-            margin: 10px 0 0 0;
-            font-size: 0.8rem;
-        }
-
-        .filter-item {
-            margin-bottom: 2px;
-        }
-
-        .filter-row {
-            display: flex;
-            align-items: center;
-            padding: 6px 8px;
-            border-radius: 6px;
-            transition: background 0.2s;
-            color: #d1d5db;
-        }
-
-        .filter-row:hover {
-            background: rgba(212, 175, 55, 0.1);
-        }
-
-        .filter-row input[type="checkbox"] {
-            margin-right: 10px;
-            accent-color: var(--accent-gold);
-            cursor: pointer;
-            width: 14px;
-            height: 14px;
-            flex-shrink: 0;
-        }
-
-        .filter-row .label {
-            flex: 1;
-            cursor: pointer;
-            user-select: none;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .filter-row input[type="checkbox"]:checked + .label {
-            color: #fff;
-            font-weight: 500;
-        }
-
-        /* Toggle arrow styling for parents */
-        .toggle-arrow {
-            width: 16px;
-            height: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: transform 0.2s ease;
-            opacity: 0.7;
-            margin-left: auto;
-        }
-
-        .toggle-arrow::before {
-            content: '';
-            border-style: solid;
-            border-width: 4px 0 4px 6px;
-            border-color: transparent transparent transparent #d1d5db;
-        }
-
-        .toggle-arrow:hover {
-            opacity: 1;
-            border-color: transparent transparent transparent #fff;
-        }
-
-        .filter-item.expanded > .filter-row .toggle-arrow {
-            transform: rotate(90deg);
-        }
-
-        /* Children styling */
-        .filter-tree ul.children {
-            list-style: none;
-            padding-left: 24px;
-            display: none;
-            margin-top: 2px;
-        }
-
-        .filter-item.expanded > ul.children {
-            display: block;
-        }
-
-        /* --- Sidebar --- */
         .sidebar {
-            width: 340px;
+            width: 320px;
             background: var(--bg-sidebar);
             border-right: 1px solid var(--border-color);
-            padding: 30px 20px;
+            padding: 30px 25px;
             height: 100vh;
             position: sticky;
             top: 0;
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 25px;
             overflow-y: auto;
             flex-shrink: 0;
         }
-
-        /* Scrollbar for sidebar */
-        .sidebar::-webkit-scrollbar { width: 6px; }
-        .sidebar::-webkit-scrollbar-track { background: transparent; }
-        .sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
-        .sidebar::-webkit-scrollbar-thumb:hover { background: rgba(212,175,55,0.5); }
 
         .sidebar-box {
             background: rgba(255, 255, 255, 0.02);
@@ -163,7 +67,7 @@
         .sidebar-title {
             font-family: var(--font-heading);
             color: var(--accent-gold);
-            font-size: 1rem;
+            font-size: 1.1rem;
             font-weight: 700;
             margin-bottom: 12px;
             text-transform: uppercase;
@@ -174,14 +78,14 @@
 
         .sidebar-list {
             list-style: none;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             color: #d1d5db;
         }
 
         .sidebar-list li {
             margin-bottom: 8px;
             position: relative;
-            padding-left: 18px;
+            padding-left: 20px;
         }
 
         .sidebar-list li::before {
@@ -193,9 +97,6 @@
             font-size: 1.2rem;
             line-height: 1;
         }
-
-        .sidebar-list.no-bullets li { padding-left: 0; }
-        .sidebar-list.no-bullets li::before { display: none; }
 
         .highlight-text {
             color: #fff;
@@ -215,10 +116,9 @@
             padding: 10px 15px;
             border-radius: 8px;
             font-weight: 600;
-            font-size: 0.85rem;
             border: 1px solid rgba(212, 175, 55, 0.3);
             transition: 0.3s;
-            margin-bottom: 8px;
+            margin-top: 10px;
         }
 
         .btn-link:hover {
@@ -232,13 +132,13 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            max-width: 1000px;
+            max-width: 1100px;
             margin: 0 auto;
         }
 
         .header-wrapper {
             text-align: center;
-            margin-bottom: 40px;
+            margin-bottom: 30px;
             width: 100%;
         }
 
@@ -253,69 +153,166 @@
             margin-bottom: 25px;
         }
 
-        .gross-loss-container {
+        /* --- Calculator Panel --- */
+        .calculator-panel {
             width: 100%;
-            max-width: 600px;
+            max-width: 750px;
             margin: 0 auto 25px auto;
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 12px 20px;
+            background: rgba(15, 15, 15, 0.8);
+            border: 1px solid var(--accent-gold);
+            border-radius: 16px;
+            padding: 25px 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .calc-header {
+            font-family: var(--font-heading);
+            color: var(--accent-gold);
+            font-size: 1.1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+            padding-bottom: 10px;
+            margin-bottom: 5px;
+        }
+
+        .calc-row {
             display: flex;
             align-items: center;
             justify-content: space-between;
             gap: 15px;
+            background: rgba(255, 255, 255, 0.02);
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
         }
 
-        .gross-loss-label {
-            font-family: var(--font-heading);
-            color: var(--accent-gold);
-            font-weight: 700;
-            font-size: 0.95rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            white-space: nowrap;
+        .calc-row label {
+            font-weight: 500;
+            color: #d1d5db;
+            flex: 1;
         }
 
-        .input-group {
+        .calc-input-group {
             display: flex;
             align-items: center;
-            flex: 1;
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
             overflow: hidden;
-            transition: 0.3s;
+            width: 200px;
         }
 
-        .input-group:focus-within {
+        .calc-input-group:focus-within {
             border-color: var(--accent-gold);
-            box-shadow: 0 0 15px var(--accent-gold-glow);
+            box-shadow: 0 0 10px var(--accent-gold-glow);
         }
 
-        .currency-prefix {
-            padding: 10px 15px;
+        .calc-prefix {
+            padding: 8px 12px;
             background: rgba(255, 255, 255, 0.05);
             color: var(--text-secondary);
             font-weight: 700;
-            border-right: 1px solid var(--border-color);
-            user-select: none;
+            border-right: 1px solid rgba(255,255,255,0.1);
         }
 
-        #grossLossInput {
+        .calc-input-group input {
             flex: 1;
             background: transparent;
             border: none;
             color: white;
-            padding: 10px 15px;
+            padding: 8px 12px;
             font-size: 1rem;
             outline: none;
             font-family: var(--font-main);
+            width: 100%;
         }
+
+        .calc-row.highlight {
+            background: rgba(212, 175, 55, 0.05);
+            border-color: rgba(212, 175, 55, 0.2);
+        }
+
+        .calc-row.highlight label { color: var(--accent-gold); font-weight: 600; }
+        .calc-row.highlight span { color: #fff; font-weight: 700; font-size: 1.1rem; }
+
+        .calc-row.total {
+            background: rgba(212, 175, 55, 0.15);
+            border-color: var(--accent-gold);
+            margin-top: 10px;
+            padding: 15px 20px;
+        }
+        
+        .calc-row.total label { color: var(--accent-gold); font-weight: 700; font-size: 1.1rem; text-transform: uppercase; }
+        .calc-row.total span { color: #fff; font-weight: 800; font-size: 1.4rem; }
+
+        .deductions-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px dashed rgba(255, 255, 255, 0.1);
+        }
+
+        .deduction-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .deduction-name-input {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            color: white;
+            padding: 8px 12px;
+            font-size: 0.9rem;
+            outline: none;
+            transition: 0.3s;
+        }
+        .deduction-name-input:focus { border-color: var(--accent-gold); }
+
+        .btn-add-deduction {
+            background: transparent;
+            color: var(--accent-gold);
+            border: 1px dashed var(--accent-gold);
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.3s;
+            margin-top: 5px;
+            width: 100%;
+        }
+        .btn-add-deduction:hover {
+            background: rgba(212, 175, 55, 0.1);
+        }
+
+        .btn-remove {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--error);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 6px;
+            width: 35px;
+            height: 38px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+        .btn-remove:hover { background: var(--error); color: white; }
 
         #searchInput {
             width: 100%;
-            max-width: 600px;
+            max-width: 750px;
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid var(--border-color);
             padding: 14px 24px;
@@ -325,6 +322,8 @@
             outline: none;
             transition: 0.3s;
             text-align: center;
+            margin: 0 auto;
+            display: block;
         }
 
         #searchInput:focus {
@@ -332,7 +331,10 @@
             box-shadow: 0 0 25px var(--accent-gold-glow);
         }
 
-        .content-width { width: 100%; }
+        .content-width {
+            width: 100%;
+            max-width: 900px;
+        }
 
         .section-tag {
             font-family: var(--font-heading);
@@ -387,7 +389,12 @@
             color: var(--text-secondary);
             text-transform: uppercase;
             letter-spacing: 0.05em;
-            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .badge.special {
+            background: rgba(212, 175, 55, 0.15);
+            color: var(--accent-gold);
+            border: 1px solid rgba(212, 175, 55, 0.4);
         }
 
         .copy-hint {
@@ -399,7 +406,9 @@
             transition: opacity 0.2s;
         }
 
-        .spiel-card:hover .copy-hint { opacity: 1; }
+        .spiel-card:hover .copy-hint {
+            opacity: 1;
+        }
 
         .spiel-body {
             font-size: 1.05rem;
@@ -412,8 +421,7 @@
             font-weight: 700;
             border-bottom: 1px solid var(--accent-gold);
         }
-
-        /* --- Notification --- */
+        
         #toast {
             position: fixed;
             bottom: 30px;
@@ -432,7 +440,6 @@
 
         #toast.visible { transform: translateX(-50%) translateY(0); opacity: 1; }
 
-        /* --- Responsive --- */
         @media (max-width: 900px) {
             body { flex-direction: column; }
             .sidebar {
@@ -444,6 +451,10 @@
                 padding: 20px;
             }
             .main-container { padding: 30px 20px; }
+            .calc-row { flex-direction: column; align-items: flex-start; }
+            .calc-input-group { width: 100%; mt-2 }
+            .deduction-row { flex-direction: column; align-items: stretch; }
+            .btn-remove { width: 100%; }
         }
     </style>
 </head>
@@ -452,208 +463,65 @@
 <aside class="sidebar">
     <div class="sidebar-box">
         <div class="sidebar-title">Promo Details</div>
-        <ul class="sidebar-list no-bullets">
-            <li><strong>Bonus Name:</strong> <br><span class="highlight-text">15% Weekly Casino Cashback</span></li>
-            <li style="margin-top: 8px;"><strong>Crediting Schedule:</strong> <br><span class="highlight-text">Monday by 12:00 PM</span></li>
-            <li style="margin-top: 8px;"><strong>Qualifying Period:</strong> <br><span class="highlight-text">Monday 00:00 - Sunday 23:59</span></li>
-            <li style="margin-top: 8px;"><strong>Min / Max Cashback:</strong> <br><span class="highlight-text">R5 min &middot; R5,000 max per week</span></li>
-            <li style="margin-top: 8px;"><strong>Important:</strong> <br><span class="highlight-text" style="white-space: normal; display: block; font-size: 0.8rem; line-height: 1.3;">Easybet may suspend players from the promotion for fraudulent activity or bonus abuse.</span></li>
+        <ul class="sidebar-list">
+            <li><strong>Bonus Name:</strong> <br><span class="highlight-text">15% Cashback for Sports</span></li>
+            <li><strong>Crediting Schedule:</strong> <br><span class="highlight-text">Thursday @ 12:00 PM</span></li>
         </ul>
     </div>
 
-   <div class="sidebar-box">
-    <div class="sidebar-title">Qualifying Games</div>
-    <div style="font-size: 0.75rem; color: #aaa; margin-bottom: 5px;">Filters on ADV</div>
-    
-    <ul class="filter-tree">
-        <li class="filter-item">
-            <div class="filter-row">
-                <input type="checkbox" id="chk-multi">
-                <label for="chk-multi" class="label">Multi-games</label>
-            </div>
-        </li>
-        <li class="filter-item">
-            <div class="filter-row">
-                <input type="checkbox" id="chk-horses">
-                <label for="chk-horses" class="label">Horses</label>
-            </div>
-        </li>
-        <li class="filter-item">
-            <div class="filter-row">
-                <input type="checkbox" id="chk-agt" checked>
-                <label for="chk-agt" class="label">AGT Instant Games</label>
-            </div>
-        </li>
-        <li class="filter-item">
-            <div class="filter-row">
-                <input type="checkbox" id="chk-amatic" checked>
-                <label for="chk-amatic" class="label">Amatic Instant Games</label>
-            </div>
-        </li>
-        <li class="filter-item">
-            <div class="filter-row">
-                <input type="checkbox" id="chk-betgames-iframe" checked>
-                <label for="chk-betgames-iframe" class="label">Betgames Iframe</label>
-            </div>
-        </li>
-        <li class="filter-item">
-            <div class="filter-row">
-                <input type="checkbox" id="chk-aggregator-lotto">
-                <label for="chk-aggregator-lotto" class="label">Game Aggregator Lotto</label>
-            </div>
-        </li>
-        <li class="filter-item">
-            <div class="filter-row">
-                <input type="checkbox" id="chk-sportsbook">
-                <label for="chk-sportsbook" class="label">Sportsbook</label>
-            </div>
-        </li>
-        <!-- Parent Item: Expanded by Default -->
-        <li class="filter-item expanded">
-            <div class="filter-row">
-                <input type="checkbox" id="chk-gameshub" checked>
-                <label for="chk-gameshub" class="label">GamesHub</label>
-                <span class="toggle-arrow" onclick="toggleFilter(event, this)"></span>
-            </div>
-            <ul class="children">
-                <li class="filter-item">
-                    <div class="filter-row">
-                        <input type="checkbox" id="chk-skypilot" checked>
-                        <label for="chk-skypilot" class="label">Skypilot</label>
-                    </div>
-                </li>
-            </ul>
-        </li>
-
-        
-        <li class="filter-item">
-            <div class="filter-row">
-                <input type="checkbox" id="chk-tom-horn" checked>
-                <label for="chk-tom-horn" class="label">Tom Horn</label>
-            </div>
-        </li>
-
-        
-        <li class="filter-item">
-            <div class="filter-row">
-                <input type="checkbox" id="chk-booming">
-                <label for="chk-booming" class="label">Booming Games</label>
-            </div>
-        </li>
-        <li class="filter-item">
-            <div class="filter-row">
-                <input type="checkbox" id="chk-gaming-hub">
-                <label for="chk-gaming-hub" class="label">Gaming Hub</label>
-            </div>
-        </li>
-        <li class="filter-item">
-            <div class="filter-row">
-                <input type="checkbox" id="chk-ct-interactive" checked>
-                <label for="chk-ct-interactive" class="label">CT-Interactive</label>
-            </div>
-        </li>
-        <li class="filter-item">
-            <div class="filter-row">
-                <input type="checkbox" id="chk-aviatrix" checked>
-                <label for="chk-aviatrix" class="label">Aviatrix</label>
-            </div>
-        </li>
-        <li class="filter-item">
-            <div class="filter-row">
-                <input type="checkbox" id="chk-evolution" checked>
-                <label for="chk-evolution" class="label">Evolution</label>
-            </div>
-        </li>
-        <li class="filter-item">
-            <div class="filter-row">
-                <input type="checkbox" id="chk-fbastards" checked>
-                <label for="chk-fbastards" class="label">Fbastards</label>
-            </div>
-        </li>
-        <li class="filter-item">
-            <div class="filter-row">
-                <input type="checkbox" id="chk-pragmatic" checked>
-                <label for="chk-pragmatic" class="label">Pragmatic</label>
-            </div>
-        </li>
-        <li class="filter-item">
-            <div class="filter-row">
-                <input type="checkbox" id="chk-spribe" checked>
-                <label for="chk-spribe" class="label">Spribe games</label>
-            </div>
-        </li>
-        <li class="filter-item">
-            <div class="filter-row">
-                <input type="checkbox" id="chk-slots-lobby" checked>
-                <label for="chk-slots-lobby" class="label">Slots Lobby</label>
-            </div>
-        </li>
-        <li class="filter-item">
-            <div class="filter-row">
-                <input type="checkbox" id="chk-spinoro" checked>
-                <label for="chk-spinoro" class="label">Spinoro</label>
-            </div>
-        </li>
-        <li class="filter-item">
-            <div class="filter-row">
-                <input type="checkbox" id="chk-synot" checked>
-                <label for="chk-synot" class="label">Synot Games</label>
-            </div>
-        </li>
-        <li class="filter-item">
-            <div class="filter-row">
-                <input type="checkbox" id="chk-mascot" checked>
-                <label for="chk-mascot" class="label">Mascot</label>
-            </div>
-        </li>
-        <li class="filter-item">
-            <div class="filter-row">
-                <input type="checkbox" id="chk-prematch">
-                <label for="chk-prematch" class="label">Prematch</label>
-            </div>
-        </li>
-        <li class="filter-item">
-            <div class="filter-row">
-                <input type="checkbox" id="chk-in-play">
-                <label for="chk-in-play" class="label">In Play</label>
-            </div>
-        </li>
-        <li class="filter-item">
-            <div class="filter-row">
-                <input type="checkbox" id="chk-global-numbers">
-                <label for="chk-global-numbers" class="label">Global Numbers</label>
-            </div>
-        </li>
-        <li class="filter-item">
-            <div class="filter-row">
-                <input type="checkbox" id="chk-lucky1">
-                <label for="chk-lucky1" class="label">Lucky #1</label>
-            </div>
-        </li>
-        <li class="filter-item">
-            <div class="filter-row">
-                <input type="checkbox" id="chk-betgames">
-                <label for="chk-betgames" class="label">Betgames</label>
-            </div>
-        </li>
-    </ul>
-</div>
+    <div class="sidebar-box">
+        <div class="sidebar-title">Filters on ADV</div>
+        <ul class="sidebar-list">
+            <li>Multi-games</li>
+            <li>SportsBook</li>
+            <li>Prematch</li>
+            <li>In Play</li>
+        </ul>
+    </div>
 
     <div class="sidebar-box">
         <div class="sidebar-title">Helpful Links</div>
-        <a href="https://easybet.co.za/page/15-weekly-casino-cashback" target="_blank" class="btn-link">View Full T&Cs</a>
+        <a href="https://easybet.co.za/page/cash-back" target="_blank" class="btn-link">View Full T&Cs</a>
     </div>
 </aside>
 
 <main class="main-container">
     <div class="header-wrapper">
-        <h1>15% Weekly Casino Cashback</h1>
+        <h1>15% Cashback for Sports</h1>
         
-        <div class="gross-loss-container">
-            <div class="gross-loss-label">Net Loss</div>
-            <div class="input-group">
-                <span class="currency-prefix">R</span>
-                <input type="text" id="grossLossInput" placeholder="Enter amount..." oninput="updateGrossLoss(this)">
+        <div class="calculator-panel">
+            <div class="calc-header">Net Loss Calculator</div>
+            
+            <div class="calc-row">
+                <label>Total Sports Losses</label>
+                <div class="calc-input-group">
+                    <span class="calc-prefix">R</span>
+                    <input type="text" id="calcLosses" placeholder="0.00" oninput="formatAndCalculate(this)">
+                </div>
+            </div>
+            
+            <div class="calc-row">
+                <label>Total Sports Winnings</label>
+                <div class="calc-input-group">
+                    <span class="calc-prefix">R</span>
+                    <input type="text" id="calcWinnings" placeholder="0.00" oninput="formatAndCalculate(this)">
+                </div>
+            </div>
+
+            <div class="calc-row highlight">
+                <label>Gross Net Loss (Losses - Winnings)</label>
+                <span id="displayGrossNetLoss">R 0.00</span>
+            </div>
+
+            <div class="deductions-container" id="deductionsList">
+                <!-- Dynamic Bonus Deductions inserted here via JS -->
+            </div>
+            
+            <button class="btn-add-deduction" onclick="addDeductionRow()">+ Add Bonus Transfer Deduction</button>
+
+            <div class="calc-row total">
+                <label>Final Qualifying Net Loss</label>
+                <span id="displayFinalNetLoss">R 0.00</span>
             </div>
         </div>
 
@@ -664,303 +532,153 @@
         
         <div class="section-tag">Initial Phase</div>
         
-        <div class="spiel-card" onclick="copySpiel(this)" data-category="always">
+        <div class="spiel-card" onclick="copyText(this)" data-category="always">
             <div class="card-meta">
                 <span class="badge">Discovery</span>
                 <span class="copy-hint">Click to Copy</span>
             </div>
-            <div class="spiel-body">Thank you for confirming your account details. I'd like to know if you are inquiring about the 15% Weekly Casino Cashback promotion. Is that correct?</div>
+            <div class="spiel-body">Thank you for confirming your account details. I'd like to know if you are inquiring about the 15% Cashback for Sports promotion. Is that correct?</div>
         </div>
 
-        <div class="spiel-card" onclick="copySpiel(this)" data-category="always">
+        <div class="spiel-card" onclick="copyText(this)" data-category="always">
             <div class="card-meta">
-                <span class="badge" style="color: #28a745; font-weight: bold; border-color: #28a745; background: rgba(40,167,69,0.1);">NO DELAY, SYSTEM IS GOOD</span>
+                <span class="badge" style="color: #28a745; font-weight: bold;">NO DELAY, SYSTEM IS GOOD</span>
                 <span class="copy-hint">CLICK TO COPY</span>
             </div>
             <div class="spiel-body">Thank you for confirming. I completely understand how exciting it is to receive your cashback bonus, and I'll be happy to look into this for you.
 
-To determine whether you qualify for the 15% Weekly Casino Cashback, I need to review your Casino Games betting activity from Monday 00:00 to Sunday 23:59 of the qualifying week.
+To determine whether you qualify for the Sports Cashback, I need to review your sports betting activity (pre-match and in-play) from Monday to Sunday of the previous week.
 
 Please note that your net loss is calculated as:
-Net Losses = Total Bets - Total Winnings on qualifying Casino Games.
-(Important: Only Casino Bonus Wallet transfers to your Real Wallet are deducted from this amount. Transfers from the Non-Casino Bonus Wallet are not deducted).
+Net Losses = Total Losses - Total Winnings - Non-Casino Bonuses.
 
 I'll now review your activity on my side. This may take approximately 3-5 minutes. Please stay connected, and I'll return with an update as soon as possible.</div>
         </div>
 
-        <div class="section-tag">Resolution Scripts (Tiered)</div>
+        <div class="section-tag">Resolution Scripts</div>
 
-        <div class="spiel-card" onclick="copySpiel(this)" data-category="always">
+        <div class="spiel-card" onclick="copyText(this)" data-category="always" id="detailedBreakdownCard">
             <div class="card-meta">
-                <span class="badge" style="color: var(--warning); border-color: var(--warning); background: rgba(245, 158, 11, 0.1);">Cx reached out before the crediting date</span>
+                <span class="badge special">Detailed Calculation Breakdown</span>
+                <span class="copy-hint">Click to Copy</span>
+            </div>
+            <div class="spiel-body">Thank you for your continued patience while I reviewed your account and the Sports Cashback calculation for the period of <span class="dynamic-start date-hl">Date</span> to <span class="dynamic-end date-hl">Date</span>.
+
+Upon reviewing the transactions on your account, I can confirm that your total sports net loss for the qualifying period was {GROSS_NET_LOSS}. However, bonus transfers received during the same period are deducted when determining the final qualifying net loss.
+
+The calculation is as follows:
+{GROSS_NET_LOSS} Total sports net loss
+{DEDUCTIONS_LIST}= {FINAL_NET_LOSS} Final qualifying net loss
+
+{QUALIFICATION_STATEMENT}
+
+The applicable Sports Cashback requirements are:
+• Minimum net loss: R100
+• Minimum cashback: R10
+• Maximum cashback: R5,000 per week
+• Maximum withdrawable amount: R25,000
+
+For reference, if a customer has R3,500 in total sports losses, R1,500 in total sports winnings, and transfers R1,000 from their Non-Casino Bonus Wallet to their Real Wallet, the qualifying net loss would be:
+R3,500 − R1,500 − R1,000 = R1,000 qualifying net loss
+A qualifying net loss of R1,000 would fall within the 15% cashback tier, resulting in R150 being credited to the Non-Casino Bonus Wallet.
+
+For the complete promotion terms and conditions, please visit:
+https://easybet.co.za/page/cash-back</div>
+        </div>
+
+        <div class="spiel-card" onclick="copyText(this)" data-category="qualified">
+            <div class="card-meta">
+                <span class="badge" style="color: var(--warning);">Normal Resolution (Pre-Crediting)</span>
                 <span class="copy-hint">Click to Copy</span>
             </div>
             <div class="spiel-body">Thank you for patiently waiting.
 
-I have reviewed all your qualifying Casino Games bets placed between <span class="dynamic-start date-hl">Monday</span> 00:00 and <span class="dynamic-end date-hl">Sunday</span> 23:59.
+I have reviewed all your qualifying sports bets placed between <span class="dynamic-start date-hl">Date</span> and <span class="dynamic-end date-hl">Date</span>.
 
-Based on my review, your net loss for this period is <strong>RXXXX</strong>.
+Based on my review, your final qualifying net loss for this period is <strong>RXXXX</strong>.
 
-The final calculation and cashback assessment are automatically completed by our Bonus Team every Monday by 12:00 PM. If your net loss remains R100 or more by the end of the week, you will receive up to 15% of your net losses back in your Casino Bonus Wallet (minimum Cashback is R5, maximum is R5 000 per week).
+The final calculation and cashback assessment are automatically completed by our Bonus Team every Thursday at 12:00 PM. 
 
 For full promotion details, please visit:
-https://easybet.co.za/page/15-weekly-casino-cashback</div>
+https://easybet.co.za/page/cash-back</div>
         </div>
         
-        <div class="spiel-card" onclick="copySpiel(this)" data-tier="15">
+        <div class="spiel-card" onclick="copyText(this)" data-category="qualified-15">
             <div class="card-meta">
-                <span class="badge" style="color: #10b981; border-color: #10b981; background: rgba(16, 185, 129, 0.1);">Qualified 15% Tier (R5,000+ Loss)</span>
+                <span class="badge" style="color: var(--success);">Qualified - 15% Tier (R500+ Loss)</span>
                 <span class="copy-hint">Click to Copy</span>
             </div>
             <div class="spiel-body">Thanks for patiently waiting.
 
-Upon checking your account, I can confirm that you qualified for the 15% Weekly Casino Cashback! 
+Upon checking your account, I can confirm that you qualified for the Sports Cashback Bonus! 
 
-Your net loss on Casino Games from <span class="dynamic-start date-hl">Monday</span> 00:00 to <span class="dynamic-end date-hl">Sunday</span> 23:59 was <strong>RXXXX</strong>. Because your net losses fell into the R5,000+ bracket, you are eligible for <strong>15% Cashback</strong> (up to R25,000 max withdrawal) credited straight to your Casino Bonus Wallet.
+Your final qualifying net loss on sports bets from <span class="dynamic-start date-hl">Date</span> to <span class="dynamic-end date-hl">Date</span> was <strong>RXXXX</strong>. Because your net losses were R500 or more, you are eligible for the full <strong>15% Cash Back</strong> as a Bonus Bet.
 
-Cashback is paid into your Casino Bonus Wallet every Monday by 12:00 PM. Please remember that you must wager your bonus 4x on qualifying games before you can withdraw your winnings. (Note: For Crash Games, only bets with a cashout of 1.50x or higher count toward wagering).
-
-Important: your Cashback must be wagered before Sunday 23:59 of the week it is issued. Any remaining bonus funds and winnings will expire at that time. Withdrawing from your Real Wallet does not affect your Casino Bonus Wallet, and wagering continues as normal.
+Please keep in mind that your Bonus Wallet cash can only be used on Sports (including multibets), and must be wagered once within 5 days before it can be moved to your Main Funds wallet.
 
 For more information and terms, please visit:
-https://easybet.co.za/page/15-weekly-casino-cashback</div>
+https://easybet.co.za/page/cash-back</div>
         </div>
 
-        <div class="spiel-card" onclick="copySpiel(this)" data-tier="10">
+        <div class="spiel-card" onclick="copyText(this)" data-category="qualified-10">
             <div class="card-meta">
-                <span class="badge" style="color: #10b981; border-color: #10b981; background: rgba(16, 185, 129, 0.1);">Qualified 10% Tier (R1,500 - R4,999)</span>
+                <span class="badge" style="color: var(--success);">Qualified - 10% Tier (R100-R499 Loss)</span>
                 <span class="copy-hint">Click to Copy</span>
             </div>
             <div class="spiel-body">Thanks for patiently waiting.
 
-Upon checking your account, I can confirm that you qualified for the Weekly Casino Cashback! 
+Upon checking your account, I can confirm that you qualified for the Sports Cashback Bonus! 
 
-Your net loss on Casino Games from <span class="dynamic-start date-hl">Monday</span> 00:00 to <span class="dynamic-end date-hl">Sunday</span> 23:59 was <strong>RXXXX</strong>. Because your net losses were between R1,500 and R4,999, you are eligible for <strong>10% Cashback</strong> (up to R5,000 max withdrawal) credited straight to your Casino Bonus Wallet.
+Your final qualifying net loss on sports bets from <span class="dynamic-start date-hl">Date</span> to <span class="dynamic-end date-hl">Date</span> was <strong>RXXXX</strong>. Because your net losses fell between R100 and R499.99, you are eligible for <strong>10% Cash Back</strong> as a Bonus Bet.
 
-Cashback is paid into your Casino Bonus Wallet every Monday by 12:00 PM. Please remember that you must wager your bonus 4x on qualifying games before you can withdraw your winnings. (Note: For Crash Games, only bets with a cashout of 1.50x or higher count toward wagering).
-
-Important: your Cashback must be wagered before Sunday 23:59 of the week it is issued. Any remaining bonus funds and winnings will expire at that time. Withdrawing from your Real Wallet does not affect your Casino Bonus Wallet, and wagering continues as normal.
+Please keep in mind that your Bonus Wallet cash can only be used on Sports (including multibets), and must be wagered once within 5 days before it can be moved to your Main Funds wallet.
 
 For more information and terms, please visit:
-https://easybet.co.za/page/15-weekly-casino-cashback</div>
+https://easybet.co.za/page/cash-back</div>
         </div>
 
-        <div class="spiel-card" onclick="copySpiel(this)" data-tier="7">
+        <div class="spiel-card" onclick="copyText(this)" data-category="not-qualified">
             <div class="card-meta">
-                <span class="badge" style="color: #3b82f6; border-color: #3b82f6; background: rgba(59, 130, 246, 0.1);">Qualified 7% Tier (R500 - R1,499)</span>
-                <span class="copy-hint">Click to Copy</span>
-            </div>
-            <div class="spiel-body">Thanks for patiently waiting.
-
-Upon checking your account, I can confirm that you qualified for the Weekly Casino Cashback! 
-
-Your net loss on Casino Games from <span class="dynamic-start date-hl">Monday</span> 00:00 to <span class="dynamic-end date-hl">Sunday</span> 23:59 was <strong>RXXXX</strong>. Because your net losses were between R500 and R1,499, you are eligible for <strong>7% Cashback</strong> (up to R1,000 max withdrawal) credited straight to your Casino Bonus Wallet.
-
-Cashback is paid into your Casino Bonus Wallet every Monday by 12:00 PM. Please remember that you must wager your bonus 4x on qualifying games before you can withdraw your winnings. (Note: For Crash Games, only bets with a cashout of 1.50x or higher count toward wagering).
-
-Important: your Cashback must be wagered before Sunday 23:59 of the week it is issued. Any remaining bonus funds and winnings will expire at that time. Withdrawing from your Real Wallet does not affect your Casino Bonus Wallet, and wagering continues as normal.
-
-For more information and terms, please visit:
-https://easybet.co.za/page/15-weekly-casino-cashback</div>
-        </div>
-
-        <div class="spiel-card" onclick="copySpiel(this)" data-tier="5">
-            <div class="card-meta">
-                <span class="badge" style="color: #8b5cf6; border-color: #8b5cf6; background: rgba(139, 92, 246, 0.1);">Qualified 5% Tier (R100 - R499)</span>
-                <span class="copy-hint">Click to Copy</span>
-            </div>
-            <div class="spiel-body">Thanks for patiently waiting.
-
-Upon checking your account, I can confirm that you qualified for the Weekly Casino Cashback! 
-
-Your net loss on Casino Games from <span class="dynamic-start date-hl">Monday</span> 00:00 to <span class="dynamic-end date-hl">Sunday</span> 23:59 was <strong>RXXXX</strong>. Because your net losses were between R100 and R499, you are eligible for <strong>5% Cashback</strong> (minimum R5, up to R1,000 max withdrawal) credited straight to your Casino Bonus Wallet.
-
-Cashback is paid into your Casino Bonus Wallet every Monday by 12:00 PM. Please remember that you must wager your bonus 4x on qualifying games before you can withdraw your winnings. (Note: For Crash Games, only bets with a cashout of 1.50x or higher count toward wagering).
-
-Important: your Cashback must be wagered before Sunday 23:59 of the week it is issued. Any remaining bonus funds and winnings will expire at that time. Withdrawing from your Real Wallet does not affect your Casino Bonus Wallet, and wagering continues as normal.
-
-For more information and terms, please visit:
-https://easybet.co.za/page/15-weekly-casino-cashback</div>
-        </div>
-
-        <div class="section-tag">Pre Crediting Scripts (Tiered)</div>
-
-        <div class="spiel-card" onclick="copySpiel(this)" data-tier="15">
-            <div class="card-meta">
-                <span class="badge" style="color: #10b981; border-color: #10b981; background: rgba(16, 185, 129, 0.1);">Pre-Crediting 15% Tier (R5,000+ Loss)</span>
-                <span class="copy-hint">Click to Copy</span>
-            </div>
-            <div class="spiel-body">Thanks for patiently waiting. Upon checking your account, I can confirm that you qualified for the 15% Weekly Casino Cashback! 
-
-Your net loss on Casino Games from <span class="dynamic-start date-hl">Monday</span> 00:00 to <span class="dynamic-end date-hl">Sunday</span> 23:59 was <strong>RXXXX</strong>. Because your net losses fell into the R5,000+ bracket, you are eligible for <strong>15% Cashback</strong> (up to R25,000 max withdrawal) credited straight to your Casino Bonus Wallet.
-
-Cashback is paid into your Casino Bonus Wallet every Monday by 12:00 PM. Please remember that you must wager your bonus 4x on qualifying games before you can withdraw your winnings. (Note: For Crash Games, only bets with a cashout of 1.50x or higher count toward wagering).
-
-Additionally, the final calculation and cashback assessment are automatically completed by our Bonus Team every Monday by 12:00 PM.
-
-Important: your Cashback must be wagered before Sunday 23:59 of the week it is issued. Any remaining bonus funds and winnings will expire at that time. Withdrawing from your Real Wallet does not affect your Casino Bonus Wallet, and wagering continues as normal.
-
-For more information and terms, please visit:
-https://easybet.co.za/page/15-weekly-casino-cashback</div>
-        </div>
-
-        <div class="spiel-card" onclick="copySpiel(this)" data-tier="10">
-            <div class="card-meta">
-                <span class="badge" style="color: #10b981; border-color: #10b981; background: rgba(16, 185, 129, 0.1);">Pre-Crediting 10% Tier (R1,500 - R4,999)</span>
-                <span class="copy-hint">Click to Copy</span>
-            </div>
-            <div class="spiel-body">Thanks for patiently waiting. Upon checking your account, I can confirm that you qualified for the Weekly Casino Cashback! 
-
-Your net loss on Casino Games from <span class="dynamic-start date-hl">Monday</span> 00:00 to <span class="dynamic-end date-hl">Sunday</span> 23:59 was <strong>RXXXX</strong>. Because your net losses were between R1,500 and R4,999, you are eligible for <strong>10% Cashback</strong> (up to R5,000 max withdrawal) credited straight to your Casino Bonus Wallet.
-
-Cashback is paid into your Casino Bonus Wallet every Monday by 12:00 PM. Please remember that you must wager your bonus 4x on qualifying games before you can withdraw your winnings. (Note: For Crash Games, only bets with a cashout of 1.50x or higher count toward wagering).
-
-Additionally, the final calculation and cashback assessment are automatically completed by our Bonus Team every Monday by 12:00 PM.
-
-Important: your Cashback must be wagered before Sunday 23:59 of the week it is issued. Any remaining bonus funds and winnings will expire at that time. Withdrawing from your Real Wallet does not affect your Casino Bonus Wallet, and wagering continues as normal.
-
-For more information and terms, please visit:
-https://easybet.co.za/page/15-weekly-casino-cashback</div>
-        </div>
-
-        <div class="spiel-card" onclick="copySpiel(this)" data-tier="7">
-            <div class="card-meta">
-                <span class="badge" style="color: #3b82f6; border-color: #3b82f6; background: rgba(59, 130, 246, 0.1);">Pre-Crediting 7% Tier (R500 - R1,499)</span>
-                <span class="copy-hint">Click to Copy</span>
-            </div>
-            <div class="spiel-body">Thanks for patiently waiting. Upon checking your account, I can confirm that you qualified for the Weekly Casino Cashback! 
-
-Your net loss on Casino Games from <span class="dynamic-start date-hl">Monday</span> 00:00 to <span class="dynamic-end date-hl">Sunday</span> 23:59 was <strong>RXXXX</strong>. Because your net losses were between R500 and R1,499, you are eligible for <strong>7% Cashback</strong> (up to R1,000 max withdrawal) credited straight to your Casino Bonus Wallet.
-
-Cashback is paid into your Casino Bonus Wallet every Monday by 12:00 PM. Please remember that you must wager your bonus 4x on qualifying games before you can withdraw your winnings. (Note: For Crash Games, only bets with a cashout of 1.50x or higher count toward wagering).
-
-Additionally, the final calculation and cashback assessment are automatically completed by our Bonus Team every Monday by 12:00 PM.
-
-Important: your Cashback must be wagered before Sunday 23:59 of the week it is issued. Any remaining bonus funds and winnings will expire at that time. Withdrawing from your Real Wallet does not affect your Casino Bonus Wallet, and wagering continues as normal.
-
-For more information and terms, please visit:
-https://easybet.co.za/page/15-weekly-casino-cashback</div>
-        </div>
-
-        <div class="spiel-card" onclick="copySpiel(this)" data-tier="5">
-            <div class="card-meta">
-                <span class="badge" style="color: #8b5cf6; border-color: #8b5cf6; background: rgba(139, 92, 246, 0.1);">Pre-Crediting 5% Tier (R100 - R499)</span>
-                <span class="copy-hint">Click to Copy</span>
-            </div>
-            <div class="spiel-body">Thanks for patiently waiting. Upon checking your account, I can confirm that you qualified for the Weekly Casino Cashback! 
-
-Your net loss on Casino Games from <span class="dynamic-start date-hl">Monday</span> 00:00 to <span class="dynamic-end date-hl">Sunday</span> 23:59 was <strong>RXXXX</strong>. Because your net losses were between R100 and R499, you are eligible for <strong>5% Cashback</strong> (minimum R5, up to R1,000 max withdrawal) credited straight to your Casino Bonus Wallet.
-
-Cashback is paid into your Casino Bonus Wallet every Monday by 12:00 PM. Please remember that you must wager your bonus 4x on qualifying games before you can withdraw your winnings. (Note: For Crash Games, only bets with a cashout of 1.50x or higher count toward wagering).
-
-Additionally, the final calculation and cashback assessment are automatically completed by our Bonus Team every Monday by 12:00 PM.
-
-Important: your Cashback must be wagered before Sunday 23:59 of the week it is issued. Any remaining bonus funds and winnings will expire at that time. Withdrawing from your Real Wallet does not affect your Casino Bonus Wallet, and wagering continues as normal.
-
-For more information and terms, please visit:
-https://easybet.co.za/page/15-weekly-casino-cashback</div>
-        </div>
-
-        <div class="section-tag">Cashback Issued</div>
-
-        <div class="spiel-card" onclick="copySpiel(this)" data-category="always">
-            <div class="card-meta">
-                <span class="badge" style="color: #10b981; border-color: #10b981; background: rgba(16, 185, 129, 0.1);">The cashback bonus has been credited already</span>
-                <span class="copy-hint">Click to Copy</span>
-            </div>
-            <div class="spiel-body">Great news! Your Cashback has been successfully credited to your Casino Bonus Wallet.
-
-Here's how to make the most of it:
-1. Log in to your account and open any qualifying Casino Game.
-2. Once the game loads, use the drop-down next to "Back to List" and select Free Bonus to play using your Cashback instead of your own cash.
-3. You can track your wagering progress at any time in the Bonus section of your account.
-
-Before any winnings can be withdrawn, your Cashback must be wagered 4x across qualifying games (Note: for Crash Games, only bets with a cashout of 1.50x or higher count toward wagering).
-
-Please remember: your Cashback must be wagered before Sunday 23:59 of the week it was issued. Any remaining bonus funds and winnings will expire at that time, so be sure to use it before then.
-
-Maximum withdrawable winnings depend on your qualifying tier percentage: R25,000 (15%), R5,000 (10%), R1,000 (7%), or R1,000 (5%). Minimum Cashback issued is R5; maximum is R5,000 per week.
-
-Withdrawing from your Real Wallet does not affect your Casino Bonus Wallet, and your wagering continues as normal.
-
-For the full Terms and Conditions, please visit:
-https://easybet.co.za/page/15-weekly-casino-cashback</div>
-        </div>
-
-        <div class="spiel-card" onclick="copySpiel(this)" data-tier="none">
-            <div class="card-meta">
-                <span class="badge" style="color: var(--error); border-color: var(--error); background: rgba(239, 68, 68, 0.1);">Not Qualified (< R100 Loss)</span>
+                <span class="badge" style="color: var(--error);">Not Qualified (< R100 Loss)</span>
                 <span class="copy-hint">Click to Copy</span>
             </div>
             <div class="spiel-body">Thank you so much for your patience while I checked this for you. I understand how disappointing it can be to miss out on a bonus, and I’m really sorry this wasn’t the outcome you were hoping for.
 
-After reviewing your account, I can confirm that you did not qualify for the Weekly Casino Cashback this time. Your net loss on Casino Games for the period <span class="dynamic-start date-hl">Monday</span> 00:00 to <span class="dynamic-end date-hl">Sunday</span> 23:59 was <strong>RXXXX</strong>. 
+After reviewing your account, I can confirm that you did not qualify for the Sports Cashback this time. Your final qualifying net loss for the period <span class="dynamic-start date-hl">Date</span> to <span class="dynamic-end date-hl">Date</span> was <strong>RXXXX</strong>. 
 
-As per the promotion’s terms and conditions, a minimum net loss of R100 during the promotional week (Monday 00:00 - Sunday 23:59) is required to qualify for the first tier of cashback (minimum Cashback payout is R5).
+As per the promotion’s terms and conditions, a minimum net loss of R100 during the promotional week is required to qualify for any cashback.
 
-Please don’t be discouraged though. This is an ongoing weekly promotion, so you’ll have another opportunity to qualify next time.
+Please don’t be discouraged though. This is a weekly promotion, so you’ll have another opportunity to qualify in the next cycle.
 
 If you’d like to review the full promotion details, you can find them here:
-https://easybet.co.za/page/15-weekly-casino-cashback</div>
+https://easybet.co.za/page/cash-back</div>
         </div>
 
-        <div class="spiel-card" onclick="copySpiel(this)" data-category="not-qualified">
+        <div class="spiel-card" onclick="copyText(this)" data-category="not-qualified-winnings">
             <div class="card-meta">
-                <span class="badge" style="color: var(--error); border-color: var(--error); background: rgba(239, 68, 68, 0.1);">Not Qualified (Winnings > Losses)</span>
+                <span class="badge" style="color: var(--error);">Not Qualified (Winnings > Losses)</span>
                 <span class="copy-hint">Click to Copy</span>
             </div>
             <div class="spiel-body">Thank you for waiting. I understand how disappointing missing a bonus can be, and I’m sorry you didn't qualify this time.
 
-Based on your Casino Games betting activity from <span class="dynamic-start date-hl">Monday</span> 00:00 to <span class="dynamic-end date-hl">Sunday</span> 23:59, your total winnings actually exceeded your losses. On the bright side, this means you came out ahead during the review period!
+Based on your sports betting activity from <span class="dynamic-start date-hl">Date</span> to <span class="dynamic-end date-hl">Date</span>, your total winnings actually exceeded your losses. On the bright side, this means you came out ahead during the review period!
 
-Because the calculation reflects an overall profit and not a net loss, the Cashback does not apply for this period. 
+Because the calculation reflects an overall profit and not a net loss, the Sports Cashback does not apply for this period. 
 
-For more information about the promotion, you can view the full details here:
-https://easybet.co.za/page/15-weekly-casino-cashback</div>
-        </div>
-
-        <div class="section-tag">Lucky Numbers Rules</div>
-
-        <div class="spiel-card" onclick="copySpiel(this)" data-category="lucky-numbers">
-            <div class="card-meta">
-                <span class="badge" style="color: #6366f1; border-color: #6366f1; background: rgba(99, 102, 241, 0.1);">Lucky Numbers: Basic Winning Rule</span>
-                <span class="copy-hint">Click to Copy</span>
-            </div>
-            <div class="spiel-body">Thank you for your inquiry regarding your Lucky Numbers ticket.
-
-Please note that for Lucky Numbers, a ticket is considered a winner ONLY if all of the numbers you selected match the winning result. Even one missing or unmatched number means the ticket is not a winning ticket. 
-
-For example, if you selected 2 numbers, both must appear in the draw. If you selected 5 numbers, all 5 must appear. 
-
-Please let me know if you need me to check a specific ticket ID for you!</div>
-        </div>
-
-        <div class="spiel-card" onclick="copySpiel(this)" data-category="lucky-numbers">
-            <div class="card-meta">
-                <span class="badge" style="color: #6366f1; border-color: #6366f1; background: rgba(99, 102, 241, 0.1);">Lucky Numbers: Detailed Rule Explanation</span>
-                <span class="copy-hint">Click to Copy</span>
-            </div>
-            <div class="spiel-body">I completely understand your frustration, but I would like to clarify our Lucky Numbers winning rules for you.
-
-The most important rule is that a ticket is considered a winner ONLY if all of the numbers you selected match the winning result. Even one missing or unmatched number means the ticket is not a winning ticket.
-
-For example:
-✅ If you select 2 numbers, and both appear in the results, you win!
-❌ If you select 6 numbers, but only 4 of them appear in the results, the ticket is a loss because not ALL 6 numbers matched.
-
-If a player wants to win based on just 2 matching numbers, they should only select 2 numbers on their ticket. Since your ticket had unmatched numbers, it is correctly settled as a loss. I hope this clears up the misunderstanding!</div>
+For more information about the Sports Cashback promotion, you can view the full details here:
+https://easybet.co.za/page/cash-back</div>
         </div>
 
         <div class="section-tag">Closing Scripts</div>
 
-        <div class="spiel-card" onclick="copySpiel(this)" data-category="not-qualified">
+        <div class="spiel-card" onclick="copyText(this)" data-category="not-qualified-close">
             <div class="card-meta">
-                <span class="badge" style="color: var(--error); border-color: var(--error); background: rgba(239, 68, 68, 0.1);">Not Qualified Closing</span>
+                <span class="badge" style="color: var(--error);">Not Qualified Closing</span>
                 <span class="copy-hint">Click to Copy</span>
             </div>
-            <div class="spiel-body">I’m glad I could assist you with your inquiry about the 15% Weekly Casino Cashback.
+            <div class="spiel-body">I’m glad I could assist you with your inquiry about the 15% Cashback for Sports.
 
-At the moment, you do not qualify for this week's promotion. However, please don't worry, as this promotion runs regularly, giving you another opportunity to qualify in the next cycle.
+At the moment, you do not qualify for this week's promotion. However, please don't worry, as this promotion runs every week, giving you another opportunity to qualify in the next cycle.
 
 Have a wonderful day ahead and stay safe!
 
@@ -975,14 +693,14 @@ Email: help@easybet.co.za
 Thank you for choosing Easybet. Have a great day ahead.</div>
         </div>
 
-        <div class="spiel-card" onclick="copySpiel(this)" data-category="qualified">
+        <div class="spiel-card" onclick="copyText(this)" data-category="qualified-close">
             <div class="card-meta">
-                <span class="badge" style="color: #10b981; border-color: #10b981; background: rgba(16, 185, 129, 0.1);">Qualified Closing</span>
+                <span class="badge" style="color: var(--success);">Qualified Closing</span>
                 <span class="copy-hint">Click to Copy</span>
             </div>
-            <div class="spiel-body">I’m really happy that I was able to assist you with your inquiry regarding the 15% Weekly Casino Cashback.
+            <div class="spiel-body">I’m really happy that I was able to assist you with your inquiry regarding the 15% Cashback for Sports.
 
-I helped you identify your net loss, clarified your qualifying status, and explained the 4x wagering requirements for your Casino Bonus Wallet, including the Sunday 23:59 wagering deadline.
+I helped you identify your net loss, clarified your qualifying cashback tier, and explained the wagering requirements for your Bonus Bet.
 
 Have a wonderful day ahead and stay safe!
 
@@ -1003,60 +721,36 @@ Thank you for choosing Easybet. Have a great day ahead.</div>
 <div id="toast">Copied to Clipboard</div>
 
 <script>
+    let deductionCount = 0;
+
     function calculateDates() {
         const now = new Date();
         const currentDay = now.getDay(); 
         
         // Target the PREVIOUS week's Monday to Sunday
-        // getDay() is 0 for Sunday, 1 for Monday.
-        const daysToLastSunday = (currentDay === 0) ? -7 : -currentDay;
+        const daysToLastMonday = (currentDay === 0) ? -6 : 1 - currentDay;
         
-        const lastSunday = new Date(now);
-        lastSunday.setDate(now.getDate() + daysToLastSunday);
+        const thisWeekMonday = new Date(now);
+        thisWeekMonday.setDate(now.getDate() + daysToLastMonday);
+        thisWeekMonday.setHours(0,0,0,0);
+
+        const lastSunday = new Date(thisWeekMonday);
+        lastSunday.setDate(thisWeekMonday.getDate() - 1);
         
         const lastMonday = new Date(lastSunday);
         lastMonday.setDate(lastSunday.getDate() - 6);
 
-        const startStr = lastMonday.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
-        const endStr = lastSunday.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+        const startStr = lastMonday.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
+        const endStr = lastSunday.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 
         document.querySelectorAll('.dynamic-start').forEach(el => el.innerText = startStr);
         document.querySelectorAll('.dynamic-end').forEach(el => el.innerText = endStr);
     }
 
-    function toggleFilter(event, element) {
-        event.preventDefault(); // Prevent triggering the row click
-        const parentLi = element.closest('.filter-item');
-        if (parentLi) {
-            parentLi.classList.toggle('expanded');
-        }
-    }
-
-    function initFilterStates() {
-        const checkboxes = document.querySelectorAll('.filter-tree input[type="checkbox"]');
-        checkboxes.forEach(cb => {
-            // Restore from localStorage if present to maintain persistence
-            const savedState = localStorage.getItem('adv_filter_' + cb.id);
-            if (savedState !== null) {
-                cb.checked = savedState === 'true';
-            }
-            
-            // Save state on change
-            cb.addEventListener('change', (e) => {
-                localStorage.setItem('adv_filter_' + e.target.id, e.target.checked);
-            });
-        });
-    }
-
-    function copySpiel(card) {
+    function copyText(card) {
         const text = card.querySelector('.spiel-body').innerText;
-        triggerCopy(text, "Copied Spiel to Clipboard");
-    }
-
-    function triggerCopy(text, toastMessage) {
         navigator.clipboard.writeText(text).then(() => {
             const toast = document.getElementById("toast");
-            toast.innerText = toastMessage;
             toast.className = "visible";
             setTimeout(() => toast.className = "", 2000);
         });
@@ -1082,90 +776,163 @@ Thank you for choosing Easybet. Have a great day ahead.</div>
         });
     }
 
-    // --- Net Loss Functions ---
     
-    function initializeGrossLossData() {
-        // Save original HTML after dynamic dates are injected
+    function initializeOriginalData() {
         document.querySelectorAll('.spiel-card').forEach(card => {
             const body = card.querySelector('.spiel-body');
-            if(body) {
-                card.dataset.originalHtml = body.innerHTML;
-            }
-            // Set initial eligibility state to true for all
+            if(body) { card.dataset.originalHtml = body.innerHTML; }
             card.dataset.eligible = "true";
         });
     }
 
-    function updateGrossLoss(inputElement) {
-        // Remove non-numeric characters (except period) and prevent double periods
-        let val = inputElement.value.replace(/[^0-9.]/g, '');
-        val = val.replace(/(\..*)\./g, '$1');
-        inputElement.value = val;
-
-        updateQualificationVisibility(val);
-        replaceGrossLossText(val);
-        filterSpiels(); // Re-trigger visual filter
+    function addDeductionRow() {
+        deductionCount++;
+        const container = document.getElementById('deductionsList');
+        
+        const row = document.createElement('div');
+        row.className = 'deduction-row';
+        row.id = `deduction-${deductionCount}`;
+        
+        row.innerHTML = `
+            <input type="text" class="deduction-name-input" placeholder="e.g. 15% Sports Cashback bonus transfer">
+            <div class="calc-input-group" style="width: 150px;">
+                <span class="calc-prefix">R</span>
+                <input type="text" class="deduction-val-input" placeholder="0.00" oninput="formatAndCalculate(this)">
+            </div>
+            <button class="btn-remove" onclick="removeDeductionRow('${row.id}')">✕</button>
+        `;
+        
+        // Add event listener to the name input to also trigger calculate so string builds nicely
+        row.querySelector('.deduction-name-input').addEventListener('input', calculateAll);
+        
+        container.appendChild(row);
+        calculateAll();
     }
 
-    function updateQualificationVisibility(val) {
-        const cards = document.querySelectorAll('.spiel-card');
+    function removeDeductionRow(rowId) {
+        document.getElementById(rowId).remove();
+        calculateAll();
+    }
+
+    function formatAndCalculate(inputElement) {
+        // Clean numeric input
+        let val = inputElement.value.replace(/[^0-9.]/g, '');
+        val = val.replace(/(\..*)\./g, '$1'); // prevent double decimals
+        inputElement.value = val;
+        calculateAll();
+    }
+
+    function calculateAll() {
+        const valLoss = parseFloat(document.getElementById('calcLosses').value) || 0;
+        const valWin = parseFloat(document.getElementById('calcWinnings').value) || 0;
         
-        if (val === '') {
-            // Revert to all visible if field is empty
-            cards.forEach(card => card.dataset.eligible = "true");
-            return;
-        }
+        // Gross Net Loss
+        const grossLoss = valLoss - valWin;
+        document.getElementById('displayGrossNetLoss').innerText = `R ${grossLoss.toFixed(2)}`;
 
-        const numVal = parseFloat(val);
+        // Handle Deductions String creation & Totaling
+        let totalDeductions = 0;
+        let deductionsString = "";
 
-        cards.forEach(card => {
-            const cat = card.dataset.category;
-            const tier = card.dataset.tier;
-
-            if (cat === 'always') {
-                card.dataset.eligible = "true";
-            } else if (cat === 'lucky-numbers') {
-                // Hide Lucky Numbers spiels if actively calculating casino net loss
-                card.dataset.eligible = "false";
-            } else if (tier) {
-                // Tier logic applied based on 15% cashback rules
-                if (tier === '15' && numVal >= 5000) card.dataset.eligible = "true";
-                else if (tier === '10' && numVal >= 1500 && numVal < 5000) card.dataset.eligible = "true";
-                else if (tier === '7' && numVal >= 500 && numVal < 1500) card.dataset.eligible = "true";
-                else if (tier === '5' && numVal >= 100 && numVal < 500) card.dataset.eligible = "true";
-                else if (tier === 'none' && numVal < 100) card.dataset.eligible = "true";
-                else card.dataset.eligible = "false";
-            } else if (cat === 'qualified') {
-                card.dataset.eligible = (numVal >= 100) ? "true" : "false";
-            } else if (cat === 'not-qualified') {
-                card.dataset.eligible = (numVal < 100) ? "true" : "false";
+        document.querySelectorAll('.deduction-row').forEach(row => {
+            const name = row.querySelector('.deduction-name-input').value || "Bonus transfer";
+            const amtStr = row.querySelector('.deduction-val-input').value;
+            const amt = parseFloat(amtStr) || 0;
+            
+            if(amtStr !== "") {
+                totalDeductions += amt;
+                deductionsString += `− R${amt.toFixed(2)} ${name}\n`;
             }
         });
+
+        // Final Qualifying Net Loss
+        const finalNet = grossLoss - totalDeductions;
+        document.getElementById('displayFinalNetLoss').innerText = `R ${finalNet.toFixed(2)}`;
+
+        // Determine states based on final calculation
+        updateUIBasedOnCalculation(grossLoss, finalNet, valLoss, valWin, deductionsString);
     }
 
-    function replaceGrossLossText(val) {
+    
+    function updateUIBasedOnCalculation(grossLoss, finalNet, totalLosses, totalWinnings, deductionsString) {
+        const isInputsEmpty = (document.getElementById('calcLosses').value === '' && document.getElementById('calcWinnings').value === '');
+        
+        const isWinningsGreater = (totalWinnings > totalLosses);
+        const isQualified10 = finalNet >= 100 && finalNet < 500;
+        const isQualified15 = finalNet >= 500;
+        const isNotQualified = finalNet < 100 && !isWinningsGreater;
+
+        // Update Visibility rules for cards
+        document.querySelectorAll('.spiel-card').forEach(card => {
+            if (isInputsEmpty) { card.dataset.eligible = "true"; return; }
+            
+            const cat = card.dataset.category;
+            card.dataset.eligible = "false"; // default hide
+            
+            if (cat === 'always') card.dataset.eligible = "true";
+            
+            // Standard Qualified Catch-All (Pre-crediting)
+            if (cat === 'qualified' && finalNet >= 100) card.dataset.eligible = "true";
+            
+            // Specific Tiers
+            if (cat === 'qualified-10' && isQualified10) card.dataset.eligible = "true";
+            if (cat === 'qualified-15' && isQualified15) card.dataset.eligible = "true";
+            
+            // Not Qualified scenarios
+            if (cat === 'not-qualified' && isNotQualified) card.dataset.eligible = "true";
+            if (cat === 'not-qualified-winnings' && isWinningsGreater) card.dataset.eligible = "true";
+            
+            // Closing Scripts
+            if (cat === 'not-qualified-close' && finalNet < 100) card.dataset.eligible = "true";
+            if (cat === 'qualified-close' && finalNet >= 100) card.dataset.eligible = "true";
+        });
+
+        // Generate Replacement texts
+        let finalStr = finalNet.toFixed(2);
+        let grossStr = grossLoss.toFixed(2);
+
+        let qualStatement = "";
+        if (finalNet < 100) {
+            qualStatement = `The minimum qualifying net loss for the Sports Cashback promotion is R100. As your final qualifying net loss was R${finalStr}, this amount falls below the required minimum. Therefore, you did not qualify for the 15% Sports Cashback bonus for this qualifying period.`;
+        } else if (finalNet >= 100 && finalNet < 500) {
+            qualStatement = `As your final qualifying net loss was R${finalStr}, you fall into the 10% tier! Therefore, you qualified for a 10% Sports Cashback bonus for this qualifying period.`;
+        } else {
+            qualStatement = `As your final qualifying net loss was R${finalStr}, you fall into the 15% tier! Therefore, you qualified for the maximum 15% Sports Cashback bonus for this qualifying period.`;
+        }
+
+        // Apply Replacements
         document.querySelectorAll('.spiel-card').forEach(card => {
             const body = card.querySelector('.spiel-body');
             if (!body || !card.dataset.originalHtml) return;
 
-            if (val === '') {
-                // Restore original placeholders and dates
-                body.innerHTML = card.dataset.originalHtml;
+            if (isInputsEmpty) {
+                body.innerHTML = card.dataset.originalHtml; // Restore original if empty
             } else {
-                // Automatically prefix the value with "R" as requested
-                // Replaces RXXXX with R{user_input}
-                let newHtml = card.dataset.originalHtml
-                    .replace(/RXXXXXX/g, 'R' + val)
-                    .replace(/RXXXX/g, 'R' + val);
+                let newHtml = card.dataset.originalHtml;
+                
+                // For standard spiels using RXXXX (Inject FINAL net loss)
+                newHtml = newHtml.replace(/RXXXX/g, finalStr);
+                
+                // For the Detailed Breakdown Spiel specifically
+                if (card.id === 'detailedBreakdownCard') {
+                    newHtml = newHtml.replace('{GROSS_NET_LOSS}', `R${grossStr}`);
+                    newHtml = newHtml.replace('{GROSS_NET_LOSS}', `R${grossStr}`); // Replace second instance
+                    newHtml = newHtml.replace('{DEDUCTIONS_LIST}', deductionsString ? deductionsString : "");
+                    newHtml = newHtml.replace('{FINAL_NET_LOSS}', `R${finalStr}`);
+                    newHtml = newHtml.replace('{QUALIFICATION_STATEMENT}', qualStatement);
+                }
+                
                 body.innerHTML = newHtml;
             }
         });
+
+        filterSpiels(); // Visually update the UI based on datset.eligible
     }
 
+    // Startup
     window.onload = function() {
         calculateDates();
-        initializeGrossLossData();
-        initFilterStates(); // Initialize the persistent filter tree states
+        initializeOriginalData();
     };
 </script>
 

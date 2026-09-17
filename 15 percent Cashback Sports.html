@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -43,7 +42,6 @@
             overflow-x: hidden;
         }
 
-        /* --- Sidebar --- */
         .sidebar {
             width: 320px;
             background: var(--bg-sidebar);
@@ -128,20 +126,19 @@
             color: #000;
         }
 
-        /* --- Main Content --- */
         .main-container {
             flex: 1;
             padding: 50px 40px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            max-width: 1000px;
+            max-width: 1100px;
             margin: 0 auto;
         }
 
         .header-wrapper {
             text-align: center;
-            margin-bottom: 40px;
+            margin-bottom: 30px;
             width: 100%;
         }
 
@@ -156,70 +153,166 @@
             margin-bottom: 25px;
         }
 
-        /* --- Gross Loss Input --- */
-        .gross-loss-container {
+        /* --- Calculator Panel --- */
+        .calculator-panel {
             width: 100%;
-            max-width: 600px;
+            max-width: 750px;
             margin: 0 auto 25px auto;
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 12px 20px;
+            background: rgba(15, 15, 15, 0.8);
+            border: 1px solid var(--accent-gold);
+            border-radius: 16px;
+            padding: 25px 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .calc-header {
+            font-family: var(--font-heading);
+            color: var(--accent-gold);
+            font-size: 1.1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+            padding-bottom: 10px;
+            margin-bottom: 5px;
+        }
+
+        .calc-row {
             display: flex;
             align-items: center;
             justify-content: space-between;
             gap: 15px;
+            background: rgba(255, 255, 255, 0.02);
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
         }
 
-        .gross-loss-label {
-            font-family: var(--font-heading);
-            color: var(--accent-gold);
-            font-weight: 700;
-            font-size: 0.95rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            white-space: nowrap;
+        .calc-row label {
+            font-weight: 500;
+            color: #d1d5db;
+            flex: 1;
         }
 
-        .input-group {
+        .calc-input-group {
             display: flex;
             align-items: center;
-            flex: 1;
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
             overflow: hidden;
-            transition: 0.3s;
+            width: 200px;
         }
 
-        .input-group:focus-within {
+        .calc-input-group:focus-within {
             border-color: var(--accent-gold);
-            box-shadow: 0 0 15px var(--accent-gold-glow);
+            box-shadow: 0 0 10px var(--accent-gold-glow);
         }
 
-        .currency-prefix {
-            padding: 10px 15px;
+        .calc-prefix {
+            padding: 8px 12px;
             background: rgba(255, 255, 255, 0.05);
             color: var(--text-secondary);
             font-weight: 700;
-            border-right: 1px solid var(--border-color);
-            user-select: none;
+            border-right: 1px solid rgba(255,255,255,0.1);
         }
 
-        #grossLossInput {
+        .calc-input-group input {
             flex: 1;
             background: transparent;
             border: none;
             color: white;
-            padding: 10px 15px;
+            padding: 8px 12px;
             font-size: 1rem;
             outline: none;
             font-family: var(--font-main);
+            width: 100%;
         }
+
+        .calc-row.highlight {
+            background: rgba(212, 175, 55, 0.05);
+            border-color: rgba(212, 175, 55, 0.2);
+        }
+
+        .calc-row.highlight label { color: var(--accent-gold); font-weight: 600; }
+        .calc-row.highlight span { color: #fff; font-weight: 700; font-size: 1.1rem; }
+
+        .calc-row.total {
+            background: rgba(212, 175, 55, 0.15);
+            border-color: var(--accent-gold);
+            margin-top: 10px;
+            padding: 15px 20px;
+        }
+        
+        .calc-row.total label { color: var(--accent-gold); font-weight: 700; font-size: 1.1rem; text-transform: uppercase; }
+        .calc-row.total span { color: #fff; font-weight: 800; font-size: 1.4rem; }
+
+        .deductions-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px dashed rgba(255, 255, 255, 0.1);
+        }
+
+        .deduction-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .deduction-name-input {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            color: white;
+            padding: 8px 12px;
+            font-size: 0.9rem;
+            outline: none;
+            transition: 0.3s;
+        }
+        .deduction-name-input:focus { border-color: var(--accent-gold); }
+
+        .btn-add-deduction {
+            background: transparent;
+            color: var(--accent-gold);
+            border: 1px dashed var(--accent-gold);
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.3s;
+            margin-top: 5px;
+            width: 100%;
+        }
+        .btn-add-deduction:hover {
+            background: rgba(212, 175, 55, 0.1);
+        }
+
+        .btn-remove {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--error);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 6px;
+            width: 35px;
+            height: 38px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+        .btn-remove:hover { background: var(--error); color: white; }
 
         #searchInput {
             width: 100%;
-            max-width: 600px;
+            max-width: 750px;
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid var(--border-color);
             padding: 14px 24px;
@@ -229,6 +322,8 @@
             outline: none;
             transition: 0.3s;
             text-align: center;
+            margin: 0 auto;
+            display: block;
         }
 
         #searchInput:focus {
@@ -238,6 +333,7 @@
 
         .content-width {
             width: 100%;
+            max-width: 900px;
         }
 
         .section-tag {
@@ -260,7 +356,6 @@
             background: linear-gradient(to right, var(--border-color), transparent);
         }
 
-        /* --- Cards --- */
         .spiel-card {
             background: var(--bg-card);
             border: 1px solid var(--border-color);
@@ -295,6 +390,12 @@
             text-transform: uppercase;
             letter-spacing: 0.05em;
         }
+        
+        .badge.special {
+            background: rgba(212, 175, 55, 0.15);
+            color: var(--accent-gold);
+            border: 1px solid rgba(212, 175, 55, 0.4);
+        }
 
         .copy-hint {
             font-size: 0.65rem;
@@ -320,8 +421,7 @@
             font-weight: 700;
             border-bottom: 1px solid var(--accent-gold);
         }
-
-        /* --- Notification --- */
+        
         #toast {
             position: fixed;
             bottom: 30px;
@@ -340,7 +440,6 @@
 
         #toast.visible { transform: translateX(-50%) translateY(0); opacity: 1; }
 
-        /* --- Responsive --- */
         @media (max-width: 900px) {
             body { flex-direction: column; }
             .sidebar {
@@ -352,6 +451,10 @@
                 padding: 20px;
             }
             .main-container { padding: 30px 20px; }
+            .calc-row { flex-direction: column; align-items: flex-start; }
+            .calc-input-group { width: 100%; mt-2 }
+            .deduction-row { flex-direction: column; align-items: stretch; }
+            .btn-remove { width: 100%; }
         }
     </style>
 </head>
@@ -370,7 +473,7 @@
         <div class="sidebar-title">Filters on ADV</div>
         <ul class="sidebar-list">
             <li>Multi-games</li>
-            <li>Game Aggregator Sports Book</li>
+            <li>SportsBook</li>
             <li>Prematch</li>
             <li>In Play</li>
         </ul>
@@ -386,11 +489,39 @@
     <div class="header-wrapper">
         <h1>15% Cashback for Sports</h1>
         
-        <div class="gross-loss-container">
-            <div class="gross-loss-label">Gross Loss</div>
-            <div class="input-group">
-                <span class="currency-prefix">R</span>
-                <input type="text" id="grossLossInput" placeholder="Enter amount..." oninput="updateGrossLoss(this)">
+        <div class="calculator-panel">
+            <div class="calc-header">Net Loss Calculator</div>
+            
+            <div class="calc-row">
+                <label>Total Sports Losses</label>
+                <div class="calc-input-group">
+                    <span class="calc-prefix">R</span>
+                    <input type="text" id="calcLosses" placeholder="0.00" oninput="formatAndCalculate(this)">
+                </div>
+            </div>
+            
+            <div class="calc-row">
+                <label>Total Sports Winnings</label>
+                <div class="calc-input-group">
+                    <span class="calc-prefix">R</span>
+                    <input type="text" id="calcWinnings" placeholder="0.00" oninput="formatAndCalculate(this)">
+                </div>
+            </div>
+
+            <div class="calc-row highlight">
+                <label>Gross Net Loss (Losses - Winnings)</label>
+                <span id="displayGrossNetLoss">R 0.00</span>
+            </div>
+
+            <div class="deductions-container" id="deductionsList">
+                <!-- Dynamic Bonus Deductions inserted here via JS -->
+            </div>
+            
+            <button class="btn-add-deduction" onclick="addDeductionRow()">+ Add Bonus Transfer Deduction</button>
+
+            <div class="calc-row total">
+                <label>Final Qualifying Net Loss</label>
+                <span id="displayFinalNetLoss">R 0.00</span>
             </div>
         </div>
 
@@ -426,6 +557,35 @@ I'll now review your activity on my side. This may take approximately 3-5 minute
 
         <div class="section-tag">Resolution Scripts</div>
 
+        <div class="spiel-card" onclick="copyText(this)" data-category="always" id="detailedBreakdownCard">
+            <div class="card-meta">
+                <span class="badge special">Detailed Calculation Breakdown</span>
+                <span class="copy-hint">Click to Copy</span>
+            </div>
+            <div class="spiel-body">Thank you for your continued patience while I reviewed your account and the Sports Cashback calculation for the period of <span class="dynamic-start date-hl">Date</span> to <span class="dynamic-end date-hl">Date</span>.
+
+Upon reviewing the transactions on your account, I can confirm that your total sports net loss for the qualifying period was {GROSS_NET_LOSS}. However, bonus transfers received during the same period are deducted when determining the final qualifying net loss.
+
+The calculation is as follows:
+{GROSS_NET_LOSS} Total sports net loss
+{DEDUCTIONS_LIST}= {FINAL_NET_LOSS} Final qualifying net loss
+
+{QUALIFICATION_STATEMENT}
+
+The applicable Sports Cashback requirements are:
+• Minimum net loss: R100
+• Minimum cashback: R10
+• Maximum cashback: R5,000 per week
+• Maximum withdrawable amount: R25,000
+
+For reference, if a customer has R3,500 in total sports losses, R1,500 in total sports winnings, and transfers R1,000 from their Non-Casino Bonus Wallet to their Real Wallet, the qualifying net loss would be:
+R3,500 − R1,500 − R1,000 = R1,000 qualifying net loss
+A qualifying net loss of R1,000 would fall within the 15% cashback tier, resulting in R150 being credited to the Non-Casino Bonus Wallet.
+
+For the complete promotion terms and conditions, please visit:
+https://easybet.co.za/page/cash-back</div>
+        </div>
+
         <div class="spiel-card" onclick="copyText(this)" data-category="qualified">
             <div class="card-meta">
                 <span class="badge" style="color: var(--warning);">Normal Resolution (Pre-Crediting)</span>
@@ -435,9 +595,7 @@ I'll now review your activity on my side. This may take approximately 3-5 minute
 
 I have reviewed all your qualifying sports bets placed between <span class="dynamic-start date-hl">Date</span> and <span class="dynamic-end date-hl">Date</span>.
 
-Based on my review, your gross loss for this period is <strong>RXXXXXX</strong>.
-
-Please note that any non-casino bonuses credited during the same period will be deducted to calculate your final net loss. As a result, I am unable to confirm your exact final eligibility at this exact moment.
+Based on my review, your final qualifying net loss for this period is <strong>RXXXX</strong>.
 
 The final calculation and cashback assessment are automatically completed by our Bonus Team every Thursday at 12:00 PM. 
 
@@ -445,7 +603,7 @@ For full promotion details, please visit:
 https://easybet.co.za/page/cash-back</div>
         </div>
         
-        <div class="spiel-card" onclick="copyText(this)" data-category="qualified">
+        <div class="spiel-card" onclick="copyText(this)" data-category="qualified-15">
             <div class="card-meta">
                 <span class="badge" style="color: var(--success);">Qualified - 15% Tier (R500+ Loss)</span>
                 <span class="copy-hint">Click to Copy</span>
@@ -454,7 +612,7 @@ https://easybet.co.za/page/cash-back</div>
 
 Upon checking your account, I can confirm that you qualified for the Sports Cashback Bonus! 
 
-Your net loss on sports bets from <span class="dynamic-start date-hl">Date</span> to <span class="dynamic-end date-hl">Date</span> was <strong>RXXXX</strong>. Because your net losses were R500 or more, you are eligible for the full <strong>15% Cash Back</strong> as a Bonus Bet.
+Your final qualifying net loss on sports bets from <span class="dynamic-start date-hl">Date</span> to <span class="dynamic-end date-hl">Date</span> was <strong>RXXXX</strong>. Because your net losses were R500 or more, you are eligible for the full <strong>15% Cash Back</strong> as a Bonus Bet.
 
 Please keep in mind that your Bonus Wallet cash can only be used on Sports (including multibets), and must be wagered once within 5 days before it can be moved to your Main Funds wallet.
 
@@ -462,16 +620,16 @@ For more information and terms, please visit:
 https://easybet.co.za/page/cash-back</div>
         </div>
 
-        <div class="spiel-card" onclick="copyText(this)" data-category="qualified">
+        <div class="spiel-card" onclick="copyText(this)" data-category="qualified-10">
             <div class="card-meta">
-                <span class="badge" style="color: var(--success);">Qualified - 10% Tier (R99-R499 Loss)</span>
+                <span class="badge" style="color: var(--success);">Qualified - 10% Tier (R100-R499 Loss)</span>
                 <span class="copy-hint">Click to Copy</span>
             </div>
             <div class="spiel-body">Thanks for patiently waiting.
 
 Upon checking your account, I can confirm that you qualified for the Sports Cashback Bonus! 
 
-Your net loss on sports bets from <span class="dynamic-start date-hl">Date</span> to <span class="dynamic-end date-hl">Date</span> was <strong>RXXXX</strong>. Because your net losses fell between R99 and R499, you are eligible for <strong>10% Cash Back</strong> as a Bonus Bet.
+Your final qualifying net loss on sports bets from <span class="dynamic-start date-hl">Date</span> to <span class="dynamic-end date-hl">Date</span> was <strong>RXXXX</strong>. Because your net losses fell between R100 and R499.99, you are eligible for <strong>10% Cash Back</strong> as a Bonus Bet.
 
 Please keep in mind that your Bonus Wallet cash can only be used on Sports (including multibets), and must be wagered once within 5 days before it can be moved to your Main Funds wallet.
 
@@ -481,14 +639,14 @@ https://easybet.co.za/page/cash-back</div>
 
         <div class="spiel-card" onclick="copyText(this)" data-category="not-qualified">
             <div class="card-meta">
-                <span class="badge" style="color: var(--error);">Not Qualified (< R99 Loss)</span>
+                <span class="badge" style="color: var(--error);">Not Qualified (< R100 Loss)</span>
                 <span class="copy-hint">Click to Copy</span>
             </div>
             <div class="spiel-body">Thank you so much for your patience while I checked this for you. I understand how disappointing it can be to miss out on a bonus, and I’m really sorry this wasn’t the outcome you were hoping for.
 
-After reviewing your account, I can confirm that you did not qualify for the Sports Cashback this time. Your net loss on sports bets for the period <span class="dynamic-start date-hl">Date</span> to <span class="dynamic-end date-hl">Date</span> was <strong>RXXXX</strong>. 
+After reviewing your account, I can confirm that you did not qualify for the Sports Cashback this time. Your final qualifying net loss for the period <span class="dynamic-start date-hl">Date</span> to <span class="dynamic-end date-hl">Date</span> was <strong>RXXXX</strong>. 
 
-As per the promotion’s terms and conditions, a minimum net loss of R99 during the promotional week is required to qualify for any cashback.
+As per the promotion’s terms and conditions, a minimum net loss of R100 during the promotional week is required to qualify for any cashback.
 
 Please don’t be discouraged though. This is a weekly promotion, so you’ll have another opportunity to qualify in the next cycle.
 
@@ -496,7 +654,7 @@ If you’d like to review the full promotion details, you can find them here:
 https://easybet.co.za/page/cash-back</div>
         </div>
 
-        <div class="spiel-card" onclick="copyText(this)" data-category="not-qualified">
+        <div class="spiel-card" onclick="copyText(this)" data-category="not-qualified-winnings">
             <div class="card-meta">
                 <span class="badge" style="color: var(--error);">Not Qualified (Winnings > Losses)</span>
                 <span class="copy-hint">Click to Copy</span>
@@ -513,7 +671,7 @@ https://easybet.co.za/page/cash-back</div>
 
         <div class="section-tag">Closing Scripts</div>
 
-        <div class="spiel-card" onclick="copyText(this)" data-category="not-qualified">
+        <div class="spiel-card" onclick="copyText(this)" data-category="not-qualified-close">
             <div class="card-meta">
                 <span class="badge" style="color: var(--error);">Not Qualified Closing</span>
                 <span class="copy-hint">Click to Copy</span>
@@ -535,7 +693,7 @@ Email: help@easybet.co.za
 Thank you for choosing Easybet. Have a great day ahead.</div>
         </div>
 
-        <div class="spiel-card" onclick="copyText(this)" data-category="qualified">
+        <div class="spiel-card" onclick="copyText(this)" data-category="qualified-close">
             <div class="card-meta">
                 <span class="badge" style="color: var(--success);">Qualified Closing</span>
                 <span class="copy-hint">Click to Copy</span>
@@ -563,13 +721,13 @@ Thank you for choosing Easybet. Have a great day ahead.</div>
 <div id="toast">Copied to Clipboard</div>
 
 <script>
+    let deductionCount = 0;
+
     function calculateDates() {
         const now = new Date();
         const currentDay = now.getDay(); 
         
         // Target the PREVIOUS week's Monday to Sunday
-        // If today is Monday(1), diff is -7 days to get to last Monday
-        // If today is Sunday(0), diff is -6 days to get to last Monday
         const daysToLastMonday = (currentDay === 0) ? -6 : 1 - currentDay;
         
         const thisWeekMonday = new Date(now);
@@ -602,7 +760,7 @@ Thank you for choosing Easybet. Have a great day ahead.</div>
         const q = document.getElementById('searchInput').value.toLowerCase();
         document.querySelectorAll('.spiel-card').forEach(card => {
             const matchesSearch = card.innerText.toLowerCase().includes(q);
-            const isEligible = card.dataset.eligible !== "false"; // Respect the Gross Loss logic
+            const isEligible = card.dataset.eligible !== "false"; 
             card.style.display = (matchesSearch && isEligible) ? "block" : "none";
         });
         
@@ -618,76 +776,163 @@ Thank you for choosing Easybet. Have a great day ahead.</div>
         });
     }
 
-    // --- New Gross Loss Functions ---
     
-    function initializeGrossLossData() {
-        // Save original HTML after dynamic dates are injected
+    function initializeOriginalData() {
         document.querySelectorAll('.spiel-card').forEach(card => {
             const body = card.querySelector('.spiel-body');
-            if(body) {
-                card.dataset.originalHtml = body.innerHTML;
-            }
-            // Set initial eligibility state to true for all
+            if(body) { card.dataset.originalHtml = body.innerHTML; }
             card.dataset.eligible = "true";
         });
     }
 
-    function updateGrossLoss(inputElement) {
-        // Remove non-numeric characters (except period) and prevent double periods
-        let val = inputElement.value.replace(/[^0-9.]/g, '');
-        val = val.replace(/(\..*)\./g, '$1');
-        inputElement.value = val;
-
-        updateQualificationVisibility(val);
-        replaceGrossLossText(val);
-        filterSpiels(); // Re-trigger visual filter
+    function addDeductionRow() {
+        deductionCount++;
+        const container = document.getElementById('deductionsList');
+        
+        const row = document.createElement('div');
+        row.className = 'deduction-row';
+        row.id = `deduction-${deductionCount}`;
+        
+        row.innerHTML = `
+            <input type="text" class="deduction-name-input" placeholder="e.g. 15% Sports Cashback bonus transfer">
+            <div class="calc-input-group" style="width: 150px;">
+                <span class="calc-prefix">R</span>
+                <input type="text" class="deduction-val-input" placeholder="0.00" oninput="formatAndCalculate(this)">
+            </div>
+            <button class="btn-remove" onclick="removeDeductionRow('${row.id}')">✕</button>
+        `;
+        
+        // Add event listener to the name input to also trigger calculate so string builds nicely
+        row.querySelector('.deduction-name-input').addEventListener('input', calculateAll);
+        
+        container.appendChild(row);
+        calculateAll();
     }
 
-    function updateQualificationVisibility(val) {
-        const cards = document.querySelectorAll('.spiel-card');
+    function removeDeductionRow(rowId) {
+        document.getElementById(rowId).remove();
+        calculateAll();
+    }
+
+    function formatAndCalculate(inputElement) {
+        // Clean numeric input
+        let val = inputElement.value.replace(/[^0-9.]/g, '');
+        val = val.replace(/(\..*)\./g, '$1'); // prevent double decimals
+        inputElement.value = val;
+        calculateAll();
+    }
+
+    function calculateAll() {
+        const valLoss = parseFloat(document.getElementById('calcLosses').value) || 0;
+        const valWin = parseFloat(document.getElementById('calcWinnings').value) || 0;
         
-        if (val === '') {
-            // Revert to all visible if field is empty
-            cards.forEach(card => card.dataset.eligible = "true");
-            return;
-        }
+        // Gross Net Loss
+        const grossLoss = valLoss - valWin;
+        document.getElementById('displayGrossNetLoss').innerText = `R ${grossLoss.toFixed(2)}`;
 
-        const numVal = parseFloat(val);
-        const isQualified = numVal >= 99;
+        // Handle Deductions String creation & Totaling
+        let totalDeductions = 0;
+        let deductionsString = "";
 
-        cards.forEach(card => {
-            const cat = card.dataset.category;
-            if (cat === 'always') {
-                card.dataset.eligible = "true";
-            } else if (cat === 'qualified') {
-                card.dataset.eligible = isQualified ? "true" : "false";
-            } else if (cat === 'not-qualified') {
-                card.dataset.eligible = !isQualified ? "true" : "false";
+        document.querySelectorAll('.deduction-row').forEach(row => {
+            const name = row.querySelector('.deduction-name-input').value || "Bonus transfer";
+            const amtStr = row.querySelector('.deduction-val-input').value;
+            const amt = parseFloat(amtStr) || 0;
+            
+            if(amtStr !== "") {
+                totalDeductions += amt;
+                deductionsString += `− R${amt.toFixed(2)} ${name}\n`;
             }
         });
+
+        // Final Qualifying Net Loss
+        const finalNet = grossLoss - totalDeductions;
+        document.getElementById('displayFinalNetLoss').innerText = `R ${finalNet.toFixed(2)}`;
+
+        // Determine states based on final calculation
+        updateUIBasedOnCalculation(grossLoss, finalNet, valLoss, valWin, deductionsString);
     }
 
-    function replaceGrossLossText(val) {
+    
+    function updateUIBasedOnCalculation(grossLoss, finalNet, totalLosses, totalWinnings, deductionsString) {
+        const isInputsEmpty = (document.getElementById('calcLosses').value === '' && document.getElementById('calcWinnings').value === '');
+        
+        const isWinningsGreater = (totalWinnings > totalLosses);
+        const isQualified10 = finalNet >= 100 && finalNet < 500;
+        const isQualified15 = finalNet >= 500;
+        const isNotQualified = finalNet < 100 && !isWinningsGreater;
+
+        // Update Visibility rules for cards
+        document.querySelectorAll('.spiel-card').forEach(card => {
+            if (isInputsEmpty) { card.dataset.eligible = "true"; return; }
+            
+            const cat = card.dataset.category;
+            card.dataset.eligible = "false"; // default hide
+            
+            if (cat === 'always') card.dataset.eligible = "true";
+            
+            // Standard Qualified Catch-All (Pre-crediting)
+            if (cat === 'qualified' && finalNet >= 100) card.dataset.eligible = "true";
+            
+            // Specific Tiers
+            if (cat === 'qualified-10' && isQualified10) card.dataset.eligible = "true";
+            if (cat === 'qualified-15' && isQualified15) card.dataset.eligible = "true";
+            
+            // Not Qualified scenarios
+            if (cat === 'not-qualified' && isNotQualified) card.dataset.eligible = "true";
+            if (cat === 'not-qualified-winnings' && isWinningsGreater) card.dataset.eligible = "true";
+            
+            // Closing Scripts
+            if (cat === 'not-qualified-close' && finalNet < 100) card.dataset.eligible = "true";
+            if (cat === 'qualified-close' && finalNet >= 100) card.dataset.eligible = "true";
+        });
+
+        // Generate Replacement texts
+        let finalStr = finalNet.toFixed(2);
+        let grossStr = grossLoss.toFixed(2);
+
+        let qualStatement = "";
+        if (finalNet < 100) {
+            qualStatement = `The minimum qualifying net loss for the Sports Cashback promotion is R100. As your final qualifying net loss was R${finalStr}, this amount falls below the required minimum. Therefore, you did not qualify for the 15% Sports Cashback bonus for this qualifying period.`;
+        } else if (finalNet >= 100 && finalNet < 500) {
+            qualStatement = `As your final qualifying net loss was R${finalStr}, you fall into the 10% tier! Therefore, you qualified for a 10% Sports Cashback bonus for this qualifying period.`;
+        } else {
+            qualStatement = `As your final qualifying net loss was R${finalStr}, you fall into the 15% tier! Therefore, you qualified for the maximum 15% Sports Cashback bonus for this qualifying period.`;
+        }
+
+        // Apply Replacements
         document.querySelectorAll('.spiel-card').forEach(card => {
             const body = card.querySelector('.spiel-body');
             if (!body || !card.dataset.originalHtml) return;
 
-            if (val === '') {
-                // Restore original placeholders and dates
-                body.innerHTML = card.dataset.originalHtml;
+            if (isInputsEmpty) {
+                body.innerHTML = card.dataset.originalHtml; // Restore original if empty
             } else {
-                // Perform dynamic replacement for all exact RXXXX combinations
-                let newHtml = card.dataset.originalHtml
-                    .replace(/RXXXXXX/g, val)
-                    .replace(/RXXXX/g, val);
+                let newHtml = card.dataset.originalHtml;
+                
+                // For standard spiels using RXXXX (Inject FINAL net loss)
+                newHtml = newHtml.replace(/RXXXX/g, finalStr);
+                
+                // For the Detailed Breakdown Spiel specifically
+                if (card.id === 'detailedBreakdownCard') {
+                    newHtml = newHtml.replace('{GROSS_NET_LOSS}', `R${grossStr}`);
+                    newHtml = newHtml.replace('{GROSS_NET_LOSS}', `R${grossStr}`); // Replace second instance
+                    newHtml = newHtml.replace('{DEDUCTIONS_LIST}', deductionsString ? deductionsString : "");
+                    newHtml = newHtml.replace('{FINAL_NET_LOSS}', `R${finalStr}`);
+                    newHtml = newHtml.replace('{QUALIFICATION_STATEMENT}', qualStatement);
+                }
+                
                 body.innerHTML = newHtml;
             }
         });
+
+        filterSpiels(); // Visually update the UI based on datset.eligible
     }
 
+    // Startup
     window.onload = function() {
         calculateDates();
-        initializeGrossLossData();
+        initializeOriginalData();
     };
 </script>
 

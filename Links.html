@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,14 +13,16 @@
 :root{
   --sw:min(320px,85vw);
   --ink:#eef4f1; --mute:#93a69d; --line:rgba(255,255,255,.09);
-  --glass:rgba(11,17,15,.58); --accent:#a8d8bd; --star:#e8c877;
+  --glass:rgba(14,14,16,.55); --accent:#a8d8bd; --star:#e8c877;
   --ease:cubic-bezier(.32,.72,0,1);
+  --io:cubic-bezier(.65,0,.35,1);  /* ease-in-out for the sidebar */
+  --dur:.65s;
 }
 *{box-sizing:border-box;margin:0}
 html,body{height:100%}
 body{
   font-family:"Source Sans 3","Segoe UI","SF Pro Text",Roboto,"Helvetica Neue",Arial,sans-serif;
-  color:var(--ink);background:#0a100e;overflow:hidden;-webkit-font-smoothing:antialiased;
+  color:var(--ink);background:#0b0b0d;overflow:hidden;-webkit-font-smoothing:antialiased;
   text-rendering:optimizeLegibility;font-kerning:normal;
 }
 button{font:inherit;color:inherit}
@@ -27,13 +30,14 @@ button{font:inherit;color:inherit}
 
 /* ---------- Background ---------- */
 .bg{
-  position:fixed;inset:0;z-index:-2;background:#0a100e
-    url("https://images.unsplash.com/photo-1789011310705-a6ebc5d3ebb5?auto=format&fit=crop&w=2200&q=80");
+  position:fixed;inset:0;z-index:-2;background:#0b0b0d
+    url("https://images.unsplash.com/photo-1789011310705-a6ebc5d3ebb5");
   background-size:cover;background-position:center;
 }
 .veil{
   position:fixed;inset:0;z-index:-1;
-  background:radial-gradient(ellipse at 50% 45%,rgba(6,10,9,.40),rgba(6,10,9,.85) 95%),rgba(6,10,9,.35);
+  /* neutral black only: no colour tint, original photo colours preserved */
+  background:radial-gradient(ellipse at 50% 45%,rgba(0,0,0,.12),rgba(0,0,0,.50) 100%),rgba(0,0,0,.26);
 }
 
 /* ---------- Main title ---------- */
@@ -42,9 +46,17 @@ main{height:100dvh;display:grid;place-items:center;padding:24px}
 h1{
   max-width:18ch;text-align:center;text-wrap:balance;
   font-size:clamp(2.25rem,5.8vw,4.25rem);font-weight:600;letter-spacing:-.025em;line-height:1.08;
-  text-shadow:0 2px 30px rgba(0,0,0,.45);animation:rise .9s var(--ease) both;
+  text-shadow:0 2px 30px rgba(0,0,0,.45);
 }
-@keyframes rise{from{opacity:0;transform:translateY(10px)}}
+/* Typewriter: the not-yet-typed remainder stays in the layout (invisible) so the title never jumps or re-wraps */
+.rest{color:transparent;text-shadow:none;user-select:none}
+.caret{display:inline-block;width:0;position:relative}
+.caret::after{
+  content:"";position:absolute;left:2px;bottom:.12em;width:.06em;min-width:2px;height:.85em;
+  background:var(--ink);border-radius:2px;opacity:0;transition:opacity .5s ease;
+}
+h1.typing .caret::after{opacity:.9;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:.15}}
 
 /* ---------- Sidebar ---------- */
 .side{
@@ -53,21 +65,28 @@ h1{
   background:var(--glass);backdrop-filter:blur(26px) saturate(140%);-webkit-backdrop-filter:blur(26px) saturate(140%);
   border:1px solid var(--line);border-left:0;border-radius:0 22px 22px 0;
   box-shadow:0 20px 60px rgba(0,0,0,.35);
-  transform:translateX(-105%);visibility:hidden;
-  transition:transform .5s var(--ease),visibility 0s .5s;
+  opacity:0;visibility:hidden;transform:translate3d(-100%,0,0);will-change:transform,opacity;
+  transition:transform var(--dur) var(--io),opacity var(--dur) var(--io),visibility 0s linear var(--dur);
 }
-body.open .side{transform:none;visibility:visible;transition:transform .5s var(--ease),visibility 0s}
+body.open .side{
+  opacity:1;visibility:visible;transform:translate3d(0,0,0);
+  transition:transform var(--dur) var(--io),opacity var(--dur) var(--io),visibility 0s;
+}
+/* panel contents fade in just after the panel starts moving, and out first when closing */
+.side>*{opacity:0;transition:opacity .3s ease}
+body.open .side>*{opacity:1;transition:opacity .45s ease .2s}
 
+/* The arrow tab uses the exact same transform + curve, so it stays attached to the panel edge */
 .tab{
-  position:fixed;z-index:30;top:50%;left:0;transform:translateY(-50%);
+  position:fixed;z-index:30;top:50%;left:0;transform:translate3d(0,-50%,0);will-change:transform;
   width:28px;height:64px;display:grid;place-items:center;cursor:pointer;
   background:var(--glass);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
   border:1px solid var(--line);border-left:0;border-radius:0 14px 14px 0;
-  transition:left .5s var(--ease),background .2s;
+  transition:transform var(--dur) var(--io),background .2s;
 }
 .tab:hover{background:rgba(255,255,255,.12)}
-.tab svg{width:16px;height:16px;transition:transform .5s var(--ease)}
-body.open .tab{left:var(--sw)}
+.tab svg{width:16px;height:16px;transition:transform var(--dur) var(--io)}
+body.open .tab{transform:translate3d(var(--sw),-50%,0)}
 body.open .tab svg{transform:rotate(180deg)}
 
 /* Search + sort */
@@ -157,7 +176,7 @@ ul{list-style:none;padding:0;display:grid;gap:2px}
 .toast.show{opacity:1;transform:translate(-50%,0)}
 
 @media(max-width:720px){input{font-size:16px}}
-@media(prefers-reduced-motion:reduce){*,*::before,*::after{transition-duration:.01ms!important;animation-duration:.01ms!important}}
+@media(prefers-reduced-motion:reduce){.star.pop,h1.typing .caret::after{animation:none}}
 </style>
 </head>
 <body>
@@ -180,6 +199,42 @@ ul{list-style:none;padding:0;display:grid;gap:2px}
 </aside>
 
 <main><h1>Easybet Promotions Link by Ray T.</h1></main>
+<script>
+/* ---------- Title typewriter ----------
+   Types the title immediately on load, then again every 20 seconds.
+   Time-based (requestAnimationFrame), so it stays reliable even if the tab is busy.
+   The untyped remainder stays in the layout (invisible) so the title never shifts. */
+(function () {
+  var h1 = document.querySelector("h1");
+  var text = h1.textContent.trim();
+  var chars = Array.from(text);
+  h1.setAttribute("aria-label", text);
+  h1.innerHTML = '<span aria-hidden="true"><span class="typed"></span><i class="caret"></i><span class="rest"></span></span>';
+  var typed = h1.querySelector(".typed"), rest = h1.querySelector(".rest");
+  var run = 0;
+
+  function show(n) { typed.textContent = chars.slice(0, n).join(""); rest.textContent = chars.slice(n).join(""); }
+
+  function type() {
+    var id = ++run, t = 40, times = [], shown = 0;
+    chars.forEach(function (c) { t += 45 + Math.random() * 45 + (c === " " ? 60 : 0); times.push(t); }); // natural rhythm
+    var t0 = performance.now();
+    h1.classList.add("typing");
+    show(0);
+    (function frame() {
+      if (id !== run) return;                                   // a newer cycle took over
+      var el = performance.now() - t0, n = shown;
+      while (n < chars.length && times[n] <= el) n++;
+      if (n !== shown) { shown = n; show(n); }
+      if (shown < chars.length) requestAnimationFrame(frame);
+      else setTimeout(function () { if (id === run) h1.classList.remove("typing"); }, 900);
+    })();
+  }
+
+  type();                          // starts immediately on load
+  setInterval(type, 20000);        // repeats every 20 seconds
+})();
+</script>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>

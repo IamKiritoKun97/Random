@@ -1,785 +1,423 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Easybet Promotions Link</title>
-    <style>
-        :root {
-            --glass-bg: rgba(15, 15, 20, 0.55);
-            --glass-border: rgba(255, 255, 255, 0.08);
-            --glass-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
-            --text-primary: rgba(255, 255, 255, 0.95);
-            --text-secondary: rgba(255, 255, 255, 0.6);
-            --accent: rgba(255, 255, 255, 0.15);
-            --accent-hover: rgba(255, 255, 255, 0.25);
-            --star-active: #ffd700;
-            --sidebar-width: 340px;
-            --font-stack: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-        }
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Easybet Promotions Link Manager</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ---------- Tokens ---------- */
+:root{
+  --sw:min(320px,85vw);
+  --ink:#eef4f1; --mute:#93a69d; --line:rgba(255,255,255,.09);
+  --glass:rgba(11,17,15,.58); --accent:#a8d8bd; --star:#e8c877;
+  --ease:cubic-bezier(.32,.72,0,1);
+}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%}
+body{
+  font-family:"Source Sans 3","Segoe UI","SF Pro Text",Roboto,"Helvetica Neue",Arial,sans-serif;
+  color:var(--ink);background:#0a100e;overflow:hidden;-webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;font-kerning:normal;
+}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+/* ---------- Background ---------- */
+.bg{
+  position:fixed;inset:0;z-index:-2;background:#0a100e
+    url("https://images.unsplash.com/photo-1789011310705-a6ebc5d3ebb5?auto=format&fit=crop&w=2200&q=80");
+  background-size:cover;background-position:center;
+}
+.veil{
+  position:fixed;inset:0;z-index:-1;
+  background:radial-gradient(ellipse at 50% 45%,rgba(6,10,9,.40),rgba(6,10,9,.85) 95%),rgba(6,10,9,.35);
+}
 
-        body {
-            font-family: var(--font-stack);
-            background-color: #0a0a0a;
-            color: var(--text-primary);
-            overflow-x: hidden;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+/* ---------- Main title ---------- */
+/* Main content never moves: the sidebar overlays it */
+main{height:100dvh;display:grid;place-items:center;padding:24px}
+h1{
+  max-width:18ch;text-align:center;text-wrap:balance;
+  font-size:clamp(2.25rem,5.8vw,4.25rem);font-weight:600;letter-spacing:-.025em;line-height:1.08;
+  text-shadow:0 2px 30px rgba(0,0,0,.45);animation:rise .9s var(--ease) both;
+}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}}
 
-        .background-image {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            /* Atmospheric dark nature/mountain landscape from Unsplash */
-            background-image: url('https://images.unsplash.com/photo-1478760329108-5c3ed9d495a0?auto=format&fit=crop&w=2574&q=80');
-            background-size: cover;
-            background-position: center;
-            z-index: -2;
-        }
+/* ---------- Sidebar ---------- */
+.side{
+  position:fixed;z-index:20;top:12px;bottom:12px;left:0;width:var(--sw);
+  display:flex;flex-direction:column;
+  background:var(--glass);backdrop-filter:blur(26px) saturate(140%);-webkit-backdrop-filter:blur(26px) saturate(140%);
+  border:1px solid var(--line);border-left:0;border-radius:0 22px 22px 0;
+  box-shadow:0 20px 60px rgba(0,0,0,.35);
+  transform:translateX(-105%);visibility:hidden;
+  transition:transform .5s var(--ease),visibility 0s .5s;
+}
+body.open .side{transform:none;visibility:visible;transition:transform .5s var(--ease),visibility 0s}
 
-        .background-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: linear-gradient(135deg, rgba(5,5,10,0.7) 0%, rgba(10,10,15,0.85) 100%);
-            z-index: -1;
-        }
+.tab{
+  position:fixed;z-index:30;top:50%;left:0;transform:translateY(-50%);
+  width:28px;height:64px;display:grid;place-items:center;cursor:pointer;
+  background:var(--glass);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border:1px solid var(--line);border-left:0;border-radius:0 14px 14px 0;
+  transition:left .5s var(--ease),background .2s;
+}
+.tab:hover{background:rgba(255,255,255,.12)}
+.tab svg{width:16px;height:16px;transition:transform .5s var(--ease)}
+body.open .tab{left:var(--sw)}
+body.open .tab svg{transform:rotate(180deg)}
 
-        .main-title {
-            font-size: clamp(1.5rem, 4vw, 2.5rem);
-            font-weight: 600;
-            letter-spacing: -0.02em;
-            text-align: center;
-            text-shadow: 0 4px 20px rgba(0,0,0,0.5);
-            z-index: 1;
-            transition: opacity 0.3s ease;
-            padding: 0 20px;
-        }
+/* Search + sort */
+.tools{display:flex;gap:8px;padding:18px 16px 12px}
+.search{position:relative;flex:1;min-width:0}
+.search svg{position:absolute;left:12px;top:50%;width:16px;height:16px;transform:translateY(-50%);color:var(--mute);pointer-events:none}
+input{
+  width:100%;height:40px;padding:0 12px 0 36px;border-radius:12px;
+  border:1px solid var(--line);background:rgba(255,255,255,.05);color:var(--ink);font:inherit;font-size:1rem;
+  transition:border-color .2s,background .2s;
+}
+input::placeholder{color:var(--mute)}
+input:focus{border-color:rgba(168,216,189,.4);background:rgba(255,255,255,.08);outline:none}
+input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.sort{
+  height:40px;padding:0 12px;border-radius:12px;cursor:pointer;font-size:.9rem;font-weight:600;color:var(--mute);
+  border:1px solid var(--line);background:rgba(255,255,255,.05);transition:all .2s;
+}
+.sort[aria-pressed="true"]{color:var(--accent);border-color:rgba(168,216,189,.35);background:rgba(168,216,189,.08)}
 
-        .sidebar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: var(--sidebar-width);
-            height: 100vh;
-            background: var(--glass-bg);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
-            border-right: 1px solid var(--glass-border);
-            box-shadow: var(--glass-shadow);
-            transform: translateX(-100%);
-            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-            z-index: 100;
-            display: flex;
-            flex-direction: column;
-        }
+/* List */
+.list{flex:1;overflow-y:auto;padding:0 10px 14px;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.18) transparent}
+ul{list-style:none;padding:0;display:grid;gap:2px}
+.lbl{font-size:.8rem;letter-spacing:.03em;color:var(--mute);padding:14px 10px 6px}
+.empty{font-size:.95rem;color:var(--mute);text-align:center;padding:28px 0}
 
-        .sidebar.open {
-            transform: translateX(0);
-        }
+.row{
+  position:relative;display:flex;align-items:flex-start;gap:2px;padding:8px 6px 8px 2px;
+  border:1px solid transparent;border-radius:12px;
+  transition:background .2s,border-color .2s,transform .2s,opacity .2s;
+}
+.row:hover,.row:focus-within{background:rgba(255,255,255,.06);border-color:var(--line);transform:translateY(-1px)}
+.star{
+  flex:none;width:32px;height:32px;display:grid;place-items:center;border:0;border-radius:8px;
+  background:none;color:var(--mute);font-size:17px;line-height:1;cursor:pointer;transition:color .2s;
+}
+.star:hover{color:var(--ink)}
+.star[aria-pressed="true"]{color:var(--star)}
+.star.pop{animation:pop .3s var(--ease)}
+@keyframes pop{40%{transform:scale(1.35)}}
 
-        .sidebar-toggle {
-            position: absolute;
-            top: 50%;
-            right: -36px;
-            transform: translateY(-50%);
-            width: 36px;
-            height: 64px;
-            background: var(--glass-bg);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
-            border: 1px solid var(--glass-border);
-            border-left: none;
-            border-radius: 0 12px 12px 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            color: var(--text-primary);
-            box-shadow: 10px 0 20px rgba(0,0,0,0.2);
-            transition: background 0.2s ease, right 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-            outline: none;
-        }
+.body{flex:1;min-width:0;padding-top:5px}
+.name{
+  display:block;color:var(--ink);text-decoration:none;font-size:1.02rem;font-weight:500;line-height:1.35;overflow-wrap:anywhere;
+}
+.name:hover{text-decoration:underline;text-decoration-color:rgba(255,255,255,.4);text-underline-offset:3px}
 
-        .sidebar-toggle:hover {
-            background: var(--accent);
-        }
+/* Hover actions: Copy Name / Copy Link */
+.actions{
+  display:grid;grid-template-rows:0fr;opacity:0;transform:translateY(-3px);
+  transition:grid-template-rows .25s var(--ease),opacity .2s,transform .25s var(--ease);
+}
+.actions>div{overflow:hidden;min-height:0;display:flex;gap:6px;padding:0 2px}
+.row:hover .actions,.row:focus-within .actions{grid-template-rows:1fr;opacity:1;transform:none}
+.actions button{
+  margin:8px 0 3px;height:26px;padding:0 10px;border-radius:8px;cursor:pointer;font-size:.82rem;font-weight:600;
+  border:1px solid var(--line);background:rgba(255,255,255,.06);transition:background .2s,color .2s,border-color .2s;
+}
+.actions button:hover{background:rgba(255,255,255,.13)}
+.actions button.ok{color:var(--accent);border-color:rgba(168,216,189,.4)}
+@media(hover:none){ /* touch: keep actions visible */
+  .actions{grid-template-rows:1fr;opacity:1;transform:none}
+  .row:hover{transform:none}
+}
 
-        .sidebar-toggle svg {
-            width: 20px;
-            height: 20px;
-            transition: transform 0.4s ease;
-        }
+/* Drag handle + states */
+.grip{
+  flex:none;width:24px;height:32px;display:grid;place-items:center;border:0;background:none;
+  color:var(--mute);opacity:.55;cursor:grab;touch-action:none;transition:opacity .2s;
+}
+.row:hover .grip,.grip:focus-visible{opacity:1}
+.row.dragging{opacity:.4}
+.row.drop-before::before,.row.drop-after::after{
+  content:"";position:absolute;left:8px;right:8px;height:2px;border-radius:2px;background:var(--accent);
+}
+.row.drop-before::before{top:-2px}
+.row.drop-after::after{bottom:-2px}
 
-        .sidebar.open .sidebar-toggle svg {
-            transform: rotate(180deg);
-        }
+/* Copy confirmation */
+.toast{
+  position:fixed;z-index:40;left:50%;bottom:28px;transform:translate(-50%,8px);
+  padding:10px 18px;border-radius:999px;font-size:.95rem;font-weight:500;
+  background:var(--glass);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid var(--line);
+  box-shadow:0 10px 30px rgba(0,0,0,.3);opacity:0;pointer-events:none;
+  transition:opacity .25s,transform .3s var(--ease);
+}
+.toast.show{opacity:1;transform:translate(-50%,0)}
 
-        .sidebar-header {
-            padding: 24px 24px 16px;
-            border-bottom: 1px solid var(--glass-border);
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .search-container {
-            position: relative;
-            display: flex;
-            align-items: center;
-        }
-
-        .search-icon {
-            position: absolute;
-            left: 12px;
-            width: 16px;
-            height: 16px;
-            color: var(--text-secondary);
-            pointer-events: none;
-        }
-
-        .search-input {
-            width: 100%;
-            background: rgba(0, 0, 0, 0.2);
-            border: 1px solid var(--glass-border);
-            border-radius: 8px;
-            padding: 10px 10px 10px 36px;
-            color: var(--text-primary);
-            font-size: 0.9rem;
-            font-family: inherit;
-            transition: border-color 0.2s ease, background 0.2s ease;
-            outline: none;
-        }
-
-        .search-input:focus {
-            border-color: rgba(255, 255, 255, 0.3);
-            background: rgba(0, 0, 0, 0.3);
-        }
-
-        .search-input::placeholder {
-            color: var(--text-secondary);
-        }
-
-        .controls-row {
-            display: flex;
-            justify-content: flex-end;
-        }
-
-        .sort-btn {
-            background: transparent;
-            border: 1px solid var(--glass-border);
-            color: var(--text-secondary);
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-size: 0.75rem;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            font-weight: 500;
-        }
-
-        .sort-btn.active {
-            background: var(--text-primary);
-            color: #000;
-            border-color: var(--text-primary);
-        }
-
-        .sidebar-content {
-            flex: 1;
-            overflow-y: auto;
-            padding: 12px;
-        }
-
-        /* Custom scrollbar */
-        .sidebar-content::-webkit-scrollbar {
-            width: 6px;
-        }
-        .sidebar-content::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        .sidebar-content::-webkit-scrollbar-thumb {
-            background: var(--glass-border);
-            border-radius: 10px;
-        }
-
-        .section-label {
-            font-size: 0.65rem;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            color: var(--text-secondary);
-            margin: 16px 12px 8px;
-            font-weight: 600;
-        }
-
-        .promo-item {
-            display: flex;
-            align-items: center;
-            padding: 12px;
-            margin-bottom: 4px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background 0.2s ease, transform 0.2s ease;
-            position: relative;
-            border: 1px solid transparent;
-            user-select: none;
-        }
-
-        .promo-item:hover {
-            background: var(--accent);
-            border-color: var(--glass-border);
-        }
-
-        .promo-item.draggable {
-            cursor: grab;
-        }
-        
-        .promo-item.draggable:active {
-            cursor: grabbing;
-        }
-
-        .promo-item.dragging {
-            opacity: 0.4;
-            transform: scale(0.98);
-        }
-
-        .promo-item.drag-over {
-            border-top: 2px solid var(--text-primary);
-            border-top-left-radius: 0;
-            border-top-right-radius: 0;
-        }
-
-        .star-btn {
-            background: none;
-            border: none;
-            color: var(--text-secondary);
-            font-size: 1.2rem;
-            line-height: 1;
-            margin-right: 12px;
-            cursor: pointer;
-            transition: color 0.2s ease, transform 0.2s ease;
-            display: flex;
-            align-items: center;
-            padding: 4px;
-            outline: none;
-        }
-
-        .star-btn:hover {
-            transform: scale(1.1);
-        }
-
-        .star-btn.starred {
-            color: var(--star-active);
-        }
-
-        .promo-name {
-            flex: 1;
-            font-size: 0.85rem;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            pointer-events: none;
-            font-weight: 500;
-        }
-
-        .promo-actions {
-            display: flex;
-            gap: 6px;
-            opacity: 0;
-            transform: translateX(10px);
-            transition: opacity 0.2s ease, transform 0.2s ease;
-            position: absolute;
-            right: 12px;
-            background: rgba(20, 20, 25, 0.9);
-            padding: 4px;
-            border-radius: 6px;
-            border: 1px solid var(--glass-border);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-        }
-
-        .promo-item:hover .promo-actions {
-            opacity: 1;
-            transform: translateX(0);
-        }
-
-        .action-btn {
-            background: var(--accent);
-            border: none;
-            color: var(--text-primary);
-            font-size: 0.65rem;
-            padding: 4px 8px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-family: inherit;
-            transition: background 0.2s ease;
-            white-space: nowrap;
-        }
-
-        .action-btn:hover {
-            background: var(--accent-hover);
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 30px 20px;
-            color: var(--text-secondary);
-            font-size: 0.85rem;
-        }
-
-        .toast {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%) translateY(20px);
-            background: rgba(255, 255, 255, 0.95);
-            color: #000;
-            padding: 10px 20px;
-            border-radius: 30px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-            z-index: 1000;
-        }
-
-        .toast.visible {
-            opacity: 1;
-            transform: translateX(-50%) translateY(0);
-        }
-
-        @media (max-width: 768px) {
-            :root {
-                --sidebar-width: 85vw;
-            }
-            
-            /* Make actions more accessible on mobile */
-            .promo-actions {
-                opacity: 1;
-                transform: translateX(0);
-                position: relative;
-                right: auto;
-                background: transparent;
-                border: none;
-                padding: 0;
-                margin-left: 10px;
-            }
-
-            .promo-item {
-                flex-wrap: wrap;
-                padding: 12px 12px 16px;
-            }
-
-            .promo-actions {
-                width: 100%;
-                justify-content: flex-start;
-                margin-top: 10px;
-                margin-left: 36px; /* align with text */
-            }
-
-            .action-btn {
-                padding: 6px 12px;
-                background: rgba(255,255,255,0.1);
-            }
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-            * {
-                transition-duration: 0.01ms !important;
-                animation-duration: 0.01ms !important;
-                animation-iteration-count: 1 !important;
-            }
-        }
-    </style>
+@media(max-width:720px){input{font-size:16px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{transition-duration:.01ms!important;animation-duration:.01ms!important}}
+</style>
 </head>
 <body>
+<div class="bg" aria-hidden="true"></div>
+<div class="veil" aria-hidden="true"></div>
 
-    <div class="background-image"></div>
-    <div class="background-overlay"></div>
+<button class="tab" id="tab" type="button" aria-controls="side" aria-expanded="false" aria-label="Open promotions sidebar">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+</button>
 
-    <main>
-        <h1 class="main-title">Easybet Promotions Link by Ray T.</h1>
-    </main>
+<aside class="side" id="side" aria-label="Promotions">
+  <div class="tools">
+    <label class="search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+      <input id="q" type="search" placeholder="Search promotions..." autocomplete="off" aria-label="Search promotions">
+    </label>
+    <button class="sort" id="sort" type="button" aria-pressed="true" aria-label="Sort A to Z">A–Z</button>
+  </div>
+  <div class="list" id="list"></div>
+</aside>
 
-    <aside id="sidebar" class="sidebar">
-        <button id="sidebar-toggle" class="sidebar-toggle" aria-label="Toggle Sidebar">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="9 18 15 12 9 6"></polyline>
-            </svg>
-        </button>
+<main><h1>Easybet Promotions Link by Ray T.</h1></main>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-        <div class="sidebar-header">
-            <div class="search-container">
-                <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="11" cy="11" r="8"></circle>
-                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                </svg>
-                <input type="text" id="search-input" class="search-input" placeholder="Search promotions..." aria-label="Search promotions">
-            </div>
-            <div class="controls-row">
-                <button id="sort-btn" class="sort-btn" aria-label="Toggle Alphabetical Sort">A-Z</button>
-            </div>
-        </div>
+<script>
+/* ---------- Data (single source of truth) ---------- */
+const promotions = [
+  { id: "p1", name: "150% First Deposit Match", url: "https://easybet.co.za/page/deposit-match" },
+  { id: "p2", name: "Easybet Game Night!", url: "https://easybet.co.za/page/easybet-game-night" },
+  { id: "p3", name: "Voucher Giveaway", url: "https://easybet.co.za/page/voucher-giveaway" },
+  { id: "p4", name: "EasyUP Early Payout!", url: "https://easybet.co.za/page/easyup-early-payout" },
+  { id: "p5", name: "Multibet Win Boost", url: "https://easybet.co.za/page/multibet-bonus" },
+  { id: "p6", name: "Voucher Drop", url: "https://easybet.co.za/page/voucher-drop" },
+  { id: "p7", name: "Guaranteed Saturday Bonus!", url: "https://easybet.co.za/page/guaranteed-saturday-bonus" },
+  { id: "p8", name: "Engage and Earn!", url: "https://easybet.co.za/page/easybet-socials" },
+  { id: "p9", name: "Read to win the great voucher hunt begins/", url: "https://playbook.easybet.co.za/read-to-win-the-great-voucher-hunt-begins/" },
+  { id: "p10", name: "Bet Builder Is Here!", url: "https://easybet.co.za/page/bet-builder" },
+  { id: "p11", name: "15% Weekly Sports Cashback", url: "https://easybet.co.za/page/cash-back" },
+  { id: "p12", name: "R500 First Bet Match", url: "https://easybet.co.za/page/r500-first-bet-match" },
+  { id: "p13", name: "Early Cash Out", url: "https://easybet.co.za/page/early-cash-out" },
+  { id: "p14", name: "Losing Leg 10X Bet Insurance", url: "https://easybet.co.za/page/losing-leg" },
+  { id: "p15", name: "Refer a friend bonus", url: "https://easybet.co.za/page/refer-friend-200" },
+  { id: "p16", name: "R50 Sign Up Bonus", url: "https://easybet.co.za/page/r50-sign-up-bonus" },
+  { id: "p17", name: "Download our data free app", url: "https://easybet.freeurl.co.za/" },
+  { id: "p18", name: "Birthday Bonus Bet", url: "https://easybet.co.za/page/bdaybonusbet" },
+  { id: "p19", name: "Free Bet Frenzy", url: "https://easybet.co.za/page/free-bet-frenzy" },
+  { id: "p20", name: "15% Weekly Casino Cashback", url: "https://easybet.co.za/page/15-weekly-casino-cashback" },
+  { id: "p21", name: "Your Casino Bonus", url: "https://easybet.co.za/page/your-casino-bonus" },
+  { id: "p22", name: "20% Sports Cash Back!", url: "https://easybet.co.za/page/20-sports-cash-back-exclusive" },
+  { id: "p23", name: "30% Casino Payday Boost", url: "https://easybet.co.za/page/30-casino-payday-boost-exclusive" },
+  { id: "p24", name: "20% Casino Payday Boost", url: "https://easybet.co.za/page/20-casino-payday-boost-exclusive" },
+  { id: "p25", name: "Sports Deposit Match", url: "https://easybet.co.za/page/sports-deposit-match-exclusive-ibex" },
+  { id: "p26", name: "Friday Casino Bonus in ADV", url: "https://easybet.co.za/page/your-casino-bonus-recharge" },
+  { id: "p27", name: "GMB50 Free spins", url: "https://easybet.co.za/page/100-free-spins-v2?btag=125365361" },
+  { id: "p28", name: "Aviator Tournament!", url: "https://easybet.co.za/page/aviator-tournament" },
+  { id: "p29", name: "26. Bonus Bets / Bonus Rounds", url: "https://easybet.co.za/page/terms-conditions/bonus-wallets" },
+  { id: "p30", name: "15% Lotto Cashback", url: "https://easybet.co.za/page/cash-back-lotto" },
+  { id: "p31", name: "4% Bet Code Bonus!", url: "https://easybet.co.za/page/copy-my-bet-bonus" },
+  { id: "p32", name: "25% Win Boost", url: "https://easybet.co.za/page/25-casino-bonus-wb" },
+  { id: "p33", name: "15% Win Boost", url: "https://easybet.co.za/page/15-casino-bonus-wb" },
+  { id: "p34", name: "R500 Casino Welcome Bonus", url: "https://easybet.co.za/page/r500-casino-welcome-bonus" },
+  { id: "p35", name: "20% Lotto Payday Reminder & Issuance: 2:00 PM, 4:00 PM, & Realtime", url: "https://easybet.co.za/page/lotto-payday-boost-20-ib" },
+  { id: "p36", name: "20% Sports Payday Reminder & Issuance: 2:00 PM, 4:00 PM, & Realtime", url: "https://easybet.co.za/page/sports-payday-boost-20-ib" },
+  { id: "p37", name: "20% Casino Payday Reminder & Issuance: 2:00 PM, 4:00 PM, & Realtime", url: "https://easybet.co.za/page/20-casino-payday-boost-exclusive" },
+  { id: "p38", name: "30% Casino Payday Reminder & Issuance: 2:00 PM, 4:00 PM, & Realtime", url: "https://easybet.co.za/page/30-casino-payday-boost-exclusive" },
+  { id: "p39", name: "55% Casino Payday Reminder & Issuance: 2:00 PM, 4:00 PM, & Realtime", url: "https://easybet.co.za/page/55-casino-payday-boost-exclusive" },
+  { id: "p40", name: "20% VIP Casino Payday Reminder & Issuance: 2:00 PM & 4:00 PM", url: "https://easybet.co.za/page/20-casino-payday-boost-vip" },
+  { id: "p41", name: "20% VIP Lotto Payday Reminder & Issuance: 2:00 PM & 4:00 PM", url: "https://easybet.co.za/page/lotto-payday-boost-20-ib-vip" },
+  { id: "p42", name: "20% VIP Sports Payday Reminder & Issuance: 2:00 PM & 4:00 PM", url: "https://easybet.co.za/page/sports-payday-boost-20-vip-ib" },
+  { id: "p43", name: "30% VIP Casino Payday Reminder & Issuance: 2:00 PM & 4:00 PM", url: "https://easybet.co.za/page/30-casino-payday-boost-vip" },
+  { id: "p44", name: "55% VIP Casino Payday Reminder & Issuance: 2:00 PM & 4:00 PM", url: "https://easybet.co.za/page/55-casino-payday-boost-vip" },
+  { id: "p45", name: "Fica verified promo 25 Qualifier", url: "https://easybet.co.za/page/fica-verified-promo-25-qualifier" },
+  { id: "p46", name: "Fica verified promo 25 Casino bonus Issuance", url: "https://easybet.co.za/page/fica-verified-promo-25-casino-bonus" },
+  { id: "p47", name: "Registration", url: "https://easybet.co.za/page/registration-queries/registration-account" },
+  { id: "p48", name: "Deposit turnover (7.11)", url: "https://easybet.co.za/page/terms-conditions/withdrawals" },
+  { id: "p49", name: "Initial withdrawal (7.15)", url: "https://easybet.co.za/page/terms-conditions/withdrawals" },
+  { id: "p50", name: "Deposit Limit, Account Deactivation/Deletion", url: "https://easybet.co.za/page/responsible-gambling-policy" },
+  { id: "p51", name: "Withdrawal Limit/ General terms for Bonus/Promo Cash", url: "https://easybet.co.za/page/limits-bonus-terms" },
+  { id: "p52", name: "Bonus Transfer", url: "https://easybet.co.za/page/bonus-queries/transfer-funds" },
+  { id: "p53", name: "Cancel withdrawal", url: "https://easybet.co.za/page/withdrawal-queries/withdrawal-cancel" },
+  { id: "p54", name: "Bet types (Single, Multibet, System bets)", url: "https://easybet.co.za/page/bet-types" },
+  { id: "p55", name: "How to Rebet", url: "https://easybet.co.za/page/sports-betting/sports-howtorebet" },
+  { id: "p56", name: "Bet cancellation policy (5.3)", url: "https://easybet.co.za/page/terms-conditions/placing-bets" },
+  { id: "p57", name: "Reset password", url: "https://easybet.co.za/page/account-queries/forgot-password" }
+];
 
-        <div id="sidebar-content" class="sidebar-content">
-            <!-- Dynamic Content Renders Here -->
-        </div>
-    </aside>
+/* ---------- State ---------- */
+const KEY = "easybetPromotionsState";
+const byId = new Map(promotions.map(p => [p.id, p]));
+const $ = id => document.getElementById(id);
+const [$list, $q, $sort, $tab, $toast, $side] = ["list", "q", "sort", "tab", "toast", "side"].map($);
+let starred = load();   // ordered array of starred ids (order = manual drag order)
+let sortAZ = true;
+let query = "";
 
-    <div id="toast" class="toast">Copied</div>
+function load() {
+  try {
+    const s = JSON.parse(localStorage.getItem(KEY));
+    if (Array.isArray(s && s.starred)) return [...new Set(s.starred.filter(id => byId.has(id)))];
+  } catch (e) {}
+  return [];
+}
+function save() { try { localStorage.setItem(KEY, JSON.stringify({ starred })); } catch (e) {} }
 
-    <script>
-        // Data Architecture
-        const rawData = [
-            { id: "p1", name: "150% First Deposit Match", url: "https://easybet.co.za/page/deposit-match" },
-            { id: "p2", name: "Easybet Game Night!", url: "https://easybet.co.za/page/easybet-game-night" },
-            { id: "p3", name: "Voucher Giveaway", url: "https://easybet.co.za/page/voucher-giveaway" },
-            { id: "p4", name: "EasyUP Early Payout!", url: "https://easybet.co.za/page/easyup-early-payout" },
-            { id: "p5", name: "Multibet Win Boost", url: "https://easybet.co.za/page/multibet-bonus" },
-            { id: "p6", name: "Voucher Drop", url: "https://easybet.co.za/page/voucher-drop" },
-            { id: "p7", name: "Guaranteed Saturday Bonus!", url: "https://easybet.co.za/page/guaranteed-saturday-bonus" },
-            { id: "p8", name: "Engage and Earn!", url: "https://easybet.co.za/page/easybet-socials" },
-            { id: "p9", name: "Read to win the great voucher hunt begins/", url: "https://playbook.easybet.co.za/read-to-win-the-great-voucher-hunt-begins/" },
-            { id: "p10", name: "Bet Builder Is Here!", url: "https://easybet.co.za/page/bet-builder" },
-            { id: "p11", name: "15% Weekly Sports Cashback", url: "https://easybet.co.za/page/cash-back" },
-            { id: "p12", name: "R500 First Bet Match", url: "https://easybet.co.za/page/r500-first-bet-match" },
-            { id: "p13", name: "Early Cash Out", url: "https://easybet.co.za/page/early-cash-out" },
-            { id: "p14", name: "Losing Leg 10X Bet Insurance", url: "https://easybet.co.za/page/losing-leg" },
-            { id: "p15", name: "Refer a friend bonus", url: "https://easybet.co.za/page/refer-friend-200" },
-            { id: "p16", name: "R50 Sign Up Bonus", url: "https://easybet.co.za/page/r50-sign-up-bonus" },
-            { id: "p17", name: "Download our data free app", url: "https://easybet.freeurl.co.za/" },
-            { id: "p18", name: "Birthday Bonus Bet", url: "https://easybet.co.za/page/bdaybonusbet" },
-            { id: "p19", name: "Free Bet Frenzy", url: "https://easybet.co.za/page/free-bet-frenzy" },
-            { id: "p20", name: "15% Weekly Casino Cashback", url: "https://easybet.co.za/page/15-weekly-casino-cashback" },
-            { id: "p21", name: "Your Casino Bonus", url: "https://easybet.co.za/page/your-casino-bonus" },
-            { id: "p22", name: "20% Sports Cash Back!", url: "https://easybet.co.za/page/20-sports-cash-back-exclusive" },
-            { id: "p23", name: "30% Casino Payday Boost", url: "https://easybet.co.za/page/30-casino-payday-boost-exclusive" },
-            { id: "p24", name: "20% Casino Payday Boost", url: "https://easybet.co.za/page/20-casino-payday-boost-exclusive" },
-            { id: "p25", name: "Sports Deposit Match", url: "https://easybet.co.za/page/sports-deposit-match-exclusive-ibex" },
-            { id: "p26", name: "Friday Casino Bonus in ADV", url: "https://easybet.co.za/page/your-casino-bonus-recharge" },
-            { id: "p27", name: "GMB50 Free spins", url: "https://easybet.co.za/page/100-free-spins-v2?btag=125365361" },
-            { id: "p28", name: "Aviator Tournament!", url: "https://easybet.co.za/page/aviator-tournament" },
-            { id: "p29", name: "26. Bonus Bets / Bonus Rounds", url: "https://easybet.co.za/page/terms-conditions/bonus-wallets" },
-            { id: "p30", name: "15% Lotto Cashback", url: "https://easybet.co.za/page/cash-back-lotto" },
-            { id: "p31", name: "4% Bet Code Bonus!", url: "https://easybet.co.za/page/copy-my-bet-bonus" },
-            { id: "p32", name: "25% Win Boost", url: "https://easybet.co.za/page/25-casino-bonus-wb" },
-            { id: "p33", name: "15% Win Boost", url: "https://easybet.co.za/page/15-casino-bonus-wb" },
-            { id: "p34", name: "R500 Casino Welcome Bonus", url: "https://easybet.co.za/page/r500-casino-welcome-bonus" },
-{ id: "p35", name: "20% Lotto Payday Reminder & Issuance: 2:00 PM, 4:00 PM, & Realtime", url: "https://easybet.co.za/page/lotto-payday-boost-20-ib" },
-{ id: "p36", name: "20% Sports Payday Reminder & Issuance: 2:00 PM, 4:00 PM, & Realtime", url: "https://easybet.co.za/page/sports-payday-boost-20-ib" },
-{ id: "p37", name: "20% Casino Payday Reminder & Issuance: 2:00 PM, 4:00 PM, & Realtime", url: "https://easybet.co.za/page/20-casino-payday-boost-exclusive" },
-{ id: "p38", name: "30% Casino Payday Reminder & Issuance: 2:00 PM, 4:00 PM, & Realtime", url: "https://easybet.co.za/page/30-casino-payday-boost-exclusive" },
-{ id: "p39", name: "55% Casino Payday Reminder & Issuance: 2:00 PM, 4:00 PM, & Realtime", url: "https://easybet.co.za/page/55-casino-payday-boost-exclusive" },
-{ id: "p40", name: "20% VIP Casino Payday Reminder & Issuance: 2:00 PM & 4:00 PM", url: "https://easybet.co.za/page/20-casino-payday-boost-vip" },
-{ id: "p41", name: "20% VIP Lotto Payday Reminder & Issuance: 2:00 PM & 4:00 PM", url: "https://easybet.co.za/page/lotto-payday-boost-20-ib-vip" },
-{ id: "p42", name: "20% VIP Sports Payday Reminder & Issuance: 2:00 PM & 4:00 PM", url: "https://easybet.co.za/page/sports-payday-boost-20-vip-ib" },
-{ id: "p43", name: "30% VIP Casino Payday Reminder & Issuance: 2:00 PM & 4:00 PM", url: "https://easybet.co.za/page/30-casino-payday-boost-vip" },
-{ id: "p44", name: "55% VIP Casino Payday Reminder & Issuance: 2:00 PM & 4:00 PM", url: "https://easybet.co.za/page/55-casino-payday-boost-vip" },
-{ id: "p45", name: "Fica verified promo 25 Qualifier", url: "https://easybet.co.za/page/fica-verified-promo-25-qualifier" },
-{ id: "p46", name: "Fica verified promo 25 Casino bonus Issuance", url: "https://easybet.co.za/page/fica-verified-promo-25-casino-bonus" },
-{ id: "p47", name: "Registration", url: "https://easybet.co.za/page/registration-queries/registration-account" },
-{ id: "p48", name: "Deposit turnover (7.11)", url: "https://easybet.co.za/page/terms-conditions/withdrawals" },
-{ id: "p49", name: "Initial withdrawal (7.15)", url: "https://easybet.co.za/page/terms-conditions/withdrawals" },
-{ id: "p50", name: "Deposit Limit, Account Deactivation/Deletion", url: "https://easybet.co.za/page/responsible-gambling-policy" },
-{ id: "p51", name: "Withdrawal Limit/ General terms for Bonus/Promo Cash", url: "https://easybet.co.za/page/limits-bonus-terms" },
-{ id: "p52", name: "Bonus Transfer", url: "https://easybet.co.za/page/bonus-queries/transfer-funds" },
-{ id: "p53", name: "Cancel withdrawal", url: "https://easybet.co.za/page/withdrawal-queries/withdrawal-cancel" },
-{ id: "p54", name: "Bet types (Single, Multibet, System bets)", url: "https://easybet.co.za/page/bet-types" },
-{ id: "p55", name: "How to Rebet", url: "https://easybet.co.za/page/sports-betting/sports-howtorebet" },
-{ id: "p56", name: "Bet cancellation policy (5.3)", url: "https://easybet.co.za/page/terms-conditions/placing-bets" },
-{ id: "p57", name: "Reset password", url: "https://easybet.co.za/page/account-queries/forgot-password" }
-        ];
+/* ---------- Clipboard + toast ---------- */
+async function copyText(text) {
+  try { await navigator.clipboard.writeText(text); return true; } catch (e) {}
+  try { // fallback for older browsers / restricted contexts
+    const t = document.createElement("textarea");
+    t.value = text; t.setAttribute("readonly", "");
+    t.style.cssText = "position:fixed;top:-100px;opacity:0";
+    document.body.appendChild(t); t.select();
+    const ok = document.execCommand("copy"); t.remove(); return ok;
+  } catch (e) { return false; }
+}
+let timer;
+function toast(msg) {
+  $toast.textContent = msg; $toast.classList.add("show");
+  clearTimeout(timer); timer = setTimeout(() => $toast.classList.remove("show"), 1800);
+}
 
-        const STORAGE_KEY = 'easybetPromotionsState';
-        let state = {
-            starredIds: [], // Order matters for drag & drop
-            sortAZ: false,
-            searchQuery: ''
-        };
+/* ---------- Rendering ---------- */
+const GRIP = '<button class="grip" type="button"><svg width="10" height="16" viewBox="0 0 10 16" fill="currentColor"><circle cx="2" cy="3" r="1.3"/><circle cx="8" cy="3" r="1.3"/><circle cx="2" cy="8" r="1.3"/><circle cx="8" cy="8" r="1.3"/><circle cx="2" cy="13" r="1.3"/><circle cx="8" cy="13" r="1.3"/></svg></button>';
 
-        // Load State
-        try {
-            const stored = localStorage.getItem(STORAGE_KEY);
-            if (stored) {
-                const parsed = JSON.parse(stored);
-                if (Array.isArray(parsed.starredIds)) {
-                    state.starredIds = parsed.starredIds;
-                }
-            }
-        } catch (e) {
-            console.warn("Could not parse local storage. Using default state.");
-        }
+function makeRow(p, isStar) {
+  const li = document.createElement("li");
+  li.className = "row" + (isStar ? " starred" : "");
+  li.dataset.id = p.id;
+  li.innerHTML =
+    '<button class="star" type="button"></button>' +
+    '<div class="body"><a class="name" target="_blank" rel="noopener noreferrer"></a>' +
+    '<div class="actions"><div><button type="button" data-copy="name">Copy Name</button>' +
+    '<button type="button" data-copy="url">Copy Link</button></div></div></div>' + (isStar ? GRIP : "");
+  const a = li.querySelector(".name");
+  a.textContent = p.name;
+  a.setAttribute("href", p.url);            // URL kept exactly as supplied
+  const s = li.querySelector(".star");
+  s.textContent = isStar ? "★" : "☆";
+  s.setAttribute("aria-pressed", isStar);
+  s.setAttribute("aria-label", (isStar ? "Unstar " : "Star ") + p.name);
+  li.querySelectorAll("[data-copy]").forEach(b => b.setAttribute("aria-label", b.textContent + ": " + p.name));
+  const g = li.querySelector(".grip");
+  if (g) g.setAttribute("aria-label", "Reorder " + p.name + ". Use up and down arrow keys.");
+  return li;
+}
 
-        const saveState = () => {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify({
-                starredIds: state.starredIds
-            }));
-        };
+function section(items, isStar) {
+  const ul = document.createElement("ul");
+  items.forEach(p => ul.appendChild(makeRow(p, isStar)));
+  return ul;
+}
+function label(text) {
+  const d = document.createElement("div"); d.className = "lbl"; d.textContent = text; return d;
+}
 
-        // DOM Elements
-        const sidebar = document.getElementById('sidebar');
-        const sidebarToggle = document.getElementById('sidebar-toggle');
-        const searchInput = document.getElementById('search-input');
-        const sortBtn = document.getElementById('sort-btn');
-        const sidebarContent = document.getElementById('sidebar-content');
-        const toast = document.getElementById('toast');
-        let toastTimeout;
+function render() {
+  const q = query.trim().toLowerCase();
+  const match = p => p.name.toLowerCase().includes(q);
+  const stars = starred.map(id => byId.get(id)).filter(match);
+  const rest = promotions.filter(p => !starred.includes(p.id) && match(p));
+  if (sortAZ) rest.sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: "base" }));
 
-        // Toggle Sidebar
-        sidebarToggle.addEventListener('click', () => {
-            sidebar.classList.toggle('open');
-        });
+  $list.replaceChildren();
+  if (!stars.length && !rest.length) {
+    const d = document.createElement("div"); d.className = "empty"; d.textContent = "No promotions found";
+    $list.appendChild(d); return;
+  }
+  if (stars.length) { $list.append(label("Starred"), section(stars, true)); }
+  if (rest.length) { if (stars.length) $list.appendChild(label("All promotions")); $list.appendChild(section(rest, false)); }
+}
 
-        // Search
-        searchInput.addEventListener('input', (e) => {
-            state.searchQuery = e.target.value.trim().toLowerCase();
-            render();
-        });
+/* ---------- Starring ---------- */
+function toggleStar(id) {
+  starred = starred.includes(id) ? starred.filter(x => x !== id) : [...starred, id];
+  save(); render();
+  const s = $list.querySelector('[data-id="' + id + '"] .star');
+  if (s) { s.focus({ preventScroll: true }); s.classList.add("pop"); }
+}
 
-        // Sort Toggle
-        sortBtn.addEventListener('click', () => {
-            state.sortAZ = !state.sortAZ;
-            if (state.sortAZ) {
-                sortBtn.classList.add('active');
-            } else {
-                sortBtn.classList.remove('active');
-            }
-            render();
-        });
+/* ---------- Reordering (pointer-based; works with mouse and touch) ---------- */
+function moveStar(id, targetId, after) {
+  const arr = starred.filter(x => x !== id);
+  arr.splice(arr.indexOf(targetId) + (after ? 1 : 0), 0, id);
+  starred = arr; save();
+}
 
-        // Toast Notification
-        const showToast = (message) => {
-            toast.textContent = message;
-            toast.classList.add('visible');
-            clearTimeout(toastTimeout);
-            toastTimeout = setTimeout(() => {
-                toast.classList.remove('visible');
-            }, 1800);
-        };
+function startDrag(e, el) {
+  e.preventDefault();
+  const id = el.dataset.id;
+  let target = null, after = false;
+  el.classList.add("dragging");
+  const clear = () => $list.querySelectorAll(".drop-before,.drop-after").forEach(n => n.classList.remove("drop-before", "drop-after"));
+  const move = ev => {
+    clear();
+    const hit = document.elementFromPoint(ev.clientX, ev.clientY);
+    const r = hit && hit.closest(".row.starred");
+    if (r && r !== el) {
+      const b = r.getBoundingClientRect();
+      after = ev.clientY > b.top + b.height / 2; target = r;
+      r.classList.add(after ? "drop-after" : "drop-before");
+    } else target = null;
+  };
+  const end = ev => {
+    ["pointermove", "pointerup", "pointercancel"].forEach((t, i) => window.removeEventListener(t, [move, end, end][i]));
+    if (target && ev.type === "pointerup") moveStar(id, target.dataset.id, after);
+    render();
+  };
+  window.addEventListener("pointermove", move);
+  window.addEventListener("pointerup", end);
+  window.addEventListener("pointercancel", end);
+}
 
-        // Clipboard Copy Fallback
-        const copyToClipboard = async (text, successMessage) => {
-            try {
-                if (navigator.clipboard && window.isSecureContext) {
-                    await navigator.clipboard.writeText(text);
-                    showToast(successMessage);
-                } else {
-                    // Fallback for older browsers
-                    const textArea = document.createElement("textarea");
-                    textArea.value = text;
-                    textArea.style.position = "absolute";
-                    textArea.style.left = "-999999px";
-                    document.body.prepend(textArea);
-                    textArea.select();
-                    document.execCommand('copy');
-                    textArea.remove();
-                    showToast(successMessage);
-                }
-            } catch (err) {
-                console.error("Copy failed", err);
-            }
-        };
+/* ---------- List events (delegated) ---------- */
+$list.addEventListener("click", async e => {
+  const b = e.target.closest("button");
+  if (!b) return;
+  const p = byId.get(b.closest(".row").dataset.id);
+  if (b.classList.contains("star")) return toggleStar(p.id);
+  if (b.dataset.copy) {
+    const isName = b.dataset.copy === "name";
+    const ok = await copyText(isName ? p.name : p.url);
+    toast(ok ? (isName ? "Name copied" : "Link copied") : "Couldn’t copy");
+    if (ok) { b.classList.add("ok"); setTimeout(() => b.classList.remove("ok"), 1200); }
+  }
+});
+$list.addEventListener("pointerdown", e => {
+  const g = e.target.closest(".grip");
+  if (g && e.button === 0) startDrag(e, g.closest(".row"));
+});
+$list.addEventListener("keydown", e => { // keyboard reordering on the grip
+  const g = e.target.closest(".grip");
+  if (!g || !["ArrowUp", "ArrowDown"].includes(e.key)) return;
+  e.preventDefault();
+  const row = g.closest(".row"), down = e.key === "ArrowDown";
+  const n = down ? row.nextElementSibling : row.previousElementSibling;
+  if (!n || !n.classList.contains("starred")) return;
+  moveStar(row.dataset.id, n.dataset.id, down); render();
+  $list.querySelector('[data-id="' + row.dataset.id + '"] .grip').focus();
+});
+$list.addEventListener("animationend", e => e.target.classList.remove("pop"));
 
-        const render = () => {
-            sidebarContent.innerHTML = '';
+/* ---------- Search, sort, sidebar ---------- */
+$q.addEventListener("input", () => { query = $q.value; render(); });
+$sort.addEventListener("click", () => {
+  sortAZ = !sortAZ; $sort.setAttribute("aria-pressed", sortAZ); render();
+});
+function setOpen(open) {
+  document.body.classList.toggle("open", open);
+  $tab.setAttribute("aria-expanded", open);
+  $tab.setAttribute("aria-label", open ? "Close promotions sidebar" : "Open promotions sidebar");
+}
+$tab.addEventListener("click", () => setOpen(!document.body.classList.contains("open")));
+document.addEventListener("keydown", e => { if (e.key === "Escape") setOpen(false); });
+// Click/tap anywhere outside the sidebar (and its arrow) closes it.
+// pointerdown is used so list re-renders or drag releases can't cause false closes.
+document.addEventListener("pointerdown", e => {
+  if (document.body.classList.contains("open") && !e.target.closest("#side, #tab")) setOpen(false);
+});
 
-            // Filter by search
-            let filtered = rawData.filter(p => 
-                p.name.toLowerCase().includes(state.searchQuery)
-            );
-
-            if (filtered.length === 0) {
-                sidebarContent.innerHTML = '<div class="empty-state">No promotions found</div>';
-                return;
-            }
-
-            // Separate into starred and unstarred
-            let starredList = [];
-            let unstarredList = [];
-
-            filtered.forEach(p => {
-                if (state.starredIds.includes(p.id)) {
-                    starredList.push(p);
-                } else {
-                    unstarredList.push(p);
-                }
-            });
-
-            // Sort Starred: Follow manual array order unless AZ is enforced globally
-            if (state.sortAZ) {
-                starredList.sort((a, b) => a.name.localeCompare(b.name));
-            } else {
-                starredList.sort((a, b) => state.starredIds.indexOf(a.id) - state.starredIds.indexOf(b.id));
-            }
-
-            // Sort Unstarred: Original order unless AZ
-            if (state.sortAZ) {
-                unstarredList.sort((a, b) => a.name.localeCompare(b.name));
-            }
-
-            // Generate HTML
-            if (starredList.length > 0) {
-                const label = document.createElement('div');
-                label.className = 'section-label';
-                label.textContent = 'Starred';
-                sidebarContent.appendChild(label);
-                
-                starredList.forEach(p => {
-                    sidebarContent.appendChild(createItemElement(p, true));
-                });
-            }
-
-            if (unstarredList.length > 0) {
-                const label = document.createElement('div');
-                label.className = 'section-label';
-                label.textContent = 'All Promotions';
-                sidebarContent.appendChild(label);
-
-                unstarredList.forEach(p => {
-                    sidebarContent.appendChild(createItemElement(p, false));
-                });
-            }
-        };
-
-        const createItemElement = (promo, isStarred) => {
-            const div = document.createElement('div');
-            div.className = 'promo-item';
-            // Only make it draggable if it's starred AND AZ sorting is OFF
-            if (isStarred && !state.sortAZ && state.searchQuery === '') {
-                div.classList.add('draggable');
-                div.setAttribute('draggable', 'true');
-                attachDragEvents(div, promo.id);
-            }
-            div.dataset.id = promo.id;
-
-            const starBtn = document.createElement('button');
-            starBtn.className = `star-btn ${isStarred ? 'starred' : ''}`;
-            starBtn.innerHTML = isStarred ? '★' : '☆';
-            starBtn.setAttribute('aria-label', isStarred ? 'Remove from favorites' : 'Add to favorites');
-            
-            const nameSpan = document.createElement('span');
-            nameSpan.className = 'promo-name';
-            nameSpan.textContent = promo.name;
-            
-            const actionsDiv = document.createElement('div');
-            actionsDiv.className = 'promo-actions';
-            
-            const copyNameBtn = document.createElement('button');
-            copyNameBtn.className = 'action-btn';
-            copyNameBtn.textContent = 'Copy Name';
-            
-            const copyLinkBtn = document.createElement('button');
-            copyLinkBtn.className = 'action-btn';
-            copyLinkBtn.textContent = 'Copy Link';
-
-            // Events
-            starBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                toggleStar(promo.id);
-            });
-
-            copyNameBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                copyToClipboard(promo.name, 'Name copied');
-            });
-
-            copyLinkBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                copyToClipboard(promo.url, 'Link copied');
-            });
-
-            // Main Row Click
-            div.addEventListener('click', (e) => {
-                if(e.target.closest('.star-btn') || e.target.closest('.action-btn')) return;
-                copyToClipboard(promo.url, 'Link copied');
-            });
-
-            actionsDiv.appendChild(copyNameBtn);
-            actionsDiv.appendChild(copyLinkBtn);
-            div.appendChild(starBtn);
-            div.appendChild(nameSpan);
-            div.appendChild(actionsDiv);
-
-            return div;
-        };
-
-        const toggleStar = (id) => {
-            if (state.starredIds.includes(id)) {
-                state.starredIds = state.starredIds.filter(starredId => starredId !== id);
-            } else {
-                state.starredIds.push(id);
-            }
-            saveState();
-            render();
-        };
-
-        let draggedId = null;
-
-        const attachDragEvents = (el, id) => {
-            el.addEventListener('dragstart', (e) => {
-                draggedId = id;
-                e.dataTransfer.effectAllowed = 'move';
-                setTimeout(() => el.classList.add('dragging'), 0);
-            });
-
-            el.addEventListener('dragend', () => {
-                draggedId = null;
-                el.classList.remove('dragging');
-                document.querySelectorAll('.promo-item').forEach(item => {
-                    item.classList.remove('drag-over');
-                });
-            });
-
-            el.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                e.dataTransfer.dropEffect = 'move';
-                if (draggedId === id) return;
-                el.classList.add('drag-over');
-            });
-
-            el.addEventListener('dragleave', () => {
-                el.classList.remove('drag-over');
-            });
-
-            el.addEventListener('drop', (e) => {
-                e.preventDefault();
-                el.classList.remove('drag-over');
-                if (draggedId && draggedId !== id) {
-                    reorderStarred(draggedId, id);
-                }
-            });
-        };
-
-        const reorderStarred = (draggedId, targetId) => {
-            const oldIndex = state.starredIds.indexOf(draggedId);
-            const newIndex = state.starredIds.indexOf(targetId);
-            
-            if (oldIndex === -1 || newIndex === -1) return;
-            
-            // Remove from old
-            const [movedItem] = state.starredIds.splice(oldIndex, 1);
-            // Insert at new
-            state.starredIds.splice(newIndex, 0, movedItem);
-            
-            saveState();
-            render();
-        };
-
-        // Initial render
-        render();
-    </script>
+render();
+</script>
 </body>
 </html>

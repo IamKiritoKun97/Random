@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Easybet StudioDesk</title>
+    
+    <!-- Fonts: Inter for clean, modern typography matching the image -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons: FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Styling: Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Scripts: Vue 3 and SortableJS -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        app: {
+                            bg: '#141624',       // Deep dark background (main area)
+                            panel: '#1E2132',    // Slightly lighter for sidebar/navbar
+                            border: '#2D3147',   // Subtle panel borders
+                            borderHighlight: '#3B405A',
+                            text: '#8B93A6',     // Muted text
+                            textLight: '#E2E4EB',// Primary text
+                            orange: '#F97316',   // Easybet orange accent
+                            orangeBg: 'rgba(249, 115, 22, 0.08)',
+                            blue: '#3b82f6'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #141624;
+            color: #E2E4EB;
+            -webkit-font-smoothing: antialiased;
+            overflow: hidden; /* Prevent body scroll, handle internally */
+        }
+        
+        [v-cloak] {
+            display: none;
+        }
+
+        /* Dark themed scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #2D3147;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #3B405A;
+        }
+
+        /* Drag handle cursors */
+        .drag-handle {
+            cursor: grab;
+        }
+        .drag-handle:active {
+            cursor: grabbing;
+        }
+
+        /* Sortable ghost styling for dark mode */
+        .sortable-ghost {
+            opacity: 0.3;
+            background-color: #2D3147 !important;
+            border: 1px dashed #F97316 !important;
+        }
+
+        /* Transitions */
+        .fade-enter-active, .fade-leave-active {
+            transition: opacity 0.2s ease;
+        }
+        .fade-enter-from, .fade-leave-to {
+            opacity: 0;
+        }
+
+        .toast-enter-active, .toast-leave-active {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .toast-enter-from, .toast-leave-to {
+            opacity: 0;
+            transform: translateY(20px) scale(0.95);
+        }
+
+        /* Custom Input styling to remove default webkit styles */
+        input[type="search"]::-webkit-search-cancel-button {
+            -webkit-appearance: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="app" v-cloak class="h-screen w-full flex flex-col bg-app-bg text-app-textLight">
+        
+        <nav class="h-[60px] flex-shrink-0 bg-app-panel border-b border-app-border px-4 sm:px-6 flex items-center justify-between z-10 relative shadow-sm">
+            <!-- Logo & Title -->
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-orange-500/20 to-orange-600/10 flex items-center justify-center border border-app-orange/30">
+                    <i class="fa-solid fa-layer-group text-app-orange text-lg"></i>
+                </div>
+                <div class="flex flex-col justify-center">
+                    <h1 class="text-base font-bold text-white leading-tight tracking-wide">Easybet StudioDesk</h1>
+                    <p class="text-[11px] text-app-text font-medium leading-tight">Manage Titles & Interactive Copy-Spiels</p>
+                </div>
+            </div>
+
+            <!-- Right Actions -->
+            <div class="flex items-center gap-3">
+                <!-- Hidden file input for import -->
+                <input type="file" ref="fileInput" @change="importJson" class="hidden" accept=".json">
+                
+                <div class="flex bg-[#181A27] rounded-lg p-1 border border-app-border">
+                    <button @click="$refs.fileInput.click()" class="text-app-text hover:text-white px-3 py-1.5 rounded-md hover:bg-app-border transition-colors text-xs font-semibold flex items-center gap-2" title="Import JSON">
+                        <i class="fa-solid fa-file-import"></i> <span class="hidden sm:inline">Import</span>
+                    </button>
+                    <button @click="exportJson" class="text-app-text hover:text-white px-3 py-1.5 rounded-md hover:bg-app-border transition-colors text-xs font-semibold flex items-center gap-2" title="Export JSON">
+                        <i class="fa-solid fa-file-export"></i> <span class="hidden sm:inline">Export</span>
+                    </button>
+                </div>
+                
+                <button @click="openCategoryModal()" class="bg-[#181A27] border border-app-border hover:border-app-borderHighlight text-app-textLight px-4 py-2 rounded-lg transition-colors text-xs font-semibold flex items-center gap-2 group">
+                    <i class="fa-regular fa-square-plus text-app-text group-hover:text-white transition-colors text-sm"></i>
+                    <span>New Category</span>
+                </button>
+            </div>
+        </nav>
+
+        <div class="flex-1 flex overflow-hidden">
+            
+            <!-- LEFT SIDEBAR: Categories / Titles Shelf -->
+            <aside class="w-[340px] flex-shrink-0 bg-[#161824] border-r border-app-border flex flex-col z-0">
+                
+                <!-- Sidebar Header & Controls -->
+                <div class="p-5 pb-2 flex flex-col gap-4">
+                    <h2 class="text-[11px] font-bold text-app-text tracking-widest uppercase">Titles Shelf</h2>
+                    
+                    <!-- Search -->
+                    <div class="relative">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-app-text text-sm"></i>
+                        <input v-model="categorySearch" type="search" placeholder="Search titles..." 
+                               class="w-full bg-[#11131C] border border-app-border focus:border-app-borderHighlight rounded-lg py-2 pl-9 pr-8 text-sm outline-none transition-colors placeholder-app-text/60">
+                        <i v-if="categorySearch" @click="categorySearch = ''" class="fa-solid fa-xmark absolute right-3 top-1/2 -translate-y-1/2 text-app-text hover:text-white cursor-pointer text-sm"></i>
+                    </div>
+
+                    <!-- Sort / Filter -->
+                    <div class="flex flex-col gap-3 pt-1">
+                        <div class="flex items-center justify-between text-[11px] font-semibold text-app-text">
+                            <span>SORT:</span>
+                            <div class="flex bg-[#11131C] rounded p-0.5 border border-app-border">
+                                <button @click="sortBy = 'az'" :class="sortBy === 'az' ? 'bg-app-borderHighlight text-white' : 'hover:text-white'" class="px-3 py-1 rounded transition-colors">A-Z</button>
+                                <button @click="sortBy = 'size'" :class="sortBy === 'size' ? 'bg-app-borderHighlight text-white' : 'hover:text-white'" class="px-3 py-1 rounded transition-colors">Size</button>
+                                <button @click="sortBy = 'custom'" :class="sortBy === 'custom' ? 'bg-app-borderHighlight text-white' : 'hover:text-white'" class="px-3 py-1 rounded transition-colors" title="Manual Order"><i class="fa-solid fa-arrow-down-short-wide"></i></button>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between text-[11px] font-semibold text-app-text">
+                            <span>FILTER:</span>
+                            <div class="flex bg-[#11131C] rounded p-0.5 border border-app-border">
+                                <button @click="filterFavorites = false" :class="!filterFavorites ? 'bg-app-borderHighlight text-white' : 'hover:text-white'" class="px-3 py-1 rounded transition-colors">Show All</button>
+                                <button @click="filterFavorites = true" :class="filterFavorites ? 'bg-app-borderHighlight text-white' : 'hover:text-white'" class="px-3 py-1 rounded transition-colors flex items-center gap-1">
+                                    <i class="fa-solid fa-star text-app-orange text-[9px]"></i> Favorites
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex-1 overflow-y-auto px-3 pb-6 category-list pt-2" ref="sidebarList">
+                    
+                    <!-- Empty State -->
+                    <div v-if="filteredCategories.length === 0" class="text-center py-10 text-app-text text-sm">
+                        No titles found.
+                    </div>
+
+                    <!-- Dynamic List Iteration -->
+                    <template v-for="(item, index) in filteredCategories" :key="item.category.id">
+                        
+                        <!-- Header Injectors (Based on favorite status) -->
+                        <div v-if="index === 0 && item.category.favorite && !categorySearch" 
+                             class="no-drag text-[11px] font-bold text-app-orange tracking-widest uppercase mb-3 px-2 mt-2 flex items-center gap-2">
+                            <i class="fa-solid fa-star"></i> Starred Titles
+                        </div>
+                        <div v-if="!item.category.favorite && (index === 0 || filteredCategories[index-1].category.favorite) && !categorySearch" 
+                             class="no-drag text-[11px] font-bold text-app-text tracking-widest uppercase mb-3 px-2 mt-6 flex items-center gap-2">
+                            <i class="fa-solid fa-bars-staggered"></i> Channels / Categories
+                        </div>
+
+                        <!-- Category Item Card -->
+                        <div @click="selectCategory(item.originalIndex)"
+                             class="category-item group flex items-center justify-between p-2.5 mb-1 rounded-xl cursor-pointer transition-all border select-none"
+                             :class="selectedCategoryIndex === item.originalIndex 
+                                ? 'bg-app-orangeBg border-app-orange' 
+                                : 'bg-transparent border-transparent hover:border-app-border hover:bg-[#1C1F2E]'">
+                            
+                            <div class="flex items-center gap-3 overflow-hidden">
+                                <!-- Drag Handle -->
+                                <i class="fa-solid fa-grip-vertical text-app-text/40 hover:text-white drag-handle px-1 py-2" @click.stop></i>
+                                
+                                <!-- Icon based on favorite -->
+                            <i v-if="item.category.favorite" class="fa-solid fa-lock text-xs mt-0.5" :style="{ color: item.category.accent || '#F97316' }"></i>
+                            <i v-else class="fa-solid fa-hashtag text-xs mt-0.5" :style="{ color: item.category.accent || '#3b82f6' }"></i>
+                            
+                            <!-- Title -->
+                            <span class="font-medium text-[13px] truncate lowercase"
+                                  :class="selectedCategoryIndex === item.originalIndex ? 'text-white font-semibold' : 'text-app-textLight group-hover:text-white'">
+                                {{ item.category.name }}
+                            </span>
+                        </div>
+
+                        <!-- Right Info -->
+                        <div class="flex items-center gap-3 pl-2 flex-shrink-0">
+                            <!-- Actions (Visible on hover, selected, or if favorite) -->
+                            <div class="flex items-center gap-1">
+                                <button @click.stop="toggleFavoriteCategory(item.originalIndex)" 
+                                        class="w-6 h-6 rounded flex items-center justify-center hover:bg-black/30 transition-colors"
+                                        :class="item.category.favorite ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'">
+                                    <i :class="item.category.favorite ? 'fa-solid fa-star text-app-orange' : 'fa-regular fa-star text-app-text'"></i>
+                                </button>
+                                <button @click.stop="openCategoryModal(item.originalIndex)" 
+                                        class="w-6 h-6 rounded flex items-center justify-center hover:bg-black/30 transition-colors opacity-0 group-hover:opacity-100"
+                                        :class="{'opacity-100': selectedCategoryIndex === item.originalIndex}">
+                                    <i class="fa-solid fa-pen text-app-text hover:text-white text-[11px]"></i>
+                                </button>
+                            </div>
+                            <!-- Badge -->
+                            <span class="bg-[#11131C] border border-app-border text-app-textLight text-[10px] font-bold px-2 py-0.5 rounded-full min-w-[24px] text-center">
+                                    {{ item.category.spiels.length }}
+                                </span>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </aside>
+
+            <main class="flex-1 flex flex-col min-w-0 bg-[#0F111A] relative shadow-[inset_1px_0_0_0_rgba(255,255,255,0.02)]">
+                
+                <div v-if="activeCategory" class="flex-1 flex flex-col h-full">
+                    
+                    <!-- Main Header -->
+                    <div class="px-8 py-6 border-b border-app-border bg-[#141622] flex-shrink-0">
+                        <div class="flex justify-between items-start gap-4">
+                            <div class="flex gap-4 items-start">
+                                <div class="mt-1 flex items-center justify-center w-8 h-8 rounded-full border border-app-border bg-[#1B1E2B]">
+                                    <i v-if="activeCategory.favorite" class="fa-solid fa-lock text-sm" :style="{ color: activeCategory.accent || '#3b82f6' }"></i>
+                                    <i v-else class="fa-solid fa-hashtag text-sm" :style="{ color: activeCategory.accent || '#3b82f6' }"></i>
+                                </div>
+                                <div>
+                                    <h2 class="text-xl font-bold text-white tracking-tight">{{ activeCategory.name }}</h2>
+                                    <p class="text-[13px] text-app-text mt-1">Standard interactive Spiel collection. Tap any block below to copy.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center gap-3">
+                                <!-- Main Search -->
+                                <div class="relative w-64">
+                                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-app-text text-sm"></i>
+                                    <input v-model="spielSearch" type="search" placeholder="Filter current spiels..." 
+                                           class="w-full bg-[#181A27] border border-app-border focus:border-app-borderHighlight rounded-lg py-2 pl-9 pr-4 text-sm outline-none transition-colors">
+                                </div>
+                                <button @click="openSpielModal(selectedCategoryIndex)" class="bg-[#181A27] border border-app-border hover:border-app-borderHighlight text-app-textLight px-4 py-2 rounded-lg transition-colors text-sm font-semibold flex items-center gap-2 group">
+                                    <i class="fa-solid fa-plus text-app-text group-hover:text-white transition-colors"></i>
+                                    <span>New Spiel</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex-1 overflow-y-auto px-8 py-6">
+                        <h3 class="text-[11px] font-bold text-white tracking-widest uppercase mb-4 flex items-center gap-2">
+                            Other Category Spiels
+                            <div class="h-px bg-app-border flex-1 ml-4"></div>
+                        </h3>
+                        
+                        <div v-if="filteredSpiels.length === 0" class="text-center py-12 text-app-text border border-dashed border-app-border rounded-xl">
+                            No spiels match your search or category is empty.
+                        </div>
+
+                        <div class="flex flex-col gap-4 pb-12 spiel-list" ref="mainList">
+                            <div v-for="(item, sIndex) in filteredSpiels" :key="item.spiel.id" 
+                                 class="spiel-item group relative rounded-xl transition-all duration-200 cursor-pointer overflow-hidden border"
+                                 :class="copiedSpielId === item.spiel.id 
+                                    ? 'bg-app-orangeBg border-app-orange shadow-[0_0_15px_rgba(249,115,22,0.15)]' 
+                                    : 'bg-[#181A27] border-app-border hover:border-app-borderHighlight hover:bg-[#1E2132]'"
+                                 @click="copySpiel(item.spiel)">
+                                
+                                <div class="px-5 py-4">
+                                    <!-- Spiel Header -->
+                                    <div class="flex items-center justify-between mb-3">
+                                        <div class="flex items-center gap-2">
+                                            <i class="fa-solid fa-grip-vertical text-app-text/30 group-hover:text-app-text transition-colors drag-handle py-1 pr-2" @click.stop></i>
+                                            <span class="font-extrabold text-lg tracking-tight"
+                                                  :class="copiedSpielId === item.spiel.id ? 'text-app-orange' : 'text-white'">
+                                                {{ item.spiel.label || (sIndex + 1) }}
+                                            </span>
+                                            <i v-if="item.spiel.favorite" class="fa-solid fa-star text-app-orange text-sm ml-1"></i>
+                                        </div>
+                                        
+                                        <!-- Actions -->
+                                        <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity bg-[#181A27]/80 backdrop-blur rounded-lg p-1 border border-app-border" @click.stop>
+                                            <button @click="toggleFavoriteSpiel(item.originalIndex)" class="w-7 h-7 rounded hover:bg-white/10 flex items-center justify-center transition-colors">
+                                                <i :class="item.spiel.favorite ? 'fa-solid fa-star text-app-orange' : 'fa-regular fa-star text-app-text'"></i>
+                                            </button>
+                                            <button @click="openSpielModal(selectedCategoryIndex, item.originalIndex)" class="w-7 h-7 rounded hover:bg-white/10 flex items-center justify-center transition-colors">
+                                                <i class="fa-solid fa-pen text-app-text hover:text-white text-xs"></i>
+                                            </button>
+                                            <button @click="deleteSpiel(item.originalIndex)" class="w-7 h-7 rounded hover:bg-red-500/20 text-app-text hover:text-red-400 flex items-center justify-center transition-colors">
+                                                <i class="fa-solid fa-trash text-xs"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Spiel Text -->
+                                    <div class="text-[14px] leading-relaxed whitespace-pre-wrap pl-7 font-normal"
+                                         :class="copiedSpielId === item.spiel.id ? 'text-app-orange/90' : 'text-[#8B93A6]'">
+                                        {{ item.spiel.text }}
+                                    </div>
+                                </div>
+                                
+                                <!-- Copy Indicator overlay -->
+                                <div v-if="copiedSpielId === item.spiel.id" class="absolute top-4 right-5 flex items-center gap-2 text-app-orange font-bold text-xs bg-app-orangeBg px-2 py-1 rounded">
+                                    <i class="fa-solid fa-check"></i> Copied
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Empty State if no category selected -->
+                <div v-else class="flex-1 flex flex-col items-center justify-center text-app-text">
+                    <i class="fa-regular fa-folder-open text-4xl mb-4 opacity-50"></i>
+                    <p>Select a category from the shelf to view spiels.</p>
+                </div>
+            </main>
+        </div>
+
+        <!-- Toast Notification -->
+        <div class="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-50 flex flex-col gap-2 items-center pointer-events-none">
+            <transition-group name="toast">
+                <div v-for="toast in toasts" :key="toast.id" 
+                     class="bg-[#2D3147] text-white border border-app-border px-5 py-3 rounded-full shadow-2xl flex items-center gap-3 text-sm font-semibold">
+                    <i class="fa-solid fa-circle-check text-green-400"></i>
+                    {{ toast.message }}
+                </div>
+            </transition-group>
+        </div>
+
+        <!-- Modals overlay -->
+        <transition name="fade">
+            <div v-if="activeModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0F111A]/80 backdrop-blur-sm" @click="closeModal">
+                
+                <!-- Category Modal -->
+                <div v-if="activeModal === 'category'" class="bg-[#1E2132] border border-app-border rounded-2xl shadow-2xl w-full max-w-md overflow-hidden transform transition-all" @click.stop>
+                    <div class="px-6 py-4 border-b border-app-border flex justify-between items-center">
+                        <h3 class="text-base font-bold text-white">{{ editingCategoryIndex !== null ? 'Edit Category Title' : 'New Category Title' }}</h3>
+                        <button @click="closeModal" class="text-app-text hover:text-white p-1 transition-colors"><i class="fa-solid fa-xmark text-lg"></i></button>
+                    </div>
+                    <div class="p-6 space-y-5">
+                        <div>
+                            <label class="block text-xs font-bold text-app-text tracking-wide uppercase mb-2">Category Name</label>
+                            <input v-model="modalData.category.name" type="text" class="w-full bg-[#11131C] border border-app-border rounded-lg px-4 py-3 focus:ring-1 focus:ring-app-orange focus:border-app-orange outline-none transition-all text-white placeholder-app-text/50" placeholder="e.g., Pending Withdrawal">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-app-text tracking-wide uppercase mb-2">Accent Color</label>
+                            <div class="flex items-center gap-4">
+                                <div class="relative w-10 h-10 rounded-lg overflow-hidden border border-app-border shadow-sm">
+                                    <input v-model="modalData.category.accent" type="color" class="absolute -inset-2 w-16 h-16 cursor-pointer opacity-0 z-10">
+                                    <div class="absolute inset-0 z-0 pointer-events-none" :style="{ backgroundColor: modalData.category.accent }"></div>
+                                </div>
+                                <span class="text-sm text-app-textLight font-mono uppercase bg-[#11131C] px-3 py-1.5 rounded-md border border-app-border">{{ modalData.category.accent }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="px-6 py-4 border-t border-app-border bg-[#181A27] flex justify-between items-center">
+                        <button v-if="editingCategoryIndex !== null" @click="deleteCategory(editingCategoryIndex)" class="text-red-400 hover:bg-red-500/10 px-4 py-2 rounded-lg text-sm font-semibold transition-colors">
+                            Delete
+                        </button>
+                        <div v-else></div>
+                        <div class="flex gap-2">
+                            <button @click="closeModal" class="px-5 py-2 text-app-text hover:text-white hover:bg-[#2D3147] rounded-lg text-sm font-semibold transition-colors">Cancel</button>
+                            <button @click="saveCategory" class="px-5 py-2 bg-app-orange hover:bg-orange-600 text-white rounded-lg text-sm font-semibold shadow-sm transition-colors">Save Title</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Spiel Modal -->
+                <div v-if="activeModal === 'spiel'" class="bg-[#1E2132] border border-app-border rounded-2xl shadow-2xl w-full max-w-3xl overflow-hidden transform transition-all flex flex-col max-h-[90vh]" @click.stop>
+                    <div class="px-6 py-4 border-b border-app-border flex justify-between items-center flex-shrink-0">
+                        <h3 class="text-base font-bold text-white flex items-center gap-2">
+                            <i class="fa-regular fa-comment-dots text-app-orange"></i>
+                            {{ editingSpielIndex !== null ? 'Edit Interactive Spiel' : 'New Interactive Spiel' }}
+                        </h3>
+                        <button @click="closeModal" class="text-app-text hover:text-white p-1 transition-colors"><i class="fa-solid fa-xmark text-lg"></i></button>
+                    </div>
+                    <div class="p-6 space-y-5 overflow-y-auto">
+                        <div>
+                            <label class="block text-xs font-bold text-app-text tracking-wide uppercase mb-2">Identifier / Label</label>
+                            <input v-model="modalData.spiel.label" type="text" class="w-full bg-[#11131C] border border-app-border rounded-lg px-4 py-3 focus:ring-1 focus:ring-app-orange focus:border-app-orange outline-none transition-all text-white placeholder-app-text/50" placeholder="e.g., OZOW, OTT, Step 1">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-app-text tracking-wide uppercase mb-2">Copy Text</label>
+                            <textarea v-model="modalData.spiel.text" rows="10" class="w-full bg-[#11131C] border border-app-border rounded-lg px-4 py-3 focus:ring-1 focus:ring-app-orange focus:border-app-orange outline-none transition-all resize-none text-white placeholder-app-text/50 font-medium leading-relaxed" placeholder="Type the exact message to be copied here..."></textarea>
+                        </div>
+                    </div>
+                    <div class="px-6 py-4 border-t border-app-border bg-[#181A27] flex justify-end gap-2 flex-shrink-0">
+                        <button @click="closeModal" class="px-5 py-2 text-app-text hover:text-white hover:bg-[#2D3147] rounded-lg text-sm font-semibold transition-colors">Cancel</button>
+                        <button @click="saveSpiel" class="px-5 py-2 bg-app-orange hover:bg-orange-600 text-white rounded-lg text-sm font-semibold shadow-sm transition-colors flex items-center gap-2">
+                            <i class="fa-solid fa-floppy-disk"></i> Save Spiel
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </transition>
+    </div>
+
+    <script>
+        const { createApp, ref, computed, onMounted, nextTick, watch } = Vue;
+
+        createApp({
+            setup() {
+                // Initial Default Data matching original logic structure
+                const defaultData = { titles: [] };
+                const data = ref({ titles: [] });
+                
+                // UI State
+                const selectedCategoryIndex = ref(0);
+                const categorySearch = ref('');
+                const spielSearch = ref('');
+                const filterFavorites = ref(false);
+                const sortBy = ref('custom');
+                const copiedSpielId = ref(null);
+                
+                // Modals
+                const activeModal = ref(null); 
+                const editingCategoryIndex = ref(null);
+                const editingSpielCategoryIndex = ref(null);
+                const editingSpielIndex = ref(null);
+                const modalData = ref({
+                    category: { name: '', accent: '#3b82f6' },
+                    spiel: { label: '', text: '' }
+                });
+
+                const toasts = ref([]);
+
+                // Load Data
+                const loadData = () => {
+                    const saved = localStorage.getItem('studioDeskData');
+                    if (saved) {
+                        try {
+                            data.value = JSON.parse(saved);
+                        } catch (e) {
+                            data.value = getAttachedJsonData();
+                        }
+                    } else {
+                        data.value = getAttachedJsonData();
+                    }
+                };
+
+                const saveData = () => {
+                    localStorage.setItem('studioDeskData', JSON.stringify(data.value));
+                };
+
+                // ID Gen
+                const genId = (prefix) => prefix + '_' + Math.random().toString(36).substr(2, 8);
+
+                // Toast
+                let toastCount = 0;
+                const showToast = (message) => {
+                    const id = toastCount++;
+                    toasts.value.push({ id, message });
+                    setTimeout(() => {
+                        toasts.value = toasts.value.filter(t => t.id !== id);
+                    }, 2000);
+                };
+
+                // Audio
+                const playSuccessSound = () => {
+                    try {
+                        const AudioContext = window.AudioContext || window.webkitAudioContext;
+                        if (!AudioContext) return;
+                        const ctx = new AudioContext();
+                        const playTone = (freq, type, startTime, duration, vol) => {
+                            const osc = ctx.createOscillator();
+                            const gain = ctx.createGain();
+                            osc.type = type;
+                            osc.frequency.setValueAtTime(freq, ctx.currentTime + startTime);
+                            gain.gain.setValueAtTime(0, ctx.currentTime + startTime);
+                            gain.gain.linearRampToValueAtTime(vol, ctx.currentTime + startTime + 0.01);
+                            gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + startTime + duration);
+                            osc.connect(gain);
+                            gain.connect(ctx.destination);
+                            osc.start(ctx.currentTime + startTime);
+                            osc.stop(ctx.currentTime + startTime + duration);
+                        };
+                        // Short crisp pop/chime
+                        playTone(1200, 'sine', 0, 0.1, 0.2); 
+                        playTone(1600, 'sine', 0.08, 0.15, 0.2);
+                    } catch (e) { console.log(e); }
+                };
+
+                // Computed Properties
+                const filteredCategories = computed(() => {
+                    let list = data.value.titles.map((cat, idx) => ({ category: cat, originalIndex: idx }));
+                    
+                    if (categorySearch.value) {
+                        const s = categorySearch.value.toLowerCase();
+                        list = list.filter(item => item.category.name.toLowerCase().includes(s));
+                    }
+                    
+                    // Apply A-Z or Size Sorting
+                    if (sortBy.value === 'az') {
+                        list.sort((a, b) => a.category.name.localeCompare(b.category.name));
+                    } else if (sortBy.value === 'size') {
+                        list.sort((a, b) => b.category.spiels.length - a.category.spiels.length);
+                    }
+
+                    // Apply Favorites Grouping (Keeps all items, but moves stars to top)
+                    if (filterFavorites.value) {
+                        list.sort((a, b) => {
+                            if (a.category.favorite && !b.category.favorite) return -1;
+                            if (!a.category.favorite && b.category.favorite) return 1;
+                            return 0; // Maintain relative order if both are in the same group
+                        });
+                    }
+                    
+                    return list;
+                });
+
+                const activeCategory = computed(() => {
+                    if (selectedCategoryIndex.value !== null && data.value.titles[selectedCategoryIndex.value]) {
+                        return data.value.titles[selectedCategoryIndex.value];
+                    }
+                    return null;
+                });
+
+                const filteredSpiels = computed(() => {
+                    if (!activeCategory.value) return [];
+                    let list = activeCategory.value.spiels.map((sp, idx) => ({ spiel: sp, originalIndex: idx }));
+                    
+                    if (spielSearch.value) {
+                        const s = spielSearch.value.toLowerCase();
+                        list = list.filter(item => 
+                            (item.spiel.label && item.spiel.label.toLowerCase().includes(s)) || 
+                            item.spiel.text.toLowerCase().includes(s)
+                        );
+                    }
+                    return list;
+                });
+
+                // Actions
+                const selectCategory = (index) => {
+                    selectedCategoryIndex.value = index;
+                    spielSearch.value = '';
+                };
+
+                const copySpiel = (spiel) => {
+                    // Visual state
+                    copiedSpielId.value = spiel.id;
+                    setTimeout(() => { if(copiedSpielId.value === spiel.id) copiedSpielId.value = null; }, 1500);
+
+                    const text = spiel.text;
+                    if (navigator.clipboard && window.isSecureContext) {
+                        navigator.clipboard.writeText(text).then(() => {
+                            playSuccessSound();
+                            showToast("Copied to clipboard");
+                        });
+                    } else {
+                        let textArea = document.createElement("textarea");
+                        textArea.value = text;
+                        textArea.style.position = "fixed";
+                        textArea.style.left = "-999999px";
+                        document.body.appendChild(textArea);
+                        textArea.focus();
+                        textArea.select();
+                        try {
+                            document.execCommand('copy');
+                            playSuccessSound();
+                            showToast("Copied to clipboard");
+                        } catch (err) {}
+                        document.body.removeChild(textArea);
+                    }
+                };
+
+                // Toggle Favorites (Ensures favorites stay at top for clean UI grouping)
+                const toggleFavoriteCategory = (index) => {
+                    let cat = data.value.titles[index];
+                    cat.favorite = !cat.favorite;
+                    
+                    // Move to appropriate section automatically
+                    data.value.titles.splice(index, 1);
+                    if (cat.favorite) {
+                        data.value.titles.unshift(cat);
+                        // Update selection index if we moved it
+                        if(selectedCategoryIndex.value === index) selectedCategoryIndex.value = 0;
+                    } else {
+                        // Find first non-favorite and insert there
+                        let newIdx = data.value.titles.findIndex(c => !c.favorite);
+                        if(newIdx === -1) newIdx = data.value.titles.length;
+                        data.value.titles.splice(newIdx, 0, cat);
+                        if(selectedCategoryIndex.value === index) selectedCategoryIndex.value = newIdx;
+                    }
+                    saveData();
+                };
+
+                const toggleFavoriteSpiel = (sIndex) => {
+                    if (!activeCategory.value) return;
+                    let cat = data.value.titles[selectedCategoryIndex.value];
+                    let spiel = cat.spiels[sIndex];
+                    spiel.favorite = !spiel.favorite;
+
+                    // Move to top of spiels if favored
+                    cat.spiels.splice(sIndex, 1);
+                    if (spiel.favorite) {
+                        cat.spiels.unshift(spiel);
+                    } else {
+                        cat.spiels.push(spiel);
+                    }
+                    saveData();
+                };
+
+                // Modals CRUD
+                const closeModal = () => {
+                    activeModal.value = null;
+                };
+
+                const openCategoryModal = (index = null) => {
+                    editingCategoryIndex.value = index;
+                    if (index !== null) {
+                        modalData.value.category = { ...data.value.titles[index] };
+                    } else {
+                        modalData.value.category = { name: '', accent: '#F97316' };
+                    }
+                    activeModal.value = 'category';
+                };
+
+                const saveCategory = () => {
+                    if (!modalData.value.category.name.trim()) return;
+                    
+                    if (editingCategoryIndex.value !== null) {
+                        data.value.titles[editingCategoryIndex.value].name = modalData.value.category.name;
+                        data.value.titles[editingCategoryIndex.value].accent = modalData.value.category.accent;
+                    } else {
+                        const newCat = {
+                            id: genId('title'),
+                            name: modalData.value.category.name,
+                            desc: "",
+                            accent: modalData.value.category.accent,
+                            favorite: false,
+                            spiels: []
+                        };
+                        data.value.titles.push(newCat);
+                        selectedCategoryIndex.value = data.value.titles.length - 1;
+                    }
+                    saveData();
+                    closeModal();
+                };
+
+                const deleteCategory = (index) => {
+                    if (confirm("Delete this category permanently?")) {
+                        data.value.titles.splice(index, 1);
+                        selectedCategoryIndex.value = 0;
+                        saveData();
+                        closeModal();
+                    }
+                };
+
+                const openSpielModal = (cIndex, sIndex = null) => {
+                    if(cIndex === null) return;
+                    editingSpielCategoryIndex.value = cIndex;
+                    editingSpielIndex.value = sIndex;
+                    
+                    if (sIndex !== null) {
+                        modalData.value.spiel = { ...data.value.titles[cIndex].spiels[sIndex] };
+                    } else {
+                        modalData.value.spiel = { label: '', text: '' };
+                    }
+                    activeModal.value = 'spiel';
+                };
+
+                const saveSpiel = () => {
+                    if (!modalData.value.spiel.text.trim()) return;
+                    
+                    const cat = data.value.titles[editingSpielCategoryIndex.value];
+                    
+                    if (editingSpielIndex.value !== null) {
+                        cat.spiels[editingSpielIndex.value].label = modalData.value.spiel.label;
+                        cat.spiels[editingSpielIndex.value].text = modalData.value.spiel.text;
+                    } else {
+                        cat.spiels.push({
+                            id: genId('spiel'),
+                            label: modalData.value.spiel.label || "New Spiel",
+                            text: modalData.value.spiel.text,
+                            favorite: false
+                        });
+                    }
+                    saveData();
+                    closeModal();
+                };
+
+                const deleteSpiel = (sIndex) => {
+                    if (confirm("Delete this spiel permanently?")) {
+                        data.value.titles[selectedCategoryIndex.value].spiels.splice(sIndex, 1);
+                        saveData();
+                    }
+                };
+
+                // Import / Export
+                const exportJson = () => {
+                    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data.value, null, 2));
+                    const dl = document.createElement('a');
+                    dl.setAttribute("href", dataStr);
+                    
+                    // Format: ChatSupport_YYYYMMDD_HHMMSS.json
+                    const now = new Date();
+                    const year = now.getFullYear();
+                    const month = String(now.getMonth() + 1).padStart(2, '0');
+                    const day = String(now.getDate()).padStart(2, '0');
+                    const hours = String(now.getHours()).padStart(2, '0');
+                    const minutes = String(now.getMinutes()).padStart(2, '0');
+                    const seconds = String(now.getSeconds()).padStart(2, '0');
+                    
+                    const filename = `ChatSupport_${year}${month}${day}_${hours}${minutes}${seconds}.json`;
+                    
+                    dl.setAttribute("download", filename);
+                    document.body.appendChild(dl);
+                    dl.click();
+                    dl.remove();
+                    showToast("Export Successful");
+                };
+
+                const importJson = (event) => {
+                    const file = event.target.files[0];
+                    if (!file) return;
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        try {
+                            const parsed = JSON.parse(e.target.result);
+                            if (parsed && parsed.titles) {
+                                data.value = parsed;
+                                saveData();
+                                selectedCategoryIndex.value = 0;
+                                showToast("Import Successful");
+                                setTimeout(initSortables, 100);
+                            }
+                        } catch (err) { alert("Invalid JSON file."); }
+                        event.target.value = '';
+                    };
+                    reader.readAsText(file);
+                };
+
+                let sidebarSortable = null;
+                let mainListSortable = null;
+
+                const initSortables = () => {
+                    nextTick(() => {
+                        // Destroy old instances
+                        if (sidebarSortable) sidebarSortable.destroy();
+                        if (mainListSortable) mainListSortable.destroy();
+
+                        const sList = document.querySelector('.category-list');
+                        const mList = document.querySelector('.spiel-list');
+
+                        if (sList && !categorySearch.value && sortBy.value === 'custom' && !filterFavorites.value) {
+                            sidebarSortable = Sortable.create(sList, {
+                                animation: 200,
+                                handle: '.drag-handle',
+                                draggable: '.category-item',
+                                filter: '.no-drag', // prevent headers from dragging
+                                preventOnFilter: false,
+                                ghostClass: 'sortable-ghost',
+                                onEnd: (evt) => {
+                                    if (evt.oldDraggableIndex === undefined || evt.newDraggableIndex === undefined) return;
+                                    
+                                    // Use DraggableIndex to ignore headers in count mapping to the array
+                                    const item = data.value.titles.splice(evt.oldDraggableIndex, 1)[0];
+                                    data.value.titles.splice(evt.newDraggableIndex, 0, item);
+                                    
+                                    // Keep selected index tracking accurate
+                                    if(selectedCategoryIndex.value === evt.oldDraggableIndex) {
+                                        selectedCategoryIndex.value = evt.newDraggableIndex;
+                                    } else if (selectedCategoryIndex.value > evt.oldDraggableIndex && selectedCategoryIndex.value <= evt.newDraggableIndex) {
+                                        selectedCategoryIndex.value--;
+                                    } else if (selectedCategoryIndex.value < evt.oldDraggableIndex && selectedCategoryIndex.value >= evt.newDraggableIndex) {
+                                        selectedCategoryIndex.value++;
+                                    }
+                                    saveData();
+                                }
+                            });
+                        }
+
+                        if (mList && !spielSearch.value) {
+                            mainListSortable = Sortable.create(mList, {
+                                animation: 200,
+                                handle: '.drag-handle',
+                                draggable: '.spiel-item',
+                                ghostClass: 'sortable-ghost',
+                                onEnd: (evt) => {
+                                    if (evt.oldDraggableIndex === undefined || evt.newDraggableIndex === undefined) return;
+                                    
+                                    const cat = data.value.titles[selectedCategoryIndex.value];
+                                    const item = cat.spiels.splice(evt.oldDraggableIndex, 1)[0];
+                                    cat.spiels.splice(evt.newDraggableIndex, 0, item);
+                                    saveData();
+                                }
+                            });
+                        }
+                    });
+                };
+
+                // Re-init sortables when selection or search changes (disable during search)
+                watch([selectedCategoryIndex, categorySearch, filterFavorites, spielSearch, sortBy], () => {
+                    initSortables();
+                });
+
+                onMounted(() => {
+                    loadData();
+                    initSortables();
+                });
+
+                // Embedded default mock data based on user's image/JSON
+                const getAttachedJsonData = () => {
+                   return {
+                      "titles": [
+                        {
+                          "id": "title_ylb37l6a",
+                          "name": "pending withdrawal request",
+                          "desc": "",
+                          "accent": "#F97316",
+                          "favorite": true,
+                          "spiels": [
+                            {
+                              "id": "spiel_fg2iqxcl",
+                              "label": "1",
+                              "text": "Thank you for confirming your account details. I understand that you're contacting us regarding your RCODE withdrawal request. Is that correct?",
+                              "favorite": false
+                            },
+                            {
+                              "id": "spiel_mzbwv8ot",
+                              "label": "2",
+                              "text": "Thank you for confirming. I completely understand how important it is for you to have access to your funds as soon as possible. Rest assured, I'll do my best to assist with getting your withdrawal reviewed as soon as possible.\n\nUpon checking, I can see that your withdrawal is still pending. Typically, withdrawals are reviewed and approved within 24 hours, as stated in our Terms and Conditions here:\nhttps://easybet.co.za/page/deposits-withdrawals\n\nDon't worry. I'm here to assist you. Let me work on speeding up your withdrawal for you. Please allow me 3 to 5 minutes while I work on this for you.",
+                              "favorite": false
+                            },
+                            {
+                              "id": "spiel_ozow",
+                              "label": "OZOW",
+                              "text": "Thank you for patiently waiting. Great news! I've already forwarded your withdrawal request to the relevant team for priority handling to help expedite the process.\n\nOnce your request has been successfully processed, you should receive an SMS notification within a few minutes.\n\nAfter approval, the funds typically reflect in your bank account within 1 to 2 business days, depending on your bank's processing time.\n\nI'm happy to help you with anything else you need, what else can I do for you today?",
+                              "favorite": true
+                            },
+                            {
+                              "id": "spiel_ott",
+                              "label": "OTT",
+                              "text": "Your OTT voucher request is currently being prioritized.",
+                              "favorite": false
+                            }
+                          ]
+                        },
+                        {
+                          "id": "title_wvdjdiwl",
+                          "name": "pending initial withdrawal",
+                          "desc": "",
+                          "accent": "#F97316",
+                          "favorite": true,
+                          "spiels": []
+                        },
+                        {
+                          "id": "title_shoprite",
+                          "name": "shoprite money market acc...",
+                          "desc": "",
+                          "accent": "#3b82f6",
+                          "favorite": false,
+                          "spiels": []
+                        },
+                        {
+                          "id": "title_bank",
+                          "name": "bank update | has pending t...",
+                          "desc": "",
+                          "accent": "#F97316",
+                          "favorite": false,
+                          "spiels": []
+                        },
+                        {
+                          "id": "title_cancel",
+                          "name": "cancel pending withdrawal",
+                          "desc": "",
+                          "accent": "#F97316",
+                          "favorite": false,
+                          "spiels": []
+                        }
+                      ]
+                    };
+                };
+
+                return {
+                    data, toasts, activeModal, modalData, 
+                    selectedCategoryIndex, activeCategory,
+                    categorySearch, spielSearch, filterFavorites, sortBy,
+                    filteredCategories, filteredSpiels,
+                    copiedSpielId,
+                    editingCategoryIndex, editingSpielIndex,
+                    copySpiel, toggleFavoriteCategory, toggleFavoriteSpiel, selectCategory,
+                    openCategoryModal, saveCategory, deleteCategory,
+                    openSpielModal, saveSpiel, deleteSpiel,
+                    closeModal, importJson, exportJson
+                };
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html>

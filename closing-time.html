@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Chat Spiel Manager</title>
+    <style>
+        /* ==========================================================================
+           CSS VARIABLES & THEME
+           ========================================================================== */
+        :root {
+            /* Backgrounds (Deep charcoal / dark navy) */
+            --bg-workspace: #0f1117;
+            --bg-card: #171b25;
+            --bg-card-hover: #1c2230;
+            
+            /* Text Colors */
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            
+            /* Borders & Shadows */
+            --border-base: #272d3d;
+            --border-hover: #333d52;
+            --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+            --shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+            
+            /* Category Accents */
+            --accent-normal: #38bdf8; /* Professional Blue/Cyan */
+            --bg-normal-subtle: rgba(56, 189, 248, 0.1);
+            
+            --accent-delay: #fbbf24; /* Muted Amber */
+            --bg-delay-subtle: rgba(251, 191, 36, 0.1);
+
+            --accent-no-account: #f43f5e; /* Muted Rose/Red for Not Found */
+            --bg-no-account-subtle: rgba(244, 63, 94, 0.1);
+
+            --accent-withdrawal: #14b8a6; /* Professional Teal for Finances */
+            --bg-withdrawal-subtle: rgba(20, 184, 166, 0.1);
+            
+            --accent-closing: #a78bfa; /* Muted Purple/Violet */
+            --bg-closing-subtle: rgba(167, 139, 250, 0.1);
+
+            --accent-all: #cbd5e1; /* Neutral */
+            
+            /* Success State */
+            --accent-success: #34d399; /* Muted Green */
+            
+            /* Layout & Animation */
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-smooth: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* ==========================================================================
+           RESET & BASE STYLES
+           ========================================================================== */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-workspace);
+            color: var(--text-primary);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* ==========================================================================
+           LAYOUT
+           ========================================================================== */
+        .workspace {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 32px 24px;
+            min-height: 100vh;
+        }
+
+        header {
+            margin-bottom: 40px;
+        }
+
+        .header-titles {
+            margin-bottom: 24px;
+        }
+
+        .header-titles h1 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            letter-spacing: -0.01em;
+            margin-bottom: 4px;
+        }
+
+        .header-titles p {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        /* ==========================================================================
+           CATEGORY FILTER NAVIGATION
+           ========================================================================== */
+        .filters {
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+            scrollbar-width: none; /* Firefox */
+        }
+        
+        .filters::-webkit-scrollbar {
+            display: none; /* Chrome/Safari */
+        }
+
+        .filter-btn {
+            background: transparent;
+            border: 1px solid var(--border-base);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            white-space: nowrap;
+        }
+
+        .filter-btn:hover {
+            color: var(--text-primary);
+            border-color: var(--border-hover);
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .filter-btn:focus-visible {
+            outline: 2px solid var(--accent-normal);
+            outline-offset: 2px;
+        }
+
+        /* Active Filter States */
+        .filter-btn.active[data-filter="all"] {
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--text-primary);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        .filter-btn.active[data-filter="normal"] {
+            background: var(--bg-normal-subtle);
+            color: var(--accent-normal);
+            border-color: rgba(56, 189, 248, 0.3);
+        }
+
+        .filter-btn.active[data-filter="delay"] {
+            background: var(--bg-delay-subtle);
+            color: var(--accent-delay);
+            border-color: rgba(251, 191, 36, 0.3);
+        }
+
+        .filter-btn.active[data-filter="no-account"] {
+            background: var(--bg-no-account-subtle);
+            color: var(--accent-no-account);
+            border-color: rgba(244, 63, 94, 0.3);
+        }
+
+        .filter-btn.active[data-filter="withdrawal"] {
+            background: var(--bg-withdrawal-subtle);
+            color: var(--accent-withdrawal);
+            border-color: rgba(20, 184, 166, 0.3);
+        }
+
+        .filter-btn.active[data-filter="closing"] {
+            background: var(--bg-closing-subtle);
+            color: var(--accent-closing);
+            border-color: rgba(167, 139, 250, 0.3);
+        }
+
+        /* ==========================================================================
+           SPIEL CARDS GRID
+           ========================================================================== */
+        .spiels-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 24px;
+        }
+
+        .spiel-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-base);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            position: relative;
+            box-shadow: var(--shadow-card);
+        }
+
+        .spiel-card:hover {
+            transform: translateY(-3px);
+            background: var(--bg-card-hover);
+            border-color: var(--border-hover);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .spiel-card:active {
+            transform: translateY(0) scale(0.98);
+            transition: var(--transition-fast);
+        }
+
+        .spiel-card:focus-visible {
+            outline: 2px solid var(--accent-normal);
+            outline-offset: 2px;
+        }
+
+        .spiel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .spiel-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            line-height: 1.4;
+        }
+
+        .spiel-category {
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 9999px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            flex-shrink: 0;
+            border: 1px solid transparent;
+        }
+
+        /* Category Badges */
+        .category-normal {
+            color: var(--accent-normal);
+            background: var(--bg-normal-subtle);
+            border-color: rgba(56, 189, 248, 0.2);
+        }
+
+        .category-delay {
+            color: var(--accent-delay);
+            background: var(--bg-delay-subtle);
+            border-color: rgba(251, 191, 36, 0.2);
+        }
+
+        .category-no-account {
+            color: var(--accent-no-account);
+            background: var(--bg-no-account-subtle);
+            border-color: rgba(244, 63, 94, 0.2);
+            white-space: nowrap;
+        }
+
+        .category-withdrawal {
+            color: var(--accent-withdrawal);
+            background: var(--bg-withdrawal-subtle);
+            border-color: rgba(20, 184, 166, 0.2);
+        }
+
+        .category-closing {
+            color: var(--accent-closing);
+            background: var(--bg-closing-subtle);
+            border-color: rgba(167, 139, 250, 0.2);
+        }
+
+        .spiel-body {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            white-space: pre-wrap;
+        }
+
+        /* Empty State */
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 80px 20px;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: var(--radius-lg);
+            border: 1px dashed var(--border-base);
+        }
+
+        /* ==========================================================================
+           TOAST NOTIFICATION
+           ========================================================================== */
+        .toast {
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: rgba(23, 27, 37, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--border-hover);
+            color: var(--text-primary);
+            padding: 12px 20px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition-smooth);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            pointer-events: none;
+        }
+
+        .toast.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .toast-icon {
+            width: 16px;
+            height: 16px;
+            fill: var(--accent-success);
+        }
+
+        /* ==========================================================================
+           RESPONSIVE
+           ========================================================================== */
+        @media (max-width: 768px) {
+            .workspace { padding: 20px 16px; }
+            .spiels-grid { grid-template-columns: 1fr; gap: 16px; }
+            header { margin-bottom: 24px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="workspace">
+        <header>
+            <div class="header-titles">
+                <h1>Live Chat Spiel Manager</h1>
+                <p>Quick-copy workspace</p>
+            </div>
+            
+            <nav class="filters" aria-label="Spiel Categories">
+                <button class="filter-btn active" data-filter="all">All Spiels</button>
+                <button class="filter-btn" data-filter="normal">Normal</button>
+                <button class="filter-btn" data-filter="delay">Delay</button>
+                <button class="filter-btn" data-filter="no-account">No Account</button>
+                <button class="filter-btn" data-filter="withdrawal">Withdrawal</button>
+                <button class="filter-btn" data-filter="closing">Closing</button>
+            </nav>
+        </header>
+
+        <main class="spiels-grid" id="spiels-container" role="region" aria-label="Spiel Cards">
+            <!-- Spiels rendered by JavaScript -->
+        </main>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast" aria-live="polite">
+        <svg class="toast-icon" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+        </svg>
+        Spiel copied
+    </div>
+
+    <!-- ==========================================================================
+         JAVASCRIPT LOGIC
+         ========================================================================== -->
+    <script>
+        // Data Structure
+        const spielsData = [
+            {
+                title: "Greeting - Need Phone Number",
+                category: "normal",
+                text: "Good day! Thank you for reaching out to Easybet Customer Support. My name is Raya, and I'll be your support today.\n\nTo proceed securely, could you please provide the phone number linked to your Easybet account so I can pull it up on my end?"
+            },
+            {
+                title: "Delay Greeting - Need Phone Number",
+                category: "delay",
+                text: "Good day! Thank you for reaching out to Easybet Customer Support. My name is Raya, and I'll be your support today.\n\nWe sincerely apologize for the delay and truly appreciate your patience. We’re currently experiencing a high volume of inquiries, but we’re committed to assisting all customers as quickly as possible.\n\nTo help me securely pull up your account and provide accurate support, could you please share the phone number that is currently linked to your Easybet account?"
+            },
+            {
+                title: "Greeting - Confirm Mobile Number",
+                category: "normal",
+                text: "Good day! Thank you for reaching out to Easybet Customer Support. My name is Raya, and I'll be your support today.\n\nTo proceed securely, I’d like to confirm if the mobile number you provided is currently linked to your Easybet account."
+            },
+            {
+                title: "Greeting - Confirm Email",
+                category: "normal",
+                text: "Good day! Thank you for reaching out to Easybet Customer Support. My name is Raya, and I'll be your support today.\n\nTo proceed securely, I’d like to confirm if the email address you provided is currently linked to your Easybet account."
+            },
+            {
+                title: "Delay Greeting - Confirm Mobile Number",
+                category: "delay",
+                text: "Good day! Thank you for reaching out to Easybet Customer Support. My name is Raya, and I'll be your support today.\n\nWe sincerely apologize for the delay and truly appreciate your patience. We’re currently experiencing a high volume of inquiries, but we’re committed to assisting all customers as quickly as possible.\n\nTo proceed securely, I’d like to confirm if the mobile number you provided is currently linked to your Easybet account."
+            },
+            {
+                title: "Delay Greeting - Confirm Email",
+                category: "delay",
+                text: "Good day! Thank you for reaching out to Easybet Customer Support. My name is Raya, and I'll be your support today.\n\nWe sincerely apologize for the delay and truly appreciate your patience. We’re currently experiencing a high volume of inquiries, but we’re committed to assisting all customers as quickly as possible.\n\nTo proceed securely, I’d like to confirm if the email address you provided is currently linked to your Easybet account."
+            },
+            {
+                title: "No Account - Mobile Number",
+                category: "no-account",
+                text: "Thank you for providing your mobile number. I’ve checked the details, but I’m unable to find an Easybet account linked to the number provided.\n\nCould you please provide your email address registered on your Easybet account so I can check this for you?"
+            },
+            {
+                title: "No Account - Email Address",
+                category: "no-account",
+                text: "Thank you for providing your email address. I’ve checked our system and can confirm that it is not linked to an Easybet account.\n\nTo help me locate the correct account securely and check this thoroughly for you, could you please provide your ID number?"
+            },
+            {
+                title: "Withdrawal - Confirm Request",
+                category: "withdrawal",
+                text: "Thank you for confirming your account details. I understand that you're contacting us regarding your RCODE withdrawal request. Is that correct?"
+            },
+            {
+                title: "Withdrawal - Pending Review",
+                category: "withdrawal",
+                text: "Thank you for confirming. I completely understand how important it is for you to have access to your funds as soon as possible. Rest assured, I’ll do my best to assist with getting your withdrawal reviewed as soon as possible.\n\nUpon checking, I can see that your withdrawal is still pending. Typically, withdrawals are reviewed and approved within 24 hours, as stated in our Terms and Conditions here: https://easybet.co.za/page/deposits-withdrawals\n\nDon't worry. I'm here to assist you. Let me work on speeding up your withdrawal for you. Please allow me 3 to 5 minutes while I work on this for you."
+            },
+            {
+                title: "Withdrawal - Priority Handling",
+                category: "withdrawal",
+                text: "Thank you for patiently waiting. Great news! I’ve already forwarded your withdrawal request to the relevant team for priority handling to help expedite the process.\n\nOnce your request has been successfully processed, you should receive an SMS notification within a few minutes.\n\nAfter approval, the funds typically reflect in your bank account within 1 to 2 business days, depending on your bank’s processing time.\n\nI’m happy to help you with anything else you need, what else can I do for you today?"
+            },
+            {
+                title: "Withdrawal - Processing Delay",
+                category: "withdrawal",
+                text: "Please note that we’re currently handling a higher volume of withdrawal requests due to the strong winning streak from our customers this week. As a result, the withdrawal team is working through several requests at the same time, which may cause some delays in processing.\n\nRest assured, your withdrawal is being attended to. Once it has been processed, you’ll receive an SMS notification. While I’m unable to provide an exact processing timeframe, your request is already in the queue for review.\n\nI’m happy to help you with anything else you need, what else can I do for you today?"
+            },
+            {
+                title: "Withdrawal - Future Tip",
+                category: "withdrawal",
+                text: "As an additional tip for future withdrawals, instead of submitting two separate withdrawal requests, you can consider submitting one larger withdrawal. This can help you manage your withdrawal requests more efficiently, as only two withdrawals can be processed within a 24-hour period."
+            },
+            {
+                title: "Withdrawal - Approved",
+                category: "withdrawal",
+                text: "I’ve received an update from our Withdrawals Team, and I’m pleased to confirm that your pending withdrawal request has now been approved.\n\nI’m happy to assist you with anything else you may need. Is there anything else I can help you with today?"
+            },
+            {
+                title: "Withdrawal - Priority Handling (Closing)",
+                category: "withdrawal",
+                text: "It was a pleasure assisting you with your inquiry, and I have personally ensured that your withdrawal request has been flagged for priority handling and expedited processing. Please be assured that it is being closely attended to.\n\nHave a wonderful day ahead and stay safe!\n\nA short star rating survey will appear after this chat. Your feedback truly means a lot to us. Just a quick heads-up: 1 star ⭐ is the lowest rating and 5 stars ⭐ is the highest. Please feel free to rate us based on your experience today. Your input helps us improve and serve you better.\n\nYou can contact us anytime via:\nLive Chat\nEmail: help@easybet.co.za\n\nThank you for choosing Easybet. Have a great day ahead."
+            },
+            {
+                title: "Withdrawal - Approved (Closing)",
+                category: "withdrawal",
+                text: "Thank you for your patience and cooperation throughout this process. It was a pleasure assisting you with your inquiry today. I personally ensured that your withdrawal request was flagged for priority handling and expedited review, and I am pleased to let you know that our withdrawals team has now successfully approved your request.\n\nIf there is anything else we can assist you with, please feel free to let us know. We are always here to support you every step of the way.\n\nHave a wonderful day ahead and stay safe!\n\nA short star rating survey will appear after this chat. Your feedback truly means a lot to us. Just a quick heads-up: 1 star ⭐ is the lowest rating and 5 stars ⭐ is the highest. Please feel free to rate us based on your experience today. Your input helps us improve and serve you better.\n\nYou can contact us anytime via:\nLive Chat\nEmail: help@easybet.co.za\n\nThank you for choosing Easybet. Have a great day ahead!"
+            },
+            {
+                title: "Closing - Resolved Inquiry",
+                category: "closing",
+                text: "It looks like we’ve been inactive for a bit and since we haven’t received any details about your concern, I’ll go ahead and close the chat for now.\n\nI’m glad that I was able to assist you with your inquiry regarding STATEHERE. If you need any further help, please don’t hesitate to reach out our support team is always here to assist you.\n\nA short star rating survey will appear after this chat. Your feedback truly means a lot to us. Just a quick heads-up: 1 star ⭐ is the lowest rating and 5 stars ⭐ is the highest. Please feel free to rate us based on your experience today. Your input helps us improve and serve you better.\n\nYou can contact us anytime via:\nLive Chat\nEmail: help@easybet.co.za\n\nThank you for choosing Easybet. Have a great day ahead."
+            },
+            {
+                title: "Closing - Inactive Chat",
+                category: "closing",
+                text: "It looks like we’ve been inactive for a bit and since we haven’t received any details about your concern, I’ll go ahead and close the chat for now.\n\nPlease note that our Easybet Support Team is available 24/7 should you need any further assistance.\n\nYou can contact us anytime via:\nLive Chat\nEmail: help@easybet.co.za\n\nWe’d really appreciate it if you could take a moment to rate the service you received today. A short survey will appear after the chat ends, and your feedback helps us improve our support.\n\nThank you for choosing Easybet, and have a great day ahead."
+            }
+        ];
+
+        // Elements
+        const container = document.getElementById('spiels-container');
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const toast = document.getElementById('toast');
+        let toastTimeout;
+
+        // Rendering Logic
+        function renderSpiels(filter = 'all') {
+            container.innerHTML = '';
+            
+            const filteredSpiels = spielsData.filter(spiel => filter === 'all' || spiel.category === filter);
+
+            if (filteredSpiels.length === 0) {
+                container.innerHTML = '<div class="empty-state">No spiels available in this category.</div>';
+                return;
+            }
+
+            filteredSpiels.forEach(spiel => {
+                const card = document.createElement('div');
+                card.className = 'spiel-card';
+                card.setAttribute('role', 'button');
+                card.setAttribute('tabindex', '0');
+                card.setAttribute('aria-label', `Copy spiel: ${spiel.title}`);
+
+                // Format category name for UI display
+                const displayCategory = spiel.category.replace('-', ' ');
+
+                card.innerHTML = `
+                    <div class="spiel-header">
+                        <span class="spiel-title">${spiel.title}</span>
+                        <span class="spiel-category category-${spiel.category}">${displayCategory}</span>
+                    </div>
+                    <div class="spiel-body">${spiel.text}</div>
+                `;
+
+                // Interactions: Click & Keyboard
+                card.addEventListener('click', () => handleCopy(spiel.text));
+                card.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        handleCopy(spiel.text);
+                    }
+                });
+
+                container.appendChild(card);
+            });
+        }
+
+        // Clipboard Logic
+        async function handleCopy(text) {
+            try {
+                await navigator.clipboard.writeText(text);
+                showToast();
+                playNotificationSound();
+            } catch (err) {
+                console.error('Failed to copy text: ', err);
+            }
+        }
+
+        // Toast Logic
+        function showToast() {
+            clearTimeout(toastTimeout);
+            toast.classList.add('show');
+            
+            toastTimeout = setTimeout(() => {
+                toast.classList.remove('show');
+            }, 1800); // Automatically disappears smoothly under 2 seconds
+        }
+
+        // Notification Sound Logic (Web Audio API - No external dependencies)
+        function playNotificationSound() {
+            try {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (!AudioContext) return; 
+
+                const ctx = new AudioContext();
+
+                const playTone = (freq, type, startTime, duration, volume) => {
+                    const osc = ctx.createOscillator();
+                    const gainNode = ctx.createGain();
+
+                    osc.type = type;
+                    osc.frequency.setValueAtTime(freq, ctx.currentTime + startTime);
+
+                    // Soft volume envelope
+                    gainNode.gain.setValueAtTime(0, ctx.currentTime + startTime);
+                    gainNode.gain.linearRampToValueAtTime(volume, ctx.currentTime + startTime + 0.02);
+                    gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + startTime + duration);
+
+                    osc.connect(gainNode);
+                    gainNode.connect(ctx.destination);
+
+                    osc.start(ctx.currentTime + startTime);
+                    osc.stop(ctx.currentTime + startTime + duration);
+                };
+
+                // Play a subtle, professional double-chime (G5 -> C6)
+                playTone(783.99, 'sine', 0, 0.3, 0.08);     // First note (G5), low volume
+                playTone(1046.50, 'sine', 0.1, 0.5, 0.06);  // Second note (C6), slightly delayed & lower volume
+                
+            } catch (e) {
+                console.error("Audio playback failed", e);
+            }
+        }
+
+        // Category Filtering Logic
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                filterBtns.forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+                renderSpiels(e.target.dataset.filter);
+            });
+        });
+
+        // Initialize Workspace
+        renderSpiels();
+    </script>
+</body>
+</html>

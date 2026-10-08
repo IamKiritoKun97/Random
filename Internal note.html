@@ -986,25 +986,59 @@
 
     #toast {
       visibility: hidden;
+      display: flex;
+      align-items: center;
+      gap: 10px;
       background: var(--accent);
       color: #000;
       font-weight: 700;
-      padding: 16px 32px;
+      padding: 14px 26px 14px 16px;
       border-radius: 100px;
       position: fixed;
       bottom: 40px;
       left: 50%;
-      transform: translateX(-50%) translateY(20px);
+      transform: translateX(-50%) translateY(24px) scale(0.94);
       z-index: 4000;
       font-size: 0.78rem;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.04em;
       opacity: 0;
-      box-shadow: 0 24px 60px rgba(0,0,0,0.6);
-      transition: all 0.4s var(--anim-out);
+      pointer-events: none;
+      box-shadow: 0 24px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.4);
+      transition: opacity 0.35s var(--anim-out),
+                  transform 0.45s var(--anim-spring),
+                  visibility 0s linear 0.45s;
     }
 
-    #toast.show { visibility: visible; opacity: 1; transform: translateX(-50%) translateY(0); }
+    #toast.show {
+      visibility: visible;
+      opacity: 1;
+      transform: translateX(-50%) translateY(0) scale(1);
+      transition: opacity 0.3s var(--anim-out),
+                  transform 0.45s var(--anim-spring),
+                  visibility 0s linear 0s;
+    }
+
+    #toast .toast-icon {
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      background: #0a0c10;
+      color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+
+    #toast.is-error { background: var(--error); color: #fff; }
+    #toast.is-error .toast-icon { background: rgba(0,0,0,0.25); }
+
+    /* Brief pulse on the Live Preview box when copied */
+    .bubble.is-copied { animation: bubble-copied 0.6s var(--anim-out); }
+    .bubble.is-copied:after { content: 'COPIED'; opacity: 1; color: var(--text-main); }
+    .bubble:focus-visible { outline: none; box-shadow: var(--focus-ring), inset 0 2px 16px rgba(0,0,0,0.4); }
+    @keyframes bubble-copied {
+      0%   { transform: scale(1);     box-shadow: 0 0 0 0 rgba(255,255,255,0.35), inset 0 2px 16px rgba(0,0,0,0.4); }
+      35%  { transform: scale(0.985); box-shadow: 0 0 0 6px rgba(255,255,255,0.10), inset 0 2px 16px rgba(0,0,0,0.4); }
+      100% { transform: scale(1);     box-shadow: 0 0 0 0 rgba(255,255,255,0), inset 0 2px 16px rgba(0,0,0,0.4); }
+    }
 
     .mobile-only { display: none !important; }
 
@@ -1307,8 +1341,7 @@
           <label class="panel-item"><input type="checkbox" value="Manually disabled due to a duplicate ID Code: {ID1}"> <span class="dropdown-item-text">Duplicate ID Code</span></label>
           <label class="panel-item"><input type="checkbox" value="Manually disabled due to a duplicate Bank Account Number: {ID1}"> <span class="dropdown-item-text">Duplicate Bank Acc</span></label>
       <label class="panel-item"><input type="checkbox" value="We can proceed with reactivating this account once the customer provides a valid ID, proof of residence, and an ID selfie, provided all documents return a 'Green' status in XDS."> <span class="dropdown-item-text">Reactivation Pending (XDS)</span></label>
- <label class="panel-item"><input type="checkbox" value="This account remains disabled, please do not reactivate, one-time courtesy was granted to account {ID1}."> <span class="dropdown-item-text">Remains Disabled</span></label>
- <label class="panel-item"><input type="checkbox" value="Modified the account to prevent future duplication."> <span class="dropdown-item-text">Modified the account to prevent future duplication</span></label>
+ <label class="panel-item"><input type="checkbox" value="This account remains disabled, please do not reactivate, one-time courtesy was granted to account {ID1}. Modified the account to prevent future duplication."> <span class="dropdown-item-text">Remains Disabled</span></label>
 
  <label class="panel-item"><input type="checkbox" value="R50 Sign up bonus abuser, do not reactivate."> <span class="dropdown-item-text">R50 Sign up bonus abuser, do not reactivate.</span></label>
 
@@ -1480,7 +1513,7 @@
     </div>
 
     <span class="section-label">Live Preview</span>
-    <div id="bubble" class="bubble" role="button" onclick="copyText()"></div>
+    <div id="bubble" class="bubble" role="button" tabindex="0" aria-label="Copy note to clipboard" onclick="copyText()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();copyText();}"></div>
   </div>
 
   <div class="tags-sidebar">
@@ -1497,7 +1530,7 @@
   </div>
 </div>
 
-<div id="toast">Copied to Clipboard</div>
+<div id="toast" role="status" aria-live="polite"><span class="toast-icon" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></span><span id="toastText">Copied to clipboard!</span></div>
 
 <!-- Welcome Modal Overlay -->
 <div id="welcomeModalOverlay" class="welcome-modal-overlay">
@@ -1652,7 +1685,7 @@
         document.body.classList.add('ui-expanded');
     });
 
-    const REMOTE_WALLPAPER_URL = "https://images.unsplash.com/photo-1779485070200-a33a369afe5a?q=80&w=1171&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"; 
+    const REMOTE_WALLPAPER_URL = "https://images.unsplash.com/photo-1789011310705-a6ebc5d3ebb5?q=80&w=1171&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"; 
     const LOCAL_WALLPAPER_URL = "wallpaper.jpg";
     let currentWallpaperBlobUrl = null;
 
@@ -1934,7 +1967,7 @@
     "Discovery Bank", "African Bank", "Sasfin Bank", "Albaraka Bank",
     "HSBC Bank", "Olympus Mobile", "Payshap", "Access Bank", "RMB",
     "Standard Chartered Bank", "Ubank", "TymeBank", "Bidvest Bank",
-    "Bank Zero Mukuru"
+    "Bank Zero", "Mukuru"
   ];
 
   // Builds a bank <select> bound to sel[field] ('v1' = From/OLD, 'v2' = To/NEW)
@@ -2356,25 +2389,114 @@
     }
   }
 
-  function copyText() {
-    const text = document.getElementById("bubble").textContent;
+  // ===== Audio feedback (Web Audio API, fully offline) =====
+  let audioCtx = null;
+
+  // Create/resume the AudioContext. Must be called from a user gesture
+  // (click, key, touch) so browsers' autoplay policies allow playback.
+  function ensureAudioContext() {
+    try {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return null;
+      if (!audioCtx) audioCtx = new AC();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      return audioCtx;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  // Unlock audio on the first interaction anywhere on the page
+  ['pointerdown', 'keydown', 'touchstart'].forEach(evt => {
+    window.addEventListener(evt, function unlock() {
+      ensureAudioContext();
+      window.removeEventListener(evt, unlock);
+    }, { passive: true });
+  });
+
+  // One soft bell-like note: sine fundamental + quiet octave partial, fast attack, exponential decay
+  function playNote(ctx, freq, start, duration, peak) {
+    const master = ctx.createGain();
+    master.gain.setValueAtTime(0.0001, start);
+    master.gain.exponentialRampToValueAtTime(peak, start + 0.008);
+    master.gain.exponentialRampToValueAtTime(0.0001, start + duration);
+    master.connect(ctx.destination);
+
+    const fundamental = ctx.createOscillator();
+    fundamental.type = 'sine';
+    fundamental.frequency.setValueAtTime(freq, start);
+    fundamental.connect(master);
+
+    const partialGain = ctx.createGain();
+    partialGain.gain.value = 0.22;
+    partialGain.connect(master);
+    const partial = ctx.createOscillator();
+    partial.type = 'sine';
+    partial.frequency.setValueAtTime(freq * 2, start);
+    partial.connect(partialGain);
+
+    [fundamental, partial].forEach(o => { o.start(start); o.stop(start + duration + 0.05); });
+  }
+
+  // iOS SMS-style two-tone chime (short high note, then a higher, longer one)
+  function playSmsChime() {
+    const ctx = ensureAudioContext();
+    if (!ctx) return;
+    try {
+      const t = ctx.currentTime + 0.01;
+      playNote(ctx, 1174.66, t,        0.16, 0.16); // D6
+      playNote(ctx, 1567.98, t + 0.11, 0.38, 0.14); // G6
+    } catch (e) { /* audio is a nicety; never break copying */ }
+  }
+
+  // ===== Click-to-copy =====
+  function fallbackCopy(text) {
     const el = document.createElement('textarea');
     el.value = text;
     el.setAttribute('readonly', '');
-    el.style.position = 'absolute'; el.style.left = '-9999px';
+    el.style.position = 'fixed';
+    el.style.left = '-9999px';
+    el.style.top = '0';
     document.body.appendChild(el);
     el.select();
-    try { document.execCommand('copy'); showToast("Copied to clipboard", false); } catch (err) { }
+    el.setSelectionRange(0, el.value.length);
+    let ok = false;
+    try { ok = document.execCommand('copy'); } catch (err) { ok = false; }
     document.body.removeChild(el);
+    return ok;
   }
 
+  async function copyText() {
+    ensureAudioContext(); // inside the click gesture, so playback is allowed
+    const bubble = document.getElementById("bubble");
+    const text = bubble.textContent;
+
+    let ok = false;
+    if (navigator.clipboard && window.isSecureContext) {
+      try { await navigator.clipboard.writeText(text); ok = true; } catch (e) { ok = false; }
+    }
+    if (!ok) ok = fallbackCopy(text);
+
+    if (ok) {
+      playSmsChime();
+      showToast("Copied to clipboard!", false);
+      bubble.classList.remove('is-copied');
+      void bubble.offsetWidth; // restart animation on rapid clicks
+      bubble.classList.add('is-copied');
+      setTimeout(() => bubble.classList.remove('is-copied'), 700);
+    } else {
+      showToast("Couldn't copy. Please try again", true);
+    }
+  }
+
+  let toastTimer = null;
   function showToast(message, isError) {
     const toast = document.getElementById("toast");
-    toast.textContent = message;
-    toast.style.background = isError ? "var(--error)" : "var(--accent)";
-    toast.style.color = isError ? "white" : "black";
+    document.getElementById("toastText").textContent = message;
+    toast.classList.toggle("is-error", !!isError);
+    clearTimeout(toastTimer);
     toast.classList.add("show");
-    setTimeout(() => toast.classList.remove("show"), 2500);
+    toastTimer = setTimeout(() => toast.classList.remove("show"), 2200);
   }
 </script>
 

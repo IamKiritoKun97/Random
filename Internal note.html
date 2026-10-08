@@ -1942,24 +1942,32 @@
   // ===== Dropdown-driven dynamic fields =====
   const GENDER_OPTIONS = ["Male", "Female"];
 
-  const BRANCH_CODE_OPTIONS = [
-    { bank: "Absa Bank",        code: "632005" },
-    { bank: "African Bank",     code: "430000" },
-    { bank: "Access Bank",      code: "410506" },
-    { bank: "Capitec Bank",     code: "470010" },
-    { bank: "Finbond Mutual",   code: "589000" },
-    { bank: "Discovery Bank",   code: "679000" },
-    { bank: "FNB",              code: "250655" },
-    { bank: "Grindrod Bank",    code: "223626" },
-    { bank: "Investec Bank",    code: "580105" },
-    { bank: "Nedbank",          code: "198765" },
-    { bank: "Sasfin Bank",      code: "683000" },
-    { bank: "OM Bank",          code: "352000" },
-    { bank: "Standard Bank",    code: "051001" },
-    { bank: "Tyme Bank",        code: "678910" },
-    { bank: "Bidvest Bank",     code: "470010" },
-    { bank: "Mercantile Bank",  code: "450105" }
-  ];
+const BRANCH_CODE_OPTIONS = [
+  { bank: "Absa Bank",                code: "632005" },
+  { bank: "Access Bank",              code: "410506" },
+  { bank: "African Bank",             code: "430000" },
+  { bank: "Albaraka Bank",            code: "800000" },
+  { bank: "Bank Zero Mukuru",        code: "435000" },
+  { bank: "Capitec Bank",             code: "470010" },
+  { bank: "Discovery Bank",           code: "679000" },
+  { bank: "Finbond Mutual",          code: "589000" },
+  { bank: "FNB",                     code: "250655" },
+  { bank: "Grindrod Bank",           code: "223626" },
+  { bank: "HSBC Bank",               code: "580000" },
+  { bank: "Investec Bank",           code: "580105" },
+  { bank: "Mercantile Bank",         code: "450105" },
+  { bank: "Nedbank",                 code: "198765" },
+  { bank: "OM Bank under Bidvest option 1",   code: "352000" },
+  { bank: "OM Bank under Bidvest option 2",   code: "462005" }, 
+  { bank: "Olympus Mobile",          code: "000000" },
+  { bank: "Payshap",                 code: "000000" },
+  { bank: "RMB",                     code: "261251" },
+  { bank: "Sasfin Bank",             code: "683000" },
+  { bank: "Standard Bank",           code: "051001" },
+  { bank: "Standard Chartered Bank", code: "730020" },
+  { bank: "Tyme Bank",               code: "678910" },
+  { bank: "Ubank",                   code: "431010" }
+];
 
   // Shared option list for both the "From" and "To" bank dropdowns
   const BANK_NAME_OPTIONS = [
@@ -1967,7 +1975,7 @@
     "Discovery Bank", "African Bank", "Sasfin Bank", "Albaraka Bank",
     "HSBC Bank", "Olympus Mobile", "Payshap", "Access Bank", "RMB",
     "Standard Chartered Bank", "Ubank", "TymeBank", "Bidvest Bank",
-    "Bank Zero", "Mukuru"
+    "Bank Zero Mukuru"
   ];
 
   // Builds a bank <select> bound to sel[field] ('v1' = From/OLD, 'v2' = To/NEW)

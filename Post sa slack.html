@@ -1,0 +1,1086 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Post sa Slack 4</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238892b0' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z'></path><polyline points='14 2 14 8 20 8'></polyline><line x1='16' y1='13' x2='8' y2='13'></line><line x1='16' y1='17' x2='8' y2='17'></line><polyline points='10 9 9 9 8 9'></polyline></svg>">
+    <style>
+        :root {
+            --bg-overlay: rgba(15, 20, 25, 0.75);
+            --panel-bg: rgba(25, 30, 38, 0.4);
+            --panel-border: rgba(255, 255, 255, 0.08);
+            --input-bg: rgba(10, 12, 16, 0.5);
+            --input-border: rgba(255, 255, 255, 0.12);
+            --input-focus: rgba(94, 234, 212, 0.4);
+            
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            
+            --accent-new: #5eead4; /* Muted cyan */
+            --accent-old: #cbd5e1; /* Silver */
+            
+            --radius-lg: 16px;
+            --radius-md: 12px;
+            --radius-sm: 8px;
+            
+            --font-stack: 'Inter', system-ui, -apple-system, sans-serif;
+            --transition-fast: 0.2s ease;
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-stack);
+            color: var(--text-primary);
+            background-color: #0f1419;
+            background-image: url('https://images.unsplash.com/photo-1789011310705-a6ebc5d3ebb5?q=80&w=1171&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            line-height: 1.5;
+            position: relative;
+        }
+
+        /* Dark overlay to ensure text readability over the image */
+        body::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: var(--bg-overlay);
+            z-index: 0;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .app-header {
+            position: relative;
+            z-index: 1;
+            padding: 2rem 2rem 1rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .brand {
+            font-size: 0.875rem;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .brand svg {
+            width: 18px;
+            height: 18px;
+            stroke: var(--text-secondary);
+        }
+
+        .main-container {
+            position: relative;
+            z-index: 1;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            padding: 1rem 2rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+            height: calc(100vh - 110px);
+            align-items: stretch;
+        }
+
+        .panel {
+            background: var(--panel-bg);
+            backdrop-filter: blur(24px) saturate(150%);
+            -webkit-backdrop-filter: blur(24px) saturate(150%);
+            border: 1px solid var(--panel-border);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            box-shadow: 0 24px 48px -12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255,255,255,0.05);
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .panel-title {
+            font-size: 1.125rem;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .inputs-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            flex: 1;
+            overflow-y: auto;
+            min-height: 0;
+            padding-right: 0.5rem;
+        }
+
+        .input-group {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .input-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 0.25rem;
+        }
+
+        .input-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .btn-remove {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: var(--radius-sm);
+            transition: var(--transition-fast);
+        }
+
+        .btn-remove:hover {
+            color: #ef4444; /* Soft red for destructive action */
+            background: rgba(239, 68, 68, 0.1);
+        }
+        
+        .input-group:only-child .btn-remove {
+            display: none; /* Never allow removing the last input */
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 140px;
+            background: var(--input-bg);
+            border: 1px solid var(--input-border);
+            border-radius: var(--radius-md);
+            padding: 1rem;
+            color: var(--text-primary);
+            font-family: var(--font-stack);
+            font-size: 0.875rem;
+            resize: vertical;
+            line-height: 1.6;
+            transition: var(--transition-fast);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--input-focus);
+            background: rgba(15, 20, 25, 0.8);
+            box-shadow: 0 0 0 3px rgba(94, 234, 212, 0.1), inset 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .btn-add {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px dashed var(--input-border);
+            color: var(--text-secondary);
+            padding: 0.75rem;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: var(--transition-fast);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-add:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .preview-wrapper {
+            flex: 1;
+            overflow-y: auto;
+            min-height: 0;
+            position: relative;
+            padding-right: 0.5rem;
+        }
+
+        .preview-bubble {
+            background: var(--input-bg);
+            border: 1px solid var(--input-border);
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            min-height: 100%;
+            cursor: pointer;
+            transition: var(--transition-fast);
+            position: relative;
+            outline: none;
+        }
+
+        .preview-bubble:hover, .preview-bubble:focus-visible {
+            border-color: rgba(255, 255, 255, 0.3);
+            background: rgba(20, 25, 32, 0.6);
+        }
+
+        .preview-bubble:active {
+            transform: scale(0.995);
+        }
+
+        /* Empty state styling */
+        .preview-empty {
+            color: var(--text-muted);
+            font-style: italic;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            min-height: 200px;
+        }
+
+        .record-block {
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .record-block:last-child {
+            margin-bottom: 0;
+        }
+
+        .record-line {
+            font-size: 0.875rem;
+            line-height: 1.6;
+            word-break: break-word;
+        }
+
+        .account-badge {
+            display: inline-block;
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            padding: 0.15rem 0.5rem;
+            border-radius: 4px;
+            margin-bottom: 0.5rem;
+            border: 1px solid transparent;
+        }
+
+        .badge-new {
+            color: var(--accent-new);
+            background: rgba(94, 234, 212, 0.1);
+            border-color: rgba(94, 234, 212, 0.2);
+        }
+
+        .badge-old {
+            color: var(--accent-old);
+            background: rgba(203, 213, 225, 0.1);
+            border-color: rgba(203, 213, 225, 0.2);
+        }
+
+        .badge-newer {
+            color: #7dd3fc;
+            background: rgba(125, 211, 252, 0.1);
+            border-color: rgba(125, 211, 252, 0.2);
+        }
+
+        .badge-older {
+            color: #94a3b8;
+            background: rgba(148, 163, 184, 0.1);
+            border-color: rgba(148, 163, 184, 0.2);
+        }
+
+        .name-warning {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #fca5a5;
+            padding: 0.75rem 1rem;
+            border-radius: var(--radius-sm);
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .record-mismatch {
+            border-left: 3px solid rgba(239, 68, 68, 0.5);
+            padding-left: 1rem;
+            margin-left: -1rem;
+            border-radius: 2px;
+            background: linear-gradient(90deg, rgba(239, 68, 68, 0.05) 0%, transparent 100%);
+        }
+
+        .copy-feedback {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.9);
+            background: rgba(255, 255, 255, 0.95);
+            color: #000;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            z-index: 10;
+        }
+
+        .copy-feedback.show {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .chips-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.25rem;
+        }
+
+        .status-chip {
+            padding: 0.4rem 0.6rem;
+            border-radius: var(--radius-sm);
+            font-size: 0.65rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--input-border);
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: var(--transition-fast);
+            user-select: none;
+        }
+
+        .status-chip:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+        }
+
+        .status-chip.active {
+            background: var(--text-primary);
+            color: #0f1419;
+            border-color: var(--text-primary);
+        }
+
+        /* Escalation Dropdown and Modal Styles */
+        .escalation-select {
+            background: var(--input-bg);
+            color: var(--text-primary);
+            border: 1px solid var(--input-border);
+            padding: 0.4rem 0.8rem;
+            border-radius: var(--radius-sm);
+            font-family: var(--font-stack);
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            outline: none;
+            transition: var(--transition-fast);
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%2394a3b8%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.5rem center;
+            background-size: 14px;
+            padding-right: 2rem;
+        }
+
+        .escalation-select:hover, .escalation-select:focus {
+            border-color: var(--input-focus);
+            background-color: rgba(20, 25, 32, 0.8);
+        }
+
+        .escalation-select option {
+            background: #191e26;
+            color: #f8fafc;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 100;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-content {
+            background: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            border-radius: var(--radius-lg);
+            width: 100%;
+            max-width: 800px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 1.125rem;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .btn-close-modal {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 1.5rem;
+            line-height: 1;
+            transition: var(--transition-fast);
+            padding: 0.2rem;
+        }
+
+        .btn-close-modal:hover {
+            color: var(--text-primary);
+        }
+
+        .modal-textarea {
+            width: 100%;
+            min-height: 350px;
+            background: var(--input-bg);
+            border: 1px solid var(--input-border);
+            border-radius: var(--radius-md);
+            padding: 1rem;
+            color: var(--text-primary);
+            font-family: var(--font-stack);
+            font-size: 0.875rem;
+            resize: vertical;
+            line-height: 1.6;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .modal-textarea:focus {
+            outline: none;
+            border-color: var(--input-focus);
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .btn-primary {
+            background: var(--accent-new);
+            color: #000;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: var(--radius-md);
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition-fast);
+        }
+
+        .btn-primary:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        @media (max-width: 900px) {
+            body {
+                height: auto;
+                overflow: auto;
+            }
+            
+            .main-container {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+                padding: 1rem;
+                height: auto;
+            }
+            
+            .app-header {
+                padding: 1.5rem 1rem 0.5rem;
+            }
+
+            .panel {
+                height: auto;
+                min-height: 400px;
+            }
+            
+            .inputs-wrapper {
+                max-height: 50vh;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="app-header">
+        <div class="brand">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line>
+                <polyline points="10 9 9 9 8 9"></polyline>
+            </svg>
+            Account Formatter
+        </div>
+    </header>
+
+    <main class="main-container">
+        <!-- Left Panel: Inputs -->
+        <section class="panel left-panel">
+            <div class="panel-header">
+                <h2 class="panel-title">Raw Data</h2>
+            </div>
+            
+            <div class="inputs-wrapper" id="inputs-wrapper">
+                <!-- Initial text area created via JS to maintain uniform logic -->
+            </div>
+
+            <button class="btn-add" id="btn-add" aria-label="Add another input">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                Add another input
+            </button>
+        </section>
+
+        <!-- Right Panel: Preview -->
+        <section class="panel right-panel">
+            <div class="panel-header">
+                <h2 class="panel-title">Live Preview</h2>
+                <select id="escalation-select" class="escalation-select" aria-label="Generate Escalation Report">
+                    <option value="" disabled selected>Generate Report...</option>
+                    <option value="Duplicate ID Code">Duplicate ID Code</option>
+                    <option value="Duplicate Name and Date of Birth">Duplicate Name & Date of Birth</option>
+                    <option value="Duplicate Bank account">Duplicate Bank Account</option>
+                </select>
+            </div>
+            
+            <div class="preview-wrapper">
+                <div class="preview-bubble" id="preview-bubble" tabindex="0" role="button" aria-label="Copy formatted text">
+                    <div id="preview-content">
+                        <!-- Dynamic content injected here -->
+                        <div class="preview-empty">Paste raw data to begin formatting...</div>
+                    </div>
+                    <div class="copy-feedback" id="copy-feedback">Copied!</div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Escalation Modal Popup -->
+    <div class="modal-overlay" id="escalation-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Escalation Report</h3>
+                <button class="btn-close-modal" id="btn-close-modal" aria-label="Close modal">&times;</button>
+            </div>
+            <textarea id="modal-textarea" class="modal-textarea" aria-label="Escalation text"></textarea>
+            <div class="modal-actions">
+                <button class="btn-primary" id="btn-copy-modal">Copy Report</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const inputsWrapper = document.getElementById('inputs-wrapper');
+            const btnAdd = document.getElementById('btn-add');
+            const previewContent = document.getElementById('preview-content');
+            const previewBubble = document.getElementById('preview-bubble');
+            const copyFeedback = document.getElementById('copy-feedback');
+            
+            const escalationSelect = document.getElementById('escalation-select');
+            const modalOverlay = document.getElementById('escalation-modal');
+            const btnCloseModal = document.getElementById('btn-close-modal');
+            const modalTextarea = document.getElementById('modal-textarea');
+            const btnCopyModal = document.getElementById('btn-copy-modal');
+
+            let inputCount = 0;
+            let currentFormattedData = []; 
+            let copyTextString = ""; 
+            let hasMismatchWarning = false;
+
+            const STATUS_OPTIONS = [
+                "Customer used this account to contact us",
+                "Deleted account", "No real money deposit", "With real money deposit",
+                "With balance", "Not FICA", "FICA verified",
+                "R50 Sign Up Bonus Fully Used", "R50 Sign Up Bonus Partially Used",
+                "R50 Sign Up Bonus Not Used", "R50 Sign Up Bonus Not Issued",
+                "R50 FREE BET Fully used", "Manually disabled", "Unfinished Registration",
+                "Bank Account Details Owner", "Using Someone Else’s Bank Account Details"
+            ];
+
+            function createInputGroup() {
+                inputCount++;
+                const currentId = inputCount;
+                
+                const group = document.createElement('div');
+                group.className = 'input-group';
+                group.id = `group-${currentId}`;
+
+                const header = document.createElement('div');
+                header.className = 'input-header';
+                
+                const label = document.createElement('span');
+                label.className = 'input-label';
+                label.textContent = `Account ${currentId}`;
+
+                const removeBtn = document.createElement('button');
+                removeBtn.className = 'btn-remove';
+                removeBtn.textContent = 'Remove';
+                removeBtn.setAttribute('aria-label', `Remove Account ${currentId}`);
+                removeBtn.onclick = () => {
+                    group.remove();
+                    reindexLabels();
+                    updatePreview();
+                };
+
+                header.appendChild(label);
+                header.appendChild(removeBtn);
+
+                const textarea = document.createElement('textarea');
+                textarea.placeholder = 'Paste raw data here...';
+                textarea.id = `input-${currentId}`;
+                textarea.setAttribute('aria-label', `Raw data for Account ${currentId}`);
+                textarea.addEventListener('input', updatePreview);
+
+                group.appendChild(header);
+                group.appendChild(textarea);
+
+                const chipsContainer = document.createElement('div');
+                chipsContainer.className = 'chips-container';
+                STATUS_OPTIONS.forEach(opt => {
+                    const chip = document.createElement('span');
+                    chip.className = 'status-chip';
+                    chip.textContent = opt;
+                    chip.onclick = () => {
+                        chip.classList.toggle('active');
+                        updatePreview();
+                    };
+                    chipsContainer.appendChild(chip);
+                });
+                group.appendChild(chipsContainer);
+
+                inputsWrapper.appendChild(group);
+
+                inputsWrapper.scrollTop = inputsWrapper.scrollHeight;
+                textarea.focus();
+            }
+
+            function reindexLabels() {
+                const groups = inputsWrapper.querySelectorAll('.input-group');
+                groups.forEach((group, index) => {
+                    const label = group.querySelector('.input-label');
+                    if (label) {
+                        label.textContent = `Account ${index + 1}`;
+                    }
+                });
+            }
+
+            function toTitleCase(str) {
+                return str.toLowerCase().replace(/\b\w/g, s => s.toUpperCase());
+            }
+
+            function processRecord(rawText) {
+                let text = rawText.trim();
+                if (!text) return null;
+
+                if ((text.startsWith('"') && text.endsWith('"')) || (text.startsWith("'") && text.endsWith("'"))) {
+                    if (text.length >= 2) {
+                        text = text.substring(1, text.length - 1).trim();
+                    }
+                }
+
+                const lines = text.split(/\r?\n/);
+                const cleanedLines = [];
+
+                for (let i = 0; i < lines.length; i++) {
+                    let line = lines[i].trim();
+                    if (line === '') continue;
+                    line = line.replace(/\s*\|\s*/g, ' | ');
+                    cleanedLines.push(line);
+                }
+
+                if (cleanedLines.length === 0) return null;
+
+                let firstLine = cleanedLines[0];
+                let pipeIdx = firstLine.indexOf('|');
+                let originalName = pipeIdx > -1 ? firstLine.substring(0, pipeIdx).trim() : firstLine.trim();
+                
+                // Normalizing to lowercase for accurate mismatch detection across differing capitalizations
+                let normalizedName = originalName.replace(/\s+/g, ' ').toLowerCase().trim();
+
+                let formattedLines = [];
+                for (let i = 0; i < cleanedLines.length; i++) {
+                    let line = cleanedLines[i];
+                    if (i === 0) {
+                        // Title Case customer name formatting
+                        let titleCasedName = toTitleCase(originalName.replace(/\s+/g, ' '));
+                        if (pipeIdx > -1) {
+                            let rest = firstLine.substring(pipeIdx);
+                            formattedLines.push((titleCasedName + ' ' + rest).replace(/\s+\|\s+/g, ' | '));
+                        } else {
+                            formattedLines.push(titleCasedName);
+                        }
+                    } else if (line.toLowerCase().startsWith('email:')) {
+                        // Title Case email formatting
+                        formattedLines.push(toTitleCase(line));
+                    } else {
+                        formattedLines.push(line);
+                    }
+                }
+
+                return {
+                    originalLines: cleanedLines,
+                    formattedLines: formattedLines,
+                    rawDate: parseRegisteredAt(cleanedLines),
+                    originalName: originalName,
+                    normalizedName: normalizedName,
+                    label: null,
+                    labelClass: null,
+                    isMismatch: false,
+                    statuses: []
+                };
+            }
+
+            function parseRegisteredAt(lines) {
+                for (const line of lines) {
+                    const match = line.match(/^Registered At:\s*(\d{2})\/(\d{2})\/(\d{2,4})\s+(\d{2}):(\d{2}):(\d{2})/i);
+                    if (match) {
+                        const [_, dd, mm, yy, h, m, s] = match;
+                        let year = parseInt(yy, 10);
+                        if (year < 100) year += 2000;
+                        const dateObj = new Date(year, parseInt(mm, 10) - 1, parseInt(dd, 10), parseInt(h, 10), parseInt(m, 10), parseInt(s, 10));
+                        return dateObj.getTime();
+                    }
+                }
+                return null;
+            }
+
+            function classifyAccounts(records) {
+                const datedRecords = records.filter(r => r.rawDate !== null);
+                records.forEach(r => { r.label = null; r.labelClass = null; });
+
+                if (datedRecords.length >= 2) {
+                    const timestamps = datedRecords.map(r => r.rawDate);
+                    const minTime = Math.min(...timestamps);
+                    const maxTime = Math.max(...timestamps);
+                    
+                    // 365 Days gap check
+                    const rangeDays = (maxTime - minTime) / (1000 * 60 * 60 * 24);
+                    const isLongRange = rangeDays >= 365;
+
+                    const midPoint = minTime + (maxTime - minTime) / 2;
+                    const minCount = timestamps.filter(t => t === minTime).length;
+                    const maxCount = timestamps.filter(t => t === maxTime).length;
+
+                    if (minTime !== maxTime) {
+                        records.forEach(r => {
+                            if (r.rawDate === null) return;
+
+                            if (r.rawDate === minTime && minCount === 1) {
+                                r.label = isLongRange ? 'Original Account' : 'Old Account';
+                                r.labelClass = 'badge-old';
+                            } else if (r.rawDate === maxTime && maxCount === 1) {
+                                r.label = isLongRange ? 'Newest Account' : 'New Account';
+                                r.labelClass = 'badge-new';
+                            } else if (r.rawDate < midPoint) {
+                                r.label = 'Older Account';
+                                r.labelClass = 'badge-older';
+                            } else if (r.rawDate >= midPoint) {
+                                r.label = 'Newer Account';
+                                r.labelClass = 'badge-newer';
+                            }
+                        });
+                    }
+                }
+                return records;
+            }
+
+            function detectMismatches(records) {
+                let nameFreq = {};
+                records.forEach(r => {
+                    if (r.normalizedName) {
+                        nameFreq[r.normalizedName] = (nameFreq[r.normalizedName] || 0) + 1;
+                    }
+                });
+
+                const uniqueNames = Object.keys(nameFreq);
+                if (uniqueNames.length > 1 && records.length > 1) {
+                    let maxFreq = 0;
+                    for (let name in nameFreq) {
+                        if (nameFreq[name] > maxFreq) maxFreq = nameFreq[name];
+                    }
+
+                    records.forEach(r => {
+                        if (r.normalizedName) {
+                            if (maxFreq === 1) {
+                                r.isMismatch = true; // All differ
+                            } else if (nameFreq[r.normalizedName] < maxFreq) {
+                                r.isMismatch = true; // Differing minority
+                            } else {
+                                r.isMismatch = false;
+                            }
+                        }
+                    });
+                    return true;
+                } else {
+                    records.forEach(r => r.isMismatch = false);
+                    return false;
+                }
+            }
+
+            function updatePreview() {
+                const textareas = inputsWrapper.querySelectorAll('textarea');
+                let rawRecords = [];
+
+                textareas.forEach(ta => {
+                    const group = ta.closest('.input-group');
+                    const activeChips = Array.from(group.querySelectorAll('.status-chip.active')).map(c => c.textContent);
+                    
+                    const record = processRecord(ta.value);
+                    if (record) {
+                        record.statuses = activeChips;
+                        rawRecords.push(record);
+                    }
+                });
+
+                currentFormattedData = classifyAccounts(rawRecords);
+                hasMismatchWarning = detectMismatches(currentFormattedData);
+                renderDOMAndText();
+            }
+
+            function renderDOMAndText() {
+                previewContent.innerHTML = '';
+                copyTextString = "";
+
+                if (currentFormattedData.length === 0) {
+                    const emptyState = document.createElement('div');
+                    emptyState.className = 'preview-empty';
+                    emptyState.textContent = 'Paste raw data to begin formatting...';
+                    previewContent.appendChild(emptyState);
+                    return;
+                }
+
+                let textBuilder = [];
+
+                // Display warning if differing names are found
+                if (hasMismatchWarning) {
+                    const warningDiv = document.createElement('div');
+                    warningDiv.className = 'name-warning';
+                    warningDiv.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg> Different Names Detected`;
+                    previewContent.appendChild(warningDiv);
+                    textBuilder.push('--- DIFFERENT NAMES DETECTED ---');
+                }
+
+                currentFormattedData.forEach((record, index) => {
+                    const blockDiv = document.createElement('div');
+                    blockDiv.className = 'record-block';
+                    
+                    if (record.isMismatch) {
+                        blockDiv.classList.add('record-mismatch');
+                    }
+
+                    let recordTextBuilder = [];
+
+                    if (record.label) {
+                        const badgeSpan = document.createElement('span');
+                        badgeSpan.className = `account-badge ${record.labelClass}`;
+                        badgeSpan.textContent = record.label;
+                        blockDiv.appendChild(badgeSpan);
+                        
+                        recordTextBuilder.push(record.label);
+                    }
+
+                    record.formattedLines.forEach(line => {
+                        const lineDiv = document.createElement('div');
+                        lineDiv.className = 'record-line';
+                        lineDiv.textContent = line; 
+                        blockDiv.appendChild(lineDiv);
+                        
+                        recordTextBuilder.push(line);
+                    });
+
+                    // Append active status tags to the preview output
+                    if (record.statuses && record.statuses.length > 0) {
+                        record.statuses.forEach(status => {
+                            const lineDiv = document.createElement('div');
+                            lineDiv.className = 'record-line';
+                            lineDiv.textContent = status;
+                            blockDiv.appendChild(lineDiv);
+                            recordTextBuilder.push(status);
+                        });
+                    }
+
+                    previewContent.appendChild(blockDiv);
+                    textBuilder.push(recordTextBuilder.join('\n'));
+                });
+
+                copyTextString = textBuilder.join('\n\n');
+            }
+
+            async function copyToClipboard() {
+                if (!copyTextString) return;
+
+                try {
+                    if (navigator.clipboard && window.isSecureContext) {
+                        await navigator.clipboard.writeText(copyTextString);
+                    } else {
+                        const textArea = document.createElement("textarea");
+                        textArea.value = copyTextString;
+                        textArea.style.top = "0";
+                        textArea.style.left = "0";
+                        textArea.style.position = "fixed";
+                        document.body.appendChild(textArea);
+                        textArea.focus();
+                        textArea.select();
+                        document.execCommand('copy');
+                        document.body.removeChild(textArea);
+                    }
+                    showFeedback('Copied');
+                } catch (err) {
+                    console.error('Failed to copy text: ', err);
+                    showFeedback('Select to Copy manually');
+                }
+            }
+
+            function showFeedback(msg) {
+                copyFeedback.textContent = msg;
+                copyFeedback.classList.add('show');
+                setTimeout(() => {
+                    copyFeedback.classList.remove('show');
+                }, 2000);
+            }
+
+            // Escalation Feature Event Listeners
+            escalationSelect.addEventListener('change', (e) => {
+                const selectedReason = e.target.value;
+                if (!selectedReason) return;
+
+                // Reset the select immediately so it can be clicked again
+                escalationSelect.value = "";
+
+                // Build the requested template structure
+                const reasonText = selectedReason.toLowerCase();
+                const headerText = `Hi Team, T @Fred and brrs @Jaykee @Rei, customer's account was disabled due to ${reasonText}. Please advise. Thank you!\n\nCustomer reason: \n\n`;
+                
+                // Inject into the textarea combining the header with the active live preview output
+                modalTextarea.value = headerText + (copyTextString || '');
+                
+                // Show modal
+                modalOverlay.classList.add('show');
+            });
+
+            btnCloseModal.addEventListener('click', () => {
+                modalOverlay.classList.remove('show');
+            });
+
+            // Allow clicking outside the modal content to close it
+            modalOverlay.addEventListener('click', (e) => {
+                if (e.target === modalOverlay) {
+                    modalOverlay.classList.remove('show');
+                }
+            });
+
+            // Copy logic inside the modal
+            btnCopyModal.addEventListener('click', async () => {
+                try {
+                    if (navigator.clipboard && window.isSecureContext) {
+                        await navigator.clipboard.writeText(modalTextarea.value);
+                    } else {
+                        modalTextarea.select();
+                        document.execCommand('copy');
+                    }
+                    const origText = btnCopyModal.textContent;
+                    btnCopyModal.textContent = 'Copied!';
+                    setTimeout(() => { btnCopyModal.textContent = origText; }, 2000);
+                } catch (err) {
+                    console.error('Copy failed', err);
+                }
+            });
+
+            btnAdd.addEventListener('click', createInputGroup);
+
+            previewBubble.addEventListener('click', (e) => {
+                const selection = window.getSelection();
+                if (selection.toString().length > 0) return;
+                copyToClipboard();
+            });
+
+            previewBubble.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    copyToClipboard();
+                }
+            });
+
+            createInputGroup();
+        });
+    </script>
+</body>
+</html>

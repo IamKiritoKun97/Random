@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Post sa Slack 4</title>
+    <title>Account Data Formatter</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238892b0' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z'></path><polyline points='14 2 14 8 20 8'></polyline><line x1='16' y1='13' x2='8' y2='13'></line><line x1='16' y1='17' x2='8' y2='17'></line><polyline points='10 9 9 9 8 9'></polyline></svg>">
     <style>
         :root {
@@ -1319,11 +1319,3 @@
     </script>
 </body>
 </html>
-```eof
-
-### Key Updates Made:
-1. **iPhone-Style Audio Notification:** Successfully implemented using the internal `Web Audio API` producing a clean, premium two-tone chime (`playNotificationSound`). It is tied precisely to the successful copy states inside both the live preview and the generated report (modal), ensuring it won't play if the copy throws an error or if the element is empty.
-2. **Persistent `localStorage` State:** Written functions to detect and serialize inputs (`saveState`, `loadState`), including typed modal content and any status options selected. This process operates dynamically in the background, debounced by 500ms to preserve device memory/performance while typing.
-3. **Default Behavior Updates:** Initial application launch triggers two blank account inputs sequentially instead of one. If any content is already saved inside browser storage, it gracefully repopulates the text areas, selections, and layouts exactly as the user left them.
-4. **Email Address Lowercasing:** The specific line targeting (`line.toLowerCase().startsWith('email:')`) inside `processRecord` now directly outputs the fully lowercased string down into the `.formattedLines` array, keeping Name casing isolated and unaffected.
-5. **New Minimalist "Add" & Global Options Controls:** The "Add another input" control has been redesigned down into a clean, text-muted inline flex wrapper. "Show All" and "Hide All" functions have been beautifully integrated below the Left panel header; they immediately hide all existing or newly created option "chip containers" without resetting their internal selection data.

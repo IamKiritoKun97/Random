@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Account Data Formatter</title>
+    <title>Post sa Slack</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238892b0' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z'></path><polyline points='14 2 14 8 20 8'></polyline><line x1='16' y1='13' x2='8' y2='13'></line><line x1='16' y1='17' x2='8' y2='17'></line><polyline points='10 9 9 9 8 9'></polyline></svg>">
     <style>
         :root {
@@ -134,50 +134,20 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .panel-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
         }
 
         .panel-title {
             font-size: 1.125rem;
             font-weight: 500;
             color: var(--text-primary);
-        }
-
-        /* Global Options Toggles */
-        .global-actions {
-            display: flex;
-            gap: 0.75rem;
-            align-items: center;
-            padding: 0 0.25rem;
-            margin-top: -0.5rem;
-        }
-
-        .global-action-label {
-            font-size: 0.75rem;
-            font-weight: 600;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        .btn-text {
-            background: none;
-            border: none;
-            color: var(--text-muted);
-            cursor: pointer;
-            font-size: 0.75rem;
-            font-weight: 500;
-            transition: var(--transition-fast);
-            padding: 0.25rem 0.5rem;
-            border-radius: var(--radius-sm);
-        }
-
-        .btn-text:hover {
-            color: var(--text-primary);
-            background: rgba(255, 255, 255, 0.05);
-        }
-
-        .btn-text.active {
-            color: var(--accent-new);
         }
 
         .inputs-wrapper {
@@ -188,11 +158,6 @@
             overflow-y: auto;
             min-height: 0;
             padding-right: 0.5rem;
-        }
-
-        /* Hide options toggle class */
-        .inputs-wrapper.hide-options .chips-container {
-            display: none !important;
         }
 
         .input-group {
@@ -282,7 +247,6 @@
             justify-content: center;
             gap: 0.5rem;
             width: max-content;
-            margin-top: 0.25rem;
         }
 
         .btn-add:hover, .btn-add:focus-visible {
@@ -294,6 +258,11 @@
         .btn-add svg {
             width: 16px;
             height: 16px;
+        }
+
+        .btn-reset:hover, .btn-reset:focus-visible {
+            color: #ef4444;
+            background: rgba(239, 68, 68, 0.1);
         }
 
         .preview-wrapper {
@@ -400,6 +369,8 @@
             align-items: center;
             gap: 0.5rem;
             animation: fadeIn 0.3s ease;
+            user-select: none;
+            -webkit-user-select: none;
         }
 
         .record-mismatch {
@@ -599,6 +570,55 @@
             transform: translateY(-1px);
         }
 
+        .confirm-content {
+            max-width: 420px;
+        }
+
+        .confirm-text {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .confirm-actions {
+            display: flex;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+
+        .btn-secondary, .btn-danger {
+            padding: 0.6rem 1.2rem;
+            border-radius: var(--radius-md);
+            font-family: var(--font-stack);
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition-fast);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-secondary);
+            border: 1px solid var(--input-border);
+        }
+
+        .btn-secondary:hover, .btn-secondary:focus-visible {
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.05);
+            outline: none;
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            color: #fff;
+            border: 1px solid #ef4444;
+        }
+
+        .btn-danger:hover, .btn-danger:focus-visible {
+            opacity: 0.9;
+            outline: none;
+        }
+
         @media (max-width: 900px) {
             body {
                 height: auto;
@@ -647,23 +667,22 @@
         <section class="panel left-panel">
             <div class="panel-header">
                 <h2 class="panel-title">Raw Data</h2>
+                <div class="panel-actions">
+                    <button type="button" class="btn-add btn-reset" id="btn-reset" aria-label="Reset everything">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>
+                        Reset
+                    </button>
+                    <button type="button" class="btn-add" id="btn-add" aria-label="Add another input">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                        Add input
+                    </button>
+                </div>
             </div>
 
-            <!-- Global Options Toggle -->
-            <div class="global-actions">
-                <span class="global-action-label">Options:</span>
-                <button id="btn-show-all" class="btn-text active">Show All</button>
-                <button id="btn-hide-all" class="btn-text">Hide All</button>
-            </div>
-            
             <div class="inputs-wrapper" id="inputs-wrapper">
                 <!-- Text areas created via JS to maintain uniform logic -->
             </div>
 
-            <button class="btn-add" id="btn-add" aria-label="Add another input">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                Add input
-            </button>
         </section>
 
         <!-- Right Panel: Preview -->
@@ -704,6 +723,18 @@
         </div>
     </div>
 
+    <!-- Reset Confirmation -->
+    <div class="modal-overlay" id="reset-modal">
+        <div class="modal-content confirm-content" role="dialog" aria-modal="true" aria-labelledby="reset-title" aria-describedby="reset-text">
+            <h3 class="modal-title" id="reset-title">Reset everything?</h3>
+            <p class="confirm-text" id="reset-text">Are you sure you want to reset everything? This will clear all entered data and selected options.</p>
+            <div class="confirm-actions">
+                <button type="button" class="btn-secondary" id="btn-reset-cancel">Cancel</button>
+                <button type="button" class="btn-danger" id="btn-reset-confirm">Reset Everything</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const inputsWrapper = document.getElementById('inputs-wrapper');
@@ -718,8 +749,14 @@
             const modalTextarea = document.getElementById('modal-textarea');
             const btnCopyModal = document.getElementById('btn-copy-modal');
 
-            const btnShowAll = document.getElementById('btn-show-all');
-            const btnHideAll = document.getElementById('btn-hide-all');
+            const btnReset = document.getElementById('btn-reset');
+            const resetModal = document.getElementById('reset-modal');
+            const btnResetCancel = document.getElementById('btn-reset-cancel');
+            const btnResetConfirm = document.getElementById('btn-reset-confirm');
+
+            const STORAGE_KEY = 'accountFormatterState';
+            const DEFAULT_INPUT_COUNT = 2;
+            const WARNING_LINE = '--- DIFFERENT NAMES DETECTED ---';
 
             let inputCount = 0;
             let currentFormattedData = []; 
@@ -727,6 +764,8 @@
             let hasMismatchWarning = false;
             let isRestoring = false; // Flag to prevent triggering saves during initial state load
             let saveTimeout;
+            let feedbackTimeout;
+            let modalCopyTimeout;
             let audioCtx; // Audio Context for notification sounds
 
             const STATUS_OPTIONS = [
@@ -787,11 +826,10 @@
             // 2. Data Persistence (Save & Load logic)
             function saveState() {
                 if (isRestoring) return;
-                
+
                 const textareas = inputsWrapper.querySelectorAll('textarea');
                 const state = {
                     inputs: [],
-                    optionsVisible: !inputsWrapper.classList.contains('hide-options'),
                     modalText: modalTextarea.value || ""
                 };
 
@@ -804,7 +842,11 @@
                     });
                 });
 
-                localStorage.setItem('accountFormatterState', JSON.stringify(state));
+                try {
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+                } catch (e) {
+                    console.error("Unable to save state", e);
+                }
             }
 
             const debounceSave = () => {
@@ -812,69 +854,99 @@
                 saveTimeout = setTimeout(saveState, 500);
             };
 
+            function createDefaultInputs() {
+                while (inputsWrapper.querySelectorAll('.input-group').length < DEFAULT_INPUT_COUNT) {
+                    createInputGroup();
+                }
+            }
+
             function loadState() {
                 isRestoring = true;
+                inputsWrapper.innerHTML = '';
+                inputCount = 0;
                 try {
-                    const savedState = localStorage.getItem('accountFormatterState');
-                    if (savedState) {
-                        const data = JSON.parse(savedState);
-                        
-                        // Restore Options Visibility
-                        if (data.optionsVisible === false) {
-                            inputsWrapper.classList.add('hide-options');
-                            btnShowAll.classList.remove('active');
-                            btnHideAll.classList.add('active');
-                        } else {
-                            inputsWrapper.classList.remove('hide-options');
-                            btnHideAll.classList.remove('active');
-                            btnShowAll.classList.add('active');
-                        }
+                    const savedState = localStorage.getItem(STORAGE_KEY);
+                    const data = savedState ? JSON.parse(savedState) : null;
 
-                        // Restore Inputs
-                        if (data.inputs && data.inputs.length > 0) {
-                            data.inputs.forEach(inp => {
-                                createInputGroup(inp.value, inp.activeChips);
-                            });
-                        } else {
-                            // Fallback if somehow empty
-                            createInputGroup();
-                            createInputGroup();
-                        }
+                    if (data && Array.isArray(data.inputs)) {
+                        data.inputs.forEach(inp => {
+                            const value = inp && typeof inp.value === 'string' ? inp.value : "";
+                            const chips = inp && Array.isArray(inp.activeChips) ? inp.activeChips : [];
+                            createInputGroup(value, chips);
+                        });
 
-                        // Restore Modal text
-                        if (data.modalText) {
-                            modalTextarea.value = data.modalText;
+                        if (typeof data.modalText === 'string' && data.modalText) {
+                            // Strip the warning heading if an older saved report contains it
+                            modalTextarea.value = data.modalText
+                                .split('\n')
+                                .filter(line => line.trim() !== WARNING_LINE)
+                                .join('\n');
                         }
-                    } else {
-                        // Default installation logic: Create 2 empty boxes
-                        createInputGroup();
-                        createInputGroup();
                     }
                 } catch (e) {
                     console.error("Failed to restore previous state, generating default view", e);
                     inputsWrapper.innerHTML = '';
                     inputCount = 0;
-                    createInputGroup();
-                    createInputGroup();
                 }
+
+                // Always guarantee at least two input groups (no duplicates when already present)
+                createDefaultInputs();
+                reindexLabels();
                 isRestoring = false;
                 updatePreview();
             }
 
-            // Options Global Controls
-            btnShowAll.addEventListener('click', () => {
-                inputsWrapper.classList.remove('hide-options');
-                btnShowAll.classList.add('active');
-                btnHideAll.classList.remove('active');
-                debounceSave();
-            });
+            // Reset: clear everything and return to the initial state
+            function resetEverything() {
+                // Cancel pending saves and block any save while rebuilding
+                clearTimeout(saveTimeout);
+                saveTimeout = null;
+                isRestoring = true;
 
-            btnHideAll.addEventListener('click', () => {
-                inputsWrapper.classList.add('hide-options');
-                btnHideAll.classList.add('active');
-                btnShowAll.classList.remove('active');
-                debounceSave();
-            });
+                try {
+                    localStorage.removeItem(STORAGE_KEY);
+                } catch (e) {
+                    console.error("Unable to clear saved state", e);
+                }
+
+                inputsWrapper.innerHTML = '';
+                inputCount = 0;
+                createDefaultInputs();
+                reindexLabels();
+                inputsWrapper.scrollTop = 0;
+
+                currentFormattedData = [];
+                copyTextString = "";
+                hasMismatchWarning = false;
+
+                modalTextarea.value = "";
+                escalationSelect.selectedIndex = 0;
+                modalOverlay.classList.remove('show');
+
+                clearTimeout(feedbackTimeout);
+                copyFeedback.classList.remove('show');
+                copyFeedback.textContent = 'Copied!';
+                clearTimeout(modalCopyTimeout);
+                btnCopyModal.textContent = 'Copy Report';
+
+                closeResetModal(false);
+
+                isRestoring = false;
+                updatePreview();
+
+                const firstTextarea = inputsWrapper.querySelector('textarea');
+                if (firstTextarea) firstTextarea.focus();
+            }
+
+            function openResetModal() {
+                resetModal.classList.add('show');
+                btnResetCancel.focus();
+            }
+
+            function closeResetModal(restoreFocus = true) {
+                resetModal.classList.remove('show');
+                if (restoreFocus) btnReset.focus();
+            }
 
             function createInputGroup(initialValue = "", initialChips = []) {
                 inputCount++;
@@ -942,10 +1014,10 @@
 
                 inputsWrapper.appendChild(group);
 
-                inputsWrapper.scrollTop = inputsWrapper.scrollHeight;
-                
                 if (!isRestoring) {
-                    textarea.focus();
+                    reindexLabels();
+                    textarea.focus({ preventScroll: true });
+                    group.scrollIntoView({ block: 'nearest' });
                     debounceSave();
                 }
             }
@@ -953,9 +1025,18 @@
             function reindexLabels() {
                 const groups = inputsWrapper.querySelectorAll('.input-group');
                 groups.forEach((group, index) => {
+                    const n = index + 1;
                     const label = group.querySelector('.input-label');
                     if (label) {
-                        label.textContent = `Account ${index + 1}`;
+                        label.textContent = `Account ${n}`;
+                    }
+                    const removeBtn = group.querySelector('.btn-remove');
+                    if (removeBtn) {
+                        removeBtn.setAttribute('aria-label', `Remove Account ${n}`);
+                    }
+                    const ta = group.querySelector('textarea');
+                    if (ta) {
+                        ta.setAttribute('aria-label', `Raw data for Account ${n}`);
                     }
                 });
             }
@@ -1153,7 +1234,7 @@
                     warningDiv.className = 'name-warning';
                     warningDiv.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg> Different Names Detected`;
                     previewContent.appendChild(warningDiv);
-                    textBuilder.push('--- DIFFERENT NAMES DETECTED ---');
+                    // Visual-only: intentionally NOT added to textBuilder / clipboard / reports
                 }
 
                 currentFormattedData.forEach((record, index) => {
@@ -1234,7 +1315,8 @@
             function showFeedback(msg) {
                 copyFeedback.textContent = msg;
                 copyFeedback.classList.add('show');
-                setTimeout(() => {
+                clearTimeout(feedbackTimeout);
+                feedbackTimeout = setTimeout(() => {
                     copyFeedback.classList.remove('show');
                 }, 2000);
             }
@@ -1288,9 +1370,9 @@
                     // On success: trigger audio and visual update
                     playNotificationSound();
                     
-                    const origText = btnCopyModal.textContent;
+                    clearTimeout(modalCopyTimeout);
                     btnCopyModal.textContent = 'Copied!';
-                    setTimeout(() => { btnCopyModal.textContent = origText; }, 2000);
+                    modalCopyTimeout = setTimeout(() => { btnCopyModal.textContent = 'Copy Report'; }, 2000);
                 } catch (err) {
                     console.error('Copy failed', err);
                 }
@@ -1298,6 +1380,19 @@
 
             btnAdd.addEventListener('click', () => {
                 createInputGroup();
+            });
+
+            // Reset confirmation
+            btnReset.addEventListener('click', openResetModal);
+            btnResetCancel.addEventListener('click', () => closeResetModal());
+            btnResetConfirm.addEventListener('click', resetEverything);
+            resetModal.addEventListener('click', (e) => {
+                if (e.target === resetModal) closeResetModal();
+            });
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && resetModal.classList.contains('show')) {
+                    closeResetModal();
+                }
             });
 
             previewBubble.addEventListener('click', (e) => {

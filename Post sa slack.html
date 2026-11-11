@@ -332,28 +332,10 @@
             border: 1px solid transparent;
         }
 
-        .badge-new {
-            color: var(--accent-new);
-            background: rgba(94, 234, 212, 0.1);
-            border-color: rgba(94, 234, 212, 0.2);
-        }
-
-        .badge-old {
+        .badge-account {
             color: var(--accent-old);
             background: rgba(203, 213, 225, 0.1);
             border-color: rgba(203, 213, 225, 0.2);
-        }
-
-        .badge-newer {
-            color: #7dd3fc;
-            background: rgba(125, 211, 252, 0.1);
-            border-color: rgba(125, 211, 252, 0.2);
-        }
-
-        .badge-older {
-            color: #94a3b8;
-            background: rgba(148, 163, 184, 0.1);
-            border-color: rgba(148, 163, 184, 0.2);
         }
 
         .name-warning {
@@ -1101,7 +1083,7 @@
                     originalName: originalName,
                     normalizedName: normalizedName,
                     label: null,
-                    labelClass: null,
+                    originalIndex: 0,
                     isMismatch: false,
                     statuses: []
                 };
@@ -1114,51 +1096,50 @@
                         const [_, dd, mm, yy, h, m, s] = match;
                         let year = parseInt(yy, 10);
                         if (year < 100) year += 2000;
-                        const dateObj = new Date(year, parseInt(mm, 10) - 1, parseInt(dd, 10), parseInt(h, 10), parseInt(m, 10), parseInt(s, 10));
+                        const day = parseInt(dd, 10), month = parseInt(mm, 10) - 1;
+                        const hh = parseInt(h, 10), mi = parseInt(m, 10), ss = parseInt(s, 10);
+                        const dateObj = new Date(year, month, day, hh, mi, ss);
+                        // Reject impossible dates/times (e.g. 31/02, 25:00:00) instead of letting them roll over
+                        if (dateObj.getFullYear() !== year || dateObj.getMonth() !== month || dateObj.getDate() !== day ||
+                            dateObj.getHours() !== hh || dateObj.getMinutes() !== mi || dateObj.getSeconds() !== ss) {
+                            return null;
+                        }
                         return dateObj.getTime();
                     }
                 }
                 return null;
             }
 
-            function classifyAccounts(records) {
-                const datedRecords = records.filter(r => r.rawDate !== null);
-                records.forEach(r => { r.label = null; r.labelClass = null; });
-
-                if (datedRecords.length >= 2) {
-                    const timestamps = datedRecords.map(r => r.rawDate);
-                    const minTime = Math.min(...timestamps);
-                    const maxTime = Math.max(...timestamps);
-                    
-                    // 365 Days gap check
-                    const rangeDays = (maxTime - minTime) / (1000 * 60 * 60 * 24);
-                    const isLongRange = rangeDays >= 365;
-
-                    const midPoint = minTime + (maxTime - minTime) / 2;
-                    const minCount = timestamps.filter(t => t === minTime).length;
-                    const maxCount = timestamps.filter(t => t === maxTime).length;
-
-                    if (minTime !== maxTime) {
-                        records.forEach(r => {
-                            if (r.rawDate === null) return;
-
-                            if (r.rawDate === minTime && minCount === 1) {
-                                r.label = isLongRange ? 'Original Account' : 'Old Account';
-                                r.labelClass = 'badge-old';
-                            } else if (r.rawDate === maxTime && maxCount === 1) {
-                                r.label = isLongRange ? 'Newest Account' : 'New Account';
-                                r.labelClass = 'badge-new';
-                            } else if (r.rawDate < midPoint) {
-                                r.label = 'Older Account';
-                                r.labelClass = 'badge-older';
-                            } else if (r.rawDate >= midPoint) {
-                                r.label = 'Newer Account';
-                                r.labelClass = 'badge-newer';
-                            }
-                        });
-                    }
+            // 1st, 2nd, 3rd, 4th ... 11th, 12th, 13th, 21st, 22nd, 23rd ...
+            function getOrdinal(n) {
+                const mod100 = n % 100;
+                if (mod100 >= 11 && mod100 <= 13) return n + 'th';
+                switch (n % 10) {
+                    case 1: return n + 'st';
+                    case 2: return n + 'nd';
+                    case 3: return n + 'rd';
+                    default: return n + 'th';
                 }
-                return records;
+            }
+
+            // Sorts records oldest -> newest by Registered At (stable: ties keep input order,
+            // undated records go last in input order) and assigns ordinal labels by position.
+            // Returns a NEW array; raw textareas are never touched.
+            function sortAndLabelAccounts(records) {
+                records.forEach((r, i) => { r.originalIndex = i; });
+
+                const sorted = records.slice().sort((a, b) => {
+                    const aDated = a.rawDate !== null, bDated = b.rawDate !== null;
+                    if (aDated && bDated) {
+                        if (a.rawDate !== b.rawDate) return a.rawDate - b.rawDate;
+                    } else if (aDated !== bDated) {
+                        return aDated ? -1 : 1;
+                    }
+                    return a.originalIndex - b.originalIndex;
+                });
+
+                sorted.forEach((r, i) => { r.label = getOrdinal(i + 1) + ' Account'; });
+                return sorted;
             }
 
             function detectMismatches(records) {
@@ -1209,7 +1190,7 @@
                     }
                 });
 
-                currentFormattedData = classifyAccounts(rawRecords);
+                currentFormattedData = sortAndLabelAccounts(rawRecords);
                 hasMismatchWarning = detectMismatches(currentFormattedData);
                 renderDOMAndText();
             }
@@ -1249,7 +1230,7 @@
 
                     if (record.label) {
                         const badgeSpan = document.createElement('span');
-                        badgeSpan.className = `account-badge ${record.labelClass}`;
+                        badgeSpan.className = 'account-badge badge-account';
                         badgeSpan.textContent = record.label;
                         blockDiv.appendChild(badgeSpan);
                         

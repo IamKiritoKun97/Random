@@ -4,8 +4,7 @@
   <meta charset="UTF-8" />
   <title>Internal Note</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2307090c'/%3E%3Crect x='1.5' y='1.5' width='61' height='61' rx='12.5' fill='none' stroke='%23ffffff' stroke-opacity='.18' stroke-width='3'/%3E%3Cpath d='M17 33l10 10 21-23' fill='none' stroke='%2322c55e' stroke-width='7' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" />
-  <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2307090c'/%3E%3Crect x='1.5' y='1.5' width='61' height='61' rx='12.5' fill='none' stroke='%23ffffff' stroke-opacity='.18' stroke-width='3'/%3E%3Cpath d='M17 33l10 10 21-23' fill='none' stroke='%2322c55e' stroke-width='7' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" />  <link rel="preconnect" href="https://fonts.googleapis.com">  <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;800&family=JetBrains+Mono:wght@400;500&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
   <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;800&family=JetBrains+Mono:wght@400;500&display=swap"></noscript>
@@ -664,6 +663,36 @@
       background-position: 14px center;
     }
 
+    .panel-search { position: relative; }
+    .panel-search input { padding-right: 42px; }
+
+    .btn-search-clear {
+      position: absolute;
+      top: 50%;
+      right: 10px;
+      transform: translateY(-50%);
+      width: 24px;
+      height: 24px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      background: var(--glass-surface-active);
+      border: 1px solid var(--glass-border);
+      border-radius: 8px;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+    }
+
+    .btn-search-clear.is-visible { display: flex; }
+
+    .btn-search-clear:hover {
+      background: var(--glass-surface-hover);
+      border-color: var(--glass-border-strong);
+      color: var(--text-main);
+    }
+
     .panel-search input:focus {
       background: rgba(255,255,255,0.08);
       border-color: rgba(255,255,255,0.25);
@@ -1314,6 +1343,9 @@
         </div>
         <div class="panel-search">
           <input type="text" id="searchPanel" placeholder="Search approvals, reverts..." oninput="filterOptions()">
+          <button type="button" class="btn-search-clear" id="btnSearchClear" onclick="clearSearch()" aria-label="Clear search" title="Clear search">
+            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"></path></svg>
+          </button>
         </div>
       </div>
       
@@ -1861,6 +1893,7 @@
 
   function filterOptions() {
     const query = document.getElementById('searchPanel').value.toLowerCase();
+    document.getElementById('btnSearchClear').classList.toggle('is-visible', query.length > 0);
     const items = document.querySelectorAll('#optionsList .panel-item');
     items.forEach(item => {
       item.style.display = item.textContent.toLowerCase().includes(query) ? '' : 'none';
@@ -1871,6 +1904,13 @@
       const label = group.querySelector('.dropdown-group-label');
       if(label) label.style.display = visibleItems.length > 0 ? '' : 'none';
     });
+  }
+
+  function clearSearch() {
+    const input = document.getElementById('searchPanel');
+    input.value = '';
+    filterOptions();
+    input.focus();
   }
 
   function handleCheckboxChange(cb) {

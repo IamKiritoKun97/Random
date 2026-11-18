@@ -91,7 +91,7 @@
       display: flex;
       flex-direction: row;
       position: relative;
-      width: min(1100px, 98%);
+      width: min(1320px, 98%);
       height: min(880px, 95%);
       min-width: 480px; 
       min-height: 480px;
@@ -670,8 +670,8 @@
 
     /* ===== Select Statuses + Selected Changes: always visible, in normal layout ===== */
     .left-panel {
-      flex: 3 1 0;
-      min-width: 500px;
+      flex: 3.4 1 0;
+      min-width: 660px;
       max-width: none;
       background: var(--glass-sidebar);
       box-shadow: inset -1px 0 0 0 rgba(255, 255, 255, 0.03);
@@ -686,9 +686,11 @@
     }
 
     /* Left to right: Selected Changes | Select Statuses | Internal Notes */
+    .panel-presets-col { flex: 0.95 1 0; order: -1; border-right: 1px solid var(--glass-border); }
     .panel-inputs-col { flex: 1 1 0; order: 0; }
     .panel-options-col { flex: 1.2 1 0; order: 1; }
 
+    .panel-presets-col,
     .panel-options-col,
     .panel-inputs-col {
       display: flex;
@@ -702,6 +704,7 @@
       overflow: hidden;
     }
 
+    .panel-presets-col,
     .panel-inputs-col { border-right: 1px solid var(--glass-border); }
 
     .panel-header {
@@ -743,6 +746,7 @@
     }
 
     .panel-search { position: relative; }
+    .panel-search-wrap { padding: 16px 16px 0; flex-shrink: 0; }
     .panel-search input { padding-right: 42px; }
 
     .btn-search-clear {
@@ -1214,6 +1218,7 @@
         border-bottom: 1px solid var(--glass-border);
         padding: 0;
       }
+      .panel-presets-col { flex: none; order: -1; border-right: none; border-bottom: 1px solid var(--glass-border); }
       .panel-options-col { flex: none; height: 340px; order: 1; }
       .panel-inputs-col { flex: none; min-height: 220px; order: 0; border-right: none; border-bottom: 1px solid var(--glass-border); }
       h1 { flex-wrap: wrap; }
@@ -1241,19 +1246,14 @@
 
     <div class="left-panel" id="leftPanel">
     
-    <div class="panel-options-col">
+    <div class="panel-presets-col">
       <div class="panel-header">
         <div class="panel-title-row">
-          <h2 class="panel-title">Select Statuses</h2>
+          <h2 class="panel-title">Choose presets</h2>
         </div>
-        <div class="panel-search">
-          <input type="text" id="searchPanel" placeholder="Search approvals, reverts..." oninput="filterOptions()">
-          <button type="button" class="btn-search-clear" id="btnSearchClear" onclick="clearSearch()" aria-label="Clear search" title="Clear search">
-            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"></path></svg>
-          </button>
-        </div>
+      </div>
+      <div class="panel-content">
         <div class="preset-group" id="presetGroup">
-          <div class="preset-label">Presets</div>
           <button type="button" class="btn-preset" id="btnPresetReactivation" onclick="applyPreset('reactivation')" title="Select all Reactivation statuses">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
             Reactivation
@@ -1275,6 +1275,22 @@
             <span class="preset-meta">4</span>
           </button>
         </div>
+      </div>
+    </div>
+
+    <div class="panel-options-col">
+      <div class="panel-header">
+        <div class="panel-title-row">
+          <h2 class="panel-title">Select Statuses</h2>
+        </div>
+      </div>
+      <div class="panel-search-wrap">
+      <div class="panel-search">
+        <input type="text" id="searchPanel" placeholder="Search approvals, reverts..." oninput="filterOptions()">
+        <button type="button" class="btn-search-clear" id="btnSearchClear" onclick="clearSearch()" aria-label="Clear search" title="Clear search">
+          <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"></path></svg>
+        </button>
+      </div>
       </div>
       
 

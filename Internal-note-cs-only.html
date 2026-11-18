@@ -1170,171 +1170,6 @@
 
     .mobile-only { display: none !important; }
 
-    /* Welcome Modal Styles */
-    .welcome-modal-overlay {
-      position: fixed;
-      top: 0; left: 0; width: 100vw; height: 100vh;
-      background: rgba(4, 6, 10, 0.6);
-      backdrop-filter: blur(40px) saturate(140%);
-      -webkit-backdrop-filter: blur(40px) saturate(140%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 5000;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.4s var(--anim-out);
-    }
-    .welcome-modal-overlay.is-active {
-      opacity: 1;
-      pointer-events: auto;
-    }
-    .welcome-modal {
-      background: var(--glass-panel);
-      backdrop-filter: blur(40px) saturate(140%);
-      -webkit-backdrop-filter: blur(40px) saturate(140%);
-      border: 1px solid var(--glass-border);
-      border-top: 1px solid rgba(255, 255, 255, 0.15);
-      border-radius: 24px;
-      padding: 36px;
-      width: min(440px, 90%);
-      box-shadow: var(--shadow-ambient), var(--inner-highlight);
-      text-align: center;
-      transform: translateY(20px) scale(0.95);
-      transition: transform 0.4s var(--anim-spring);
-    }
-    .welcome-modal-overlay.is-active .welcome-modal {
-      transform: translateY(0) scale(1);
-    }
-    .welcome-modal h3 {
-      font-size: 1.6rem;
-      margin: 0 0 8px 0;
-      font-weight: 600;
-      color: var(--text-main);
-    }
-    .welcome-modal p.subtitle {
-      color: var(--text-dim);
-      font-size: 0.95rem;
-      margin: 0 0 16px 0;
-      line-height: 1.4;
-    }
-    .welcome-modal p.message {
-      color: var(--text-muted);
-      font-size: 0.85rem;
-      margin: 0 0 24px 0;
-    }
-    .welcome-modal input {
-      width: 100%;
-      background: var(--glass-surface);
-      border: 1px solid var(--glass-border);
-      border-radius: 14px;
-      padding: 14px 18px;
-      color: var(--text-main);
-      font-size: 0.9rem;
-      outline: none;
-      margin-bottom: 24px;
-      text-align: center;
-      box-shadow: inset 0 2px 8px rgba(0,0,0,0.15);
-    }
-    .welcome-modal input::placeholder {
-      color: var(--text-muted);
-    }
-    .welcome-modal input:focus {
-      border-color: rgba(255,255,255,0.3);
-      background: var(--glass-surface-active);
-      box-shadow: var(--focus-ring), inset 0 2px 8px rgba(0,0,0,0.15);
-    }
-    .btn-welcome-submit {
-      background: var(--accent);
-      color: #000;
-      border: none;
-      border-radius: 14px;
-      padding: 14px 28px;
-      font-weight: 700;
-      font-size: 0.9rem;
-      cursor: pointer;
-      width: 100%;
-      box-shadow: 0 4px 12px rgba(255,255,255,0.1);
-      transition: background var(--anim-duration) var(--anim-out), transform var(--anim-duration) var(--anim-spring);
-    }
-    .btn-welcome-submit:hover {
-      background: var(--accent-hover);
-      transform: translateY(-1px);
-    }
-    .btn-welcome-submit:active {
-      transform: translateY(1px);
-    }
-
-    /* Floating Greeting Card */
-    .greeting-card-container {
-      position: fixed;
-      top: 32px;
-      right: 32px;
-      z-index: 4500;
-      pointer-events: none;
-    }
-    .greeting-card {
-      background: rgba(10, 12, 18, 0.85);
-      backdrop-filter: blur(48px) saturate(180%);
-      -webkit-backdrop-filter: blur(48px) saturate(180%);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      border-top: 1px solid rgba(255, 255, 255, 0.25);
-      border-radius: 20px;
-      padding: 24px;
-      width: 320px;
-      box-shadow: 0 24px 60px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.1);
-      color: var(--text-main);
-      position: relative;
-      opacity: 0;
-      transform: translateY(-20px) scale(0.95);
-      transition: opacity 0.5s var(--anim-out), transform 0.5s var(--anim-spring);
-      pointer-events: none; /* Changed from auto to none so invisible elements don't block interaction */
-    }
-    .greeting-card.is-active {
-      opacity: 1;
-      transform: translateY(0) scale(1);
-      pointer-events: auto; /* Active greeting is fully interactive */
-    }
-    .greeting-card .close-btn {
-      position: absolute;
-      top: 16px;
-      right: 16px;
-      background: transparent;
-      border: none;
-      color: var(--text-muted);
-      cursor: pointer;
-      font-size: 1.2rem;
-      line-height: 1;
-      padding: 4px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: color 0.2s, transform 0.2s var(--anim-spring);
-    }
-    .greeting-card .close-btn:hover {
-      color: var(--text-main);
-      transform: scale(1.2);
-    }
-    .greeting-card h4 {
-      font-size: 1.15rem;
-      margin: 0 0 10px 0;
-      font-weight: 600;
-      letter-spacing: -0.01em;
-      padding-right: 24px;
-    }
-    .greeting-card p {
-      margin: 0;
-      font-size: 0.85rem;
-      line-height: 1.5;
-      color: var(--text-dim);
-    }
-    .greeting-card .personal-msg {
-      margin-top: 12px;
-      padding-top: 12px;
-      border-top: 1px solid rgba(255, 255, 255, 0.08);
-      color: var(--text-muted);
-    }
-
     @media (max-width: 780px) {
       body { padding: 0; }
       .glass-card { 
@@ -1386,18 +1221,6 @@
       .header-actions .btn-stack-toggle { padding: 8px 10px; letter-spacing: 0.08em; }
       .mobile-only { display: flex !important; }
       .desktop-only { display: none !important; }
-      
-      .greeting-card-container {
-        top: auto;
-        bottom: 24px;
-        left: 50%;
-        right: auto;
-        transform: translateX(-50%);
-        width: min(340px, 90%);
-      }
-      .greeting-card {
-        width: 100%;
-      }
     }
   </style>
 </head>
@@ -1637,27 +1460,6 @@
 
 <div id="toast" role="status" aria-live="polite"><span class="toast-icon" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></span><span id="toastText">Copied to clipboard!</span></div>
 
-<!-- Welcome Modal Overlay -->
-<div id="welcomeModalOverlay" class="welcome-modal-overlay">
-  <div class="welcome-modal">
-    <h3>👋 Hey there!</h3>
-    <p class="subtitle">Before we get started, I'd love to know your name.</p>
-    <p class="message">What should I call you? 😊</p>
-    <input type="text" id="welcomeNameInput" placeholder="Type your name here..." autocomplete="off">
-    <button class="btn-welcome-submit" onclick="submitWelcomeName()">Let's Go ✨</button>
-  </div>
-</div>
-
-<!-- Floating Greeting Card Container -->
-<div class="greeting-card-container">
-  <div id="greetingCard" class="greeting-card">
-    <button class="close-btn" onclick="closeGreetingCard()" aria-label="Close greeting">×</button>
-    <h4 id="greetingTitle">☀️ Good Morning!</h4>
-    <p id="greetingSub">Ready to conquer the day. You've got this! 🚀</p>
-    <p id="greetingPersonal" class="personal-msg"></p>
-  </div>
-</div>
-
 <script>
   let statuses = [];
   let activeSelections = []; 
@@ -1708,21 +1510,6 @@
       "FICA Verified"
     ]
   };
-
-  const personalMessages = [
-    "Your positivity can brighten someone's day today. 😊",
-    "Small wins add up to big successes. Keep going! 🚀",
-    "You're stronger and more capable than you think. 💪",
-    "Someone today will appreciate the help you provide. 🌟",
-    "Every challenge is an opportunity to grow. ✨",
-    "Take it one step at a time  you're doing great. 😊",
-    "Believe in yourself. You've got everything it takes. 🚀",
-    "Your effort today matters more than perfection. 🌈",
-    "Keep showing up  that's where success starts. ⭐",
-    "The best part of today might still be ahead of you. ✨"
-  ];
-
-  let greetingTimeout = null;
 
   document.addEventListener("DOMContentLoaded", () => {
     const mainCard = document.getElementById('mainContainer');
@@ -1797,24 +1584,6 @@
           if (isMinimized) {
               restoreCard();
           }
-      }
-    });
-
-    // Welcome & Greeting Setup on load
-    const storedGreetingName = localStorage.getItem('greetingName');
-    if (!storedGreetingName) {
-      document.getElementById('welcomeModalOverlay').classList.add('is-active');
-      setTimeout(() => {
-        document.getElementById('welcomeNameInput').focus();
-      }, 300);
-    } else {
-      saveAndRefresh();
-      triggerGreeting(storedGreetingName);
-    }
-
-    document.getElementById('welcomeNameInput').addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        submitWelcomeName();
       }
     });
 
@@ -1896,58 +1665,6 @@
     if ('requestIdleCallback' in window) { requestIdleCallback(() => initWallpaper()); }
     else { setTimeout(initWallpaper, 300); }
   });
-
-  function submitWelcomeName() {
-    const nameInput = document.getElementById('welcomeNameInput');
-    const name = nameInput.value.trim();
-    if (!name) return;
-
-    localStorage.setItem('greetingName', name);
-
-    // Greeting name only; it never changes the selected Agent Name
-    saveAndRefresh();
-
-    document.getElementById('welcomeModalOverlay').classList.remove('is-active');
-    triggerGreeting(name);
-  }
-
-  function triggerGreeting(name) {
-    const now = new Date();
-    const hour = now.getHours();
-    let title = "";
-    let sub = "";
-
-    if (hour >= 5 && hour < 12) {
-      title = `☀️ Good Morning, ${name}!`;
-      sub = "Hope you slept well and you're ready to conquer the day. You've got this! 🚀";
-    } else if (hour >= 12 && hour < 18) {
-      title = `🌤️ Good Afternoon, ${name}!`;
-      sub = "Hope your day is going fantastic. Keep up the amazing energy! 🌟";
-    } else {
-      title = `🌙 Good Evening, ${name}!`;
-      sub = "Wishing you a wonderful and relaxing evening. Finish strong! ✨";
-    }
-
-    const randomMsg = personalMessages[Math.floor(Math.random() * personalMessages.length)];
-
-    document.getElementById('greetingTitle').textContent = title;
-    document.getElementById('greetingSub').textContent = sub;
-    document.getElementById('greetingPersonal').textContent = randomMsg;
-
-    const card = document.getElementById('greetingCard');
-    card.classList.add('is-active');
-
-    if (greetingTimeout) clearTimeout(greetingTimeout);
-    greetingTimeout = setTimeout(() => {
-      closeGreetingCard();
-    }, 6000);
-  }
-
-  function closeGreetingCard() {
-    const card = document.getElementById('greetingCard');
-    card.classList.remove('is-active');
-    if (greetingTimeout) clearTimeout(greetingTimeout);
-  }
 
   // Show / hide the Action Stack (hidden by default; hiding never clears data)
   function toggleActionStack() {

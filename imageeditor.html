@@ -1,288 +1,458 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flip Vertial Image</title>
+    <title>Flip Vertical Image</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%233b82f6'/%3E%3Crect x='12' y='14' width='40' height='36' rx='5' fill='white'/%3E%3Ccircle cx='24' cy='26' r='4.5' fill='%233b82f6'/%3E%3Cpath d='M14 48l13-14 9 9 6-6 10 11z' fill='%2393c5fd'/%3E%3Cpath d='M32 6v8M28 10l4-4 4 4' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Converts HEIC/HEIF to JPG in the browser -->
+    <script src="https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js"></script>
     <style>
         :root {
             --bg-dark: #121212;
             --panel-bg: rgba(30, 30, 30, 0.95);
             --accent: #3b82f6;
         }
-        body { 
-            background-color: var(--bg-dark); 
-            color: white; 
-            font-family: 'Inter', system-ui, sans-serif; 
-            overflow: hidden; 
-            height: 100vh; 
+        body {
+            background-color: var(--bg-dark);
+            color: white;
+            font-family: 'Inter', system-ui, sans-serif;
+            overflow: hidden;
+            height: 100vh;
             margin: 0;
         }
-        .viewport-container { 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            width: 100vw; 
-            height: 100vh; 
-            overflow: auto; 
+
+        /* Fixed stage: layout never changes when the image is transformed */
+        .viewport-container {
+            position: fixed;
+            inset: 0;
+            overflow: hidden;
             cursor: grab;
-            padding: 40px;
+            touch-action: none;
+            user-select: none;
         }
-        .viewport-container:active { cursor: grabbing; }
-        
-        #viewer-canvas, #image-element { 
-            transform-origin: center; 
-            transition: transform 0.1s ease-out; 
-            max-width: none; 
+        .viewport-container.dragging, .viewport-container.dragging #image-element { cursor: grabbing !important; }
+
+        /* Image is pinned to the center of the stage; only transform changes */
+        #image-element {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            max-width: none;
+            max-height: none;
+            transform-origin: center center;
+            will-change: transform;
+            -webkit-user-drag: none;
+            user-select: none;
         }
 
-        .toolbar { 
-            position: fixed; 
-            bottom: 20px; 
-            left: 50%; 
-            transform: translateX(-50%); 
-            background: var(--panel-bg); 
-            backdrop-filter: blur(12px); 
-            border: 1px solid #444; 
-            border-radius: 12px; 
-            padding: 8px; 
-            display: flex; 
-            gap: 4px; 
-            z-index: 1000; 
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5); 
+        .toolbar {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--panel-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid #444;
+            border-radius: 12px;
+            padding: 8px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 4px;
+            max-width: 96vw;
+            z-index: 1000;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
         }
 
-        .btn { 
-            background: #333; 
-            color: #ccc; 
-            border: none; 
-            padding: 8px 12px; 
-            border-radius: 6px; 
-            cursor: pointer; 
-            font-size: 13px; 
+        .btn {
+            background: #333;
+            color: #ccc;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
             font-weight: 500;
-            transition: all 0.2s; 
+            transition: all 0.2s;
         }
         .btn:hover { background: #444; color: white; }
         .btn-primary { background: var(--accent); color: white; }
         .btn-primary:hover { background: #2563eb; }
         .btn-danger { background: #7f1d1d; color: #fecaca; }
         .btn-danger:hover { background: #991b1b; }
+        .btn-warn { background: #78350f; color: #fde68a; }
+        .btn-warn:hover { background: #92400e; }
 
-        .close-btn {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 1001;
-        }
+        .zoom-label { min-width: 48px; text-align: center; font-size: 12px; color: #aaa; }
 
-        #pdf-viewer { width: 100%; height: 100%; border: none; background: white; }
+        .close-btn { position: fixed; top: 20px; right: 20px; z-index: 1001; }
+
+        #pdf-viewer { position: absolute; inset: 0; width: 100%; height: 100%; border: none; background: white; }
         .hidden { display: none !important; }
         .drop-zone-active { border-color: var(--accent) !important; background: rgba(59, 130, 246, 0.1); }
+
+        #loading {
+            position: fixed; inset: 0; z-index: 2000;
+            display: flex; align-items: center; justify-content: center;
+            background: rgba(0,0,0,0.6); font-size: 16px;
+        }
     </style>
 </head>
 <body>
 
     <div id="drop-zone" class="fixed inset-0 flex flex-col items-center justify-center bg-zinc-900 border-2 border-dashed border-zinc-700 m-4 rounded-xl transition-all">
         <h1 class="text-3xl font-bold mb-4">Pro Viewer</h1>
-        <p class="text-zinc-400 mb-8">Drop your image or PDF file here, or click to upload</p>
+        <p class="text-zinc-400 mb-2">Drop, paste (Ctrl+V), or upload an image or PDF</p>
+        <p class="text-zinc-500 mb-8 text-sm">HEIC files are converted to JPG automatically</p>
         <button onclick="document.getElementById('file-input').click()" class="btn btn-primary px-8 py-3 text-lg">Select File</button>
-        <input type="file" id="file-input" class="hidden" accept="image/*,application/pdf">
+        <input type="file" id="file-input" class="hidden" accept="image/*,.heic,.heif,application/pdf">
     </div>
 
     <div id="main-view" class="hidden">
         <button class="btn btn-danger close-btn" onclick="closeFile()" title="Close File">✕</button>
-        
+
         <div id="viewport" class="viewport-container">
-            <img id="image-element" class="hidden" alt="View">
+            <img id="image-element" class="hidden" alt="View" draggable="false">
             <iframe id="pdf-viewer" class="hidden" title="PDF Viewer"></iframe>
         </div>
 
         <div class="toolbar" id="toolbar">
-            <div id="image-tools" class="flex gap-1 hidden">
+            <div id="image-tools" class="flex flex-wrap items-center justify-center gap-1 hidden">
                 <button class="btn" onclick="rotate(-90)" title="Rotate Left">↺</button>
                 <button class="btn" onclick="rotate(90)" title="Rotate Right">↻</button>
                 <button class="btn" onclick="flip('x')" title="Flip Horizontal">↔</button>
                 <button class="btn" onclick="flip('y')" title="Flip Vertical">↕</button>
-                <button class="btn" onclick="zoom(0.1)" title="Zoom In">+</button>
-                <button class="btn" onclick="zoom(-0.1)" title="Zoom Out">-</button>
-                <button class="btn" onclick="fitToScreen()" title="Fit to Screen">Fit</button>
-                <button class="btn" onclick="resetView()" title="Actual Size/Reset">100%</button>
-                <div class="w-px bg-zinc-600 mx-2"></div>
+                <button class="btn" onclick="zoomBy(1.25)" title="Zoom In">+</button>
+                <span id="zoom-label" class="zoom-label">100%</span>
+                <button class="btn" onclick="zoomBy(0.8)" title="Zoom Out">-</button>
+                <button class="btn" onclick="fitToScreen(true)" title="Fit to Screen">Fit</button>
+                <button class="btn" onclick="actualSize()" title="Actual Size">100%</button>
+                <button class="btn btn-warn" onclick="revertToOriginal()" title="Undo all edits and go back to the original image">Revert</button>
+                <div class="w-px h-6 bg-zinc-600 mx-2"></div>
             </div>
-            
+
             <button class="btn" onclick="toggleFullscreen()" title="Fullscreen">⛶</button>
             <button class="btn" onclick="downloadOriginal()" title="Download Original">Download Original</button>
-            <button id="btn-edit" class="btn btn-primary hidden" onclick="downloadEdited()" title="Download Edited">Download Update</button>
+            <button id="btn-edit" class="btn btn-primary hidden" onclick="downloadEdited()" title="Download Edited (same file name)">Download Edited</button>
         </div>
     </div>
 
+    <div id="loading" class="hidden">Converting HEIC to JPG…</div>
+
     <script>
-        let currentFile = null;
+        const $ = (id) => document.getElementById(id);
+        const dropZone = $('drop-zone');
+        const mainView = $('main-view');
+        const viewport = $('viewport');
+        const imgEl = $('image-element');
+        const pdfEl = $('pdf-viewer');
+        const btnEdit = $('btn-edit');
+        const imageTools = $('image-tools');
+        const zoomLabel = $('zoom-label');
+        const loading = $('loading');
+
+        const MIN_ZOOM = 0.02, MAX_ZOOM = 32;
+
+        let currentFile = null;   // file shown (HEIC is already converted to a JPG File)
         let currentUrl = null;
         let fileType = null;
-        
-        // View state
-        let rotation = 0;
-        let scaleX = 1;
-        let scaleY = 1;
+
+        // View/edit state
+        let rotation = 0;         // cumulative degrees
+        let scaleX = 1, scaleY = 1;
         let zoomLevel = 1;
-        let isModified = false;
+        let panX = 0, panY = 0;   // offset from center of the stage
+        let autoFit = true;       // true while the image is "fit to screen"
 
-        const dropZone = document.getElementById('drop-zone');
-        const mainView = document.getElementById('main-view');
-        const imgEl = document.getElementById('image-element');
-        const pdfEl = document.getElementById('pdf-viewer');
-        const btnEdit = document.getElementById('btn-edit');
-        const imageTools = document.getElementById('image-tools');
+        /* ---------- helpers ---------- */
+        function splitName(name) {
+            const i = name.lastIndexOf('.');
+            return i > 0 ? { base: name.slice(0, i), ext: name.slice(i) } : { base: name, ext: '' };
+        }
+        function isHeic(file) {
+            return /image\/hei[cf]/i.test(file.type) || /\.hei[cf]$/i.test(file.name);
+        }
+        function isModified() {
+            return (((rotation % 360) + 360) % 360) !== 0 || scaleX !== 1 || scaleY !== 1;
+        }
+        function isSideways() {
+            return Math.abs(((rotation % 180) + 180) % 180) === 90;
+        }
 
-        // Event listeners
-        document.getElementById('file-input').addEventListener('change', (e) => handleFile(e.target.files[0]));
-        
-        window.addEventListener('paste', (e) => {
-            const item = e.clipboardData.items[0];
-            if (item && item.kind === 'file') handleFile(item.getAsFile());
+        /* ---------- file loading ---------- */
+        document.getElementById('file-input').addEventListener('change', (e) => {
+            handleFile(e.target.files[0]);
+            e.target.value = '';
         });
 
-        // Drag & Drop handlers
+        window.addEventListener('paste', (e) => {
+            const items = e.clipboardData ? [...e.clipboardData.items] : [];
+            const item = items.find(i => i.kind === 'file');
+            if (item) handleFile(item.getAsFile());
+        });
+
+        // Drag & drop anywhere on the page (also replaces the current file)
         ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(evt => {
-            dropZone.addEventListener(evt, (e) => {
+            window.addEventListener(evt, (e) => {
                 e.preventDefault();
-                e.stopPropagation();
                 if (evt === 'dragover' || evt === 'dragenter') dropZone.classList.add('drop-zone-active');
                 else dropZone.classList.remove('drop-zone-active');
+                if (evt === 'drop' && e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
             });
         });
 
-        dropZone.addEventListener('drop', (e) => {
-            handleFile(e.dataTransfer.files[0]);
-        });
-
-        function handleFile(file) {
+        async function handleFile(file) {
             if (!file) return;
-            closeFile(); // Cleanup first
-            
-            currentFile = file;
-            currentUrl = URL.createObjectURL(file);
-            fileType = file.type.startsWith('image') ? 'image' : 'pdf';
+
+            const isPdf = file.type === 'application/pdf' || /\.pdf$/i.test(file.name);
+            const isImage = file.type.startsWith('image/') || isHeic(file);
+            if (!isPdf && !isImage) { alert('Please choose an image or PDF file.'); return; }
+
+            let finalFile = file;
+
+            // HEIC/HEIF -> JPG (same base name, .jpg extension)
+            if (isHeic(file)) {
+                loading.classList.remove('hidden');
+                try {
+                    const out = await heic2any({ blob: file, toType: 'image/jpeg', quality: 0.92 });
+                    const blob = Array.isArray(out) ? out[0] : out;
+                    finalFile = new File([blob], splitName(file.name).base + '.jpg', { type: 'image/jpeg' });
+                } catch (err) {
+                    console.error(err);
+                    loading.classList.add('hidden');
+                    alert('Could not convert this HEIC file.');
+                    return;
+                }
+                loading.classList.add('hidden');
+            } else if (!file.name) {
+                finalFile = new File([file], 'image.' + (file.type.split('/')[1] || 'png'), { type: file.type });
+            }
+
+            cleanup();
+            currentFile = finalFile;
+            currentUrl = URL.createObjectURL(finalFile);
+            fileType = isPdf ? 'pdf' : 'image';
 
             dropZone.classList.add('hidden');
             mainView.classList.remove('hidden');
+            resetEdits();
 
             if (fileType === 'image') {
+                imageTools.classList.remove('hidden');
+                imgEl.onload = () => {
+                    imgEl.width = imgEl.naturalWidth;
+                    imgEl.height = imgEl.naturalHeight;
+                    fitToScreen(false);   // pasted/dropped images start fitted
+                };
                 imgEl.src = currentUrl;
                 imgEl.classList.remove('hidden');
-                imageTools.classList.remove('hidden');
             } else {
+                imageTools.classList.add('hidden');
                 pdfEl.src = currentUrl;
                 pdfEl.classList.remove('hidden');
-                imageTools.classList.add('hidden');
+                btnEdit.classList.add('hidden');
             }
-            resetView();
         }
 
-        function closeFile() {
+        function cleanup() {
             if (currentUrl) URL.revokeObjectURL(currentUrl);
             currentFile = null;
             currentUrl = null;
-            
-            imgEl.src = '';
-            pdfEl.src = '';
-            
+            imgEl.onload = null;
+            imgEl.removeAttribute('src');
+            pdfEl.removeAttribute('src');
             imgEl.classList.add('hidden');
             pdfEl.classList.add('hidden');
+        }
+
+        function closeFile() {
+            cleanup();
             mainView.classList.add('hidden');
             dropZone.classList.remove('hidden');
-            
-            resetView();
+            resetEdits();
         }
 
-        function resetView() {
-            rotation = 0;
-            scaleX = 1;
-            scaleY = 1;
-            zoomLevel = 1;
-            isModified = false;
-            updateTransform();
+        /* ---------- transform ---------- */
+        function resetEdits() {
+            rotation = 0; scaleX = 1; scaleY = 1;
+            zoomLevel = 1; panX = 0; panY = 0; autoFit = true;
         }
 
-        function updateTransform() {
-            if (fileType === 'image') {
-                imgEl.style.transform = `rotate(${rotation}deg) scaleX(${scaleX}) scaleY(${scaleY}) scale(${zoomLevel})`;
-                btnEdit.classList.toggle('hidden', !isModified);
-            }
+        // Image stays pinned at the stage center; rotate/flip happen around its own center
+        function applyTransform(animate = true) {
+            if (fileType !== 'image') return;
+            imgEl.style.transition = animate ? 'transform 0.2s ease-out' : 'none';
+            imgEl.style.transform =
+                `translate(-50%, -50%) translate(${panX}px, ${panY}px) scale(${zoomLevel}) rotate(${rotation}deg) scale(${scaleX}, ${scaleY})`;
+            imgEl.style.cursor = autoFit ? 'zoom-in' : 'zoom-out';
+            btnEdit.classList.toggle('hidden', !isModified());
+            zoomLabel.textContent = Math.round(zoomLevel * 100) + '%';
         }
 
         function rotate(deg) {
-            rotation = (rotation + deg) % 360;
-            isModified = true;
-            updateTransform();
+            rotation += deg;           // cumulative -> always spins the short way, nothing else moves
+            applyTransform(true);
         }
 
         function flip(axis) {
+            // Flip relative to the screen, even after rotating 90°/270°
+            if (isSideways()) axis = axis === 'x' ? 'y' : 'x';
             if (axis === 'x') scaleX *= -1;
-            if (axis === 'y') scaleY *= -1;
-            isModified = true;
-            updateTransform();
+            else scaleY *= -1;
+            applyTransform(true);
         }
 
-        function zoom(delta) {
-            zoomLevel = Math.max(0.1, zoomLevel + delta);
-            updateTransform();
+        function fitScale() {
+            const w = isSideways() ? imgEl.naturalHeight : imgEl.naturalWidth;
+            const h = isSideways() ? imgEl.naturalWidth : imgEl.naturalHeight;
+            const availW = viewport.clientWidth - 40;
+            const availH = viewport.clientHeight - 120; // leave room for the toolbar
+            return Math.min(availW / w, availH / h);
         }
 
-        function fitToScreen() {
-            // Simple fit logic
-            const container = document.getElementById('viewport');
-            const ratio = Math.min((container.clientWidth - 40) / imgEl.naturalWidth, (container.clientHeight - 40) / imgEl.naturalHeight);
-            zoomLevel = ratio;
-            updateTransform();
+        function fitToScreen(allowUpscale = true) {
+            if (!imgEl.naturalWidth) return;
+            let s = fitScale();
+            if (!allowUpscale) s = Math.min(1, s);
+            zoomLevel = Math.max(MIN_ZOOM, s);
+            panX = 0; panY = 0;
+            autoFit = true;
+            applyTransform(true);
         }
+
+        function actualSize() {
+            zoomAt(1, viewport.clientWidth / 2, viewport.clientHeight / 2);
+        }
+
+        // Zoom keeping the point under (cx, cy) in place
+        function zoomAt(newZoom, cx, cy, animate = true) {
+            newZoom = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, newZoom));
+            const rect = viewport.getBoundingClientRect();
+            const vx = cx - rect.left - rect.width / 2;
+            const vy = cy - rect.top - rect.height / 2;
+            const ratio = newZoom / zoomLevel;
+            panX = vx - (vx - panX) * ratio;
+            panY = vy - (vy - panY) * ratio;
+            zoomLevel = newZoom;
+            autoFit = false;
+            applyTransform(animate);
+        }
+
+        function zoomBy(factor) {
+            const rect = viewport.getBoundingClientRect();
+            zoomAt(zoomLevel * factor, rect.left + rect.width / 2, rect.top + rect.height / 2);
+        }
+
+        // Click on the image: zoom in at the cursor, click again to go back to fit
+        function toggleZoomAt(cx, cy) {
+            if (autoFit) {
+                const target = Math.max(1, zoomLevel * 2);
+                zoomAt(target, cx, cy);
+            } else {
+                fitToScreen(true);
+            }
+        }
+
+        function revertToOriginal() {
+            if (fileType !== 'image') return;
+            rotation = 0; scaleX = 1; scaleY = 1;
+            fitToScreen(false);
+        }
+
+        /* ---------- mouse / touch interaction ---------- */
+        let drag = null;
+
+        viewport.addEventListener('pointerdown', (e) => {
+            if (fileType !== 'image' || e.button !== 0) return;
+            drag = { x: e.clientX, y: e.clientY, panX, panY, moved: false, onImage: e.target === imgEl };
+            viewport.setPointerCapture(e.pointerId);
+        });
+
+        viewport.addEventListener('pointermove', (e) => {
+            if (!drag) return;
+            const dx = e.clientX - drag.x, dy = e.clientY - drag.y;
+            if (!drag.moved && Math.hypot(dx, dy) > 4) {
+                drag.moved = true;
+                viewport.classList.add('dragging');
+            }
+            if (drag.moved) {
+                panX = drag.panX + dx;
+                panY = drag.panY + dy;
+                autoFit = false;
+                applyTransform(false);
+            }
+        });
+
+        viewport.addEventListener('pointerup', (e) => {
+            if (!drag) return;
+            const wasClick = !drag.moved && drag.onImage;
+            drag = null;
+            viewport.classList.remove('dragging');
+            if (wasClick) toggleZoomAt(e.clientX, e.clientY);
+        });
+
+        viewport.addEventListener('wheel', (e) => {
+            if (fileType !== 'image') return;
+            e.preventDefault();
+            zoomAt(zoomLevel * Math.exp(-e.deltaY * 0.0015), e.clientX, e.clientY, false);
+        }, { passive: false });
+
+        window.addEventListener('resize', () => {
+            if (fileType === 'image' && autoFit) fitToScreen(false);
+        });
 
         function toggleFullscreen() {
             if (!document.fullscreenElement) document.documentElement.requestFullscreen();
             else document.exitFullscreen();
         }
 
-        function downloadOriginal() {
-            if (!currentFile) return;
+        /* ---------- downloads ---------- */
+        function saveBlobUrl(url, name) {
             const a = document.createElement('a');
-            a.href = currentUrl;
-            a.download = currentFile.name;
+            a.href = url;
+            a.download = name;
+            document.body.appendChild(a);
             a.click();
+            a.remove();
         }
 
+        // Keeps the exact original file name (HEIC -> same name with .jpg)
+        function downloadOriginal() {
+            if (!currentFile) return;
+            saveBlobUrl(currentUrl, currentFile.name);
+        }
+
+        // Same file name as the original so it replaces the old image easily
         function downloadEdited() {
-            if (fileType !== 'image') return;
-            
+            if (fileType !== 'image' || !currentFile) return;
+
+            const sideways = isSideways();
             const canvas = document.createElement('canvas');
+            canvas.width = sideways ? imgEl.naturalHeight : imgEl.naturalWidth;
+            canvas.height = sideways ? imgEl.naturalWidth : imgEl.naturalHeight;
             const ctx = canvas.getContext('2d');
-            const img = new Image();
-            img.src = imgEl.src;
 
-            img.onload = () => {
-                const isSwapped = (Math.abs(rotation) === 90 || Math.abs(rotation) === 270);
-                canvas.width = isSwapped ? img.naturalHeight : img.naturalWidth;
-                canvas.height = isSwapped ? img.naturalWidth : img.naturalHeight;
+            ctx.translate(canvas.width / 2, canvas.height / 2);
+            ctx.rotate(rotation * Math.PI / 180);
+            ctx.scale(scaleX, scaleY);
+            ctx.drawImage(imgEl, -imgEl.naturalWidth / 2, -imgEl.naturalHeight / 2);
 
-                ctx.save();
-                ctx.translate(canvas.width / 2, canvas.height / 2);
-                ctx.rotate(rotation * Math.PI / 180);
-                ctx.scale(scaleX, scaleY);
-                ctx.drawImage(img, -img.naturalWidth / 2, -img.naturalHeight / 2);
-                ctx.restore();
+            const keepTypes = ['image/jpeg', 'image/png', 'image/webp'];
+            const { base, ext } = splitName(currentFile.name);
+            let mime = currentFile.type, outName = currentFile.name;
+            if (!keepTypes.includes(mime)) {      // gif, bmp, svg... can't be re-encoded as-is
+                mime = 'image/png';
+                outName = base + '.png';
+            }
 
-                canvas.toBlob((blob) => {
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = `edited_${currentFile.name}`;
-                    a.click();
-                    URL.revokeObjectURL(url);
-                }, currentFile.type, 1.0);
-            };
+            canvas.toBlob((blob) => {
+                const url = URL.createObjectURL(blob);
+                saveBlobUrl(url, outName);
+                setTimeout(() => URL.revokeObjectURL(url), 1000);
+            }, mime, 1.0);
         }
     </script>
 </body>

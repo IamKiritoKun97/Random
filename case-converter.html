@@ -96,10 +96,12 @@ body::before {
   margin: 0 auto;
   width: 100%;
   display: flex;
+  align-items: flex-start;
 }
 
 .card {
   flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   background: var(--bg-surface);
@@ -125,9 +127,8 @@ body::before {
 .textarea-header svg { color: var(--accent); }
 
 #main-textarea {
-  flex: 1;
   width: 100%;
-  min-height: clamp(380px, 62vh, 800px);
+  min-height: clamp(190px, 31vh, 400px);
   resize: vertical;
   background: transparent;
   border: none; outline: none;
@@ -177,6 +178,15 @@ body::before {
   color: var(--accent);
 }
 .btn-icon { font-size: 15px; }
+
+.btn-copy {
+  margin-left: auto;
+  background: linear-gradient(135deg, var(--accent), #4ab8a8);
+  border-color: transparent;
+  color: #0b1a18;
+  font-weight: 700;
+}
+.btn-copy:hover { color: #071210; border-color: transparent; }
 
 /* Toast */
 .toast-container {
@@ -246,6 +256,10 @@ body::before {
         <button class="btn" data-action="alternating"><span class="btn-icon" aria-hidden="true">⇅</span> aLtErNaTiNg</button>
         <button class="btn is-active" data-action="title"><span class="btn-icon" aria-hidden="true">❑</span> Title Case</button>
         <button class="btn" data-action="inverse"><span class="btn-icon" aria-hidden="true">⊘</span> iNVERSE cAsE</button>
+        <button class="btn btn-copy" id="copyBtn" aria-label="Copy text">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          <span id="copyLabel">Copy</span>
+        </button>
       </div>
 
     </div>
@@ -333,6 +347,24 @@ body::before {
       textarea.value = transformers.title(textarea.value);
       setActive('title');
     }, 0);
+  });
+
+  /* ── Copy ── */
+  const copyBtn = document.getElementById('copyBtn');
+  const copyLabel = document.getElementById('copyLabel');
+  copyBtn.addEventListener('click', async () => {
+    const text = textarea.value;
+    if (!text.trim()) { toast('Nothing to copy', 'error'); return; }
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch (err) {
+      textarea.select();
+      document.execCommand('copy');
+      textarea.setSelectionRange(text.length, text.length);
+    }
+    lastClipboard = text; // so focusing the box doesn't re-paste what we just copied
+    copyLabel.textContent = 'Copied!';
+    setTimeout(() => { copyLabel.textContent = 'Copy'; }, 1800);
   });
 
   /* ── Toast ── */
